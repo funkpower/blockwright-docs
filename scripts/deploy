@@ -1,8 +1,8 @@
 #!/bin/sh
-# Copy site/ to the web root in $BW_TUTORIAL_DEST.
+# Copy site/ to the web root in $BW_DOCS_DEST.
 set -eu
-: "${BW_TUTORIAL_DEST:?set BW_TUTORIAL_DEST to the web root for /blockwright/}"
+: "${BW_DOCS_DEST:?set BW_DOCS_DEST to the web root for /blockwright/}"
 cd "$(dirname "$0")/.."
-mkdir -p "$BW_TUTORIAL_DEST"
+mkdir -p "$BW_DOCS_DEST"
 # The share refuses chmod: copy contents and times, not permissions.
-rsync -rt --inplace --delete --no-perms --omit-dir-times site/ "$BW_TUTORIAL_DEST/"
+rsync -rt --inplace --delete --no-perms --omit-dir-times site/ "$BW_DOCS_DEST/"

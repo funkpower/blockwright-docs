@@ -1,0 +1,3 @@
+# Installing Blockwright
+
+Not written yet. Scope and status: PLAN.md §3.
