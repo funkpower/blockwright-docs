@@ -1,0 +1,6 @@
+#!/bin/sh
+# GIT_ASKPASS helper for https://git.pumpin.online: user funkpower, token from pass.
+case "$1" in
+  Username*) echo funkpower ;;
+  *) pass show forgejo/pumpin-funkpower | head -n1 ;;
+esac
