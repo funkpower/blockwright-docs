@@ -13,9 +13,18 @@ Every tutorial has the same shape:
 
 1. **Goal**: one sentence, and the finished sample at 1× and 2×.
 2. **The idea**: the concept, with one picture.
-3. **Do it**: numbered steps in Blockwright, each with the key or click and a picture of the canvas after it.
+3. **Do it**: numbered steps in Blockwright. Each step has the key or click, a picture of the canvas after it, and a window picture of the toolbox, Tool Options and any selection. A step that applies a tool or brush is a before/after pair.
 4. **Check it**: what goes wrong and how it looks (a dotted diagonal, a speck, a skipped rung), from the craft rules.
 5. **Try it**: a short exercise with a starting `.ans` to download.
+
+Pictures are the point (maintainer, 2026-11-02). Many step-by-step images, before and after every tool and brush, showing what it does and how it is used. For each brush, tutorials 04–07 show:
+
+- its effect on a plain shape;
+- each setting run on its own, as a labelled row;
+- a 4–8 step worked example on a real subject;
+- the common mistake.
+
+Each tutorial ends with one piece built through all its brushes in order, every step pictured (blockwright-docs #3; layers, #2). Pictures are 2× with the 1× linked, and every one comes from a steps file, never hand-saved.
 
 Every manual page lists, per feature: where it is (menu, dock, shortcut), what each option does, its limits, and the tutorial that uses it.
 
@@ -74,7 +83,7 @@ Findings from reading Blockwright's `PLAN.md` and its CLI on 2026-10-23.
 1. **Step-by-step images need a headless stroke runner.** `blockwright-cli` has `render`, `convert`, `export --irc` and `shade` (one ramp pass over a box). A tutorial needs the canvas after each step of a stroke, made the same way every time. The brushes and shape tools are core functions (`brush.h`, `halfblock.h`, `shapes.h`, `brushes/detail.h`), so a `blockwright-cli replay <steps.json>` that applies tool strokes and writes an `.ans` per step is a small wrapper. Without it the step images are hand-saved from the GUI and drift as the tools change.
 2. **The shortcuts page and the menu reference need an action dump.** Blockwright already tests that no two actions share a shortcut, so it enumerates them; a `--list-actions` (JSON: menu, name, shortcut, tooltip) lets both pages be generated.
 3. **The CLI page is generated** from `blockwright-cli --help` and each command's help.
-4. **Screenshots of the window wait for Phase 2c.** 2c replaces the Brush dock with a toolbox, Tool Options and a glyph bar, so any screenshot taken before it is redone. Grabbing widgets under `QT_QPA_PLATFORM=offscreen` would make them reproducible.
+4. **Window screenshots come from `blockwright --screenshot <steps.json>`** (funkpower/blockwright#295). It replays the same steps file as `replay` in the main window, offscreen, at a fixed size, style, font and screen, and saves the window, a dock or a crop per step. Phase 2c (toolbox, Tool Options, glyph bar) is in, so the layout is the one to picture.
 5. **Rendering is ready.** `render --scale 2` gives the 2× view; `export --irc` gives each line's byte count.
 6. **Before/after toggles** are the one place JavaScript would help. `<details>` or two images side by side do without it.
 
