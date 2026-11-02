@@ -1,3 +1,92 @@
+Title: The window: canvas, docks and views
+Checked: Blockwright 0.1.0 (c44974c)
+
 # The window: canvas, docks and views
 
-Not written yet. Scope and status: PLAN.md §3.
+Blockwright's window is the canvas in the middle with docks around it: the tools on the left, the 1× preview, the palette and the other panels on the right, and the F-key glyphs along the bottom. This page says what each part is, how to move them, and what the **View** menu changes.
+
+## Starting up
+
+Blockwright opens on the **start screen** when it starts with no file or project named on the command line. The main window comes up when the start screen closes, whichever way it closes; closing it without picking anything leaves a new 80 × 40 canvas.
+
+| Part | What it does |
+|---|---|
+| **New** | **Width** (1 to 400 columns) and **Height** (1 to 5000 rows) of the new canvas; the **80 × 25**, **80 × 40** and **80 × 50** buttons set both. **iCE colours (16 background colours, no blink)** is ticked to start with. The **New** button (<kbd>N</kbd> or <kbd>Enter</kbd>) makes the canvas. |
+| **Open...** | An `.ans`, XBIN or BIN file, or a `.bwp` project (<kbd>O</kbd> or <kbd>Ctrl</kbd>+<kbd>O</kbd>). |
+| **Open Project Directory...** | A project saved as a directory. |
+| **Recent** | The files opened or saved lately, each with its folder beside the name; a click opens one. A file that is no longer there is greyed out and marked `missing`, with a **Remove** button that takes it off the list. With no recent files the list reads `Nothing opened or saved yet`. |
+| **Show at startup** | Untick it to start straight in the main window. |
+
+Starting the size and colours of a canvas from the start screen is in [What ANSI art is](../tutorials/01-what-ansi-art-is.md). **File > Start Screen...** brings the screen back at any time, and closes the open piece to do it. If the piece has unsaved changes, Blockwright asks first whether to save them; **Cancel** keeps the piece open and shows no start screen. Closing the screen without picking anything leaves a new, blank 80 × 40 `untitled.ans`, not the piece that was open. **File > New** (<kbd>Ctrl</kbd>+<kbd>N</kbd>) makes an 80 × 40 canvas with iCE colours on without the start screen.
+
+## The canvas
+
+The canvas is in the middle of the window, centred on a dark background when it is smaller than the space for it. The cell cursor, a frame that shows on any colour, marks where keyboard mode types ([Keyboard mode, F-key glyph sets and the pen](03-keyboard-mode.md)); a click on a cell puts the cursor there.
+
+- **Zoom** is a whole number from 1× to 8×. A new window starts at 2×.
+- **Pan** with the scroll bars or by dragging with the middle mouse button.
+- **Move the active layer** by dragging with <kbd>Alt</kbd> and the left button, whichever tool is active.
+- **The row meter**, beside the canvas, shows each row's size in bytes as an IRC line: a bar as long as the row's share of the IRC byte budget, with the count on it when the row is tall enough to hold it. The bar is red when the row is over the budget and amber when cells were merged to make it fit. Hover over a row for its count against the budget. **View > IRC > Row Meter** hides and shows it; it starts shown.
+
+The window's title is the file's name (`untitled.ans` before the first save), with a `*` while there are unsaved changes.
+
+### The status bar
+
+The status bar along the bottom of the window shows, from the left:
+
+- **The tool**, such as `Glyph ░`: what the active tool is set to, for the tools that say; nothing for the others.
+- **The glyph set**, such as `F-keys set 6: ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·`: the set the F-keys type now. Its tooltip lists the keys.
+- **The position**, such as `12, 3  |  80x40  |  8 px  |  2x`: the cell cursor's column and row (0, 0 is the top-left cell), the canvas's width and height in cells, the cell width in pixels (8, or 9 with 9 px letter spacing), and the zoom.
+
+Short messages show at its left for a few seconds, such as a key whose character can't be typed ([Which keys type](03-keyboard-mode.md#which-keys-type)).
+
+## Docks
+
+Each panel around the canvas is a dock: drag its title bar to move it to another side of the window, onto another dock to share its place as a tab, or off the window to float it. Drag the separator between the canvas and a column of docks to make the column wider or narrower.
+
+| Dock | Starts | What it shows | Can close |
+|---|---|---|---|
+| **Toolbox** | Left, top | A button for each tool or group of tools in the **Tools** menu, with the same shortcuts. | Yes |
+| **Tool Options** | Left, under the Toolbox | The settings of the active tool, under the tool's name. | Yes |
+| **Preview (1x)** | Right, top | The whole canvas at 1×, as it looks at its real size. | No |
+| **Palette** | Right | The 16 colours and the pen ([Palette, iCE colours and 24-bit colour](09-colour.md)). | No |
+| **Layers** | Right | The layer stack of the canvas. | Yes |
+| **Library** | Right | The stamps and text styles of the library, as thumbnails with a category list and a search box. | No |
+| **Lint** | Right, bottom, in front | The lint's findings for the canvas, one a row; activating a row puts the cell cursor on its cell. | Yes |
+| **IRC View** | Right, bottom, behind Lint | The canvas as an IRC client shows the exported lines, with a red bar where a line over the budget is cut. | Yes |
+| **Glyphs** | Bottom | The current F-key set as ten cells and a list of all 16 sets ([Keyboard mode, F-key glyph sets and the pen](03-keyboard-mode.md)). | Yes |
+
+Lint and IRC View share a place as two tabs; the one at the back updates when it comes to the front.
+
+### The Window menu
+
+The **Window** menu has a checkable item for each dock, in the order of the table above. Untick one to close the dock, tick it to bring it back. The Preview, Palette and Library docks can't be closed: their items are always ticked and greyed out.
+
+**Window > Reset Layout** puts every dock back where it starts: the left column 360 pixels wide with the Toolbox over Tool Options, the right column 360 pixels wide, and the Glyphs dock along the bottom. The canvas keeps at least 640 pixels of width; on a small screen the columns give way first.
+
+Blockwright saves the window's size and place and the docks' layout when the window closes, and puts them back on the next start.
+
+## Views
+
+The **View** menu:
+
+| Item | Shortcut | What it does |
+|---|---|---|
+| **Zoom In** | <kbd>Ctrl</kbd>+<kbd>=</kbd> or <kbd>Ctrl</kbd>+<kbd>+</kbd> | One step larger, up to 8×. |
+| **Zoom Out** | <kbd>Ctrl</kbd>+<kbd>-</kbd> | One step smaller, down to 1×. |
+| **Actual Size** | <kbd>Ctrl</kbd>+<kbd>0</kbd> | 1×. |
+| **iCE Colours** | | Bright backgrounds as 16 colours; off, they blink ([iCE colours](09-colour.md#ice-colours)). Saved in the file. |
+| **9 px Letter Spacing** | | Cells 9 pixels wide instead of 8, with the line-drawing glyphs 0xC0–0xDF joined across the ninth column as a VGA screen joined them. Saved in the file's SAUCE record. |
+| **IRC > Row Meter** | | Shows or hides the row meter beside the canvas. |
+| **IRC > IRC View** | | Shows or hides the IRC View dock. |
+| **Guides** | | **None**, **80x25**, **80x40** or **80x50**: a line after column 80 and after every 25, 40 or 50 rows. |
+
+The zoom changes the canvas only; the Preview dock always shows 1×. A canvas too wide or too tall to draw at 9 pixels a cell stays at 8, and the status bar says so.
+
+Guides are drawn over the canvas while you work and never saved. They show where a piece would break across 80 × 25, 80 × 40 or 80 × 50 screens.
+
+The **View > IRC** submenu also has **Budget...**, **Fit Lines to the Budget**, **Pad Lines** and **Swap Shades**, which are about IRC export.
+
+### Help on the window itself
+
+**Help > What's This?** (<kbd>Shift</kbd>+<kbd>F1</kbd>) turns the pointer into a question mark: click any part of the window to be told what it does. <kbd>Esc</kbd> leaves the mode. A tool's button shows the tool's whole help. **Help > Keyboard Shortcuts...** lists every action that has a key, with a search field. **Help > Manual...** opens the **Blockwright Manual** window, which needs no network: a section for each tool in the **Tools** menu's order, with its key, a picture of it at work and its help, then one for each kind of layer. Its **Keyboard Shortcuts...** button opens the shortcuts list.

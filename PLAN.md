@@ -60,14 +60,14 @@ One page per area, in `manual/`. Each page is written when its feature is on Blo
 | Page | Source in Blockwright's `PLAN.md` | Status |
 |---|---|---|
 | Install | Phase 6, packaging | Waits for packages (AUR, Debian/Ubuntu, Fedora) |
-| The window | §11 workspace layout, §4 renderer (zoom, 1× preview) | Waits for 2c |
-| Keyboard mode | §4 keyboard mode | Ready |
+| The window | §11 workspace layout, §4 renderer (zoom, 1× preview) | Written, checked against `c44974c`; window screenshots wait for `blockwright --screenshot` |
+| Keyboard mode | §4 keyboard mode | Written, checked against `c44974c` |
 | Tools | §4 drawing tools, §10 brushes | Merged tools ready; one section per tool added as each lands |
 | Selections | §4 selections | Ready |
 | Symmetry | §4 mirror mode, §10 symmetry | Ready |
 | Layers | §5 | Phase 3 |
 | Library | §12 | 2c (stamps), Phase 5 (prefabs, Scene Starter) |
-| Colour | §4 SAUCE/iCE, palette; Phase 8 24-bit | iCE and palette ready |
+| Colour | §4 SAUCE/iCE, palette; Phase 8 24-bit | Written, checked against `c44974c`; 24-bit covers reading only (drawing in 24-bit is Phase 8) |
 | IRC | §8 IRC text, §9 | CLI ready; editor side Phase 4 |
 | Lint | §10 ladder lint, Phase 4 lint panel | Rules ready; panel Phase 4 |
 | Generators | §7 | Phase 5 |
