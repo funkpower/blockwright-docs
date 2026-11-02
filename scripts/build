@@ -1,0 +1,444 @@
+#!/usr/bin/env python3
+"""Build the docs site from the Markdown pages and the .ans samples.
+
+    scripts/build [--out DIR] [--cli PATH]
+
+Pages are `index.md`, `tutorials/*.md` and `manual/*.md`, each section with
+an `index.md` of its own. A page other than an index is published
+when its metadata block carries `Checked:` (the Blockwright build its steps
+were checked against); the others are stubs, listed as not written yet and
+never linked.
+
+An image whose source is an `.ans` (`![alt](../samples/x/y.ans "2x")`) is
+drawn by `blockwright-cli render` at the scale its title names (1x when it
+names none), and links to the `.ans`, which is copied beside the picture.
+
+Any other relative link or image names a file in the repo (a `.png`, an
+`.ans` no page draws), which is copied into the site at the same path.
+
+`<!-- generated: cli-help -->` on a line of its own, outside a fenced code
+block, becomes the output of `blockwright-cli --help`. `<!-- list: tutorials -->`
+and `<!-- list: manual -->` become the list of that section's pages. Markers are
+replaced inside Python-Markdown, after it has set fenced code aside, so a
+marker is code exactly when Markdown shows it as code. A marker comment still
+in a page's HTML (one not on a line of its own) fails the build.
+
+The build fails on a link or image that doesn't resolve, a `#fragment` the
+target page has no id for, a link to a stub, a path that leaves the repo or
+resolves into `.git/` or `site/`, a missing sample, or a sample the CLI can't
+render.
+
+The output directory is cleared only when it is empty or is a site this script
+built: it writes `.blockwright-docs-manifest` (every file it wrote) into the
+site, and refuses a directory without one, or with a file the manifest doesn't
+list. It refuses
+any output inside the repo other than `site/`, and any that contains the repo.
+"""
+
+import argparse
+import html
+import os
+import re
+import shutil
+import struct
+import subprocess
+import sys
+from pathlib import Path
+from string import Template
+from urllib.parse import unquote
+
+try:
+    import markdown
+    from markdown.preprocessors import Preprocessor
+except ImportError:
+    sys.exit("build: needs Python-Markdown (python-markdown on Arch, python3-markdown on Debian)")
+
+ROOT = Path(__file__).resolve().parent.parent
+SECTIONS = {"tutorials": "Tutorials", "manual": "Manual"}
+SITE_NAME = "Blockwright"
+SCALE_RE = re.compile(r"^([1-8])x$")
+# The robots meta tag every page carries. "noindex" while the site lives at
+# lrh.pumpin.online/blockwright/; "" (no tag) once it has its own domain.
+ROBOTS = "noindex"
+# Written into the site; names every file the build wrote.
+MANIFEST = ".blockwright-docs-manifest"
+EXTERNAL_RE = re.compile(r"^[a-z][a-z0-9+.-]*:|^//", re.I)
+MARKER_RE = re.compile(r"^<!-- (generated|list): ([a-z-]+) -->[ \t]*$")
+LEFT_MARKER_RE = re.compile(r"<!--\s*(?:generated|list)\s*:")
+# Python-Markdown's fenced_code_block preprocessor runs at 25 and html_block at
+# 20; markers are replaced between the two.
+MARKER_PRIORITY = 22
+
+
+class BuildError(Exception):
+    pass
+
+
+def find_cli(explicit):
+    # One that was asked for is used or refused, never passed over.
+    for asked, how in [(explicit, "--cli"), (os.environ.get("BLOCKWRIGHT_CLI"), "BLOCKWRIGHT_CLI")]:
+        if asked:
+            found = shutil.which(asked)
+            if not found:
+                raise BuildError(f"{how}: {asked} isn't an executable")
+            return found
+    for name in ["blockwright-cli-dev", "blockwright-cli"]:
+        if shutil.which(name):
+            return shutil.which(name)
+    raise BuildError("no blockwright-cli: pass --cli or set BLOCKWRIGHT_CLI")
+
+
+def run(cmd):
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        raise BuildError(f"{' '.join(map(str, cmd))} exited {r.returncode}: {r.stderr.strip()}")
+    return r.stdout
+
+
+def png_size(path):
+    try:
+        with open(path, "rb") as f:
+            head = f.read(24)
+    except OSError as e:
+        raise BuildError(f"{path}: the render wrote no picture ({e.strerror})")
+    if head[:8] != b"\x89PNG\r\n\x1a\n":
+        raise BuildError(f"{path} is not a PNG")
+    return struct.unpack(">II", head[16:24])
+
+
+def in_repo(rel):
+    """rel (a path from ROOT) as a normalised Path, or None if it leaves the repo."""
+    path = Path(os.path.normpath(rel))
+    if path.is_absolute() or path.parts[:1] == ("..",):
+        return None
+    if not (ROOT / path).resolve().is_relative_to(ROOT):
+        return None  # a symlink out of the repo
+    return path
+
+
+def refused(target):
+    """Why the site can't carry target (a path from in_repo), or None. Checked on
+    the resolved path, so a symlink into .git/ or site/ is refused too."""
+    real = (ROOT / target).resolve().relative_to(ROOT)
+    if not real.parts or real.parts[0] in (".git", "site"):
+        return "not a file the site can carry"
+    return None
+
+
+class Markers(Preprocessor):
+    """Replaces each marker line Markdown hasn't set aside as code with the HTML
+    replace(kind, name) returns, stashed so Markdown passes it through as is."""
+
+    def __init__(self, md, replace):
+        super().__init__(md)
+        self.replace = replace
+
+    def run(self, lines):
+        out = []
+        for line in lines:
+            m = MARKER_RE.match(line)
+            if m:
+                out += ["", self.md.htmlStash.store(self.replace(m.group(1), m.group(2))), ""]
+            else:
+                out.append(line)
+        return out
+
+
+def site_files(out):
+    """Every file and symlink under out, as paths relative to it."""
+    found = set()
+    for d, dirs, files in os.walk(out):
+        for name in files + [x for x in dirs if os.path.islink(os.path.join(d, x))]:
+            found.add(os.path.relpath(os.path.join(d, name), out))
+    return found
+
+
+def prepare_out(out):
+    """Make out an empty directory, clearing it only if it is a site this script built."""
+    if out == ROOT / "site":
+        pass
+    elif out.is_relative_to(ROOT):
+        raise BuildError(f"--out {out}: inside the repo; only site/ may be built there")
+    elif ROOT.is_relative_to(out):
+        raise BuildError(f"--out {out}: holds the repo; not clearing it")
+    if out.exists() or out.is_symlink():
+        if not out.is_dir():
+            raise BuildError(f"--out {out}: not a directory")
+        if any(out.iterdir()):
+            manifest = out / MANIFEST
+            if not manifest.is_file():
+                raise BuildError(f"--out {out}: not empty and not a site this build wrote (no {MANIFEST}); "
+                                 "not clearing it")
+            listed = set(manifest.read_text(encoding="utf-8").splitlines()) | {MANIFEST}
+            extra = sorted(site_files(out) - listed)
+            if extra:
+                raise BuildError(f"--out {out}: holds files the build didn't write ({', '.join(extra[:5])}"
+                                 f"{', …' if len(extra) > 5 else ''}); not clearing it")
+            shutil.rmtree(out)
+    out.mkdir(parents=True, exist_ok=True)
+    # Claim the directory before writing anything else into it.
+    (out / MANIFEST).write_text("", encoding="utf-8")
+
+
+def write_manifest(out):
+    files = sorted(site_files(out) - {MANIFEST})
+    (out / MANIFEST).write_text("".join(f + "\n" for f in files), encoding="utf-8")
+
+
+class Page:
+    def __init__(self, src):
+        self.src = src
+        self.rel = src.relative_to(ROOT)
+        self.section = self.rel.parts[0] if len(self.rel.parts) > 1 else ""
+        self.out = self.rel.with_suffix(".html")
+        md = markdown.Markdown(extensions=["meta"])
+        md.convert(src.read_text(encoding="utf-8"))
+        meta = {k: " ".join(v) for k, v in md.Meta.items()}
+        self.checked = meta.get("checked", "")
+        self.title = meta.get("title", "")
+        if not self.title:
+            m = re.search(r"^# (.+)$", src.read_text(encoding="utf-8"), re.M)
+            self.title = m.group(1).strip() if m else src.stem
+        self.is_index = src.name == "index.md"
+        self.published = bool(self.checked) or self.is_index
+
+
+def collect_pages():
+    pages = [Page(ROOT / "index.md")]
+    for section in SECTIONS:
+        pages.append(Page(ROOT / section / "index.md"))
+        for src in sorted((ROOT / section).glob("*.md")):
+            if src.name != "index.md":
+                pages.append(Page(src))
+    return pages
+
+
+def section_list(pages, section, here):
+    items = []
+    for p in pages:
+        if p.section != section or p.is_index:
+            continue
+        if p.published:
+            href = os.path.relpath(p.out, here.out.parent)
+            items.append(f'<li><a href="{html.escape(href)}">{html.escape(p.title)}</a></li>')
+        else:
+            items.append(f'<li class="soon">{html.escape(p.title)} <span>(not written yet)</span></li>')
+    return "<ol>\n" + "\n".join(items) + "\n</ol>"
+
+
+def cli_help(cli):
+    out = run([cli, "--help"])
+    start = out.find("Usage:")
+    if start < 0:
+        raise BuildError("blockwright-cli --help printed no Usage line")
+    out = out[start:]
+    # The usage line names the binary it was run as (blockwright-cli-dev).
+    out = re.sub(r"^Usage: \S+", "Usage: blockwright-cli", out, count=1)
+    return "<pre class=\"help\">" + html.escape(out.rstrip()) + "</pre>"
+
+
+class Builder:
+    def __init__(self, out, cli):
+        self.out = out
+        self.cli = cli
+        self.rendered = {}
+        self.errors = []
+        self.pages = collect_pages()
+        self.by_out = {p.out: p for p in self.pages}
+        self.template = Template((ROOT / "theme" / "page.html").read_text(encoding="utf-8"))
+        self.version = run([cli, "--version"]).splitlines()[0].replace("blockwright-cli-dev", "blockwright-cli")
+
+    def render_sample(self, ans, scale):
+        """Draw ans (a path from ROOT) at scale; returns the PNG's site path and size."""
+        key = (ans, scale)
+        if key in self.rendered:
+            return self.rendered[key]
+        src = ROOT / ans
+        if not src.is_file():
+            raise BuildError(f"no sample {ans}")
+        png = ans.with_name(f"{ans.stem}-{scale}x.png")
+        dest = self.out / png
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        run([self.cli, "render", "--scale", str(scale), str(src), str(dest)])
+        shutil.copyfile(src, self.out / ans)
+        self.rendered[key] = (png, png_size(dest))
+        return self.rendered[key]
+
+    def fix_images(self, page, body):
+        def img(m):
+            attrs = m.group(1)
+            src = html.unescape(re.search(r'src="([^"]+)"', attrs).group(1))
+            if EXTERNAL_RE.match(src):
+                return m.group(0)
+            if not src.endswith(".ans"):
+                self.copy_asset(page, src)
+                return m.group(0)
+            title = re.search(r'title="([^"]*)"', attrs)
+            scale = 1
+            if title:
+                sm = SCALE_RE.match(title.group(1))
+                if not sm:
+                    raise BuildError(f"{page.rel}: {src}: the title names a scale, 1x to 8x, not {title.group(1)!r}")
+                scale = int(sm.group(1))
+            ans = in_repo(page.rel.parent / unquote(src))
+            if ans is None:
+                raise BuildError(f"{page.rel}: {src}: outside the repo")
+            why = refused(ans)
+            if why:
+                raise BuildError(f"{page.rel}: {src}: {why}")
+            png, (w, h) = self.render_sample(ans, scale)
+            alt = re.search(r'alt="([^"]*)"', attrs)
+            alt = alt.group(1) if alt else ""
+            href = os.path.relpath(ans, page.out.parent)
+            pngref = os.path.relpath(png, page.out.parent)
+            return (f'<a class="ans" href="{html.escape(href)}"><img src="{html.escape(pngref)}" '
+                    f'alt="{alt}" width="{w}" height="{h}"></a>')
+
+        return re.sub(r"<img ([^>]*)/?>", img, body)
+
+    def copy_asset(self, page, ref):
+        """Copy the repo file a relative link or image names into the site."""
+        path = unquote(ref.partition("#")[0])
+        if not path:
+            return
+        target = in_repo(page.rel.parent / path)
+        if target is None:
+            self.errors.append(f"{page.rel}: {ref}: outside the repo")
+        elif refused(target):
+            self.errors.append(f"{page.rel}: {ref}: {refused(target)}")
+        elif not (ROOT / target).is_file():
+            self.errors.append(f"{page.rel}: {ref}: no such file")
+        elif (self.out / target).exists():
+            return  # a page, a rendered sample or an asset already copied
+        else:
+            (self.out / target).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT / target, self.out / target)
+
+    def fix_links(self, page, body):
+        def link(m):
+            href = html.unescape(m.group(1))
+            if EXTERNAL_RE.match(href) or href.startswith("#"):
+                return m.group(0)
+            path, _, frag = href.partition("#")
+            if path.endswith((".md", ".html")):
+                target = in_repo(page.rel.parent / unquote(path))
+                tp = self.by_out.get(target.with_suffix(".html")) if target else None
+                if tp is None:
+                    self.errors.append(f"{page.rel}: link to {href}: no such page")
+                elif not tp.published:
+                    self.errors.append(f"{page.rel}: link to {href}: that page isn't written yet")
+                if path.endswith(".md"):
+                    path = path[:-3] + ".html"
+            else:
+                self.copy_asset(page, href)
+            return 'href="' + html.escape(path + ("#" + frag if frag else "")) + '"'
+
+        return re.sub(r'href="([^"]+)"', link, body)
+
+    def neighbours(self, page):
+        if not page.section or page.is_index:
+            return ""
+        same = [p for p in self.pages if p.section == page.section and p.published and not p.is_index]
+        i = same.index(page)
+        parts = []
+        if i > 0:
+            parts.append(f'<a rel="prev" href="{same[i-1].out.name}">← {html.escape(same[i-1].title)}</a>')
+        if i + 1 < len(same):
+            parts.append(f'<a rel="next" href="{same[i+1].out.name}">{html.escape(same[i+1].title)} →</a>')
+        return '<nav class="pager">' + " ".join(parts) + "</nav>" if parts else ""
+
+    def build_page(self, page):
+        text = page.src.read_text(encoding="utf-8")
+
+        def replace(kind, name):
+            if kind == "generated":
+                if name == "cli-help":
+                    return cli_help(self.cli)
+                raise BuildError(f"{page.rel}: unknown generated block {name!r}")
+            if name not in SECTIONS:
+                raise BuildError(f"{page.rel}: unknown list {name!r}")
+            return section_list(self.pages, name, page)
+
+        md = markdown.Markdown(extensions=["meta", "extra", "toc", "sane_lists"],
+                               extension_configs={"toc": {"permalink": False}})
+        md.preprocessors.register(Markers(md, replace), "blockwright_markers", MARKER_PRIORITY)
+        body = md.convert(text)
+        if LEFT_MARKER_RE.search(body):
+            raise BuildError(f"{page.rel}: a <!-- generated: --> or <!-- list: --> marker was left as a "
+                             "comment; put it on a line of its own, outside code")
+        body = self.fix_images(page, body)
+        body = self.fix_links(page, body)
+        up = os.path.relpath(".", page.out.parent)
+        root = "" if up == "." else up + "/"
+        checked = ""
+        if page.checked:
+            checked = f'<p class="checked">Describes {html.escape(page.checked)}.</p>'
+        title = SITE_NAME if not page.section else f"{page.title} · {SITE_NAME}"
+        robots = f'<meta name="robots" content="{html.escape(ROBOTS)}">\n' if ROBOTS else ""
+        doc = self.template.substitute(
+            title=html.escape(title),
+            robots=robots,
+            root=root,
+            body=body,
+            checked=checked,
+            pager=self.neighbours(page),
+        )
+        dest = self.out / page.out
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(doc, encoding="utf-8")
+
+    def check_refs(self):
+        """Every relative href and src in the built site resolves to a file in
+        it, and every #fragment to an id on the page it names."""
+        ids = {}
+
+        def ids_of(f):
+            if f not in ids:
+                text = f.read_text(encoding="utf-8")
+                ids[f] = {html.unescape(i) for i in re.findall(r'\bid="([^"]*)"', text)}
+            return ids[f]
+
+        out = self.out.resolve()
+        for f in sorted(out.rglob("*.html")):
+            text = f.read_text(encoding="utf-8")
+            for ref in re.findall(r'(?:href|src)="([^"]+)"', text):
+                ref = html.unescape(ref)
+                if EXTERNAL_RE.match(ref):
+                    continue
+                path, _, frag = ref.partition("#")
+                target = (f.parent / unquote(path)).resolve() if path else f
+                if not target.is_relative_to(out) or not target.is_file():
+                    self.errors.append(f"{f.relative_to(out)}: {ref} doesn't resolve")
+                elif frag and target.suffix == ".html" and unquote(frag) not in ids_of(target):
+                    self.errors.append(f"{f.relative_to(out)}: {ref}: no #{frag} on that page")
+
+    def build(self):
+        prepare_out(self.out)
+        try:
+            shutil.copyfile(ROOT / "theme" / "site.css", self.out / "site.css")
+            for page in self.pages:
+                if page.published:
+                    self.build_page(page)
+            self.check_refs()
+        finally:
+            write_manifest(self.out)
+        if self.errors:
+            raise BuildError("\n".join(self.errors))
+        n = sum(p.published for p in self.pages)
+        print(f"build: {n} pages, {len(self.rendered)} pictures, {self.version}, into {self.out}")
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Build the docs site into site/.")
+    ap.add_argument("--out", type=Path, default=ROOT / "site", help="output directory (default: site/)")
+    ap.add_argument("--cli", help="the blockwright-cli to render with (default: $BLOCKWRIGHT_CLI, "
+                    "blockwright-cli-dev, blockwright-cli)")
+    args = ap.parse_args()
+    try:
+        Builder(args.out.resolve(), find_cli(args.cli)).build()
+    except BuildError as e:
+        sys.exit(f"build: {e}")
+
+
+if __name__ == "__main__":
+    main()

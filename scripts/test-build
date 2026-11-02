@@ -1,0 +1,442 @@
+#!/usr/bin/env python3
+"""Run scripts/build against scratch copies of the repo and check what it does.
+
+    scripts/test-build [--build FILE] [scenario ...]
+
+Each scenario copies the repo (without .git and site/) into a fresh temporary
+directory, changes the copy, runs the build there and checks the result. With
+--build, FILE is used as the copy's scripts/build instead, to try another
+version of the script against the same scenarios. Needs what the build needs:
+Python-Markdown and a blockwright-cli. Exits 1 if any scenario fails.
+"""
+
+import argparse
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import zlib
+import struct
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+MANIFEST = ".blockwright-docs-manifest"
+PROBE_META = "Title: Probe\nChecked: Blockwright 0.1.0 (test)\n\n# Probe\n\n## A heading\n\n"
+
+
+class Fail(Exception):
+    pass
+
+
+def check(cond, what):
+    if not cond:
+        raise Fail(what)
+
+
+class Scratch:
+    def __init__(self, base, build):
+        self.base = Path(base)
+        self.repo = self.base / "docs"
+        shutil.copytree(ROOT, self.repo, ignore=shutil.ignore_patterns(".git", "site", "__pycache__"))
+        if build:
+            shutil.copyfile(build, self.repo / "scripts" / "build")
+
+    def write(self, rel, text):
+        p = self.repo / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(text, encoding="utf-8")
+        return p
+
+    def probe(self, body):
+        """A published manual page holding body."""
+        self.write("manual/99-probe.md", PROBE_META + body + "\n")
+
+    def build(self, *args):
+        r = subprocess.run([sys.executable, "-I", str(self.repo / "scripts" / "build"), *map(str, args)],
+                           cwd=self.repo, capture_output=True, text=True)
+        self.out = r.stdout + r.stderr
+        return r.returncode
+
+    def failed(self, *args, says):
+        code = self.build(*args)
+        check(code == 1, f"expected exit 1, got {code}: {self.out.strip()[-300:]}")
+        check("Traceback" not in self.out, f"traceback: {self.out.strip()[-300:]}")
+        check(says in self.out, f"expected {says!r} in: {self.out.strip()[-300:]}")
+
+    def passed(self, *args):
+        code = self.build(*args)
+        check(code == 0, f"expected exit 0, got {code}: {self.out.strip()[-300:]}")
+
+    def page(self, rel="manual/99-probe.html"):
+        return (self.repo / "site" / rel).read_text(encoding="utf-8")
+
+    def cli(self, script):
+        """A stand-in blockwright-cli: a shell script that runs the real one
+        unless script (sh case arms on "$1") handles the call first."""
+        real = shutil.which(os.environ.get("BLOCKWRIGHT_CLI", "")) or shutil.which("blockwright-cli-dev") \
+            or shutil.which("blockwright-cli")
+        check(real, "no blockwright-cli to wrap")
+        p = self.base / "fake-cli"
+        p.write_text(f'#!/bin/sh\ncase "$1" in\n{script}\nesac\nexec "{real}" "$@"\n')
+        p.chmod(0o755)
+        return p
+
+
+def tiny_png():
+    def chunk(kind, data):
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(b"\x00\xff\x00\x00")) + chunk(b"IEND", b""))
+
+
+SCENARIOS = {}
+
+
+def scenario(fn):
+    SCENARIOS[fn.__name__.replace("_", "-")] = fn
+    return fn
+
+
+@scenario
+def baseline(s):
+    """The repo as it is builds into site/, twice, with robots meta and the licence footer."""
+    s.passed()
+    s.passed()
+    page = (s.repo / "site" / "index.html").read_text(encoding="utf-8")
+    check('<meta name="robots" content="noindex">' in page, "no robots meta")
+    check("creativecommons.org/licenses/by-sa/4.0/" in page, "no licence in the footer")
+    check((s.repo / "site" / MANIFEST).is_file(), "no manifest in site/")
+
+
+# 1. --out never clears a directory the build didn't write.
+
+@scenario
+def out_theme(s):
+    """--out theme is refused and theme/ is untouched."""
+    before = sorted(p.name for p in (s.repo / "theme").iterdir())
+    s.failed("--out", "theme", says="inside the repo")
+    check(sorted(p.name for p in (s.repo / "theme").iterdir()) == before, "theme/ changed")
+
+
+@scenario
+def out_inside_repo(s):
+    """--out anywhere in the repo but site/ is refused and not created."""
+    s.failed("--out", "manual/out", says="inside the repo")
+    check(not (s.repo / "manual" / "out").exists(), "manual/out was created")
+
+
+@scenario
+def out_holds_repo(s):
+    """--out a directory that holds the repo is refused."""
+    s.failed("--out", s.base, says="holds the repo")
+    check((s.repo / "PLAN.md").is_file(), "the repo was cleared")
+
+
+@scenario
+def out_foreign_dir(s):
+    """A directory with a site.css and other-app/ is refused and kept."""
+    x = s.base / "x"
+    (x / "other-app").mkdir(parents=True)
+    (x / "site.css").write_text("")
+    (x / "other-app" / "data.txt").write_text("keep me")
+    s.failed("--out", x, says="not a site this build wrote")
+    check((x / "other-app" / "data.txt").is_file(), "other-app/data.txt is gone")
+
+
+@scenario
+def out_built_then_added(s):
+    """A built site with a file added to it later is refused and the file kept."""
+    x = s.base / "x"
+    s.passed("--out", x)
+    s.passed("--out", x)
+    (x / "notes.txt").write_text("keep me")
+    s.failed("--out", x, says="notes.txt")
+    check((x / "notes.txt").is_file(), "notes.txt is gone")
+
+
+@scenario
+def out_empty_dir(s):
+    """An existing empty directory is built into."""
+    x = s.base / "x"
+    x.mkdir()
+    s.passed("--out", x)
+    check((x / "index.html").is_file(), "no index.html")
+
+
+@scenario
+def out_failed_build_reused(s):
+    """A build that failed part way can be rebuilt into the same directory."""
+    x = s.base / "x"
+    s.probe("[x](14-cli.md#no-such-anchor)")
+    s.failed("--out", x, says="no-such-anchor")
+    (s.repo / "manual" / "99-probe.md").unlink()
+    s.passed("--out", x)
+
+
+# 2. Linked repo files are copied into the site.
+
+@scenario
+def asset_png(s):
+    """An image of an existing .png is copied into the site."""
+    (s.repo / "img").mkdir()
+    (s.repo / "img" / "pic.png").write_bytes(tiny_png())
+    s.probe("![a picture](../img/pic.png)")
+    s.passed()
+    check((s.repo / "site" / "img" / "pic.png").read_bytes() == tiny_png(), "pic.png not copied")
+
+
+@scenario
+def asset_linked_ans(s):
+    """A link to an .ans no page draws is copied into the site."""
+    s.write("samples/zz/only-linked.ans", "x")
+    s.probe("[only-linked.ans](../samples/zz/only-linked.ans)")
+    s.passed()
+    check((s.repo / "site" / "samples" / "zz" / "only-linked.ans").is_file(), "only-linked.ans not copied")
+
+
+@scenario
+def asset_missing(s):
+    """A link to a file that doesn't exist fails the build."""
+    s.probe("[gone](../img/gone.png)")
+    s.failed(says="gone.png")
+
+
+@scenario
+def asset_outside(s):
+    """A link to a file outside the repo fails the build."""
+    (s.base / "secret.txt").write_text("x")
+    s.probe("[secret](../../secret.txt)")
+    s.failed(says="outside the repo")
+
+
+@scenario
+def asset_symlink_outside(s):
+    """A link through a symlink in the repo to a file outside it fails the build."""
+    (s.base / "secret.txt").write_text("x")
+    (s.repo / "samples" / "out").symlink_to(s.base)
+    s.probe("[secret](../samples/out/secret.txt)")
+    s.failed(says="outside the repo")
+    check(not (s.repo / "site" / "samples" / "out").exists(), "the file was copied")
+
+
+@scenario
+def asset_git(s):
+    """A link to a file under .git/ fails the build."""
+    s.write(".git/config", "[core]\n")
+    s.probe("[config](../.git/config)")
+    s.failed(says="not a file the site can carry")
+    check(not (s.repo / "site" / ".git").exists(), ".git/config was copied")
+
+
+@scenario
+def asset_symlink_git(s):
+    """A link through a symlink into .git/ fails the build and copies nothing."""
+    s.write(".git/config", "[core]\n")
+    (s.repo / "samples" / "gl").mkdir()
+    (s.repo / "samples" / "gl" / "g").symlink_to(Path("..", "..", ".git"))
+    s.probe("[s](../samples/gl/g/config)")
+    s.failed(says="not a file the site can carry")
+    check(not (s.repo / "site" / "samples" / "gl").exists(), ".git/config was copied")
+
+
+@scenario
+def ans_symlink_git(s):
+    """An .ans image through a symlink into .git/ fails before anything is drawn."""
+    (s.repo / ".git").mkdir()
+    shutil.copyfile(s.repo / "samples" / "01-what-ansi-art-is" / "cells.ans", s.repo / ".git" / "x.ans")
+    (s.repo / "samples" / "gl").mkdir()
+    (s.repo / "samples" / "gl" / "g").symlink_to(Path("..", "..", ".git"))
+    s.probe("![x](../samples/gl/g/x.ans)")
+    s.failed(says="not a file the site can carry")
+    check(not (s.repo / "site" / "samples" / "gl").exists(), "the .ans was drawn into the site")
+
+
+# Links to pages, samples and renders.
+
+@scenario
+def link_stub(s):
+    """A link to a page that isn't written yet (no Checked:) fails the build."""
+    s.write("manual/98-stub.md", "Title: Stub\n\n# Stub\n")
+    s.probe("[stub](98-stub.md)")
+    s.failed(says="that page isn't written yet")
+
+
+@scenario
+def link_no_page(s):
+    """A link to a page that doesn't exist fails the build."""
+    s.probe("[none](97-none.md)")
+    s.failed(says="no such page")
+
+
+@scenario
+def sample_missing(s):
+    """An .ans image that doesn't exist fails the build."""
+    s.probe("![x](../samples/nope.ans)")
+    s.failed(says="no sample samples/nope.ans")
+
+
+@scenario
+def render_rejected(s):
+    """An .ans the CLI refuses to render (an empty file) fails the build."""
+    s.write("samples/zz/empty.ans", "")
+    s.probe("![x](../samples/zz/empty.ans)")
+    s.failed(says="empty file")
+
+
+@scenario
+def render_fails(s):
+    """A CLI whose render exits 1 fails the build."""
+    cli = s.cli('render) echo "render broke" >&2; exit 1;;')
+    s.failed("--cli", cli, says="render broke")
+
+
+@scenario
+def render_no_picture(s):
+    """A CLI whose render exits 0 but writes no picture fails the build."""
+    cli = s.cli("render) exit 0;;")
+    s.failed("--cli", cli, says="the render wrote no picture")
+
+
+# 5. Fragments must name an id on the target page.
+
+@scenario
+def anchor_other_page(s):
+    """A missing #anchor on another page fails the build."""
+    s.probe("[x](14-cli.md#no-such-anchor)")
+    s.failed(says="no-such-anchor")
+
+
+@scenario
+def anchor_same_page(s):
+    """A missing #anchor on the same page fails the build."""
+    s.probe("[x](#nowhere-on-this-page)")
+    s.failed(says="nowhere-on-this-page")
+
+
+@scenario
+def anchor_good(s):
+    """Anchors that exist pass."""
+    s.probe("[x](14-cli.md#info) [y](#a-heading)")
+    s.passed()
+
+
+# 6. An .ans image path outside the repo is refused.
+
+@scenario
+def ans_outside(s):
+    """An .ans image outside the repo fails and writes nothing beside --out."""
+    esc = s.base / "esc"
+    esc.mkdir()
+    shutil.copyfile(s.repo / "samples" / "01-what-ansi-art-is" / "cells.ans", esc / "outside.ans")
+    s.probe("![outside](../../esc/outside.ans)")
+    out = s.base / "esc-out" / "site"
+    s.failed("--out", out, says="outside the repo")
+    check(sorted(p.name for p in (s.base / "esc-out").iterdir()) == ["site"], "wrote beside --out")
+
+
+# 7. Markers in fenced code stay as written.
+
+@scenario
+def marker_in_fence(s):
+    """A generated or list marker inside a fenced block is shown, not replaced."""
+    s.probe("```\n<!-- generated: cli-help -->\n```\n\n~~~\n<!-- list: manual -->\n~~~")
+    s.passed()
+    page = (s.repo / "site" / "manual" / "99-probe.html").read_text(encoding="utf-8")
+    check("&lt;!-- generated: cli-help --&gt;" in page, "the generated marker was replaced")
+    check("&lt;!-- list: manual --&gt;" in page, "the list marker was replaced")
+    check("Usage:" not in page, "the help went into the code block")
+
+
+@scenario
+def marker_outside_fence(s):
+    """A marker after a closed fence is still replaced."""
+    s.probe("```\ncode\n```\n\n<!-- generated: cli-help -->")
+    s.passed()
+    page = (s.repo / "site" / "manual" / "99-probe.html").read_text(encoding="utf-8")
+    check("Usage: blockwright-cli" in page, "the marker after the fence wasn't replaced")
+
+
+def markers_replaced(s, body):
+    """Both markers in body, which Markdown doesn't treat as code, are replaced,
+    and neither is left in the page as an invisible comment."""
+    s.probe(body)
+    s.passed()
+    page = s.page()
+    check("<!-- generated" not in page and "<!-- list" not in page, "a marker was left as an HTML comment")
+    check("Usage: blockwright-cli" in page, "the cli-help marker wasn't replaced")
+    check("Probe</a></li>" in page, "the list marker wasn't replaced")
+
+
+@scenario
+def marker_unclosed_fence(s):
+    """Markers after a fence that is never closed (so not code) are replaced."""
+    markers_replaced(s, "```\ncode\n\n<!-- generated: cli-help -->\n\n<!-- list: manual -->")
+
+
+@scenario
+def marker_indented_fence(s):
+    """Markers between fences indented two spaces (so not code) are replaced."""
+    markers_replaced(s, "  ```\n<!-- generated: cli-help -->\n  ```\n\n  ~~~\n<!-- list: manual -->\n  ~~~")
+
+
+@scenario
+def marker_longer_close(s):
+    """Markers after a closing fence longer than its opening (so not closed) are replaced."""
+    markers_replaced(s, "````\n<!-- generated: cli-help -->\n`````\n\n<!-- list: manual -->")
+
+
+@scenario
+def marker_indented_code(s):
+    """Markers in a four-space indented code block are shown as code."""
+    s.probe("Code:\n\n    <!-- generated: cli-help -->\n    <!-- list: manual -->")
+    s.passed()
+    page = s.page()
+    check("&lt;!-- generated: cli-help --&gt;" in page, "the generated marker isn't shown")
+    check("&lt;!-- list: manual --&gt;" in page, "the list marker isn't shown")
+    check("Usage:" not in page, "the help went into the code block")
+
+
+@scenario
+def marker_inline(s):
+    """A marker inside a paragraph, which can't be replaced, fails the build."""
+    s.probe("Some text <!-- generated: cli-help --> and more.")
+    s.failed(says="marker was left as a comment")
+
+
+# 8. --out an existing file.
+
+@scenario
+def out_is_file(s):
+    """--out naming a file is a build: error, not a traceback, and the file is kept."""
+    f = s.base / "f"
+    f.write_text("keep me")
+    s.failed("--out", f, says="not a directory")
+    check(f.read_text() == "keep me", "the file changed")
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Check scripts/build against scratch copies of the repo.")
+    ap.add_argument("--build", type=Path, help="build script to test instead of scripts/build")
+    ap.add_argument("scenario", nargs="*", help=f"scenarios to run (default: all): {', '.join(SCENARIOS)}")
+    args = ap.parse_args()
+    names = args.scenario or list(SCENARIOS)
+    unknown = [n for n in names if n not in SCENARIOS]
+    if unknown:
+        sys.exit(f"test-build: no scenario {', '.join(unknown)}")
+    build = args.build.resolve() if args.build else None
+    failed = 0
+    for name in names:
+        with tempfile.TemporaryDirectory(prefix="bw-docs-test-") as base:
+            try:
+                SCENARIOS[name](Scratch(base, build))
+                print(f"ok    {name}")
+            except Fail as e:
+                failed += 1
+                print(f"FAIL  {name}: {e}")
+    print(f"{len(names) - failed} passed, {failed} failed")
+    sys.exit(1 if failed else 0)
+
+
+if __name__ == "__main__":
+    main()

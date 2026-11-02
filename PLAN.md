@@ -11,7 +11,7 @@ Tutorials link to the manual for detail; the manual links to the tutorial that t
 
 Every tutorial has the same shape:
 
-1. **Goal**: one sentence, and the finished sample at 1× and 2×.
+1. **Goal**: one sentence, and the finished sample at 1× (and at 2× when it is small enough to fit the page at 2×).
 2. **The idea**: the concept, with one picture.
 3. **Do it**: numbered steps in Blockwright. Each step has the key or click, a picture of the canvas after it, and a window picture of the toolbox, Tool Options and any selection. A step that applies a tool or brush is a before/after pair.
 4. **Check it**: what goes wrong and how it looks (a dotted diagonal, a speck, a skipped rung), from the craft rules.
@@ -36,13 +36,13 @@ Status is against Blockwright's `main` on 2026-10-23 (`e721809`). Issue and PR n
 
 | # | Tutorial | Covers | Status |
 |---|---|---|---|
-| 01 | What ANSI art is | Cells, CP437 glyphs, 16 colours, foreground and background, 80 columns, reading a piece at 1× | Ready to write (concepts; the 1× preview dock is in) |
+| 01 | What ANSI art is | Cells, CP437 glyphs, 16 colours, foreground and background, 80 columns, reading a piece at 1× | Written, checked against `c44974c` |
 | 02 | Your first piece | Keyboard mode, F-key glyph sets (Ctrl+, Ctrl+. Ctrl+/), the pen (Ctrl+arrows, Ctrl+D), undo, Save, the SAUCE dialog | Ready to write; screenshots wait for Phase 2c |
 | 03 | Pixels with half blocks | Why ▀▄█ make two pixels a cell; half-block brush, 4- vs 8-connected pencil, line, rectangle, ellipse, Filled Shapes, fill, eyedropper; iCE colours and bright backgrounds | Ready to write; screenshots wait for 2c |
-| 04 | Shading: the ladder | ░▒▓ as rungs between two colours, ramps (fire, sunset, ice, steel, skin), the shade brush, the ramp shade brush, strength, pressure, alpha lock | Ready to write; screenshots wait for 2c |
-| 05 | Shading: forms and falloff | Form shading (dome, cylinder, plane), soft falloff, ramp gradient tool, blend/smudge, despeckle | Form, falloff, despeckle in PR #49; gradient #19; blend #9 |
-| 06 | Light | Choosing a light direction, the rim light brush (Ctrl+Shift+L) and its eight compass points, form shading's light, highlights and glints; where the rim light can't help (counters, thin bars, canvas edges) | Rim light merged; form light in PR #49 |
-| 07 | Detail | Outline brush, texture stamps, glyph spray, clone stamp, symmetry: mirror X/Y, both, radial 2–8 | Symmetry merged; outline PR #55; stamps, spray, clone #10 |
+| 04 | Shading: the ladder | ░▒▓ as rungs between two colours, ramps (fire, sunset, ice, steel, skin), the shade brush, the ramp shade brush, strength, pressure, alpha lock | Ready to write; screenshots wait for 2c; step images wait for #208 |
+| 05 | Shading: forms and falloff | Form shading (dome, cylinder, plane), soft falloff, ramp gradient tool, blend/smudge, despeckle | Form, falloff, despeckle in PR #49; gradient #19; blend #9; step images wait for #208 |
+| 06 | Light | Choosing a light direction, the rim light brush (Ctrl+Shift+L) and its eight compass points, form shading's light, highlights and glints; where the rim light can't help (counters, thin bars, canvas edges) | Rim light merged; form light in PR #49; step images wait for #208 |
+| 07 | Detail | Outline brush, texture stamps, glyph spray, clone stamp, symmetry: mirror X/Y, both, radial 2–8 | Symmetry merged; outline PR #55; stamps, spray, clone #10; step images wait for #208 |
 | 08 | Composing a scene | Selections, move, flip, rotate, paste modes (normal, transparent, under), guides, reference image, Library stamps, Scene Starter | Selections, guides, reference merged; Library is Phase 2c; Scene Starter Phase 5 |
 | 09 | Layers and projects | Layer kinds (cells, pixels, text, generator, reference), compositing, the project file, snapshots | Phase 3 (#11, #12, #13) |
 | 10 | Letters and text | Lettering by hand, letters that misread at 1× (C/G, R/A, 0/D), TDF text layers | Hand lettering ready to write; TDF #18 |
@@ -72,7 +72,7 @@ One page per area, in `manual/`. Each page is written when its feature is on Blo
 | Lint | §10 ladder lint, Phase 4 lint panel | Rules ready; panel Phase 4 |
 | Generators | §7 | Phase 5 |
 | File formats | §6, §8 | `.ans`/SAUCE/IRC ready; project format Phase 3; XBIN Phase 6 |
-| CLI | `blockwright-cli --help` | Ready; generated (§4) |
+| CLI | `blockwright-cli --help` | Written, checked against `c44974c`; its full help is generated (§4) |
 | Shortcuts | every action | Generated (§4) |
 | Preferences | — | Nothing to document yet |
 
@@ -95,13 +95,25 @@ Findings from reading Blockwright's `PLAN.md` and its CLI on 2026-10-23.
 
 ## 6. Build and deploy
 
-- Pages are Markdown in `tutorials/` and `manual/`; a small build script turns them, the generated pages and the rendered samples into `site/`. The script and its Markdown library are chosen when the first page is written.
+- Pages are Markdown in `tutorials/` and `manual/`, plus the home page `index.md` and an `index.md` per section. `scripts/build` turns them into `site/`: one Python 3 script on [Python-Markdown](https://python-markdown.github.io/) (the distribution's package: `python-markdown` on Arch, `python3-markdown` on Debian and Ubuntu, `python3-markdown` on Fedora), with the `meta`, `extra`, `toc` and `sane_lists` extensions. No site generator, no JavaScript, no network. `site/` is build output and isn't tracked.
+- **Why this:** pages stay plain Markdown that reads on the forge as it is; the only dependency is a packaged library; the output is static HTML that works from a web root, a subdirectory or a file browser, which is also what the in-app help (Blockwright #210) needs.
+- **Publishing a page:** a page carries a meta block. `Title:` names it in the lists (else its first heading). `Checked: Blockwright 0.1.0 (c44974c)` says which build it was checked against and publishes it; a page without `Checked:` is a stub, listed as "not written yet", and a link to a stub fails the build.
+- **Pictures of pieces:** `![alt](../samples/<tutorial>/<file>.ans "2x")` renders the `.ans` with `blockwright-cli render --scale 2` (the title is the scale, `1x` to `8x`; none means 1×), puts the PNG in its place, links it to the `.ans`, and copies the `.ans` into the site. Pictures are never edited by hand.
+- **Other files:** any other relative link or image (a `.png`, an `.ans` no page draws) names a file in the repo, which the build copies into the site at the same path.
+- **Generated parts:** `<!-- generated: cli-help -->` is replaced by `blockwright-cli --help`; `<!-- list: tutorials -->` and `<!-- list: manual -->` by the section's pages in order. A marker goes on a line of its own. The build replaces markers inside Python-Markdown, after it has set fenced code aside, so a marker is left as written exactly where Markdown shows it as code (a closed fence, an indented block), and a page can show one. A marker comment that is still in a page's HTML fails the build, so a marker is never dropped silently.
+- **Checks:** the build fails on a link to a missing page or to a stub, a `#fragment` the target page has no id for, a link or image path that leaves the repo (symlinks included) or resolves into `.git/` or `site/`, a link to a missing file, a missing sample, a sample the CLI refuses or a render that writes no picture, a marker left as a comment, and any relative link or image in the output that doesn't resolve.
+- **Tests:** `scripts/test-build` runs the build against scratch copies of the repo, one scenario each for: the repo as it is; `--out` refused inside the repo, around the repo, on a foreign directory, on a built site with a file added, and on a file, and accepted on an empty directory and after a failed build; a linked `.png` and `.ans` copied; a link to a missing file, to a file outside the repo directly and through a symlink, to `.git/` directly and through a symlink, and an `.ans` image through a symlink into `.git/`; a link to a stub and to a missing page; a missing sample, an `.ans` the CLI rejects, a CLI whose render exits 1, and one that exits 0 without a picture; a missing `#fragment` on another page and on the same page, and good ones; an `.ans` image outside the repo; markers in fenced and indented code shown, a marker after a closed fence, after an unclosed fence, between fences indented two spaces and after a longer closing fence replaced, and a marker inside a paragraph refused. Cases it doesn't run include a missing `--cli`, an unknown marker name, the `--out` symlink and manifest-forging cases, and `scripts/deploy`.
+- **The output directory:** the build clears it first, so it only builds into a new or empty directory, or one holding exactly what a previous build wrote: each build leaves `.blockwright-docs-manifest` there, listing its files, and `scripts/deploy` doesn't copy it. Any other directory, any output inside the repo but `site/`, and any output that contains the repo are refused.
+- **Search engines:** every page carries `<meta name="robots" content="noindex">`, set by `ROBOTS` at the top of `scripts/build` (see §7).
+- **Which CLI:** `--cli PATH`, else `$BLOCKWRIGHT_CLI`, else `blockwright-cli-dev`, else `blockwright-cli` on `PATH`. The build prints the version it used; a page's `Checked:` should name that version.
+- **Reproducible samples:** until `blockwright-cli replay` (Blockwright #208) exists, a tutorial's step files can be written by a `make.py` in its samples folder with `scripts/ansi.py`, a small cell canvas that writes `.ans` with SAUCE. Each step file is the canvas the step leaves, made the same way every time. This is for the concept tutorials only (see §7).
+- Links between pages are relative, so the same `site/` works at `/blockwright/` and at a domain root (docs#1).
 - Site layout: `/blockwright/` (home: what Blockwright is, install, start here), `/blockwright/tutorials/…`, `/blockwright/manual/…`.
-- `scripts/deploy` copies `site/` to `$BW_DOCS_DEST`, the web root behind <https://lrh.pumpin.online/blockwright/>.
+- `scripts/build`, then `scripts/deploy`, which copies `site/` to `$BW_DOCS_DEST`, the web root behind <https://lrh.pumpin.online/blockwright/>.
 
-## 7. Open questions
+## 7. Decisions
 
-- **Search engines:** the host sends `noindex` on every page and answers the configured crawlers with a pointer to the clip mirror. Docs probably want to be found; that needs its own rule on the host.
-- **Licence** for the text and samples (CC BY-SA 4.0 would match the bundled font).
-- **When to start:** tutorials 01–04 and the ready manual pages could be written now, with screenshots after 2c, or all of it after Phase 5.
-- **Versioned docs:** one manual for the latest release, or one per release once packages ship.
+- **Search engines:** the site stays `noindex` while it lives at lrh.pumpin.online/blockwright/, where the host also sends `noindex` on every page. Once it moves to its own domain (docs#1) it is indexed: set `ROBOTS = ""` in `scripts/build`, and drop the host's header for that domain.
+- **Licence:** the text and the sample art are funkpower's, under CC BY-SA 4.0 (the licence of the bundled font too), unless a file says otherwise. `LICENSE` holds the legal code; the README and every page's footer credit it.
+- **Versions:** one set of docs, for the latest Blockwright. No per-release docs until packages ship; then this is decided again.
+- **Reproducible samples:** `make.py` step images are fine for the concept tutorials, 01–03, 10 and 11, where a step is typing or placing cells. The brush tutorials, 04–07, show what a brush does to the canvas, so their step images wait for `blockwright-cli replay` (Blockwright #208) and are never imitated with `scripts/ansi.py`.

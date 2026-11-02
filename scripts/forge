@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# Minimal Forgejo client for funkpower/blockwright-docs on git.pumpin.online.
+# The token comes from `pass` and is never printed.
+#
+#   forge pr-create <head> <title> <body-file>   -> prints PR number
+#   forge pr-list                                 open PRs: number, head, title
+#   forge pr-get <n>                              JSON
+#   forge pr-merge <n> [title] [message-file]     squash-merge and delete the branch;
+#                                                 title defaults to the PR title + " (#n)",
+#                                                 message to the PR body's first paragraph
+#   forge comment <n> <body-file>                 comment on a PR or issue
+#   forge issue-create <title> <body-file>        -> prints issue number
+#   forge issue-list                              open issues: number, title
+#   forge issue-close <n>
+set -euo pipefail
+API=https://git.pumpin.online/api/v1/repos/funkpower/blockwright-docs
+
+# Text never goes on a command line (one argument is capped at 128 KiB): JSON
+# bodies reach curl on stdin, and user text reaches jq through --rawfile.
+#
+# xtrace is off from reading the token to the end of the curl call, so `bash -x`
+# shows neither it nor the rest of the pass entry; the caller's setting is put
+# back afterwards. The token goes into a quoted curl config value, so anything
+# outside the token alphabet (an empty entry, `"`, `\`) is refused.
+call() { # method path [--data: the JSON body is read from stdin]
+  local xt=$-; set +x
+  local tok st=0
+  tok=$(pass show forgejo/pumpin-funkpower | sed -n 1p) || st=$?
+  if [[ $st -eq 0 && ! $tok =~ ^[A-Za-z0-9._~+/=-]+$ ]]; then
+    echo "forge: the forgejo/pumpin-funkpower token is empty or not a token" >&2; st=1
+  fi
+  if [[ $st -eq 0 ]]; then
+    local args=(-sS --fail-with-body -X "$1" -H 'Content-Type: application/json')
+    [[ ${3:-} == --data ]] && args+=(--data-binary @-)
+    curl -K <(printf 'header = "Authorization: token %s"\n' "$tok") "${args[@]}" "$API$2" || st=$?
+  fi
+  tok=
+  [[ $xt == *x* ]] && set -x
+  return $st
+}
+
+cmd=${1:-}; shift || true
+case "$cmd" in
+  pr-create)
+    data=$(jq -n --arg h "$1" --arg t "$2" --rawfile b "$3" '{head:$h,base:"main",title:$t,body:$b}')
+    call POST /pulls --data <<<"$data" | jq -r .number ;;
+  pr-list)    call GET '/pulls?state=open&limit=50' | jq -r '.[] | "\(.number)\t\(.head.ref)\t\(.title)"' ;;
+  pr-get)     call GET "/pulls/$1" ;;
+  pr-merge)
+    pr=$(call GET "/pulls/$1")
+    title=${2:-"$(jq -r .title <<<"$pr") (#$1)"}
+    if [[ $# -ge 3 ]]; then msg=$(cat "$3")
+    else # the first run of non-blank lines, found in jq so nothing upstream is cut off
+      msg=$(jq -r '(.body // "") | gsub("\r"; "") | split("\n")
+        | (first(range(length) as $i | select(.[$i] | test("[^ \t]")) | $i) // length) as $s | .[$s:]
+        | (first(range(length) as $i | select(.[$i] | test("[^ \t]") | not) | $i) // length) as $e
+        | .[:$e] | join("\n")' <<<"$pr")
+    fi
+    data=$(jq -n --rawfile t <(printf '%s' "$title") --rawfile m <(printf '%s' "$msg") \
+      '{Do:"squash",MergeTitleField:$t,MergeMessageField:$m,delete_branch_after_merge:true}')
+    call POST "/pulls/$1/merge" --data <<<"$data" >/dev/null
+    echo "squash-merged #$1" ;;
+  comment)
+    data=$(jq -n --rawfile b "$2" '{body:$b}')
+    call POST "/issues/$1/comments" --data <<<"$data" | jq -r .html_url ;;
+  issue-create)
+    data=$(jq -n --arg t "$1" --rawfile b "$2" '{title:$t,body:$b}')
+    call POST /issues --data <<<"$data" | jq -r .number ;;
+  issue-list) call GET '/issues?state=open&type=issues&limit=50' | jq -r '.[] | "\(.number)\t\(.title)"' ;;
+  issue-close) call PATCH "/issues/$1" --data <<<'{"state":"closed"}' >/dev/null && echo "closed #$1" ;;
+  *) sed -n '2,14p' "$0"; exit 2 ;;
+esac
