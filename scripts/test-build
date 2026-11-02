@@ -404,6 +404,43 @@ def marker_inline(s):
     s.failed(says="marker was left as a comment")
 
 
+COLUMN_0 = "at the start of a line of its own (not indented, not in a list item or blockquote)"
+
+
+@scenario
+def marker_indented(s):
+    """A marker indented two spaces fails the build, and the message names the column-0 rule."""
+    s.probe("  <!-- generated: cli-help -->")
+    s.failed(says=COLUMN_0)
+
+
+@scenario
+def marker_in_list_item(s):
+    """A marker in a list item's continuation fails the build, and the message names the column-0 rule."""
+    s.probe("1. step\n\n   <!-- list: manual -->")
+    s.failed(says=COLUMN_0)
+
+
+MISSPELLED = ["<!--list: manual-->", "<!-- list: Manual -->", "<!-- List: manual -->",
+              "<!-- generated: cli_help -->", "<!-- list:  manual -->", "<!-- list: tutorial -->",
+              "<!-- generated: help -->"]
+
+
+@scenario
+def marker_misspelled(s):
+    """A misspelled marker in column 0 fails the build, and the message names the
+    marker it found and the three it accepts, not the column-0 rule."""
+    for body in MISSPELLED:
+        s.probe(body)
+        try:
+            s.failed(says=f"{body} is not a marker the build knows")
+            for m in ["<!-- generated: cli-help -->", "<!-- list: tutorials -->", "<!-- list: manual -->"]:
+                check(m in s.out, f"{m} not named in: {s.out.strip()[-300:]}")
+            check(COLUMN_0 not in s.out, f"column-0 hint given: {s.out.strip()[-300:]}")
+        except Fail as e:
+            raise Fail(f"{body}: {e}")
+
+
 # 8. --out an existing file.
 
 @scenario

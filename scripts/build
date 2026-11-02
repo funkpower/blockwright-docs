@@ -16,12 +16,17 @@ names none), and links to the `.ans`, which is copied beside the picture.
 Any other relative link or image names a file in the repo (a `.png`, an
 `.ans` no page draws), which is copied into the site at the same path.
 
-`<!-- generated: cli-help -->` on a line of its own, outside a fenced code
-block, becomes the output of `blockwright-cli --help`. `<!-- list: tutorials -->`
-and `<!-- list: manual -->` become the list of that section's pages. Markers are
-replaced inside Python-Markdown, after it has set fenced code aside, so a
-marker is code exactly when Markdown shows it as code. A marker comment still
-in a page's HTML (one not on a line of its own) fails the build.
+`<!-- generated: cli-help -->` at the start of a line of its own (in column 0:
+not indented, not in a list item or blockquote), outside code, becomes the
+output of `blockwright-cli --help`. `<!-- list: tutorials -->`
+and `<!-- list: manual -->` become the list of that section's pages. A marker
+is written exactly so: lowercase, one space after `<!--`, after the colon and
+before `-->`. Markers are replaced inside Python-Markdown, after it has set
+fenced code aside, so a marker is code exactly when Markdown shows it as code.
+A marker comment still in a page's HTML fails the build: one in the wrong place
+with a message naming the column-0 rule, a misspelled one (any `<!-- generated:`
+or `<!-- list:` comment, in any case, that isn't one of the three) with a
+message naming the three.
 
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
@@ -64,7 +69,11 @@ ROBOTS = "noindex"
 MANIFEST = ".blockwright-docs-manifest"
 EXTERNAL_RE = re.compile(r"^[a-z][a-z0-9+.-]*:|^//", re.I)
 MARKER_RE = re.compile(r"^<!-- (generated|list): ([a-z-]+) -->[ \t]*$")
-LEFT_MARKER_RE = re.compile(r"<!--\s*(?:generated|list)\s*:")
+# The markers a page may use, exactly as written.
+MARKERS = ("<!-- generated: cli-help -->", "<!-- list: tutorials -->", "<!-- list: manual -->")
+# A marker, or something meant as one, left in a page's HTML: the comment up to
+# its close when it has one.
+LEFT_MARKER_RE = re.compile(r"<!--\s*(?:generated|list)\s*:(?:[^>]*-->)?", re.I)
 # Python-Markdown's fenced_code_block preprocessor runs at 25 and html_block at
 # 20; markers are replaced between the two.
 MARKER_PRIORITY = 22
@@ -123,6 +132,11 @@ def refused(target):
     if not real.parts or real.parts[0] in (".git", "site"):
         return "not a file the site can carry"
     return None
+
+
+def unknown_marker(page, found):
+    return (f"{page.rel}: {found} is not a marker the build knows; the markers are "
+            f"{', '.join(MARKERS)}, written exactly so (lowercase, single spaces as shown)")
 
 
 class Markers(Preprocessor):
@@ -354,18 +368,22 @@ class Builder:
             if kind == "generated":
                 if name == "cli-help":
                     return cli_help(self.cli)
-                raise BuildError(f"{page.rel}: unknown generated block {name!r}")
+                raise BuildError(unknown_marker(page, f"<!-- generated: {name} -->"))
             if name not in SECTIONS:
-                raise BuildError(f"{page.rel}: unknown list {name!r}")
+                raise BuildError(unknown_marker(page, f"<!-- list: {name} -->"))
             return section_list(self.pages, name, page)
 
         md = markdown.Markdown(extensions=["meta", "extra", "toc", "sane_lists"],
                                extension_configs={"toc": {"permalink": False}})
         md.preprocessors.register(Markers(md, replace), "blockwright_markers", MARKER_PRIORITY)
         body = md.convert(text)
-        if LEFT_MARKER_RE.search(body):
+        left = LEFT_MARKER_RE.search(body)
+        if left and left.group(0) not in MARKERS:
+            raise BuildError(unknown_marker(page, left.group(0)))
+        if left:
             raise BuildError(f"{page.rel}: a <!-- generated: --> or <!-- list: --> marker was left as a "
-                             "comment; put it on a line of its own, outside code")
+                             "comment; put it at the start of a line of its own (not indented, not in a list "
+                             "item or blockquote), outside code")
         body = self.fix_images(page, body)
         body = self.fix_links(page, body)
         up = os.path.relpath(".", page.out.parent)
