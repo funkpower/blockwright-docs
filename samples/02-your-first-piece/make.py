@@ -192,10 +192,10 @@ save(c, "check.ans", "Three cards")
 c = Canvas(11, 11)
 for y in range(9):
     for x in range(11):
-        ch, fg, bg = ace.cells[y][x]
+        ch, fg, bg, blink = ace.cells[y][x]
         if 1 <= x <= 9 and 1 <= y <= 7:
             ch, fg = " ", BLACK
-        c.put(x, y, ch, fg, bg)
+        c.put(x, y, ch, fg, bg, blink)
 save(c, "try.ans", "An empty card")
 
 # The answer: one way to draw it.
