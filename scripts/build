@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the docs site from the Markdown pages and the .ans samples.
+"""Build the docs site from the Markdown pages and the samples.
 
     scripts/build [--out DIR] [--cli PATH]
 
@@ -9,12 +9,15 @@ when its metadata block carries `Checked:` (the Blockwright build its steps
 were checked against); the others are stubs, listed as not written yet and
 never linked.
 
-An image whose source is an `.ans` (`![alt](../samples/x/y.ans "2x")`) is
-drawn by `blockwright-cli render` at the scale its title names (1x when it
-names none), and links to the `.ans`, which is copied beside the picture.
+An image whose source is an `.ans` or a `.bwp` project
+(`![alt](../samples/x/y.ans "2x")`) is drawn by `blockwright-cli render` (a
+project as its composite) at the scale its title names (1x when it names
+none), as `y.ans-2x.png` beside it, and links to the sample, which is copied
+beside the picture. Any other image must be a `.png`, copied as it is; an
+image of any other kind fails the build.
 
-Any other relative link or image names a file in the repo (a `.png`, an
-`.ans` no page draws), which is copied into the site at the same path.
+Any other relative link names a file in the repo (a `.bwp` or an `.ans` no
+page draws), which is copied into the site at the same path.
 
 `<!-- generated: cli-help -->` at the start of a line of its own (in column 0:
 not indented, not in a list item or blockquote), outside code, becomes the
@@ -33,8 +36,8 @@ when `ROBOTS` is set, a robots meta tag on every page.
 
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
-resolves into `.git/` or `site/`, a missing sample, or a sample the CLI can't
-render.
+resolves into `.git/` or `site/`, a missing sample, a sample the CLI can't
+render, or an image that is neither a sample nor a `.png`.
 
 The output directory is cleared only when it is empty or is a site this script
 built: it writes `.blockwright-docs-manifest` (every file it wrote) into the
@@ -65,6 +68,9 @@ ROOT = Path(__file__).resolve().parent.parent
 SECTIONS = {"tutorials": "Tutorials", "manual": "Manual"}
 SITE_NAME = "Blockwright"
 SCALE_RE = re.compile(r"^([1-8])x$")
+# Images drawn by blockwright-cli render, and images copied as they are.
+SAMPLE_TYPES = (".ans", ".bwp")
+IMAGE_TYPES = (".png",)
 # The robots meta tag every page carries; "" for none. The site has its own
 # domain and is meant to be indexed (PLAN.md §7).
 ROBOTS = ""
@@ -268,14 +274,17 @@ class Builder:
         self.version = run([cli, "--version"]).splitlines()[0].replace("blockwright-cli-dev", "blockwright-cli")
 
     def render_sample(self, ans, scale):
-        """Draw ans (a path from ROOT) at scale; returns the PNG's site path and size."""
+        """Draw ans (a path from ROOT to an .ans or .bwp) at scale; returns the
+        PNG's site path and size. The PNG keeps the sample's whole name
+        (final.ans-2x.png), so final.ans and final.bwp in one folder each get
+        their own."""
         key = (ans, scale)
         if key in self.rendered:
             return self.rendered[key]
         src = ROOT / ans
         if not src.is_file():
             raise BuildError(f"no sample {ans}")
-        png = ans.with_name(f"{ans.stem}-{scale}x.png")
+        png = ans.with_name(f"{ans.name}-{scale}x.png")
         dest = self.out / png
         dest.parent.mkdir(parents=True, exist_ok=True)
         run([self.cli, "render", "--scale", str(scale), str(src), str(dest)])
@@ -289,9 +298,14 @@ class Builder:
             src = html.unescape(re.search(r'src="([^"]+)"', attrs).group(1))
             if EXTERNAL_RE.match(src):
                 return m.group(0)
-            if not src.endswith(".ans"):
+            kind = os.path.splitext(unquote(src.partition("#")[0]))[1]
+            if kind in IMAGE_TYPES:
                 self.copy_asset(page, src)
                 return m.group(0)
+            if kind not in SAMPLE_TYPES:
+                raise BuildError(f"{page.rel}: {src}: not a picture the build can show; an image is a sample "
+                                 f"({', '.join(SAMPLE_TYPES)}, drawn by blockwright-cli render) or "
+                                 f"{', '.join(IMAGE_TYPES)}")
             title = re.search(r'title="([^"]*)"', attrs)
             scale = 1
             if title:

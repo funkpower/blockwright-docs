@@ -16,6 +16,7 @@ if any scenario fails.
 """
 
 import argparse
+import json
 import os
 import shutil
 import subprocess
@@ -146,12 +147,23 @@ class Scratch:
             if rel in SITE and rel != MANIFEST:
                 check((root / rel).read_text() == SITE[rel], f"{rel} differs")
 
+    def real_cli(self):
+        real = shutil.which(os.environ.get("BLOCKWRIGHT_CLI", "")) or shutil.which("blockwright-cli-dev") \
+            or shutil.which("blockwright-cli")
+        check(real, "no blockwright-cli")
+        return real
+
+    def run_cli(self, *args):
+        """Runs the real blockwright-cli in the copy; fails the scenario if it fails."""
+        r = subprocess.run([self.real_cli(), *map(str, args)], cwd=self.repo, stdin=subprocess.DEVNULL,
+                           capture_output=True, text=True)
+        check(r.returncode == 0, f"blockwright-cli {' '.join(map(str, args))} exited {r.returncode}: "
+                                 f"{(r.stdout + r.stderr).strip()[-300:]}")
+
     def cli(self, script):
         """A stand-in blockwright-cli: a shell script that runs the real one
         unless script (sh case arms on "$1") handles the call first."""
-        real = shutil.which(os.environ.get("BLOCKWRIGHT_CLI", "")) or shutil.which("blockwright-cli-dev") \
-            or shutil.which("blockwright-cli")
-        check(real, "no blockwright-cli to wrap")
+        real = self.real_cli()
         p = self.base / "fake-cli"
         p.write_text(f'#!/bin/sh\ncase "$1" in\n{script}\nesac\nexec "{real}" "$@"\n')
         p.chmod(0o755)
@@ -388,6 +400,129 @@ def render_no_picture(s):
     """A CLI whose render exits 0 but writes no picture fails the build."""
     cli = s.cli("render) exit 0;;")
     s.failed("--cli", cli, says="the render wrote no picture")
+
+
+# Projects (.bwp) as pictures, and image kinds the build doesn't know.
+
+# Three layers made with scripts/ansi.py's scene(): sky, then a hill, then a sun.
+LAYERED_SCENE = """import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+from ansi import scene
+
+def sky(c):
+    c.fill(0, 0, 15, 3, " ", 7, 1)
+
+def hill(c):
+    c.fill(0, 3, 15, 3, " ", 7, 2)
+    c.fill(4, 2, 11, 2, "\u2584", 2, 1)
+
+def sun(c):
+    c.fill(12, 0, 13, 0, "\u2584", 14, 1)
+    c.fill(12, 1, 13, 1, "\u2580", 14, 1)
+
+scene([("sky", sky), ("hill", hill), ("sun", sun)], 16, 4, Path(__file__).with_name("flat.ans"), title="Layers")
+"""
+
+
+def img_tag(page, png):
+    """The <img> tag in page that shows png."""
+    tag = next((t for t in page.split("<img ")[1:] if f'src="{png}"' in t), None)
+    check(tag, f"no <img> of {png}")
+    return tag.partition(">")[0]
+
+
+@scenario
+def bwp_render(s):
+    """A .bwp image (three layers, from import-scene) is drawn as its composite and linked."""
+    scene = s.write("samples/zz/layers.py", LAYERED_SCENE)
+    r = subprocess.run([sys.executable, "-I", "-B", str(scene)], stdin=subprocess.DEVNULL, capture_output=True,
+                       text=True)
+    check(r.returncode == 0, f"the scene failed: {r.stderr.strip()[-300:]}")
+    s.run_cli("import-scene", scene, "samples/zz/layers.bwp")
+    s.probe('![layers](../samples/zz/layers.bwp "2x")')
+    s.passed()
+    page = s.page()
+    check('<a class="ans" href="../samples/zz/layers.bwp">' in page, "the picture doesn't link to the .bwp")
+    check('width="256" height="128"' in img_tag(page, "../samples/zz/layers.bwp-2x.png"), "wrong size")
+    site = s.repo / "site" / "samples" / "zz"
+    check((site / "layers.bwp").read_bytes() == (s.repo / "samples" / "zz" / "layers.bwp").read_bytes(),
+          "the .bwp wasn't copied into the site")
+    s.run_cli("render", "--scale", "2", "samples/zz/flat.ans", s.base / "flat.png")
+    check((site / "layers.bwp-2x.png").read_bytes() == (s.base / "flat.png").read_bytes(),
+          "the composite isn't the scene's flat picture")
+
+
+@scenario
+def scene_title(s):
+    """scene() refuses a title import-scene would drop SAUCE for (empty, 36 characters, not CP437) with a
+    message, before it lists its layers; a 35-character title imports with SAUCE."""
+    for i, title in enumerate(["", "x" * 36, "Sun \u2600"]):
+        scene = s.write(f"samples/zz/bad{i}.py", LAYERED_SCENE.replace('title="Layers"', f"title={title!r}"))
+        r = subprocess.run([sys.executable, "-I", "-B", str(scene), "--list-layers"], stdin=subprocess.DEVNULL,
+                           capture_output=True, text=True)
+        said = (r.stdout + r.stderr).strip()[-300:]
+        check(r.returncode == 1 and not r.stdout, f"title {title!r}: --list-layers exited {r.returncode}: {said}")
+        check("Traceback" not in r.stderr and "1-35 characters" in r.stderr, f"title {title!r}: {said}")
+    r = subprocess.run([s.real_cli(), "import-scene", scene, "samples/zz/bad.bwp"], cwd=s.repo,
+                       stdin=subprocess.DEVNULL, capture_output=True, text=True)
+    said = (r.stdout + r.stderr).strip()[-300:]
+    check(r.returncode != 0 and "1-35 characters" in said and "Traceback" not in said, f"import-scene: {said}")
+    check(not (s.repo / "samples" / "zz" / "bad.bwp").exists(), "import-scene wrote a project")
+    scene = s.write("samples/zz/ok.py", LAYERED_SCENE.replace('title="Layers"', f"title={'y' * 35!r}"))
+    s.run_cli("import-scene", scene, "samples/zz/ok.bwp")
+    s.run_cli("unpack", "samples/zz/ok.bwp", "samples/zz/ok")
+    manifest = json.loads((s.repo / "samples" / "zz" / "ok" / "manifest.json").read_text(encoding="utf-8"))
+    check((manifest.get("sauce") or {}).get("title") == "y" * 35, f"no SAUCE title: {manifest.get('sauce')}")
+
+
+@scenario
+def scene_ice_off(s):
+    """scene() refuses a layer that leaves the canvas with iCE off, with a message and no traceback, whatever
+    it was asked: import-scene would make an iCE-on project whose composite isn't the flat picture."""
+    scene = s.write("samples/zz/iceoff.py", LAYERED_SCENE.replace(
+        "    c.fill(4, 2, 11, 2,", "    c.ice = False\n    c.fill(4, 2, 11, 2,"))
+    for args in (["--list-layers"], ["--layer-ans=sky"], []):
+        r = subprocess.run([sys.executable, "-I", "-B", str(scene), *args], stdin=subprocess.DEVNULL,
+                           capture_output=True, text=True)
+        said = (r.stdout + r.stderr).strip()[-300:]
+        check(r.returncode == 1 and not r.stdout, f"{args}: exited {r.returncode}: {said}")
+        check("Traceback" not in r.stderr and "hill: leaves the canvas with iCE off" in r.stderr, f"{args}: {said}")
+    check(not (s.repo / "samples" / "zz" / "flat.ans").exists(), "the scene wrote its flat picture")
+    r = subprocess.run([s.real_cli(), "import-scene", scene, "samples/zz/iceoff.bwp"], cwd=s.repo,
+                       stdin=subprocess.DEVNULL, capture_output=True, text=True)
+    said = (r.stdout + r.stderr).strip()[-300:]
+    check(r.returncode != 0 and "iCE off" in said and "Traceback" not in said, f"import-scene: {said}")
+    check(not (s.repo / "samples" / "zz" / "iceoff.bwp").exists(), "import-scene wrote a project")
+
+
+@scenario
+def bwp_beside_ans(s):
+    """final.ans and final.bwp in one folder each get their own picture."""
+    (s.repo / "samples" / "zz").mkdir()
+    s.run_cli("pack", "samples/01-what-ansi-art-is/palette.ans", "samples/zz/final.bwp")
+    shutil.copyfile(s.repo / "samples" / "01-what-ansi-art-is" / "cells.ans", s.repo / "samples" / "zz" / "final.ans")
+    s.probe('![flat](../samples/zz/final.ans "2x") ![project](../samples/zz/final.bwp "2x")')
+    s.passed()
+    page = s.page()
+    check('width="64" height="32"' in img_tag(page, "../samples/zz/final.ans-2x.png"), "the .ans picture is wrong")
+    check('width="512" height="192"' in img_tag(page, "../samples/zz/final.bwp-2x.png"), "the .bwp picture is wrong")
+
+
+@scenario
+def image_unknown(s):
+    """An image that is neither a sample nor a .png fails the build, though the file exists."""
+    s.write("img/pic.gif", "GIF89a")
+    s.probe("![a gif](../img/pic.gif)")
+    s.failed(says="not a picture the build can show")
+
+
+@scenario
+def image_project_dir(s):
+    """An image of an unpacked project directory fails the build: it isn't one file to link to."""
+    s.run_cli("unpack", "samples/01-what-ansi-art-is/cells.ans", "samples/zz/proj")
+    s.probe("![a project](../samples/zz/proj)")
+    s.failed(says="not a picture the build can show")
 
 
 # 5. Fragments must name an id on the target page.

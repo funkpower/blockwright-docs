@@ -11,7 +11,8 @@ Static documentation site for Blockwright: tutorials and the manual. `PLAN.md` i
 ## Samples
 
 - Sample art is funkpower's own: made for the tutorial, or cut from funkpower's own pieces (the maintainer's private notes say where they are). Never use pieces from `ircart/`, `polyhurt/` or anyone else's work, and nothing that shows a real person.
-- Every picture on the site is rendered from an `.ans` in `samples/` with `blockwright-cli render`, never a hand-edited PNG, so a sample can be re-rendered when the renderer changes.
+- A sample is a flat `.ans` only while it is one simple picture; anything more complicated is a Blockwright project (`.bwp`), each part on its own layer, and so is a Try-it file that has layers (`PLAN.md` §1, §6).
+- Every picture of a piece is rendered from an `.ans` or a `.bwp` in `samples/` with `blockwright-cli render` (a `.bwp` as its composite), never a hand-edited PNG, so a sample can be re-rendered when the renderer changes. Any other picture is a plain `.png` (window screenshots come from `blockwright --screenshot`), copied as it is; the build refuses an image of any other kind (`PLAN.md` §6).
 - A sample that will be shown on IRC states its widest line's byte count from `blockwright-cli export --irc`.
 
 ## Site
@@ -22,7 +23,7 @@ Static documentation site for Blockwright: tutorials and the manual. `PLAN.md` i
 ## Build and test
 
 - `scripts/build` must pass, and `scripts/test-build` (the build's own checks, run against scratch copies of the repo) must pass, before a PR opens. A change to `scripts/build` that adds behaviour adds a scenario to `scripts/test-build`.
-- Sample scripts (`samples/*/make.py`) must reproduce the committed `.ans` files byte for byte.
+- Sample scripts (`samples/*/make.py`, and the layer scripts behind a `.bwp`) must reproduce the committed `.ans` and `.bwp` files byte for byte.
 
 ## Git and the forge
 

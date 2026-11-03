@@ -27,9 +27,14 @@ is off.
 
     c.ellipse(2, 2, 13, 13, YELLOW, filled=True)
     c.line(0, 15, 9, 6, WHITE)
+
+scene() makes a script `blockwright-cli import-scene` turns into a project
+with a layer per part of the picture (see scene's own notes).
 """
 
+import json
 import struct
+import sys
 
 ESC = "\x1b["
 
@@ -57,6 +62,8 @@ def cp437(ch):
 
 
 UPPER, LOWER, FULL = "\u2580", "\u2584", "\u2588"
+# Blank glyphs. A layer's key colour makes a blank on that background
+# transparent in import-scene (scene()).
 BLANKS = (" ", "\0", "\u00a0")
 
 
@@ -297,7 +304,8 @@ class Canvas:
                 last = None
         return b"".join(out)
 
-    def save(self, path, title="", author="funkpower", date="20261102", ice=None):
+    def file(self, title="", author="funkpower", date="20261102", ice=None):
+        """The .ans with SAUCE, as bytes."""
         ice = self.ice if ice is None else ice
         body = self.ans()
         sauce = b"SAUCE00"
@@ -308,5 +316,88 @@ class Canvas:
         sauce += struct.pack("<IBBHHHHBB", len(body), 1, 1, self.width, self.height, 0, 0, 0, 1 if ice else 0)
         sauce += b"IBM VGA".ljust(22, b"\0")
         assert len(sauce) == 128
+        return body + b"\x1a" + sauce
+
+    def save(self, path, title="", author="funkpower", date="20261102", ice=None):
         with open(path, "wb") as f:
-            f.write(body + b"\x1a" + sauce)
+            f.write(self.file(title, author, date, ice))
+
+
+def sauce_title_ok(title):
+    """Whether import-scene keeps title as the project's SAUCE title."""
+    try:
+        b = title.encode("cp437")
+    except UnicodeEncodeError:
+        return False
+    return 1 <= len(b) <= 35 and all(0x20 <= x != 0x7F for x in b)
+
+
+def scene(layers, width, height, out, title=""):
+    """A layered scene, for `blockwright-cli import-scene <script.py> <out.bwp>`.
+
+    layers is [(name, draw), ...], bottom first; draw(c) draws on the Canvas
+    the layers below it left. Run with no arguments, the scene saves the
+    flattened picture to out. import-scene runs it twice over (with -B, from
+    another directory, its stdin a JSON object it ignores):
+
+      --list-layers               prints {"width", "rows", "title", "layers":
+                                  [{"name"}, {"name", "key"}, ...]} on stdout
+      --layer-ans=NAME [--key=K]  prints that layer's .ans on stdout: the
+                                  cells it changed, every other cell a blank
+                                  on colour K (the bottom layer whole)
+
+    Each layer above the bottom gets the first colour 0-15 that none of the
+    cells it changed is a blank on, so its key hides only what it left alone.
+
+    title must be one SAUCE can hold: 1-35 characters, each a printable CP437
+    glyph. import-scene writes no SAUCE record for any other title, so the
+    scene refuses it first, whatever it was asked.
+
+    A layered scene is iCE on until import-scene can make an iCE-off project:
+    a draw that leaves c.ice false is refused, whatever the scene was asked.
+    """
+    if not sauce_title_ok(title):
+        sys.exit(f"title {title!r}: a scene's title must be 1-35 characters, each a printable CP437 glyph, "
+                 "or import-scene writes the project without SAUCE")
+    args = sys.argv[1:]
+    c, parts = Canvas(width, height), []
+    for i, (name, draw) in enumerate(layers):
+        before = c.copy()
+        draw(c)
+        if not c.ice:
+            sys.exit(f"{name}: leaves the canvas with iCE off; import-scene always makes an iCE-on project, "
+                     "so its composite would not be this picture. A layered scene must keep iCE on")
+        changed = {(x, y) for y in range(height) for x in range(width) if c.cells[y][x] != before.cells[y][x]}
+        key = None
+        if i > 0:
+            used = {c.cells[y][x][2] for x, y in changed if c.cells[y][x][0] in BLANKS}
+            key = next((k for k in range(16) if k not in used), None)
+            if key is None:
+                sys.exit(f"{name}: changes a blank cell on every colour, so no key colour can stand for the "
+                         "cells it leaves alone")
+        parts.append((name, key, c.copy(), changed))
+    if not args:
+        c.save(out, title=title)
+        return
+    if args == ["--list-layers"]:
+        listing = [{"name": n} if k is None else {"name": n, "key": k} for n, k, _, _ in parts]
+        print(json.dumps({"width": width, "rows": height, "title": title, "layers": listing}))
+        return
+    want = dict(a[2:].split("=", 1) for a in args if a.startswith("--") and "=" in a)
+    if not args[0].startswith("--layer-ans=") or set(want) - {"layer-ans", "key"} or len(want) != len(args):
+        sys.exit(f"{sys.argv[0]}: --list-layers, or --layer-ans=NAME [--key=K]")
+    found = [p for p in parts if p[0] == want["layer-ans"]]
+    if not found:
+        sys.exit(f"no layer {want['layer-ans']}")
+    name, _, after, changed = found[0]
+    key = int(want["key"]) if "key" in want else None
+    if key is not None and any(after.cells[y][x][0] in BLANKS and after.cells[y][x][2] == key for x, y in changed):
+        sys.exit(f"{name}: a cell it changes is a blank on its key colour {key}; import the scene again")
+    layer = Canvas(width, height)
+    for y in range(height):
+        for x in range(width):
+            if key is None or (x, y) in changed:
+                layer.cells[y][x] = after.cells[y][x]
+            else:
+                layer.cells[y][x] = (" ", 7, key, False)
+    sys.stdout.buffer.write(layer.file(title=title))
