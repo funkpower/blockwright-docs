@@ -7,15 +7,16 @@ ${robots}<title>$title</title>
 <link rel="stylesheet" href="${root}site.css">
 </head>
 <body>
-<header>
-<a class="home" href="${root}index.html">BLOCKWRIGHT</a>
-<nav><a href="${root}tutorials/index.html">Tutorials</a> <a href="${root}manual/index.html">Manual</a></nav>
-</header>
+<div class="page">
+$nav
+<div class="content">
 <main>
 $body
 $checked
 $pager
 </main>
 <footer>Text and sample art by funkpower, under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</footer>
+</div>
+</div>
 </body>
 </html>

@@ -31,6 +31,11 @@ with a message naming the column-0 rule, a misspelled one (any `<!-- generated:`
 or `<!-- list:` comment, in any case, that isn't one of the three) with a
 message naming the three.
 
+Every page carries the site menu (`theme/page.html`'s `$nav`): the home link,
+then each section's index and its pages in the order the index lists them,
+stubs dimmed and unlinked; the page itself is marked `aria-current="page"` and
+its section `here`.
+
 The site also gets `robots.txt`, which lets crawlers fetch everything, and,
 when `ROBOTS` is set, a robots meta tag on every page.
 
@@ -238,11 +243,15 @@ def collect_pages():
     return pages
 
 
+def section_pages(pages, section):
+    """The section's pages other than its index, in the order every list of
+    them (the index lists, the menu, the pager) shows them."""
+    return [p for p in pages if p.section == section and not p.is_index]
+
+
 def section_list(pages, section, here):
     items = []
-    for p in pages:
-        if p.section != section or p.is_index:
-            continue
+    for p in section_pages(pages, section):
         if p.published:
             href = os.path.relpath(p.out, here.out.parent)
             items.append(f'<li><a href="{html.escape(href)}">{html.escape(p.title)}</a></li>')
@@ -371,7 +380,7 @@ class Builder:
     def neighbours(self, page):
         if not page.section or page.is_index:
             return ""
-        same = [p for p in self.pages if p.section == page.section and p.published and not p.is_index]
+        same = [p for p in section_pages(self.pages, page.section) if p.published]
         i = same.index(page)
         parts = []
         if i > 0:
@@ -379,6 +388,34 @@ class Builder:
         if i + 1 < len(same):
             parts.append(f'<a rel="next" href="{same[i+1].out.name}">{html.escape(same[i+1].title)} →</a>')
         return '<nav class="pager">' + " ".join(parts) + "</nav>" if parts else ""
+
+    def menu(self, page):
+        """The site menu every page carries: the home link, then each section's
+        index and its pages in order, stubs dimmed and unlinked as in the index
+        lists. The page itself is marked aria-current, its section "here"."""
+        def link(p, text, cls=""):
+            href = os.path.relpath(p.out, page.out.parent)
+            attrs = f' class="{cls}"' if cls else ""
+            if p is page:
+                attrs += ' aria-current="page"'
+            return f'<a{attrs} href="{html.escape(href)}">{html.escape(text)}</a>'
+
+        home = next(p for p in self.pages if not p.section)
+        parts = []
+        for section, name in SECTIONS.items():
+            index = next(p for p in self.pages if p.section == section and p.is_index)
+            items = []
+            for p in section_pages(self.pages, section):
+                if p.published:
+                    items.append(f"<li>{link(p, p.title)}</li>")
+                else:
+                    items.append(f'<li class="soon" title="Not written yet">{html.escape(p.title)}</li>')
+            here = " here" if page.section == section else ""
+            parts.append(f'<div class="part{here}">\n{link(index, name, "part-name")}\n<ol>\n'
+                         + "\n".join(items) + "\n</ol>\n</div>")
+        return ('<nav class="side" aria-label="Site">\n' + link(home, SITE_NAME.upper(), "home") + "\n"
+                '<details class="menu">\n<summary>Menu</summary>\n<div class="parts">\n'
+                + "\n".join(parts) + "\n</div>\n</details>\n</nav>")
 
     def build_page(self, page):
         text = page.src.read_text(encoding="utf-8")
@@ -419,6 +456,7 @@ class Builder:
             body=body,
             checked=checked,
             pager=self.neighbours(page),
+            nav=self.menu(page),
         )
         dest = self.out / page.out
         dest.parent.mkdir(parents=True, exist_ok=True)

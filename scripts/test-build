@@ -16,6 +16,7 @@ if any scenario fails.
 """
 
 import argparse
+import html.parser
 import json
 import os
 import shutil
@@ -679,7 +680,159 @@ def out_is_file(s):
     check(f.read_text() == "keep me", "the file changed")
 
 
-# 9. scripts/deploy: local or remote, as rsync decides, and nowhere else.
+# 9. The site menu on every page.
+
+class MenuParser(html.parser.HTMLParser):
+    """Reads a built page: the site menus (<nav class="side">) it carries, each
+    as a list of entries, every aria-current on the page, and the page lists
+    (an <ol> in <main>) an index page shows."""
+
+    def __init__(self):
+        super().__init__()
+        self.menus = []      # one list of entries per menu
+        self.current = []    # (tag, href) of every element with aria-current
+        self.lists = []      # each <ol> in <main>: [(href or None, text)]
+        self.stack = []
+        self.entry = None
+        self.in_main = 0
+        self.in_menu = 0
+        self.parts = []      # class of each .part div in the menu
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        cls = (a.get("class") or "").split()
+        if a.get("aria-current"):
+            self.current.append((tag, a.get("href"), a["aria-current"], bool(self.in_menu)))
+        if tag == "nav" and "side" in cls:
+            self.in_menu += 1
+            self.menus.append([])
+        elif tag == "main":
+            self.in_main += 1
+        if self.in_menu:
+            if tag == "div" and "part" in cls:
+                self.parts.append(cls)
+            if tag == "a":
+                kind = "home" if "home" in cls else "section" if "part-name" in cls else "page"
+                self.entry = {"kind": kind, "href": a.get("href"), "text": "",
+                              "current": a.get("aria-current")}
+            elif tag == "li" and "soon" in cls:
+                self.entry = {"kind": "soon", "href": None, "text": "", "current": None}
+        elif self.in_main:
+            if tag == "ol":
+                self.lists.append([])
+            elif tag == "li" and self.lists:
+                self.entry = {"href": None, "text": "", "skip": 0}
+            elif tag == "a" and self.entry is not None:
+                self.entry["href"] = a.get("href")
+            elif tag == "span" and self.entry is not None:
+                self.entry["skip"] += 1  # "(not written yet)"
+        self.stack.append(tag)
+
+    def handle_endtag(self, tag):
+        while self.stack and self.stack.pop() != tag:
+            pass
+        if self.in_menu:
+            if self.entry and ((tag == "a" and self.entry["kind"] != "soon") or (tag == "li" and self.entry["kind"] == "soon")):
+                self.entry["text"] = self.entry["text"].strip()
+                self.menus[-1].append(self.entry)
+                self.entry = None
+            if tag == "nav":
+                self.in_menu -= 1
+        elif self.in_main:
+            if tag == "span" and self.entry is not None:
+                self.entry["skip"] -= 1
+            elif tag == "li" and self.entry is not None:
+                self.lists[-1].append((self.entry["href"], self.entry["text"].strip()))
+                self.entry = None
+            elif tag == "main":
+                self.in_main -= 1
+
+    def handle_data(self, data):
+        if self.entry is not None and not self.entry.get("skip"):
+            self.entry["text"] += data
+
+
+def read_site(site):
+    """{path from site: MenuParser} for every page in a built site."""
+    pages = {}
+    for f in sorted(site.rglob("*.html")):
+        mp = MenuParser()
+        mp.feed(f.read_text(encoding="utf-8"))
+        pages[f.relative_to(site).as_posix()] = mp
+    return pages
+
+
+def resolve(page, href):
+    """href on page (both relative to the site) as a path from the site root."""
+    return os.path.normpath(os.path.join(os.path.dirname(page), href)).replace(os.sep, "/")
+
+
+def menu_site(s):
+    """The repo plus a published page and a stub, built; returns read_site()."""
+    s.probe("Probe text.")
+    s.write("manual/98-stub.md", "Title: A stub page\n\n# A stub page\n")
+    s.passed()
+    return read_site(s.repo / "site")
+
+
+@scenario
+def menu_on_every_page(s):
+    """Every built page carries the site menu exactly once, and its first entry
+    is the home link."""
+    pages = menu_site(s)
+    check(len(pages) > 3, f"only {len(pages)} pages built")
+    for name, mp in pages.items():
+        check(len(mp.menus) == 1, f"{name}: {len(mp.menus)} site menus")
+        check(mp.menus[0] and mp.menus[0][0]["kind"] == "home", f"{name}: the menu doesn't start with the home link")
+        check(resolve(name, mp.menus[0][0]["href"]) == "index.html", f"{name}: the home link isn't index.html")
+
+
+@scenario
+def menu_lists_every_page(s):
+    """Every page in the site is linked from every page's menu, a section's pages
+    are listed in the order its index lists them, and a stub is shown unlinked
+    and dimmed, as in the index."""
+    pages = menu_site(s)
+    built = set(pages)
+    indexes = {"tutorials": pages["tutorials/index.html"], "manual": pages["manual/index.html"]}
+    for name, mp in pages.items():
+        check(len(mp.menus) == 1, f"{name}: {len(mp.menus)} site menus")
+        menu = mp.menus[0]
+        linked = {resolve(name, e["href"]) for e in menu if e["href"]}
+        missing = sorted(built - linked)
+        check(not missing, f"{name}: the menu doesn't link {', '.join(missing[:5])}")
+        extra = sorted(linked - built)
+        check(not extra, f"{name}: the menu links pages that weren't built: {', '.join(extra[:5])}")
+        sections = [i for i, e in enumerate(menu) if e["kind"] == "section"]
+        check([resolve(name, menu[i]["href"]) for i in sections] == ["tutorials/index.html", "manual/index.html"],
+              f"{name}: the menu's sections aren't Tutorials then Manual")
+        for (section, index), start, end in zip(indexes.items(), sections, sections[1:] + [len(menu)]):
+            got = [(resolve(name, e["href"]) if e["href"] else None, e["text"]) for e in menu[start + 1:end]]
+            want = [(resolve(f"{section}/index.html", h) if h else None, t) for h, t in index.lists[0]]
+            check(got == want, f"{name}: the {section} menu isn't the index's list:\n  {got}\n  {want}")
+        soon = [e for e in menu if e["kind"] == "soon"]
+        check(any(e["text"] == "A stub page" for e in soon), f"{name}: the stub isn't in the menu as not written yet")
+        check(any(e["text"] == "Probe" and e["href"] for e in menu), f"{name}: the new page isn't linked")
+
+
+@scenario
+def menu_marks_current(s):
+    """On every page aria-current="page" is set exactly once, in the menu, on the
+    link to the page itself, and the page's section (none on the home page) is
+    the one marked "here"."""
+    pages = menu_site(s)
+    for name, mp in pages.items():
+        check(len(mp.current) == 1, f"{name}: aria-current set {len(mp.current)} times")
+        tag, href, value, in_menu = mp.current[0]
+        check(tag == "a" and value == "page" and in_menu, f"{name}: aria-current is {value!r} on <{tag}> "
+              f"{'in' if in_menu else 'outside'} the menu")
+        check(resolve(name, href) == name, f"{name}: aria-current marks {href}, not this page")
+        here = [i for i, c in enumerate(mp.parts) if "here" in c]
+        want = [] if "/" not in name else [["tutorials", "manual"].index(name.split("/")[0])]
+        check(here == want, f"{name}: sections marked here: {here}, expected {want}")
+
+
+# 10. scripts/deploy: local or remote, as rsync decides, and nowhere else.
 
 @scenario
 def deploy_local(s):
