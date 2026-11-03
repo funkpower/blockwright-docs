@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
-"""Run scripts/build against scratch copies of the repo and check what it does.
+"""Run scripts/build and scripts/deploy against scratch copies of the repo and
+check what they do.
 
-    scripts/test-build [--build FILE] [scenario ...]
+    scripts/test-build [--build FILE] [--deploy FILE] [scenario ...]
 
 Each scenario copies the repo (without .git and site/) into a fresh temporary
-directory, changes the copy, runs the build there and checks the result. With
---build, FILE is used as the copy's scripts/build instead, to try another
-version of the script against the same scenarios. Needs what the build needs:
-Python-Markdown and a blockwright-cli. Exits 1 if any scenario fails.
+directory, changes the copy, runs the build or the deploy there and checks the
+result. With --build or --deploy, FILE is used as the copy's scripts/build or
+scripts/deploy instead, to try another version of the script against the same
+scenarios. The deploy scenarios copy a small stand-in site/ and give rsync a
+stand-in ssh that logs its arguments and runs the rsync server in a scratch
+directory, so no host is contacted. Needs what the build needs: Python-Markdown
+and a blockwright-cli; the deploy scenarios need rsync 3.2.3 or later. Exits 1
+if any scenario fails.
 """
 
 import argparse
@@ -22,6 +27,22 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 MANIFEST = ".blockwright-docs-manifest"
+SITE = {"index.html": "home\n", "manual/page.html": "page\n", MANIFEST: "index.html\nmanual/page.html\n"}
+FAKE_HOST = "fakehost.invalid"
+# Stand-in ssh: rsync runs it as `ssh [-l user] host rsync --server ... path`.
+# It logs one file per call, drops -l and the host, and runs the command in a
+# scratch directory standing in for the remote login directory. It refuses an
+# absolute or upward path, so a broken deploy can't reach outside that directory.
+FAKE_SSH = """#!/bin/sh
+printf '%s\\n' "$@" > "{log}/call.$$"
+[ "$1" = -l ] && shift 2
+shift
+for path; do :; done
+case "$path" in
+    /*|..|../*|*/..|*/../*) echo "fake-ssh: refusing remote path $path" >&2; exit 12 ;;
+esac
+cd "{home}" && exec sh -c "$*"
+"""
 PROBE_META = "Title: Probe\nChecked: Blockwright 0.1.0 (test)\n\n# Probe\n\n## A heading\n\n"
 
 
@@ -35,12 +56,14 @@ def check(cond, what):
 
 
 class Scratch:
-    def __init__(self, base, build):
+    def __init__(self, base, build, deploy=None):
         self.base = Path(base)
         self.repo = self.base / "docs"
         shutil.copytree(ROOT, self.repo, ignore=shutil.ignore_patterns(".git", "site", "__pycache__"))
         if build:
             shutil.copyfile(build, self.repo / "scripts" / "build")
+        if deploy:
+            shutil.copyfile(deploy, self.repo / "scripts" / "deploy")
 
     def write(self, rel, text):
         p = self.repo / rel
@@ -71,6 +94,58 @@ class Scratch:
     def page(self, rel="manual/99-probe.html"):
         return (self.repo / "site" / rel).read_text(encoding="utf-8")
 
+    def deploy(self, dest):
+        """Run scripts/deploy on the stand-in site with BW_DOCS_DEST=dest and the
+        stand-in ssh. Leaves the ssh calls (argument lists) in self.calls and the
+        stand-in remote login directory in self.home."""
+        for rel, text in SITE.items():
+            self.write(f"site/{rel}", text)
+        self.home = self.base / "remote-home"
+        self.home.mkdir(exist_ok=True)
+        log = self.base / "ssh-log"
+        shutil.rmtree(log, ignore_errors=True)
+        log.mkdir()
+        ssh = self.base / "fake-ssh"
+        ssh.write_text(FAKE_SSH.format(log=log, home=self.home))
+        ssh.chmod(0o755)
+        env = dict(os.environ, BW_DOCS_DEST=str(dest), RSYNC_RSH=str(ssh))
+        r = subprocess.run(["sh", str(self.repo / "scripts" / "deploy")], cwd=self.repo, env=env,
+                           capture_output=True, text=True)
+        self.out = r.stdout + r.stderr
+        self.calls = [p.read_text().splitlines() for p in sorted(log.iterdir())]
+        return r.returncode
+
+    def deployed(self, dest):
+        code = self.deploy(dest)
+        check(code == 0, f"deploy to {dest}: expected exit 0, got {code}: {self.out.strip()[-300:]}")
+
+    def local(self):
+        check(not self.calls, f"ssh was run: {self.calls}")
+
+    def no_host_dir(self):
+        check(not any(FAKE_HOST in p.name for p in self.repo.iterdir()), "a local directory named after the host")
+
+    def remote(self, user, path):
+        """One ssh call, to FAKE_HOST as user, with the remote path rsync means by path."""
+        check(len(self.calls) == 1, f"expected one ssh call, got {self.calls}")
+        argv = self.calls[0]
+        got_user = argv[1] if argv[:1] == ["-l"] else None
+        argv = argv[2:] if got_user else argv
+        check(argv[0] == FAKE_HOST, f"ssh to {argv[0]!r}, not {FAKE_HOST}")
+        check(got_user == user, f"ssh as {got_user!r}, not {user!r}")
+        check(argv[-1] == path, f"remote path {argv[-1]!r}, not {path!r}")
+        self.no_host_dir()
+
+    def holds_site(self, root, extra=()):
+        """root holds the stand-in site without its manifest, plus the files in extra."""
+        check(root.is_dir(), f"no directory {root}")
+        got = sorted(p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file())
+        want = sorted([r for r in SITE if r != MANIFEST] + list(extra))
+        check(got == want, f"{root} holds {got}, not {want}")
+        for rel in want:
+            if rel in SITE and rel != MANIFEST:
+                check((root / rel).read_text() == SITE[rel], f"{rel} differs")
+
     def cli(self, script):
         """A stand-in blockwright-cli: a shell script that runs the real one
         unless script (sh case arms on "$1") handles the call first."""
@@ -100,13 +175,30 @@ def scenario(fn):
 
 @scenario
 def baseline(s):
-    """The repo as it is builds into site/, twice, with robots meta and the licence footer."""
+    """The repo as it is builds into site/, twice, with no robots meta and the licence footer."""
     s.passed()
     s.passed()
     page = (s.repo / "site" / "index.html").read_text(encoding="utf-8")
-    check('<meta name="robots" content="noindex">' in page, "no robots meta")
+    check('name="robots"' not in page, "a robots meta tag on the home page")
     check("creativecommons.org/licenses/by-sa/4.0/" in page, "no licence in the footer")
     check((s.repo / "site" / MANIFEST).is_file(), "no manifest in site/")
+
+
+@scenario
+def robots_txt(s):
+    """The site gets a robots.txt that allows everything, listed in the manifest,
+    in site/ and in --out, and no page carries a robots meta tag."""
+    allow = "User-agent: *\nAllow: /\n"
+    x = s.base / "x"
+    for args, out in [((), s.repo / "site"), (("--out", x), x)]:
+        s.passed(*args)
+        check((out / "robots.txt").is_file(), f"no robots.txt in {out}")
+        check((out / "robots.txt").read_text(encoding="utf-8") == allow, f"{out}/robots.txt isn't allow-all")
+        listed = (out / MANIFEST).read_text(encoding="utf-8").splitlines()
+        check("robots.txt" in listed, f"robots.txt not in {out}/{MANIFEST}")
+        for f in sorted(out.rglob("*.html")):
+            check('name="robots"' not in f.read_text(encoding="utf-8"), f"robots meta tag in {f.relative_to(out)}")
+    s.passed("--out", x)  # a site holding robots.txt is one the build wrote
 
 
 # 1. --out never clears a directory the build didn't write.
@@ -452,9 +544,75 @@ def out_is_file(s):
     check(f.read_text() == "keep me", "the file changed")
 
 
+# 9. scripts/deploy: local or remote, as rsync decides, and nowhere else.
+
+@scenario
+def deploy_local(s):
+    """A local destination gets its missing parents made and the site copied, and ssh
+    isn't run: a plain path, ./a:b (the colon comes after a slash) and an absolute
+    path holding a colon."""
+    for dest, root in [(s.base / "web" / "docs", s.base / "web" / "docs"),
+                       ("./a:b", s.repo / "a:b"),
+                       (s.base / "abs:colon" / "www", s.base / "abs:colon" / "www")]:
+        s.deployed(dest)
+        s.local()
+        s.holds_site(root)
+
+
+@scenario
+def deploy_remote_host(s):
+    """host:nested/www goes over ssh to the path as written, relative to the login
+    directory, and the missing parent is made there."""
+    s.deployed(f"{FAKE_HOST}:nested/www")
+    s.remote(None, "nested/www")
+    s.holds_site(s.home / "nested" / "www")
+
+
+@scenario
+def deploy_remote_user(s):
+    """user@host:nested/www logs in as user, to the path as written, making the missing parent."""
+    s.deployed(f"someone@{FAKE_HOST}:nested/www")
+    s.remote("someone", "nested/www")
+    s.holds_site(s.home / "nested" / "www")
+
+
+@scenario
+def deploy_remote_empty(s):
+    """host: and user@host: are refused before ssh runs: never the remote root, and
+    never --delete into the login directory."""
+    for dest in (f"{FAKE_HOST}:", f"someone@{FAKE_HOST}:"):
+        code = s.deploy(dest)
+        check(code == 1, f"{dest}: expected exit 1, got {code}: {s.out.strip()[-300:]}")
+        check("names no remote directory" in s.out, f"{dest}: no reason given: {s.out.strip()[-300:]}")
+        check(not s.calls, f"{dest}: ssh was run: {s.calls}")
+        check(not any(s.home.iterdir()), f"{dest}: something was copied")
+        s.no_host_dir()
+
+
+@scenario
+def deploy_manifest(s):
+    """The manifest is neither copied nor deleted, locally or remotely, and a stale page is deleted."""
+    theirs = "the web root's own\n"
+    local = s.base / "web"
+    for root in (local, s.base / "remote-home" / "www"):
+        (root / "old").mkdir(parents=True)
+        (root / "old" / "stale.html").write_text("stale\n")
+        (root / MANIFEST).write_text(theirs)
+    s.deployed(local)
+    s.local()
+    s.holds_site(local, extra=[MANIFEST])
+    check((local / MANIFEST).read_text() == theirs, "the local manifest was overwritten")
+    s.deployed(f"{FAKE_HOST}:www")
+    s.remote(None, "www")
+    www = s.home / "www"
+    s.holds_site(www, extra=[MANIFEST])
+    check((www / MANIFEST).read_text() == theirs, "the remote manifest was overwritten")
+
+
 def main():
-    ap = argparse.ArgumentParser(description="Check scripts/build against scratch copies of the repo.")
+    ap = argparse.ArgumentParser(description="Check scripts/build and scripts/deploy against scratch copies of the repo.")
     ap.add_argument("--build", type=Path, help="build script to test instead of scripts/build")
+    ap.add_argument("--deploy", type=Path, help="deploy script to test instead of scripts/deploy")
     ap.add_argument("scenario", nargs="*", help=f"scenarios to run (default: all): {', '.join(SCENARIOS)}")
     args = ap.parse_args()
     names = args.scenario or list(SCENARIOS)
@@ -462,11 +620,12 @@ def main():
     if unknown:
         sys.exit(f"test-build: no scenario {', '.join(unknown)}")
     build = args.build.resolve() if args.build else None
+    deploy = args.deploy.resolve() if args.deploy else None
     failed = 0
     for name in names:
         with tempfile.TemporaryDirectory(prefix="bw-docs-test-") as base:
             try:
-                SCENARIOS[name](Scratch(base, build))
+                SCENARIOS[name](Scratch(base, build, deploy))
                 print(f"ok    {name}")
             except Fail as e:
                 failed += 1

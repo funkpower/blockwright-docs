@@ -1,9 +1,30 @@
 #!/bin/sh
-# Copy site/ to the web root in $BW_DOCS_DEST.
+# Copy site/ to the web root in $BW_DOCS_DEST: a local directory, or an rsync
+# destination on another host (host:path, user@host:path).
+#
+# A remote path means what it means to rsync: relative to the login directory
+# unless it starts with /. An empty one (host:) is refused, because --delete
+# would empty the login directory; write host:. if that really is the web root.
+# Missing parent directories are made on both sides: mkdir -p for a local one,
+# --mkpath for a remote one, which needs rsync 3.2.3 or later at both ends.
+# RSYNC_RSH sets the ssh command rsync uses.
 set -eu
-: "${BW_DOCS_DEST:?set BW_DOCS_DEST to the web root for /blockwright/}"
+: "${BW_DOCS_DEST:?set BW_DOCS_DEST to the web root (a directory or host:path)}"
 cd "$(dirname "$0")/.."
-mkdir -p "$BW_DOCS_DEST"
-# The share refuses chmod: copy contents and times, not permissions.
+# rsync's own rule: a colon before the first slash names another host.
+case "${BW_DOCS_DEST%%/*}" in
+    *:*)
+        case "$BW_DOCS_DEST" in
+            *:) echo "deploy: $BW_DOCS_DEST names no remote directory; write ${BW_DOCS_DEST}. for the login directory" >&2
+                exit 1 ;;
+        esac
+        dest=$BW_DOCS_DEST
+        set -- --mkpath ;;
+    *)
+        mkdir -p "$BW_DOCS_DEST"
+        dest=$BW_DOCS_DEST/
+        set -- ;;
+esac
+# A share may refuse chmod: copy contents and times, not permissions.
 # The build manifest stays out of the web root.
-rsync -rt --inplace --delete --no-perms --omit-dir-times --exclude=/.blockwright-docs-manifest site/ "$BW_DOCS_DEST/"
+rsync -rt --inplace --delete --no-perms --omit-dir-times --exclude=/.blockwright-docs-manifest "$@" site/ "$dest"

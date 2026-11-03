@@ -28,6 +28,9 @@ with a message naming the column-0 rule, a misspelled one (any `<!-- generated:`
 or `<!-- list:` comment, in any case, that isn't one of the three) with a
 message naming the three.
 
+The site also gets `robots.txt`, which lets crawlers fetch everything, and,
+when `ROBOTS` is set, a robots meta tag on every page.
+
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
 resolves into `.git/` or `site/`, a missing sample, or a sample the CLI can't
@@ -62,9 +65,11 @@ ROOT = Path(__file__).resolve().parent.parent
 SECTIONS = {"tutorials": "Tutorials", "manual": "Manual"}
 SITE_NAME = "Blockwright"
 SCALE_RE = re.compile(r"^([1-8])x$")
-# The robots meta tag every page carries. "noindex" while the site lives at
-# lrh.pumpin.online/blockwright/; "" (no tag) once it has its own domain.
-ROBOTS = "noindex"
+# The robots meta tag every page carries; "" for none. The site has its own
+# domain and is meant to be indexed (PLAN.md §7).
+ROBOTS = ""
+# Written into the site as robots.txt: crawlers may fetch everything.
+ROBOTS_TXT = "User-agent: *\nAllow: /\n"
 # Written into the site; names every file the build wrote.
 MANIFEST = ".blockwright-docs-manifest"
 EXTERNAL_RE = re.compile(r"^[a-z][a-z0-9+.-]*:|^//", re.I)
@@ -434,6 +439,7 @@ class Builder:
         prepare_out(self.out)
         try:
             shutil.copyfile(ROOT / "theme" / "site.css", self.out / "site.css")
+            (self.out / "robots.txt").write_text(ROBOTS_TXT, encoding="utf-8")
             for page in self.pages:
                 if page.published:
                     self.build_page(page)

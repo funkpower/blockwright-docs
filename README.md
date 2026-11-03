@@ -2,7 +2,7 @@
 
 Documentation for [Blockwright](https://git.pumpin.online/funkpower/blockwright), the ANSI and IRC art editor: tutorials that start from nothing (what a cell is, how half blocks become pixels, how a shade ladder works, how to light a shape, how to get a piece onto IRC inside the byte budget) and a manual that covers every tool, menu, file format and command.
 
-Published at <https://lrh.pumpin.online/blockwright/>.
+Published at <https://blockwright-docs.pumpin.online/>. Every commit to `main` is live there within a few minutes.
 
 ## Layout
 
@@ -16,7 +16,7 @@ Published at <https://lrh.pumpin.online/blockwright/>.
 | `scripts/build` | Builds the site into `site/` (not tracked) |
 | `scripts/test-build` | Checks the build against scratch copies of the repo |
 | `scripts/ansi.py` | Writes the samples' `.ans` files |
-| `scripts/deploy` | Copies `site/` to the web root |
+| `scripts/deploy` | Copies `site/` to the web root: a directory, or `host:path` on another machine |
 | `scripts/forge` | Opens and merges PRs on the forge |
 
 ## Build
