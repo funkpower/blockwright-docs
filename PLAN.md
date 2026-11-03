@@ -68,10 +68,10 @@ One page per area, in `manual/`. Each page is written when its feature is on Blo
 | Layers | §5 | Phase 3 |
 | Library | §12 | 2c (stamps), Phase 5 (prefabs, Scene Starter) |
 | Colour | §4 SAUCE/iCE, palette; Phase 8 24-bit | Written, checked against `c44974c`; 24-bit covers reading only (drawing in 24-bit is Phase 8) |
-| IRC | §8 IRC text, §9 | CLI ready; editor side Phase 4 |
-| Lint | §10 ladder lint, Phase 4 lint panel | Rules ready; panel Phase 4 |
+| IRC | §8 IRC text, §9 | Written, checked against `c44974c` |
+| Lint | §10 ladder lint, Phase 4 lint panel | Written, checked against `c44974c` |
 | Generators | §7 | Phase 5 |
-| File formats | §6, §8 | `.ans`/SAUCE/IRC ready; project format Phase 3; XBIN Phase 6 |
+| File formats | §6, §8 | Written, checked against `c44974c` |
 | CLI | `blockwright-cli --help` | Written, checked against `c44974c`; its full help is generated (§4) |
 | Shortcuts | every action | Generated (§4) |
 | Preferences | — | Nothing to document yet |
