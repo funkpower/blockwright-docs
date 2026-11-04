@@ -69,7 +69,7 @@ One page per area, in `manual/`. Each page is written when its feature is on Blo
 | Tools | §4 drawing tools, §10 brushes | Merged tools ready; one section per tool added as each lands |
 | Selections | §4 selections | Ready |
 | Symmetry | §4 mirror mode, §10 symmetry | Ready |
-| Layers | §5 | Phase 3 |
+| Layers | §5, §15 (layer styles) | Written, checked against `0162e63` |
 | Library | §12 | 2c (stamps), Phase 5 (prefabs, Scene Starter) |
 | Colour | §4 SAUCE/iCE, palette; Phase 8 24-bit | Written, checked against `c44974c`; 24-bit covers reading only (drawing in 24-bit is Phase 8) |
 | IRC | §8 IRC text, §9 | Written, checked against `c44974c` |
