@@ -1,0 +1,186 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-9x1.ans"
+ },
+ "steps": [
+  {
+   "name": "base",
+   "action": "rectangle",
+   "fg": 1,
+   "filled": true,
+   "from": [
+    0,
+    0
+   ],
+   "to": [
+    0,
+    1
+   ]
+  },
+  {
+   "name": "base",
+   "action": "rectangle",
+   "fg": 1,
+   "filled": true,
+   "from": [
+    2,
+    0
+   ],
+   "to": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "base",
+   "action": "rectangle",
+   "fg": 1,
+   "filled": true,
+   "from": [
+    4,
+    0
+   ],
+   "to": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "base",
+   "action": "rectangle",
+   "fg": 1,
+   "filled": true,
+   "from": [
+    6,
+    0
+   ],
+   "to": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "base",
+   "action": "rectangle",
+   "fg": 1,
+   "filled": true,
+   "from": [
+    8,
+    0
+   ],
+   "to": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "pen",
+   "action": "shade",
+   "fg": 9,
+   "bg": 1,
+   "size": 1,
+   "tip": "square"
+  },
+  {
+   "name": "rung-1-1",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "rung-2-1",
+   "action": "shade",
+   "points": [
+    [
+     4,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "rung-2-2",
+   "action": "shade",
+   "points": [
+    [
+     4,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "rung-3-1",
+   "action": "shade",
+   "points": [
+    [
+     6,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "rung-3-2",
+   "action": "shade",
+   "points": [
+    [
+     6,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "rung-3-3",
+   "action": "shade",
+   "points": [
+    [
+     6,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "rung-4-1",
+   "action": "shade",
+   "points": [
+    [
+     8,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "rung-4-2",
+   "action": "shade",
+   "points": [
+    [
+     8,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "rung-4-3",
+   "action": "shade",
+   "points": [
+    [
+     8,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "rung-4-4",
+   "action": "shade",
+   "points": [
+    [
+     8,
+     0
+    ]
+   ]
+  }
+ ]
+}

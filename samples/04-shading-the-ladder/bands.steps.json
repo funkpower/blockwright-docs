@@ -1,0 +1,131 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-40x16.ans"
+ },
+ "steps": [
+  {
+   "name": "floor-1",
+   "action": "shade",
+   "fg": 1,
+   "bg": 0,
+   "tip": "square",
+   "size": 12,
+   "points": [
+    [
+     0,
+     15
+    ],
+    [
+     39,
+     15
+    ]
+   ]
+  },
+  {
+   "name": "floor-2",
+   "action": "shade",
+   "size": 8,
+   "points": [
+    [
+     0,
+     15
+    ],
+    [
+     39,
+     15
+    ]
+   ]
+  },
+  {
+   "name": "floor-3",
+   "action": "shade",
+   "size": 4,
+   "points": [
+    [
+     0,
+     15
+    ],
+    [
+     39,
+     15
+    ]
+   ]
+  },
+  {
+   "name": "floor-4",
+   "action": "shade",
+   "size": 1,
+   "points": [
+    [
+     0,
+     15
+    ],
+    [
+     39,
+     15
+    ]
+   ]
+  },
+  {
+   "name": "ball-layer",
+   "action": "newCellsLayer",
+   "rename": "ball"
+  },
+  {
+   "name": "ball-base",
+   "action": "rampShade",
+   "ramp": "fire",
+   "strength": 1,
+   "size": 20,
+   "tip": "round",
+   "points": [
+    [
+     19,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "lit-1",
+   "action": "rampShade",
+   "strength": 1,
+   "size": 29,
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "lit-2",
+   "action": "rampShade",
+   "strength": 1,
+   "size": 25,
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "lit-3",
+   "action": "rampShade",
+   "strength": 1,
+   "size": 21,
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  }
+ ]
+}

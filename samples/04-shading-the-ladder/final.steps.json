@@ -1,0 +1,278 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-40x16.ans"
+ },
+ "steps": [
+  {
+   "name": "floor-1",
+   "action": "shade",
+   "fg": 1,
+   "bg": 0,
+   "tip": "square",
+   "size": 12,
+   "points": [
+    [
+     0,
+     15
+    ],
+    [
+     39,
+     15
+    ]
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      603
+     ]
+    }
+   }
+  },
+  {
+   "name": "floor-2",
+   "action": "shade",
+   "size": 8,
+   "points": [
+    [
+     0,
+     15
+    ],
+    [
+     39,
+     15
+    ]
+   ]
+  },
+  {
+   "name": "floor-3",
+   "action": "shade",
+   "size": 4,
+   "points": [
+    [
+     0,
+     15
+    ],
+    [
+     39,
+     15
+    ]
+   ]
+  },
+  {
+   "name": "floor-4",
+   "action": "shade",
+   "size": 1,
+   "points": [
+    [
+     0,
+     15
+    ],
+    [
+     39,
+     15
+    ]
+   ]
+  },
+  {
+   "name": "ball-layer",
+   "action": "newCellsLayer",
+   "rename": "ball"
+  },
+  {
+   "name": "ball-base",
+   "action": "rampShade",
+   "ramp": "fire",
+   "strength": 0.25,
+   "size": 20,
+   "tip": "round",
+   "points": [
+    [
+     19,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "lock",
+   "action": "layerProperties",
+   "alphaLocked": true,
+   "screenshot": {
+    "of": "layers"
+   }
+  },
+  {
+   "name": "lit-1",
+   "action": "rampShade",
+   "strength": 0.25,
+   "size": 29,
+   "points": [
+    [
+     14,
+     4
+    ]
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      682
+     ]
+    }
+   }
+  },
+  {
+   "name": "lit-2",
+   "action": "rampShade",
+   "strength": 0.25,
+   "size": 25,
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "lit-3",
+   "action": "rampShade",
+   "strength": 0.25,
+   "size": 21,
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "lit-4",
+   "action": "rampShade",
+   "strength": 0.25,
+   "size": 17,
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "lit-5",
+   "action": "rampShade",
+   "strength": 0.25,
+   "size": 13,
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "lit-6",
+   "action": "rampShade",
+   "strength": 0.25,
+   "size": 9,
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "lit-7",
+   "action": "rampShade",
+   "strength": 0.25,
+   "size": 7,
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "highlight",
+   "action": "rampShade",
+   "size": 2,
+   "points": [
+    [
+     15,
+     4
+    ]
+   ],
+   "screenshot": {
+    "of": "lint"
+   }
+  },
+  {
+   "name": "floor-layer",
+   "action": "setActiveLayer",
+   "layer": "Background"
+  },
+  {
+   "name": "shadow-1",
+   "action": "shade",
+   "button": "right",
+   "size": 4,
+   "points": [
+    [
+     17,
+     13
+    ],
+    [
+     26,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "shadow-2",
+   "action": "shade",
+   "button": "right",
+   "size": 2,
+   "points": [
+    [
+     29,
+     13
+    ],
+    [
+     31,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "shadow-3",
+   "action": "shade",
+   "button": "right",
+   "size": 2,
+   "points": [
+    [
+     23,
+     11
+    ],
+    [
+     25,
+     11
+    ]
+   ],
+   "screenshot": {
+    "of": "lint"
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

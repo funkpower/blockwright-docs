@@ -1,0 +1,83 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-34x9.ans"
+ },
+ "steps": [
+  {
+   "name": "label-off",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    4,
+    8
+   ],
+   "text": "lock off"
+  },
+  {
+   "name": "label-on",
+   "action": "keyboard",
+   "at": [
+    22,
+    8
+   ],
+   "text": "lock on"
+  },
+  {
+   "name": "ball-layer",
+   "action": "newCellsLayer",
+   "rename": "ball"
+  },
+  {
+   "name": "ball-1",
+   "action": "rampShade",
+   "ramp": "fire",
+   "strength": 1,
+   "size": 12,
+   "tip": "round",
+   "points": [
+    [
+     8,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "ball-2",
+   "action": "rampShade",
+   "points": [
+    [
+     25,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "click-off",
+   "action": "rampShade",
+   "strength": 0.5,
+   "points": [
+    [
+     6,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "click-on",
+   "action": "rampShade",
+   "points": [
+    [
+     23,
+     3
+    ]
+   ]
+  }
+ ]
+}
