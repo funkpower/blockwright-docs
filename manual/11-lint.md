@@ -1,9 +1,9 @@
 Title: Lint panel and the checks it runs
-Checked: Blockwright 0.1.0 (c44974c)
+Checked: Blockwright 0.1.0 (f34d296)
 
 # Lint panel and the checks it runs
 
-The lint reads a piece as it looks at 1× and lists the faults it can find by rule: shading that skips rungs or steps through colours that aren't neighbours, rungs too wide, specks, stray half blocks, pixel noise, lone glints, broken and dotted lines, glyphs in their own background, flat areas, and the trailing black and blank rows that IRC drops. The editor shows the list in the **Lint** dock; `blockwright-cli lint` prints it.
+The lint reads a piece as it looks at 1× and lists the faults it can find by rule: shading that skips rungs or steps through colours that aren't neighbours, rungs too wide, specks, stray half blocks, pixel noise, lone glints, broken and dotted lines, glyphs in their own background, flat areas, the trailing black and blank rows that IRC drops, glyphs an `.ans` can't save, and glyphs that clients count or order differently. The editor shows the list in the **Lint** dock; `blockwright-cli lint` prints it.
 
 The lint finds what a rule can find. It doesn't judge composition, light or legibility, and a clean result doesn't mean a piece is finished.
 
@@ -31,22 +31,23 @@ Click a row, or select it and press Enter, and the cell cursor goes to that cell
 
 Under the list a summary gives the count by kind, the canvas's pixel noise and whether iCE colours are on, in the same words as the CLI's summary line (below). The dock lists at most 1000 findings; past that the summary adds "The first 1000 are listed."
 
-The dock lints what the canvas shows: every visible layer merged, with the document's iCE setting. It lints again 250 ms after an edit, a file opened or a change to the document's format (iCE colours, letter spacing, SAUCE), and only while it is shown; a dock hidden behind the IRC View tab waits until it is brought forward. While the list is out of date, "Linting…" shows under it once half a second has passed, until the new list is in.
+The dock lints what the canvas shows: every visible layer merged, with the document's iCE setting, for the document's target (see [The IRC target](#the-irc-target)). It lints again 250 ms after an edit, a file opened, a change to the document's format (iCE colours, letter spacing, SAUCE) or a change of target, and only while it is shown; a dock hidden behind the IRC View tab waits until it is brought forward. While the list is out of date, "Linting…" shows under it once half a second has passed, until the new list is in.
 
 The dock never reports [`flat`](#flat): that check needs a box around the subject, and only the CLI takes one.
 
 ## blockwright-cli lint
 
 ```
-blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--json] <in>
+blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc] [--json] <in>
 ```
 
-`<in>` is an `.ans`, `.xb` or `.bin` file, or a project, which is linted as its visible layers merged. iCE colours are the file's own.
+`<in>` is an `.ans`, `.xb` or `.bin` file, or a project, which is linted as its visible layers merged. iCE colours are the file's own. `--encoding` says how an `.ans` is read, as for every command that reads one (see [blockwright-cli](14-cli.md#what-it-reads)).
 
 | Option | What it does |
 |---|---|
 | `--ramp R` | Check this ramp: a name (`fire`, `sunset`, `ice`, `grass`, `steel`, `skin`, `sea`, `toxic`, `violet`, `wood`) or palette indices 0-15 from dark to light, such as `0,8,7,15`. Give it more than once for several. Without it every named ramp is checked and the craft pairs are allowed; with it they aren't |
 | `--box x0,y0,x1,y1` | The subject's box, corners inclusive. Only findings that touch it are reported, and the [`flat`](#flat) check runs inside it. A box past the canvas's right or bottom edge is cut to the canvas |
+| `--target ansi\|irc` | Lint for an `.ans` or for IRC. Without it a project is linted for its own target, and a flat file for ANSI. See [The IRC target](#the-irc-target) |
 | `--json` | Print the findings as JSON instead of text |
 
 The text output is one line per finding, then the summary:
@@ -62,15 +63,30 @@ Each line holds the cell, the kind, the ramp (`-` for none) and the message. Fin
 clean, noise 0.0000, iCE on
 ```
 
+A note is printed like a finding, with `note: ` before its message, but on its own it leaves the piece clean. The one note is [`ans-loss`](#ans-loss), under the IRC target: what an `.ans` save would lose of a piece that is fine for IRC. A snowman under `--target irc`:
+
+```
+0,0 ans-loss - note: 1 cell holds a glyph a CP437 .ans saves as '?' (fine for IRC)
+clean, 1 note (1 ans-loss), noise 0.0000, iCE on
+```
+
+The summary counts the findings by kind, then the notes by kind. In the Lint dock a note's row is in italics.
+
 With `--json` the same finding reads:
 
 ```
-{"findings":[{"kind":"speckle","ramp":"steel","x":11,"y":2,"x2":11,"y2":2,"message":"cell 11,2: a speck, lighter than every neighbour"}],"noise":0.0000,"ice":true}
+{"findings":[{"kind":"speckle","severity":"warning","ramp":"steel","x":11,"y":2,"x2":11,"y2":2,"message":"cell 11,2: a speck, lighter than every neighbour"}],"noise":0.0000,"ice":true}
 ```
 
-`x2,y2` is the far corner of what the finding covers (the whole canvas for `one-glyph` and `noise`), or the other cell of a wide rung or a rung skip; for a single cell it is the cell again. `ramp` is `null` for noise and the checks that use no ramp. A clean piece gives `{"findings":[],"noise":0.0000,"ice":true}`.
+`x2,y2` is the far corner of what the finding covers (the whole canvas for `one-glyph` and `noise`), or the other cell of a wide rung, a rung skip or a flag (see [`width-varies`](#width-varies)); for a single cell it is the cell again. `severity` is `"warning"` for a finding and `"note"` for a note. `ramp` is `null` for noise and the checks that use no ramp. A piece with nothing to report gives `{"findings":[],"noise":0.0000,"ice":true}`. A piece with only notes is clean, but its notes are still in the list, each with `"severity":"note"`; the snowman under `--target irc` gives:
 
-The exit status is 0 when the piece is clean and 4 when there is anything to report. A bad `--ramp`, or a `--box` that isn't four numbers from 0, is a usage error, status 2: the CLI says what is wrong and then prints its usage text.
+```
+{"findings":[{"kind":"ans-loss","severity":"note","ramp":null,"x":0,"y":0,"x2":0,"y2":0,"message":"1 cell holds a glyph a CP437 .ans saves as '?' (fine for IRC)"}],"noise":0.0000,"ice":true}
+```
+
+So an empty list means there are no notes either. To tell whether a piece is clean, read the exit status, or look for a finding whose `severity` is `"warning"`.
+
+The exit status is 0 when the piece is clean, notes or none, and 4 when there is a finding other than a note. A bad `--ramp`, or a `--box` that isn't four numbers from 0, is a usage error, status 2: the CLI says what is wrong and then prints its usage text.
 
 ```
 $ blockwright-cli lint --ramp nope clean.ans
@@ -144,7 +160,7 @@ $ blockwright-cli lint --ramp fire craft-pair.ans
 
 ## The checks
 
-There are two families. The **ladder checks** read each ramp's ladder, and the ramp column names the ramp; noise is one of them but is judged once for the whole canvas under no ramp, so its ramp column is `-`. The **craft checks** use no ramp. Each section shows a canvas drawn to have that fault and the lint's output for it.
+There are two families. The **ladder checks** read each ramp's ladder, and the ramp column names the ramp; noise is one of them but is judged once for the whole canvas under no ramp, so its ramp column is `-`. The **craft checks** use no ramp; the last five of them, from [`no-cp437`](#no-cp437) to [`ans-loss`](#ans-loss), are about the glyphs a piece holds rather than how it is drawn. Each section shows a canvas drawn to have that fault and the lint's output for it; the glyph checks show their messages instead.
 
 ### non-neighbour-shade
 
@@ -232,14 +248,14 @@ So against ░ in light red on red, with an end of the run against that ░, onl
 
 ```
 $ blockwright-cli lint fallback-speck.ans
-8,2 fallback-speck fire cell 8,2: a fallback speck, a half block showing none of the shading's colours beside it
-9,2 fallback-speck fire cell 9,2: a fallback speck, a half block showing none of the shading's colours beside it
+8,2 fallback-speck fire cell 8,2: a fallback speck, a half block in a colour the shading beside it doesn't show but falls back to where a pixel cuts it
+9,2 fallback-speck fire cell 9,2: a fallback speck, a half block in a colour the shading beside it doesn't show but falls back to where a pixel cuts it
 …
-15,2 fallback-speck fire cell 15,2: a fallback speck, a half block showing none of the shading's colours beside it
+15,2 fallback-speck fire cell 15,2: a fallback speck, a half block in a colour the shading beside it doesn't show but falls back to where a pixel cuts it
 8 findings (8 fallback-speck), noise 0.0000, iCE on
 ```
 
-The light red bottom halves face ░ in light red on red, which shows red, and the run of them ends against that ░ on both sides. The message says the half block shows "none of the shading's colours", which doesn't match what the rule flags: the half shows one of the shade's two colours, the one the shade doesn't show. With iCE on, a half that shows none of the shade's colours isn't flagged; with iCE off it can be, when it shows one of their dark counterparts and its other half is dark.
+The light red bottom halves face ░ in light red on red, which shows red, and the run of them ends against that ░ on both sides. Light red is the shade's other colour: one it holds and falls back to where a pixel cuts it, but doesn't show. With iCE off, a half in the dark counterpart of one of the shade's colours can be flagged too, when its other half is dark.
 
 **Fix:** give the half facing the shade the colour the shade shows (red here), or carry the shade on into the cell.
 
@@ -375,15 +391,106 @@ $ blockwright-cli lint blank-edge-rows.ans
 
 ### no-cp437
 
-A glyph with no CP437 code, which a project holds and an `.ans` can't: it saves it as `?`. The message names the code point and the glyph; for a snowman:
+Only under the ANSI target. A glyph a CP437 `.ans` can't save as it is. The message names the glyph's code points and the glyph, and says what an `.ans` saves in its place:
+
+| The glyph | The message, for example |
+|---|---|
+| Has no CP437 code | `U+2603 ☃ has no CP437 code: an .ans saves it as '?'` |
+| Has a CP437 code whose byte the ANSI reader acts on: ○ (0x09, TAB), ◙ (0x0A, LF), ♪ (0x0D, CR), → (0x1A, SUB), ← (0x1B, ESC) | `U+25CB ○ is CP437 0x09, which .ans reads as TAB: an .ans saves it as '?' (XBIN and BIN keep it)` |
+| Takes two cells | `U+6F22 漢 takes two cells: an .ans saves it as '?' and a space` |
+| Is a letter with combining marks that CP437 has no glyph for | `U+0071 U+0301 q U+0301 has no CP437 code: an .ans saves it as q, dropping U+0301` |
+
+A letter and a mark that CP437 has as one glyph (e and U+0301 is é) is saved as that glyph and isn't flagged. A control or bidi code point is named by its code alone and never printed. A cell that holds a control character itself (below U+0020, or U+007F) isn't flagged.
+
+The five glyphs whose byte the reader acts on are flagged like any other, and the lint exits 4. For a UTF-8 `.ans` holding ○◙♪→←:
 
 ```
-U+2603 ☃ has no CP437 code: an .ans saves it as '?'
+$ blockwright-cli lint arrows.ans
+0,0 no-cp437 - U+25CB ○ is CP437 0x09, which .ans reads as TAB: an .ans saves it as '?' (XBIN and BIN keep it)
+1,0 no-cp437 - U+25D9 ◙ is CP437 0x0A, which .ans reads as LF: an .ans saves it as '?' (XBIN and BIN keep it)
+2,0 no-cp437 - U+266A ♪ is CP437 0x0D, which .ans reads as CR: an .ans saves it as '?' (XBIN and BIN keep it)
+3,0 no-cp437 - U+2192 → is CP437 0x1A, which .ans reads as SUB: an .ans saves it as '?' (XBIN and BIN keep it)
+4,0 no-cp437 - U+2190 ← is CP437 0x1B, which .ans reads as ESC: an .ans saves it as '?' (XBIN and BIN keep it)
+5 findings (5 no-cp437), noise 0.0000, iCE on
 ```
 
-**Fix:** draw it with CP437 glyphs, or keep the piece as a project, which holds any glyph. There is no picture: an `.ans` can't carry the fault.
+In the JSON each is a `"severity":"warning"`. Under the IRC target the check is off, and the same cells are counted in one [`ans-loss`](#ans-loss) note; with nothing else to report the piece is clean and the exit status is 0:
 
-The check doesn't flag the glyphs whose CP437 byte is one the ANSI reader acts on (○ for TAB, ◙ for LF, ♪ for CR, → for SUB, ← for ESC). They have a CP437 code, but an `.ans` saves them as `?` too (see [File formats](13-file-formats.md#writing)).
+```
+$ blockwright-cli lint --target irc arrows.ans
+0,0 ans-loss - note: 5 cells hold glyphs a CP437 .ans saves as '?' (fine for IRC)
+clean, 1 note (1 ans-loss), noise 0.0000, iCE on
+```
+
+See [File formats](13-file-formats.md#writing) for why an `.ans` can't keep those five.
+
+**Fix:** draw it with CP437 glyphs, or keep the piece as a project, which holds any glyph. A piece made for IRC can take the IRC target instead.
+
+### width-varies
+
+A glyph whose width a client or terminal may count differently, so that the rest of its line moves. It runs under both targets. The message names the glyph and gives each reason that applies:
+
+- A code point that is two columns wide, or zero-width, only since a Unicode version after 9.0.0. A client with an older table draws it in one column, or gives it a column of its own.
+- U+200D (zero width joiner) in the cell: a terminal that joins graphemes draws the glyph and the one after it as one, narrower than their cells.
+- U+FE0F after a glyph one column wide: a terminal that joins graphemes draws it two columns wide, one more than its cell.
+- A skin tone modifier (U+1F3FB to U+1F3FF): a terminal that joins graphemes draws it inside the emoji before it.
+- Two regional indicators side by side make a flag. That is reported once, at the first of them, and `x2,y2` is the second.
+
+```
+$ blockwright-cli lint --target irc heart.ans
+0,0 width-varies - U+2764 U+FE0F ❤ U+FE0F: U+FE0F makes it two columns wide in a terminal that joins graphemes, one more than its cell
+0,0 ans-loss - note: 1 cell holds a glyph a CP437 .ans saves as '?' (fine for IRC)
+1 finding (1 width-varies), 1 note (1 ans-loss), noise 0.0000, iCE on
+```
+
+A newer emoji reads `U+1F970 🥰: it takes two columns here, but only since a Unicode version after 9.0.0: a client on an older table may draw it in one`.
+
+**Fix:** use a glyph whose width doesn't vary, or take out the joiner, the U+FE0F or the modifier.
+
+### lone-mark
+
+A zero-width code point, such as a combining mark, alone in a cell, which a terminal draws on the cell before it or not at all; or a glyph two columns wide with no continuation cell after it, which a terminal draws over the next cell too. It runs under both targets.
+
+```
+U+0301 is zero-width in a cell of its own: a terminal draws it on the cell before it, or not at all
+```
+
+**Fix:** put the mark in the cell of the glyph it belongs to, or take it out.
+
+### bidi-control
+
+A bidi control (U+061C, U+200E, U+200F, U+202A to U+202E, U+2066 to U+2069) in a cell, alone or in a cluster. A UTF-8 `.ans` or IRC text writes it as it is, and a client that applies bidi reorders the rest of the line. It runs under both targets. A right-to-left override alone in a cell, under the IRC target, is a bidi control and a lone mark, and the note beside them doesn't make the piece clean:
+
+```
+$ blockwright-cli lint --target irc override.ans
+0,0 lone-mark - U+202E is zero-width in a cell of its own: a terminal draws it on the cell before it, or not at all
+0,0 bidi-control - U+202E is a bidi control: a UTF-8 .ans or IRC text writes it as it is, and a client that applies bidi (HexChat, mIRC) reorders the rest of the line
+0,0 ans-loss - note: 1 cell holds a glyph a CP437 .ans saves as '?' (fine for IRC)
+2 findings (1 lone-mark, 1 bidi-control), 1 note (1 ans-loss), noise 0.0000, iCE on
+```
+
+The exit status is 4.
+
+**Fix:** take it out.
+
+### ans-loss
+
+Only under the IRC target, and a note, not a fault: what an `.ans` save would lose of a piece that is fine for IRC. There is at most one note of each kind, at the first cell it counts:
+
+| What is lost | The message |
+|---|---|
+| Glyphs: the cells [`no-cp437`](#no-cp437) would flag under the ANSI target | `5 cells hold glyphs a CP437 .ans saves as '?' (fine for IRC)` |
+| Colours: cells in a colour other than the 16 | `1 cell is in a colour an .ans can't hold, saved as the nearest of the 16 (fine for IRC)` |
+
+A note leaves the piece clean: with notes alone the summary starts `clean` and the exit status is 0. In the JSON a note's `severity` is `"note"`; in the Lint dock its row is in italics. Nothing needs fixing for IRC; if the piece is to be saved as an `.ans` as well, lint it under the ANSI target.
+
+## The IRC target
+
+A document is made for an `.ans` (the ANSI target) or for IRC. The editor sets it with **Format > Target**, a project keeps it (`pack` and `unpack` set it with `--target`), and `lint --target` overrides it; a flat file is linted for ANSI unless `--target irc` is given. Under the IRC target:
+
+- [`no-cp437`](#no-cp437) is off, and [`ans-loss`](#ans-loss) notes say what an `.ans` save would lose instead.
+- A ladder check at a cell in a colour other than the 16 judges it by the nearest of the 16, and the message ends `(an RGB cell, judged by the nearest of the 16)`.
+- Every other check runs as it does under ANSI.
 
 ## Where the rules come from
 
