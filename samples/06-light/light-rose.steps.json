@@ -1,0 +1,451 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-54x28.ans"
+ },
+ "steps": [
+  {
+   "name": "label-nw",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    9,
+    9
+   ],
+   "text": "NW"
+  },
+  {
+   "name": "label-n",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    28,
+    9
+   ],
+   "text": "N"
+  },
+  {
+   "name": "label-ne",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    45,
+    9
+   ],
+   "text": "NE"
+  },
+  {
+   "name": "label-w",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    10,
+    18
+   ],
+   "text": "W"
+  },
+  {
+   "name": "label-middle",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    24,
+    13
+   ],
+   "text": "light from"
+  },
+  {
+   "name": "label-e",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    46,
+    18
+   ],
+   "text": "E"
+  },
+  {
+   "name": "label-sw",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    9,
+    27
+   ],
+   "text": "SW"
+  },
+  {
+   "name": "label-s",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    28,
+    27
+   ],
+   "text": "S"
+  },
+  {
+   "name": "label-se",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    45,
+    27
+   ],
+   "text": "SE"
+  },
+  {
+   "name": "nw-layer",
+   "action": "newCellsLayer",
+   "rename": "nw"
+  },
+  {
+   "name": "nw-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     10,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "nw-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "nw",
+   "action": "form",
+   "light": "NW",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     10,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "n-layer",
+   "action": "newCellsLayer",
+   "rename": "n"
+  },
+  {
+   "name": "n-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     28,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "n-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "n",
+   "action": "form",
+   "light": "N",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     28,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "ne-layer",
+   "action": "newCellsLayer",
+   "rename": "ne"
+  },
+  {
+   "name": "ne-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     46,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "ne-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "ne",
+   "action": "form",
+   "light": "NE",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     46,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "w-layer",
+   "action": "newCellsLayer",
+   "rename": "w"
+  },
+  {
+   "name": "w-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     10,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "w-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "w",
+   "action": "form",
+   "light": "W",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     10,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "e-layer",
+   "action": "newCellsLayer",
+   "rename": "e"
+  },
+  {
+   "name": "e-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     46,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "e-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "e",
+   "action": "form",
+   "light": "E",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     46,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "sw-layer",
+   "action": "newCellsLayer",
+   "rename": "sw"
+  },
+  {
+   "name": "sw-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     10,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "sw-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "sw",
+   "action": "form",
+   "light": "SW",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     10,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "s-layer",
+   "action": "newCellsLayer",
+   "rename": "s"
+  },
+  {
+   "name": "s-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     28,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "s-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "s",
+   "action": "form",
+   "light": "S",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     28,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "se-layer",
+   "action": "newCellsLayer",
+   "rename": "se"
+  },
+  {
+   "name": "se-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     46,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "se-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "se",
+   "action": "form",
+   "light": "SE",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     46,
+     22
+    ]
+   ]
+  }
+ ]
+}

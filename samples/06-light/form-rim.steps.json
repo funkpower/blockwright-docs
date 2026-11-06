@@ -1,0 +1,116 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-52x13.ans"
+ },
+ "steps": [
+  {
+   "name": "label-off",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    4,
+    12
+   ],
+   "text": "Form rim light off"
+  },
+  {
+   "name": "label-on",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    31,
+    12
+   ],
+   "text": "Form rim light on"
+  },
+  {
+   "name": "off-layer",
+   "action": "newCellsLayer",
+   "rename": "off"
+  },
+  {
+   "name": "off-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 20,
+   "tip": "round",
+   "points": [
+    [
+     13,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "off-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "off",
+   "action": "form",
+   "light": "NE",
+   "strength": 1,
+   "size": 30,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     13,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "on-layer",
+   "action": "newCellsLayer",
+   "rename": "on"
+  },
+  {
+   "name": "on-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 20,
+   "tip": "round",
+   "points": [
+    [
+     39,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "on-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "on",
+   "action": "form",
+   "light": "NE",
+   "strength": 1,
+   "size": 30,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": true,
+    "specular": true
+   },
+   "points": [
+    [
+     39,
+     6
+    ]
+   ]
+  }
+ ]
+}

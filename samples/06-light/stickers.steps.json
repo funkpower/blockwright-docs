@@ -1,0 +1,232 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-60x20.ans"
+ },
+ "steps": [
+  {
+   "name": "sky-select",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    59,
+    19
+   ]
+  },
+  {
+   "name": "sky",
+   "action": "gradient",
+   "ramp": "sea",
+   "gradient": {
+    "shape": "radial",
+    "banding": "cells",
+    "from": 10,
+    "to": 2
+   },
+   "from": [
+    59,
+    0
+   ],
+   "to": [
+    0,
+    19
+   ]
+  },
+  {
+   "name": "sky-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "hills-layer",
+   "action": "newCellsLayer",
+   "rename": "hills"
+  },
+  {
+   "name": "hill-1",
+   "action": "rampShade",
+   "ramp": "grass",
+   "strength": 1,
+   "size": 36,
+   "tip": "round",
+   "points": [
+    [
+     14,
+     19
+    ]
+   ]
+  },
+  {
+   "name": "hill-2",
+   "action": "rampShade",
+   "size": 44,
+   "points": [
+    [
+     48,
+     19
+    ]
+   ]
+  },
+  {
+   "name": "hills-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "hills",
+   "action": "gradient",
+   "gradient": {
+    "shape": "linear",
+    "banding": "cells",
+    "from": 3,
+    "to": 6
+   },
+   "from": [
+    0,
+    19
+   ],
+   "to": [
+    0,
+    10
+   ]
+  },
+  {
+   "name": "hills-rim",
+   "action": "rimLight",
+   "light": "NE",
+   "size": 64,
+   "tip": "square",
+   "keepLint": true,
+   "points": [
+    [
+     30,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "boulder-layer",
+   "action": "newCellsLayer",
+   "rename": "boulder"
+  },
+  {
+   "name": "boulder-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 28,
+   "tip": "round",
+   "points": [
+    [
+     42,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "boulder-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "boulder",
+   "action": "form",
+   "light": "NE",
+   "strength": 1,
+   "size": 38,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     42,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "stone-layer",
+   "action": "newCellsLayer",
+   "rename": "stone"
+  },
+  {
+   "name": "stone-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 16,
+   "tip": "round",
+   "points": [
+    [
+     14,
+     14
+    ]
+   ]
+  },
+  {
+   "name": "stone-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "stone",
+   "action": "form",
+   "light": "NE",
+   "strength": 1,
+   "size": 26,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": true,
+    "specular": false
+   },
+   "points": [
+    [
+     14,
+     14
+    ]
+   ]
+  },
+  {
+   "name": "boulder-rim",
+   "action": "setActiveLayer",
+   "layer": "boulder"
+  },
+  {
+   "name": "boulder-rimmed",
+   "action": "rimLight",
+   "light": "NE",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     30,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "stone-rim",
+   "action": "setActiveLayer",
+   "layer": "stone"
+  },
+  {
+   "name": "stone-rimmed",
+   "action": "rimLight",
+   "light": "NE",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     30,
+     12
+    ]
+   ]
+  }
+ ]
+}

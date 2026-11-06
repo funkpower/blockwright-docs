@@ -1,0 +1,648 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-54x28.ans"
+ },
+ "steps": [
+  {
+   "name": "label-nw",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    9,
+    9
+   ],
+   "text": "NW"
+  },
+  {
+   "name": "label-n",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    28,
+    9
+   ],
+   "text": "N"
+  },
+  {
+   "name": "label-ne",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    45,
+    9
+   ],
+   "text": "NE"
+  },
+  {
+   "name": "label-w",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    10,
+    18
+   ],
+   "text": "W"
+  },
+  {
+   "name": "label-middle",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    24,
+    13
+   ],
+   "text": "light from"
+  },
+  {
+   "name": "label-e",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    46,
+    18
+   ],
+   "text": "E"
+  },
+  {
+   "name": "label-sw",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    9,
+    27
+   ],
+   "text": "SW"
+  },
+  {
+   "name": "label-s",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    28,
+    27
+   ],
+   "text": "S"
+  },
+  {
+   "name": "label-se",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    45,
+    27
+   ],
+   "text": "SE"
+  },
+  {
+   "name": "discs-layer",
+   "action": "newCellsLayer",
+   "rename": "discs"
+  },
+  {
+   "name": "disc-nw-select",
+   "action": "select",
+   "rect": [
+    3,
+    1,
+    17,
+    7
+   ]
+  },
+  {
+   "name": "disc-nw-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     10,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "disc-nw",
+   "action": "rampShade",
+   "points": [
+    [
+     10,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "disc-nw-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-nw-select",
+   "action": "select",
+   "rect": [
+    3,
+    1,
+    17,
+    7
+   ]
+  },
+  {
+   "name": "rim-nw",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     10,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "rim-nw-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "disc-n-select",
+   "action": "select",
+   "rect": [
+    21,
+    1,
+    35,
+    7
+   ]
+  },
+  {
+   "name": "disc-n-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     28,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "disc-n",
+   "action": "rampShade",
+   "points": [
+    [
+     28,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "disc-n-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-n-select",
+   "action": "select",
+   "rect": [
+    21,
+    1,
+    35,
+    7
+   ]
+  },
+  {
+   "name": "rim-n",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "N",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     28,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "rim-n-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "disc-ne-select",
+   "action": "select",
+   "rect": [
+    39,
+    1,
+    53,
+    7
+   ]
+  },
+  {
+   "name": "disc-ne-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     46,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "disc-ne",
+   "action": "rampShade",
+   "points": [
+    [
+     46,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "disc-ne-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-ne-select",
+   "action": "select",
+   "rect": [
+    39,
+    1,
+    53,
+    7
+   ]
+  },
+  {
+   "name": "rim-ne",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "NE",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     46,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "rim-ne-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "disc-w-select",
+   "action": "select",
+   "rect": [
+    3,
+    10,
+    17,
+    16
+   ]
+  },
+  {
+   "name": "disc-w-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     10,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "disc-w",
+   "action": "rampShade",
+   "points": [
+    [
+     10,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "disc-w-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-w-select",
+   "action": "select",
+   "rect": [
+    3,
+    10,
+    17,
+    16
+   ]
+  },
+  {
+   "name": "rim-w",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "W",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     10,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "rim-w-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "disc-e-select",
+   "action": "select",
+   "rect": [
+    39,
+    10,
+    53,
+    16
+   ]
+  },
+  {
+   "name": "disc-e-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     46,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "disc-e",
+   "action": "rampShade",
+   "points": [
+    [
+     46,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "disc-e-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-e-select",
+   "action": "select",
+   "rect": [
+    39,
+    10,
+    53,
+    16
+   ]
+  },
+  {
+   "name": "rim-e",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "E",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     46,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "rim-e-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "disc-sw-select",
+   "action": "select",
+   "rect": [
+    3,
+    19,
+    17,
+    25
+   ]
+  },
+  {
+   "name": "disc-sw-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     10,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "disc-sw",
+   "action": "rampShade",
+   "points": [
+    [
+     10,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "disc-sw-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-sw-select",
+   "action": "select",
+   "rect": [
+    3,
+    19,
+    17,
+    25
+   ]
+  },
+  {
+   "name": "rim-sw",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "SW",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     10,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "rim-sw-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "disc-s-select",
+   "action": "select",
+   "rect": [
+    21,
+    19,
+    35,
+    25
+   ]
+  },
+  {
+   "name": "disc-s-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     28,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "disc-s",
+   "action": "rampShade",
+   "points": [
+    [
+     28,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "disc-s-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-s-select",
+   "action": "select",
+   "rect": [
+    21,
+    19,
+    35,
+    25
+   ]
+  },
+  {
+   "name": "rim-s",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "S",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     28,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "rim-s-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "disc-se-select",
+   "action": "select",
+   "rect": [
+    39,
+    19,
+    53,
+    25
+   ]
+  },
+  {
+   "name": "disc-se-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     46,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "disc-se",
+   "action": "rampShade",
+   "points": [
+    [
+     46,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "disc-se-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-se-select",
+   "action": "select",
+   "rect": [
+    39,
+    19,
+    53,
+    25
+   ]
+  },
+  {
+   "name": "rim-se",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "SE",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     46,
+     22
+    ]
+   ]
+  },
+  {
+   "name": "rim-se-deselect",
+   "action": "deselect"
+  }
+ ]
+}

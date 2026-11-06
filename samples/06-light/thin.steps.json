@@ -1,0 +1,303 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-36x12.ans"
+ },
+ "steps": [
+  {
+   "name": "label-stems",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    4,
+    10
+   ],
+   "text": "stems"
+  },
+  {
+   "name": "label-bars",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    22,
+    10
+   ],
+   "text": "bars"
+  },
+  {
+   "name": "thin-layer",
+   "action": "newCellsLayer",
+   "rename": "thin"
+  },
+  {
+   "name": "stem-1-select",
+   "action": "select",
+   "rect": [
+    5,
+    1,
+    5,
+    8
+   ]
+  },
+  {
+   "name": "stem-1-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     5,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "stem-1",
+   "action": "rampShade",
+   "points": [
+    [
+     5,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "stem-1-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "stem-2-select",
+   "action": "select",
+   "rect": [
+    11,
+    1,
+    12,
+    8
+   ]
+  },
+  {
+   "name": "stem-2-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     11,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "stem-2",
+   "action": "rampShade",
+   "points": [
+    [
+     11,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "stem-2-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "bar-1-select",
+   "action": "select",
+   "rect": [
+    18,
+    2,
+    31,
+    2
+   ]
+  },
+  {
+   "name": "bar-1-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     24,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "bar-1",
+   "action": "rampShade",
+   "points": [
+    [
+     24,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "bar-1-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "bar-2-select",
+   "action": "select",
+   "rect": [
+    18,
+    6,
+    31,
+    7
+   ]
+  },
+  {
+   "name": "bar-2-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     24,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "bar-2",
+   "action": "rampShade",
+   "points": [
+    [
+     24,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "bar-2-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-stem-1-select",
+   "action": "select",
+   "rect": [
+    5,
+    1,
+    5,
+    8
+   ]
+  },
+  {
+   "name": "rim-stem-1",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     5,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "rim-stem-1-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-stem-2-select",
+   "action": "select",
+   "rect": [
+    11,
+    1,
+    12,
+    8
+   ]
+  },
+  {
+   "name": "rim-stem-2",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     11,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "rim-stem-2-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-bar-1-select",
+   "action": "select",
+   "rect": [
+    18,
+    2,
+    31,
+    2
+   ]
+  },
+  {
+   "name": "rim-bar-1",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     24,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "rim-bar-1-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-bar-2-select",
+   "action": "select",
+   "rect": [
+    18,
+    6,
+    31,
+    7
+   ]
+  },
+  {
+   "name": "rim-bar-2",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     24,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "rim-bar-2-deselect",
+   "action": "deselect"
+  }
+ ]
+}

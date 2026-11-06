@@ -1,0 +1,120 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-20x10.ans"
+ },
+ "steps": [
+  {
+   "name": "box-layer",
+   "action": "newCellsLayer",
+   "rename": "box"
+  },
+  {
+   "name": "box-select",
+   "action": "select",
+   "rect": [
+    3,
+    1,
+    16,
+    8
+   ]
+  },
+  {
+   "name": "box-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     9,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "box",
+   "action": "rampShade",
+   "points": [
+    [
+     9,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "box-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "hole-select",
+   "action": "select",
+   "rect": [
+    9,
+    4,
+    9,
+    4
+   ]
+  },
+  {
+   "name": "hole-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "button": "right",
+   "strength": 1,
+   "size": 1,
+   "tip": "square",
+   "points": [
+    [
+     9,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "hole",
+   "action": "rampShade",
+   "button": "right",
+   "points": [
+    [
+     9,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "hole-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-select",
+   "action": "select",
+   "rect": [
+    3,
+    1,
+    16,
+    8
+   ]
+  },
+  {
+   "name": "rim",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     9,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "rim-deselect",
+   "action": "deselect"
+  }
+ ]
+}

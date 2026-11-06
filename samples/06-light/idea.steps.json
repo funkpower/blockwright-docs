@@ -1,0 +1,202 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-72x10.ans"
+ },
+ "steps": [
+  {
+   "name": "label-one",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    13,
+    9
+   ],
+   "text": "one light"
+  },
+  {
+   "name": "label-two",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    49,
+    9
+   ],
+   "text": "two lights"
+  },
+  {
+   "name": "a-layer",
+   "action": "newCellsLayer",
+   "rename": "a"
+  },
+  {
+   "name": "a-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     9,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "a-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "a",
+   "action": "form",
+   "light": "NW",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     9,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "b-layer",
+   "action": "newCellsLayer",
+   "rename": "b"
+  },
+  {
+   "name": "b-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     27,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "b-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "b",
+   "action": "form",
+   "light": "NW",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     27,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "c-layer",
+   "action": "newCellsLayer",
+   "rename": "c"
+  },
+  {
+   "name": "c-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     45,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "c-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "c",
+   "action": "form",
+   "light": "NW",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     45,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "d-layer",
+   "action": "newCellsLayer",
+   "rename": "d"
+  },
+  {
+   "name": "d-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     63,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "d-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "d",
+   "action": "form",
+   "light": "NE",
+   "strength": 1,
+   "size": 24,
+   "tip": "square",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "points": [
+    [
+     63,
+     4
+    ]
+   ]
+  }
+ ]
+}

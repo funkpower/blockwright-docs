@@ -1,0 +1,80 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-25x11.ans"
+ },
+ "steps": [
+  {
+   "name": "disc-layer",
+   "action": "newCellsLayer",
+   "rename": "disc"
+  },
+  {
+   "name": "disc-select",
+   "action": "select",
+   "rect": [
+    5,
+    1,
+    19,
+    9
+   ]
+  },
+  {
+   "name": "disc-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 14,
+   "tip": "round",
+   "points": [
+    [
+     12,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "disc",
+   "action": "rampShade",
+   "points": [
+    [
+     12,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "disc-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-select",
+   "action": "select",
+   "rect": [
+    5,
+    1,
+    19,
+    9
+   ]
+  },
+  {
+   "name": "rim",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     12,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "rim-deselect",
+   "action": "deselect"
+  }
+ ]
+}

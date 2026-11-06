@@ -1,0 +1,147 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-30x10.ans"
+ },
+ "steps": [
+  {
+   "name": "boxes-layer",
+   "action": "newCellsLayer",
+   "rename": "boxes"
+  },
+  {
+   "name": "edge-select",
+   "action": "select",
+   "rect": [
+    0,
+    2,
+    5,
+    7
+   ]
+  },
+  {
+   "name": "edge-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     2,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "edge",
+   "action": "rampShade",
+   "points": [
+    [
+     2,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "edge-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "inside-select",
+   "action": "select",
+   "rect": [
+    14,
+    2,
+    19,
+    7
+   ]
+  },
+  {
+   "name": "inside-1",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     16,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "inside",
+   "action": "rampShade",
+   "points": [
+    [
+     16,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "inside-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-edge-select",
+   "action": "select",
+   "rect": [
+    0,
+    2,
+    5,
+    7
+   ]
+  },
+  {
+   "name": "rim-edge",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "E",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     2,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "rim-edge-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "rim-inside-select",
+   "action": "select",
+   "rect": [
+    14,
+    2,
+    19,
+    7
+   ]
+  },
+  {
+   "name": "rim-inside",
+   "action": "rimLight",
+   "ramp": "steel",
+   "light": "E",
+   "size": 64,
+   "tip": "square",
+   "keepLint": false,
+   "points": [
+    [
+     16,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "rim-inside-deselect",
+   "action": "deselect"
+  }
+ ]
+}
