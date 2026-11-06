@@ -1,0 +1,128 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-42x10.ans"
+ },
+ "steps": [
+  {
+   "name": "field-select",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    41,
+    8
+   ]
+  },
+  {
+   "name": "field-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     20,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "field",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     20,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "field-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "label-1",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    5,
+    9
+   ],
+   "text": "0%"
+  },
+  {
+   "name": "soft-1",
+   "action": "soft",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 11,
+   "tip": "round",
+   "hardness": 0,
+   "points": [
+    [
+     6,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "label-2",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    19,
+    9
+   ],
+   "text": "50%"
+  },
+  {
+   "name": "soft-2",
+   "action": "soft",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 11,
+   "tip": "round",
+   "hardness": 0.5,
+   "points": [
+    [
+     20,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "label-3",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    33,
+    9
+   ],
+   "text": "100%"
+  },
+  {
+   "name": "soft-3",
+   "action": "soft",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 11,
+   "tip": "round",
+   "hardness": 1,
+   "points": [
+    [
+     34,
+     4
+    ]
+   ]
+  }
+ ]
+}

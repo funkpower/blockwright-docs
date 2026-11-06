@@ -1,0 +1,27 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-52x18.ans"
+ },
+ "steps": [
+  {
+   "name": "wall",
+   "action": "gradient",
+   "ramp": "violet",
+   "gradient": {
+    "shape": "radial",
+    "banding": "cells",
+    "from": 8,
+    "to": 1
+   },
+   "from": [
+    0,
+    0
+   ],
+   "to": [
+    40,
+    11
+   ]
+  }
+ ]
+}

@@ -1,0 +1,170 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-44x13.ans"
+ },
+ "steps": [
+  {
+   "name": "label-clicks",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    2,
+    12
+   ],
+   "text": "ramp shade clicks"
+  },
+  {
+   "name": "label-form",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    29,
+    12
+   ],
+   "text": "form brush"
+  },
+  {
+   "name": "clicks-layer",
+   "action": "newCellsLayer",
+   "rename": "clicks"
+  },
+  {
+   "name": "clicks-disc",
+   "action": "rampShade",
+   "ramp": "fire",
+   "strength": 0.25,
+   "size": 20,
+   "tip": "round",
+   "points": [
+    [
+     11,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "clicks-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "lit-1",
+   "action": "rampShade",
+   "size": 29,
+   "points": [
+    [
+     6,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "lit-2",
+   "action": "rampShade",
+   "size": 25,
+   "points": [
+    [
+     6,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "lit-3",
+   "action": "rampShade",
+   "size": 21,
+   "points": [
+    [
+     6,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "lit-4",
+   "action": "rampShade",
+   "size": 17,
+   "points": [
+    [
+     6,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "lit-5",
+   "action": "rampShade",
+   "size": 13,
+   "points": [
+    [
+     6,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "lit-6",
+   "action": "rampShade",
+   "size": 9,
+   "points": [
+    [
+     6,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "lit-7",
+   "action": "rampShade",
+   "size": 7,
+   "points": [
+    [
+     6,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "form-layer",
+   "action": "newCellsLayer",
+   "rename": "form"
+  },
+  {
+   "name": "form-disc",
+   "action": "rampShade",
+   "ramp": "fire",
+   "strength": 0.25,
+   "size": 20,
+   "tip": "round",
+   "points": [
+    [
+     33,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "form-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "form",
+   "action": "form",
+   "strength": 1,
+   "size": 30,
+   "form": {
+    "shape": "dome"
+   },
+   "points": [
+    [
+     33,
+     6
+    ]
+   ]
+  }
+ ]
+}

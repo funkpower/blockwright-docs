@@ -1,0 +1,347 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-52x18.ans"
+ },
+ "steps": [
+  {
+   "name": "wall-select",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    51,
+    11
+   ]
+  },
+  {
+   "name": "wall",
+   "action": "gradient",
+   "ramp": "violet",
+   "gradient": {
+    "shape": "radial",
+    "banding": "cells",
+    "from": 8,
+    "to": 1
+   },
+   "from": [
+    0,
+    0
+   ],
+   "to": [
+    40,
+    11
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      905
+     ]
+    }
+   }
+  },
+  {
+   "name": "floor-select",
+   "action": "select",
+   "rect": [
+    0,
+    12,
+    51,
+    17
+   ]
+  },
+  {
+   "name": "floor",
+   "action": "gradient",
+   "ramp": "wood",
+   "gradient": {
+    "shape": "linear",
+    "banding": "cells",
+    "from": 8,
+    "to": 4
+   },
+   "from": [
+    16,
+    12
+   ],
+   "to": [
+    51,
+    12
+   ]
+  },
+  {
+   "name": "deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "pillar-layer",
+   "action": "newCellsLayer",
+   "rename": "pillar"
+  },
+  {
+   "name": "pillar-select",
+   "action": "select",
+   "rect": [
+    6,
+    1,
+    15,
+    14
+   ]
+  },
+  {
+   "name": "pillar-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "size": 30,
+   "tip": "square",
+   "points": [
+    [
+     10,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "pillar",
+   "action": "form",
+   "strength": 1,
+   "form": {
+    "shape": "cylinder"
+   },
+   "points": [
+    [
+     10,
+     7
+    ]
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      862
+     ]
+    }
+   }
+  },
+  {
+   "name": "pillar-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "ball-layer",
+   "action": "newCellsLayer",
+   "rename": "ball"
+  },
+  {
+   "name": "ball-base",
+   "action": "rampShade",
+   "ramp": "sea",
+   "strength": 0.25,
+   "size": 22,
+   "tip": "round",
+   "points": [
+    [
+     35,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "lock",
+   "action": "layerProperties",
+   "alphaLocked": true,
+   "screenshot": {
+    "of": "layers",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      310,
+      205
+     ]
+    }
+   }
+  },
+  {
+   "name": "ball",
+   "action": "form",
+   "strength": 1,
+   "size": 30,
+   "form": {
+    "shape": "dome"
+   },
+   "points": [
+    [
+     35,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "floor-layer",
+   "action": "setActiveLayer",
+   "layer": "Background"
+  },
+  {
+   "name": "shadow-1",
+   "action": "soft",
+   "ramp": "wood",
+   "strength": 0.5,
+   "size": 8,
+   "tip": "round",
+   "hardness": 0,
+   "button": "right",
+   "points": [
+    [
+     17,
+     14
+    ],
+    [
+     21,
+     14
+    ]
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      752
+     ]
+    }
+   }
+  },
+  {
+   "name": "shadow-2",
+   "action": "soft",
+   "button": "right",
+   "points": [
+    [
+     48,
+     15
+    ],
+    [
+     51,
+     15
+    ]
+   ]
+  },
+  {
+   "name": "smudge",
+   "action": "smudge",
+   "strength": 0.5,
+   "size": 2,
+   "tip": "square",
+   "points": [
+    [
+     21,
+     14
+    ],
+    [
+     27,
+     14
+    ]
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      682
+     ]
+    }
+   }
+  },
+  {
+   "name": "wear-1",
+   "action": "rampShade",
+   "strength": 0.25,
+   "size": 1,
+   "tip": "square",
+   "points": [
+    [
+     3,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "wear-2",
+   "action": "rampShade",
+   "button": "right",
+   "points": [
+    [
+     11,
+     16
+    ]
+   ]
+  },
+  {
+   "name": "wear-3",
+   "action": "rampShade",
+   "points": [
+    [
+     36,
+     16
+    ],
+    [
+     37,
+     16
+    ]
+   ],
+   "screenshot": {
+    "of": "lint"
+   }
+  },
+  {
+   "name": "despeckle",
+   "action": "despeckle",
+   "size": 12,
+   "tip": "square",
+   "points": [
+    [
+     0,
+     15
+    ],
+    [
+     51,
+     15
+    ]
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      667
+     ]
+    }
+   }
+  },
+  {
+   "name": "check",
+   "action": "deselect",
+   "screenshot": {
+    "of": "lint"
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

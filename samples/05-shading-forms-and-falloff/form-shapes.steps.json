@@ -1,0 +1,189 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-56x13.ans"
+ },
+ "steps": [
+  {
+   "name": "label-dome",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    7,
+    12
+   ],
+   "text": "dome"
+  },
+  {
+   "name": "label-cylinder",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    22,
+    12
+   ],
+   "text": "cylinder"
+  },
+  {
+   "name": "label-plane",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    43,
+    12
+   ],
+   "text": "plane"
+  },
+  {
+   "name": "dome-layer",
+   "action": "newCellsLayer",
+   "rename": "dome"
+  },
+  {
+   "name": "dome-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 16,
+   "tip": "round",
+   "points": [
+    [
+     9,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "dome-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "dome",
+   "action": "form",
+   "strength": 1,
+   "size": 30,
+   "tip": "square",
+   "form": {
+    "shape": "dome"
+   },
+   "points": [
+    [
+     9,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "cylinder-layer",
+   "action": "newCellsLayer",
+   "rename": "cylinder"
+  },
+  {
+   "name": "cylinder-select",
+   "action": "select",
+   "rect": [
+    22,
+    1,
+    30,
+    11
+   ]
+  },
+  {
+   "name": "cylinder-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 30,
+   "tip": "square",
+   "points": [
+    [
+     26,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "cylinder-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "cylinder-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "cylinder",
+   "action": "form",
+   "strength": 1,
+   "size": 30,
+   "tip": "square",
+   "form": {
+    "shape": "cylinder"
+   },
+   "points": [
+    [
+     26,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "plane-layer",
+   "action": "newCellsLayer",
+   "rename": "plane"
+  },
+  {
+   "name": "plane-select",
+   "action": "select",
+   "rect": [
+    38,
+    2,
+    52,
+    10
+   ]
+  },
+  {
+   "name": "plane-base",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 30,
+   "tip": "square",
+   "points": [
+    [
+     45,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "plane-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "plane-lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "plane",
+   "action": "form",
+   "strength": 1,
+   "size": 30,
+   "tip": "square",
+   "form": {
+    "shape": "plane"
+   },
+   "points": [
+    [
+     45,
+     6
+    ]
+   ]
+  }
+ ]
+}

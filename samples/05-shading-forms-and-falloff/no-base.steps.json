@@ -1,0 +1,92 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-52x18.ans"
+ },
+ "steps": [
+  {
+   "name": "wall-select",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    51,
+    11
+   ]
+  },
+  {
+   "name": "wall",
+   "action": "gradient",
+   "ramp": "violet",
+   "gradient": {
+    "shape": "radial",
+    "banding": "cells",
+    "from": 8,
+    "to": 1
+   },
+   "from": [
+    0,
+    0
+   ],
+   "to": [
+    40,
+    11
+   ]
+  },
+  {
+   "name": "floor-select",
+   "action": "select",
+   "rect": [
+    0,
+    12,
+    51,
+    17
+   ]
+  },
+  {
+   "name": "floor",
+   "action": "gradient",
+   "ramp": "wood",
+   "gradient": {
+    "shape": "linear",
+    "banding": "cells",
+    "from": 8,
+    "to": 4
+   },
+   "from": [
+    16,
+    12
+   ],
+   "to": [
+    51,
+    12
+   ]
+  },
+  {
+   "name": "deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "ball-layer",
+   "action": "newCellsLayer",
+   "rename": "ball"
+  },
+  {
+   "name": "ball",
+   "action": "form",
+   "strength": 1,
+   "size": 22,
+   "form": {
+    "shape": "dome"
+   },
+   "points": [
+    [
+     35,
+     10
+    ]
+   ],
+   "ramp": "sea",
+   "tip": "round"
+  }
+ ]
+}

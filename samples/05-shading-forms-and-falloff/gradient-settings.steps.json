@@ -1,0 +1,132 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-48x11.ans"
+ },
+ "steps": [
+  {
+   "name": "label-1",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    0,
+    1
+   ],
+   "text": "linear"
+  },
+  {
+   "name": "select-1",
+   "action": "select",
+   "rect": [
+    12,
+    0,
+    47,
+    2
+   ]
+  },
+  {
+   "name": "fill-1",
+   "action": "gradient",
+   "ramp": "violet",
+   "gradient": {
+    "shape": "linear",
+    "banding": "cells",
+    "from": 0,
+    "to": 12
+   },
+   "from": [
+    12,
+    1
+   ],
+   "to": [
+    47,
+    1
+   ]
+  },
+  {
+   "name": "label-2",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    0,
+    5
+   ],
+   "text": "radial"
+  },
+  {
+   "name": "select-2",
+   "action": "select",
+   "rect": [
+    12,
+    4,
+    47,
+    6
+   ]
+  },
+  {
+   "name": "fill-2",
+   "action": "gradient",
+   "ramp": "violet",
+   "gradient": {
+    "shape": "radial",
+    "banding": "cells",
+    "from": 12,
+    "to": 0
+   },
+   "from": [
+    30,
+    5
+   ],
+   "to": [
+    47,
+    5
+   ]
+  },
+  {
+   "name": "label-3",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    0,
+    9
+   ],
+   "text": "rung 4 to 8"
+  },
+  {
+   "name": "select-3",
+   "action": "select",
+   "rect": [
+    12,
+    8,
+    47,
+    10
+   ]
+  },
+  {
+   "name": "fill-3",
+   "action": "gradient",
+   "ramp": "violet",
+   "gradient": {
+    "shape": "linear",
+    "banding": "cells",
+    "from": 4,
+    "to": 8
+   },
+   "from": [
+    12,
+    9
+   ],
+   "to": [
+    47,
+    9
+   ]
+  },
+  {
+   "name": "deselect",
+   "action": "deselect"
+  }
+ ]
+}

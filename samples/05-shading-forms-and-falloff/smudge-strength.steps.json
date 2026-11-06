@@ -1,0 +1,460 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-45x7.ans"
+ },
+ "steps": [
+  {
+   "name": "label-1",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    0,
+    0
+   ],
+   "text": "25%"
+  },
+  {
+   "name": "left-1-select",
+   "action": "select",
+   "rect": [
+    5,
+    0,
+    24,
+    0
+   ]
+  },
+  {
+   "name": "left-1-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     14,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "left-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     14,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "left-1-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "right-1-select",
+   "action": "select",
+   "rect": [
+    25,
+    0,
+    44,
+    0
+   ]
+  },
+  {
+   "name": "right-1-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     34,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "right-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 0.5,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     34,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "right-1-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "smudge-1",
+   "action": "smudge",
+   "ramp": "wood",
+   "strength": 0.25,
+   "size": 1,
+   "tip": "square",
+   "points": [
+    [
+     21,
+     0
+    ],
+    [
+     35,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "label-2",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    0,
+    2
+   ],
+   "text": "50%"
+  },
+  {
+   "name": "left-2-select",
+   "action": "select",
+   "rect": [
+    5,
+    2,
+    24,
+    2
+   ]
+  },
+  {
+   "name": "left-2-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     14,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "left-2",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     14,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "left-2-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "right-2-select",
+   "action": "select",
+   "rect": [
+    25,
+    2,
+    44,
+    2
+   ]
+  },
+  {
+   "name": "right-2-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     34,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "right-2",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 0.5,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     34,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "right-2-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "smudge-2",
+   "action": "smudge",
+   "ramp": "wood",
+   "strength": 0.5,
+   "size": 1,
+   "tip": "square",
+   "points": [
+    [
+     21,
+     2
+    ],
+    [
+     35,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "label-3",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    0,
+    4
+   ],
+   "text": "75%"
+  },
+  {
+   "name": "left-3-select",
+   "action": "select",
+   "rect": [
+    5,
+    4,
+    24,
+    4
+   ]
+  },
+  {
+   "name": "left-3-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "left-3",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "left-3-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "right-3-select",
+   "action": "select",
+   "rect": [
+    25,
+    4,
+    44,
+    4
+   ]
+  },
+  {
+   "name": "right-3-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     34,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "right-3",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 0.5,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     34,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "right-3-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "smudge-3",
+   "action": "smudge",
+   "ramp": "wood",
+   "strength": 0.75,
+   "size": 1,
+   "tip": "square",
+   "points": [
+    [
+     21,
+     4
+    ],
+    [
+     35,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "label-4",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "at": [
+    0,
+    6
+   ],
+   "text": "100%"
+  },
+  {
+   "name": "left-4-select",
+   "action": "select",
+   "rect": [
+    5,
+    6,
+    24,
+    6
+   ]
+  },
+  {
+   "name": "left-4-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     14,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "left-4",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     14,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "left-4-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "right-4-select",
+   "action": "select",
+   "rect": [
+    25,
+    6,
+    44,
+    6
+   ]
+  },
+  {
+   "name": "right-4-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     34,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "right-4",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 0.5,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     34,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "right-4-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "smudge-4",
+   "action": "smudge",
+   "ramp": "wood",
+   "strength": 1.0,
+   "size": 1,
+   "tip": "square",
+   "points": [
+    [
+     21,
+     6
+    ],
+    [
+     35,
+     6
+    ]
+   ]
+  }
+ ]
+}

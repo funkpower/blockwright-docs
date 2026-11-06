@@ -1,0 +1,47 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-26x13.ans"
+ },
+ "steps": [
+  {
+   "name": "disc-layer",
+   "action": "newCellsLayer",
+   "rename": "disc"
+  },
+  {
+   "name": "disc",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 1,
+   "size": 20,
+   "tip": "round",
+   "points": [
+    [
+     12,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "lock",
+   "action": "layerProperties",
+   "alphaLocked": true
+  },
+  {
+   "name": "form",
+   "action": "form",
+   "strength": 0.25,
+   "size": 30,
+   "form": {
+    "shape": "dome"
+   },
+   "points": [
+    [
+     12,
+     6
+    ]
+   ]
+  }
+ ]
+}

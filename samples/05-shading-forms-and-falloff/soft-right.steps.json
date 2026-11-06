@@ -1,0 +1,66 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-30x9.ans"
+ },
+ "steps": [
+  {
+   "name": "field-select",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    29,
+    8
+   ]
+  },
+  {
+   "name": "field-1",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "field",
+   "action": "rampShade",
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     14,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "field-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "soft",
+   "action": "soft",
+   "ramp": "wood",
+   "strength": 0.5,
+   "size": 11,
+   "tip": "round",
+   "hardness": 0,
+   "points": [
+    [
+     14,
+     4
+    ]
+   ],
+   "button": "right"
+  }
+ ]
+}

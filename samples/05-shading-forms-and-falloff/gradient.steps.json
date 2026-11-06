@@ -1,0 +1,64 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-36x3.ans"
+ },
+ "steps": [
+  {
+   "name": "bar-select",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    35,
+    2
+   ]
+  },
+  {
+   "name": "bar",
+   "action": "rampShade",
+   "ramp": "violet",
+   "strength": 1,
+   "size": 64,
+   "tip": "square",
+   "points": [
+    [
+     17,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "bar-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "select",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    35,
+    2
+   ]
+  },
+  {
+   "name": "gradient",
+   "action": "gradient",
+   "gradient": {
+    "shape": "linear",
+    "banding": "cells",
+    "from": 0,
+    "to": 12
+   },
+   "from": [
+    0,
+    0
+   ],
+   "to": [
+    35,
+    0
+   ]
+  }
+ ]
+}
