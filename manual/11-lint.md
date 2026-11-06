@@ -372,7 +372,7 @@ $ blockwright-cli lint trailing-black.ans
 2 findings (2 trailing-black), noise 0.0000, iCE on
 ```
 
-**Fix:** end the row with something that isn't black, or export with Pad Lines on, which ends each row on a black-on-black block so IRC keeps the black.
+**Fix:** end the row with something that isn't black, or export with **View > IRC > Pad Lines** (no shortcut) on, which keeps the trailing black and writes a row's last cell, when it is a glyph of one code point that shows black alone and isn't bold, italic or underlined (not a letter with a combining mark, nor the right cell of a wide glyph that IRC text writes whole), as a `█` with a black foreground and no background code of its own, which a client can't trim ([Making rows fit](10-irc.md#making-rows-fit)).
 
 ### blank-edge-rows
 
@@ -387,7 +387,7 @@ $ blockwright-cli lint blank-edge-rows.ans
 2 findings (2 blank-edge-rows), noise 0.0000, iCE on
 ```
 
-**Fix:** crop the canvas to the art, or keep the margin with a black-on-black block in each row (Pad Lines does it on export).
+**Fix:** crop the canvas to the art, or keep the margin with a black-on-black block in each row. **View > IRC > Pad Lines** (no shortcut) keeps the blank rows on export instead, and writes a row's last cell, when it is a glyph of one code point that shows black alone and isn't bold, italic or underlined (not a letter with a combining mark, nor the right cell of a wide glyph that IRC text writes whole), as a `█` with a black foreground ([Making rows fit](10-irc.md#making-rows-fit)).
 
 ### no-cp437
 
