@@ -1,5 +1,5 @@
 Title: Layers and projects
-Checked: Blockwright 0.1.0 (fd10778)
+Checked: Blockwright 0.1.0 (4b72bcc)
 
 # Layers and projects
 
@@ -43,7 +43,7 @@ A cell of a Cells layer is **opaque** or **transparent**. A transparent cell add
 
 A Pixels layer sets **halves**. On one with no layer style switched on, as both in this tutorial are, a cell with both halves set is a half-block cell of its own, and covers what is under it. Where it sets one half, and with iCE colours on, as this piece has them, the other half shows what is under it in that cell: the colour of that half under `█`, `▀`, `▄` or a space, the background under `░`, the foreground under `▓`, and under `▒` its darker colour in the top half and its lighter colour in the bottom one. Any other glyph, a star say, shows its background, and the glyph goes. So a pixel shape laid over shading ends without a speck, and a pixel shape over a star hides it. A layer style composites the layer as whole cells instead, so its free halves no longer show what is under them ([How the layers combine](../manual/07-layers.md#how-the-layers-combine)). With iCE colours off, a free half that would show a bright colour next to a bright pixel of another colour shows dark instead ([Pixels](../manual/07-layers.md#pixels) in the manual).
 
-The **mode** of a Cells, Text or Generator layer decides what its opaque cells write: **normal**, the whole cell, **chars-only**, the glyph alone, or **colours-only**, the colours alone. A Pixels layer ignores it. A new layer is normal, and the app has no control for it; the manual's [How the layers combine](../manual/07-layers.md#how-the-layers-combine) shows how to set it in the project file. Two more rules. A glyph a Text layer writes, in normal or chars-only mode, stays in front of any Pixels layer, above or below it, until a Cells or Generator layer above the text writes its own glyph there. And a Reference layer or a hidden layer is skipped.
+The **mode** of a Cells, Text or Generator layer decides what its opaque cells write: **normal**, the whole cell, **chars-only**, the glyph alone, or **colours-only**, the colours and formatting (bold, italic, underline, blink) alone. A Pixels layer ignores it. A new layer is normal, and the app has no control for it; the manual's [How the layers combine](../manual/07-layers.md#how-the-layers-combine) shows how to set it in the project file. Two more rules. A glyph a Text layer writes, in normal or chars-only mode, stays in front of any Pixels layer, above or below it, until a Cells or Generator layer above the text writes its own glyph there. And a Reference layer or a hidden layer is skipped.
 
 ### The project file
 
