@@ -1,0 +1,76 @@
+{
+ "version": 1,
+ "start": {
+  "file": "../07-detail/final.bwp"
+ },
+ "steps": [
+  {
+   "name": "background-active",
+   "action": "setActiveLayer",
+   "layer": "Background"
+  },
+  {
+   "name": "banners-layer",
+   "action": "newPixelLayer",
+   "rename": "banners",
+   "screenshot": {
+    "of": "layers",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      310,
+      205
+     ]
+    }
+   }
+  },
+  {
+   "name": "sides",
+   "action": "rectangle",
+   "fg": 1,
+   "filled": true,
+   "symmetry": "mirrorX",
+   "from": [
+    9,
+    18
+   ],
+   "to": [
+    11,
+    28
+   ]
+  },
+  {
+   "name": "middle",
+   "action": "rectangle",
+   "symmetry": "none",
+   "from": [
+    28,
+    18
+   ],
+   "to": [
+    31,
+    30
+   ]
+  },
+  {
+   "name": "raise",
+   "action": "raiseLayer",
+   "screenshot": {
+    "of": "layers",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      310,
+      205
+     ]
+    }
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

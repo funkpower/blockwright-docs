@@ -1,0 +1,27 @@
+{
+ "version": 1,
+ "start": {
+  "file": "final.ans"
+ },
+ "steps": [
+  {
+   "name": "opened",
+   "action": "deselect",
+   "screenshot": {
+    "of": "layers",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      310,
+      205
+     ]
+    }
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

@@ -33,7 +33,7 @@ A Pixels layer holds two half-block colours per cell (top and bottom), each eith
 
 Paint with the Half-Block Brush, Line, Rectangle, Ellipse or Fill. Other tools can only write a space, `█`, `▀` or `▄`; shade-producing tools and other glyphs are refused, and nothing is written.
 
-Set halves cover what is below; transparent halves show through, except on a layer with a layer style switched on ([How the layers combine](#how-the-layers-combine)). Where a half is transparent, the cell picks `▀` or `▄` and its colours so the free half shows what is under it: a pixel's own half, or the colour a shade cell mostly shows (`░` its background, `▓` its foreground, `▒` its darker colour), so a shape drawn over a shaded field doesn't leave specks at its edges. Text layers stay in front of pixels. Exports flatten these pixels into half-block glyphs and colours in the visible composite.
+Set halves cover what is below; transparent halves show through, except on a layer with a layer style switched on ([How the layers combine](#how-the-layers-combine)). Where a half is transparent, the cell picks `▀` or `▄` and its colours so the free half shows what is under it: a pixel's own half, or the colour a shade cell shows (`░` its background, `▓` its foreground, `▒` its darker colour in a free top half and its lighter colour in a free bottom half), so a shape drawn over a shaded field doesn't leave specks at its edges. With iCE colours off a cell shows only one bright colour, and the pixel keeps its own: where the pixel is bright and the free half would show a different bright colour, the free half goes dark, to that colour's dark version under `█`, `▀` or `▄` (yellow to brown, dark grey to black) and to the shade's background in its dark version under `▓` or `▒`. A blinking free half (iCE off, a half showing the cell's foreground) keeps its blink only where the pixel is dark and a different colour from it. A text cell stays in front of pixels ([Text](#text)). Exports flatten these pixels into half-block glyphs and colours in the visible composite.
 
 A cell erased on a Pixels layer is transparent, even when the layer is the bottom one.
 
@@ -43,7 +43,7 @@ A Text layer holds text rendered as glyph cells with foreground and background c
 
 Edit live text with the Text tool and Tool Options; painting tools cannot change it. Clicking a Text layer with the Text tool edits it; clicking anywhere else and typing starts a new Text layer there, named `Text N`, just above the active layer. Without a live text source, the cells can be painted like a Cells layer.
 
-Opaque text cells normally replace cells below and cannot be covered by Pixels layers, whichever is on top; transparent cells show through. A Cells layer above that writes its own glyph over a text cell makes it plain cells again. Exports flatten the visible rendered text into character cells.
+Opaque text cells normally replace cells below and cannot be covered by Pixels layers, whichever is on top; transparent cells show through. A Cells or Generator layer above that writes its own glyph over a text cell makes it plain cells again ([How the layers combine](#how-the-layers-combine)). Exports flatten the visible rendered text into character cells.
 
 ### Generator
 
@@ -131,7 +131,7 @@ Each cell of the canvas starts blank and takes each visible layer over it in tur
 
 There is no blending: a cell is opaque or transparent, and the mode decides which of its parts it writes.
 
-- A Pixels layer replaces the halves it sets and leaves the others showing what is under them, whatever its mode.
+- A Pixels layer replaces the halves it sets and leaves the others showing what is under them, whatever its mode; with iCE colours off, a free half that would be a second bright colour in the cell shows dark ([Pixels](#pixels)).
 - A Pixels layer with a layer style that has any effect switched on composites its styled cells instead, as whole cells in the normal mode, whatever its own mode. A styled cell is opaque, so where the layer sets only one half of a cell, the other half is black, not what is under it; a cell the style draws nothing in still shows what is under it. Its styled cells still never cover a text cell.
 - A cell that a Text layer writes its glyph to (normal or chars-only) is text, and stays in front of any Pixels layer, above or below it. A Cells or Generator layer that then writes its glyph there (normal or chars-only) makes it plain cells again; a colours-only one recolours it and leaves it text.
 - A Reference layer is skipped.

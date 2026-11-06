@@ -1,0 +1,53 @@
+{
+ "version": 1,
+ "start": {
+  "file": "banners.bwp"
+ },
+ "steps": [
+  {
+   "name": "background-active",
+   "action": "setActiveLayer",
+   "layer": "Background"
+  },
+  {
+   "name": "cloud-layer",
+   "action": "newCellsLayer",
+   "rename": "cloud"
+  },
+  {
+   "name": "cloud-top",
+   "action": "rectangle",
+   "fg": 8,
+   "filled": true,
+   "symmetry": "none",
+   "from": [
+    14,
+    5
+   ],
+   "to": [
+    24,
+    5
+   ]
+  },
+  {
+   "name": "cloud",
+   "action": "rectangle",
+   "from": [
+    19,
+    8
+   ],
+   "to": [
+    29,
+    8
+   ]
+  },
+  {
+   "name": "cloud-move",
+   "action": "move",
+   "by": [
+    -10,
+    0
+   ]
+  }
+ ]
+}

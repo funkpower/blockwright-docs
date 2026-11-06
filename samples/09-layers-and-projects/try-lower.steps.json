@@ -1,0 +1,21 @@
+{
+ "version": 1,
+ "start": {
+  "file": "try.bwp"
+ },
+ "steps": [
+  {
+   "name": "banners-active",
+   "action": "setActiveLayer",
+   "layer": "banners"
+  },
+  {
+   "name": "lower",
+   "action": "lowerLayer"
+  },
+  {
+   "name": "lowest",
+   "action": "lowerLayer"
+  }
+ ]
+}

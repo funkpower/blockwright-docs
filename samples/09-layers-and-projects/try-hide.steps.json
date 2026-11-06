@@ -1,0 +1,18 @@
+{
+ "version": 1,
+ "start": {
+  "file": "try.bwp"
+ },
+ "steps": [
+  {
+   "name": "door-active",
+   "action": "setActiveLayer",
+   "layer": "door"
+  },
+  {
+   "name": "door-hidden",
+   "action": "layerProperties",
+   "visible": false
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "version": 1,
+ "start": {
+  "file": "../07-detail/final.bwp"
+ },
+ "steps": [
+  {
+   "name": "door-active",
+   "action": "setActiveLayer",
+   "layer": "door"
+  },
+  {
+   "name": "door-hidden",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "door-shown",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "background-active",
+   "action": "setActiveLayer",
+   "layer": "Background"
+  },
+  {
+   "name": "background-hidden",
+   "action": "layerProperties",
+   "visible": false
+  }
+ ]
+}
