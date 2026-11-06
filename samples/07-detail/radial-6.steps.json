@@ -1,0 +1,46 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-41x17.ans"
+ },
+ "steps": [
+  {
+   "name": "top",
+   "action": "glyph",
+   "glyph": "▀",
+   "fg": 14,
+   "bg": 0,
+   "size": 1,
+   "tip": "square",
+   "points": [
+    [
+     22,
+     2
+    ],
+    [
+     27,
+     2
+    ]
+   ],
+   "symmetry": {
+    "mode": "radial",
+    "folds": 6
+   }
+  },
+  {
+   "name": "side",
+   "action": "glyph",
+   "glyph": "▌",
+   "points": [
+    [
+     22,
+     3
+    ],
+    [
+     22,
+     5
+    ]
+   ]
+  }
+ ]
+}

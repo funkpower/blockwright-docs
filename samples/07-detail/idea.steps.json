@@ -1,0 +1,202 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-54x11.ans"
+ },
+ "steps": [
+  {
+   "name": "label-dots",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "symmetry": "none",
+   "at": [
+    10,
+    10
+   ],
+   "text": "dots"
+  },
+  {
+   "name": "label-forms",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "symmetry": "none",
+   "at": [
+    36,
+    10
+   ],
+   "text": "lit forms"
+  },
+  {
+   "name": "mass-select",
+   "action": "select",
+   "rect": [
+    1,
+    1,
+    24,
+    8
+   ]
+  },
+  {
+   "name": "mass-1",
+   "action": "rampShade",
+   "points": [
+    [
+     12,
+     4
+    ]
+   ],
+   "ramp": "wood",
+   "strength": 1,
+   "size": 64,
+   "tip": "square"
+  },
+  {
+   "name": "mass",
+   "action": "rampShade",
+   "points": [
+    [
+     12,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "mass-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "dot-0",
+   "action": "keyboard",
+   "fg": 4,
+   "bg": 6,
+   "at": [
+    4,
+    2
+   ],
+   "text": "."
+  },
+  {
+   "name": "dot-1",
+   "action": "keyboard",
+   "fg": 4,
+   "bg": 6,
+   "at": [
+    11,
+    3
+   ],
+   "text": "."
+  },
+  {
+   "name": "dot-2",
+   "action": "keyboard",
+   "fg": 4,
+   "bg": 6,
+   "at": [
+    19,
+    2
+   ],
+   "text": "."
+  },
+  {
+   "name": "dot-3",
+   "action": "keyboard",
+   "fg": 4,
+   "bg": 6,
+   "at": [
+    7,
+    5
+   ],
+   "text": "."
+  },
+  {
+   "name": "dot-4",
+   "action": "keyboard",
+   "fg": 4,
+   "bg": 6,
+   "at": [
+    15,
+    6
+   ],
+   "text": "."
+  },
+  {
+   "name": "dot-5",
+   "action": "keyboard",
+   "fg": 4,
+   "bg": 6,
+   "at": [
+    22,
+    5
+   ],
+   "text": "."
+  },
+  {
+   "name": "dot-6",
+   "action": "keyboard",
+   "fg": 4,
+   "bg": 6,
+   "at": [
+    3,
+    7
+   ],
+   "text": "."
+  },
+  {
+   "name": "dot-7",
+   "action": "keyboard",
+   "fg": 4,
+   "bg": 6,
+   "at": [
+    12,
+    8
+   ],
+   "text": "."
+  },
+  {
+   "name": "dot-8",
+   "action": "keyboard",
+   "fg": 4,
+   "bg": 6,
+   "at": [
+    20,
+    8
+   ],
+   "text": "."
+  },
+  {
+   "name": "bricks-select",
+   "action": "select",
+   "rect": [
+    29,
+    1,
+    52,
+    8
+   ]
+  },
+  {
+   "name": "bricks",
+   "action": "texture",
+   "ramp": "wood",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "texture": {
+    "kind": "brick",
+    "density": 1.6,
+    "seed": 1
+   },
+   "points": [
+    [
+     40,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "bricks-deselect",
+   "action": "deselect"
+  }
+ ]
+}

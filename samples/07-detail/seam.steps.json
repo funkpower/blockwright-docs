@@ -1,0 +1,262 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-48x11.ans"
+ },
+ "steps": [
+  {
+   "name": "label-plain",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "symmetry": "none",
+   "at": [
+    5,
+    10
+   ],
+   "text": "one shape"
+  },
+  {
+   "name": "label-selection",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "symmetry": "none",
+   "at": [
+    28,
+    10
+   ],
+   "text": "two shapes"
+  },
+  {
+   "name": "left-grey-select",
+   "action": "select",
+   "rect": [
+    2,
+    1,
+    11,
+    8
+   ]
+  },
+  {
+   "name": "left-grey-1",
+   "action": "rampShade",
+   "points": [
+    [
+     6,
+     4
+    ]
+   ],
+   "ramp": "steel",
+   "strength": 1,
+   "size": 64,
+   "tip": "square"
+  },
+  {
+   "name": "left-grey",
+   "action": "rampShade",
+   "points": [
+    [
+     6,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "left-grey-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "left-white-select",
+   "action": "select",
+   "rect": [
+    12,
+    1,
+    21,
+    8
+   ]
+  },
+  {
+   "name": "left-white-1",
+   "action": "rampShade",
+   "points": [
+    [
+     16,
+     4
+    ]
+   ],
+   "ramp": "steel",
+   "strength": 1,
+   "size": 64,
+   "tip": "square"
+  },
+  {
+   "name": "left-white-2",
+   "action": "rampShade",
+   "points": [
+    [
+     16,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "left-white",
+   "action": "rampShade",
+   "points": [
+    [
+     16,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "left-white-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "right-grey-select",
+   "action": "select",
+   "rect": [
+    26,
+    1,
+    35,
+    8
+   ]
+  },
+  {
+   "name": "right-grey-1",
+   "action": "rampShade",
+   "points": [
+    [
+     30,
+     4
+    ]
+   ],
+   "ramp": "steel",
+   "strength": 1,
+   "size": 64,
+   "tip": "square"
+  },
+  {
+   "name": "right-grey",
+   "action": "rampShade",
+   "points": [
+    [
+     30,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "right-grey-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "right-white-select",
+   "action": "select",
+   "rect": [
+    36,
+    1,
+    45,
+    8
+   ]
+  },
+  {
+   "name": "right-white-1",
+   "action": "rampShade",
+   "points": [
+    [
+     40,
+     4
+    ]
+   ],
+   "ramp": "steel",
+   "strength": 1,
+   "size": 64,
+   "tip": "square"
+  },
+  {
+   "name": "right-white-2",
+   "action": "rampShade",
+   "points": [
+    [
+     40,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "right-white",
+   "action": "rampShade",
+   "points": [
+    [
+     40,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "right-white-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "line-left",
+   "action": "outline",
+   "ramp": "steel",
+   "size": 22,
+   "tip": "square",
+   "points": [
+    [
+     11,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "grey-select",
+   "action": "select",
+   "rect": [
+    26,
+    1,
+    35,
+    8
+   ]
+  },
+  {
+   "name": "line-grey",
+   "action": "outline",
+   "outline": "selection",
+   "points": [
+    [
+     30,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "white-select",
+   "action": "select",
+   "rect": [
+    36,
+    1,
+    45,
+    8
+   ]
+  },
+  {
+   "name": "line-white",
+   "action": "outline",
+   "points": [
+    [
+     40,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "line-deselect",
+   "action": "deselect"
+  }
+ ]
+}

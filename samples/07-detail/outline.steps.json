@@ -1,0 +1,133 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-40x12.ans"
+ },
+ "steps": [
+  {
+   "name": "yellow-select",
+   "action": "select",
+   "rect": [
+    3,
+    2,
+    16,
+    8
+   ]
+  },
+  {
+   "name": "yellow-1",
+   "action": "rampShade",
+   "points": [
+    [
+     9,
+     5
+    ]
+   ],
+   "ramp": "fire",
+   "strength": 1,
+   "size": 14,
+   "tip": "round"
+  },
+  {
+   "name": "yellow-2",
+   "action": "rampShade",
+   "points": [
+    [
+     9,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "yellow",
+   "action": "rampShade",
+   "points": [
+    [
+     9,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "yellow-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "grey-select",
+   "action": "select",
+   "rect": [
+    23,
+    2,
+    36,
+    8
+   ]
+  },
+  {
+   "name": "grey-1",
+   "action": "rampShade",
+   "points": [
+    [
+     29,
+     5
+    ]
+   ],
+   "ramp": "steel",
+   "strength": 1,
+   "size": 14,
+   "tip": "round"
+  },
+  {
+   "name": "grey",
+   "action": "rampShade",
+   "points": [
+    [
+     29,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "grey-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "line-yellow",
+   "action": "outline",
+   "ramp": "fire",
+   "size": 20,
+   "tip": "square",
+   "points": [
+    [
+     9,
+     5
+    ]
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      920
+     ]
+    }
+   }
+  },
+  {
+   "name": "line-grey",
+   "action": "outline",
+   "ramp": "steel",
+   "points": [
+    [
+     29,
+     5
+    ]
+   ]
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

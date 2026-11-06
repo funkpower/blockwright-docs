@@ -1,0 +1,42 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-60x20.ans"
+ },
+ "steps": [
+  {
+   "name": "wall-select",
+   "action": "select",
+   "rect": [
+    0,
+    9,
+    59,
+    19
+   ]
+  },
+  {
+   "name": "wall",
+   "action": "texture",
+   "ramp": "wood",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "texture": {
+    "kind": "brick",
+    "density": 1.6,
+    "seed": 69
+   },
+   "points": [
+    [
+     29,
+     14
+    ]
+   ],
+   "symmetry": "mirrorX"
+  },
+  {
+   "name": "wall-deselect",
+   "action": "deselect"
+  }
+ ]
+}

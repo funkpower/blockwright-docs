@@ -1,0 +1,43 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-21x7.ans"
+ },
+ "steps": [
+  {
+   "name": "top",
+   "action": "glyph",
+   "glyph": "▀",
+   "fg": 14,
+   "bg": 0,
+   "size": 1,
+   "tip": "square",
+   "points": [
+    [
+     2,
+     1
+    ],
+    [
+     7,
+     1
+    ]
+   ],
+   "symmetry": "none"
+  },
+  {
+   "name": "side",
+   "action": "glyph",
+   "glyph": "▌",
+   "points": [
+    [
+     2,
+     2
+    ],
+    [
+     2,
+     4
+    ]
+   ]
+  }
+ ]
+}

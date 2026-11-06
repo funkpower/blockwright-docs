@@ -1,0 +1,80 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-40x12.ans"
+ },
+ "steps": [
+  {
+   "name": "moon-select",
+   "action": "select",
+   "rect": [
+    5,
+    2,
+    18,
+    8
+   ]
+  },
+  {
+   "name": "moon-1",
+   "action": "rampShade",
+   "points": [
+    [
+     11,
+     5
+    ]
+   ],
+   "ramp": "steel",
+   "strength": 1,
+   "size": 14,
+   "tip": "round"
+  },
+  {
+   "name": "moon",
+   "action": "rampShade",
+   "points": [
+    [
+     11,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "moon-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "stars",
+   "action": "spray",
+   "fg": 15,
+   "bg": 0,
+   "size": 64,
+   "tip": "square",
+   "spray": {
+    "kind": "stars",
+    "density": 100,
+    "seed": 1
+   },
+   "points": [
+    [
+     20,
+     6
+    ]
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      900
+     ]
+    }
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

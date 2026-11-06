@@ -1,0 +1,248 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-76x20.ans"
+ },
+ "steps": [
+  {
+   "name": "label-scales",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "symmetry": "none",
+   "at": [
+    9,
+    9
+   ],
+   "text": "scales"
+  },
+  {
+   "name": "label-foliage",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "symmetry": "none",
+   "at": [
+    35,
+    9
+   ],
+   "text": "foliage"
+  },
+  {
+   "name": "label-hoard",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "symmetry": "none",
+   "at": [
+    62,
+    9
+   ],
+   "text": "hoard"
+  },
+  {
+   "name": "label-brick",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "symmetry": "none",
+   "at": [
+    10,
+    19
+   ],
+   "text": "brick"
+  },
+  {
+   "name": "label-noise",
+   "action": "keyboard",
+   "fg": 7,
+   "bg": 0,
+   "symmetry": "none",
+   "at": [
+    36,
+    19
+   ],
+   "text": "noise"
+  },
+  {
+   "name": "scales-select",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    23,
+    7
+   ]
+  },
+  {
+   "name": "scales",
+   "action": "texture",
+   "ramp": "sea",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "texture": {
+    "kind": "scales",
+    "density": 1.6,
+    "seed": 1
+   },
+   "points": [
+    [
+     11,
+     3
+    ]
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      912
+     ]
+    }
+   }
+  },
+  {
+   "name": "scales-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "foliage-select",
+   "action": "select",
+   "rect": [
+    26,
+    0,
+    49,
+    7
+   ]
+  },
+  {
+   "name": "foliage",
+   "action": "texture",
+   "ramp": "grass",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "texture": {
+    "kind": "foliage",
+    "density": 1.6,
+    "seed": 1
+   },
+   "points": [
+    [
+     37,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "foliage-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "hoard-select",
+   "action": "select",
+   "rect": [
+    52,
+    0,
+    75,
+    7
+   ]
+  },
+  {
+   "name": "hoard",
+   "action": "texture",
+   "ramp": "fire",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "texture": {
+    "kind": "hoard",
+    "density": 1.6,
+    "seed": 1
+   },
+   "points": [
+    [
+     63,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "hoard-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "brick-select",
+   "action": "select",
+   "rect": [
+    0,
+    10,
+    23,
+    17
+   ]
+  },
+  {
+   "name": "brick",
+   "action": "texture",
+   "ramp": "wood",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "texture": {
+    "kind": "brick",
+    "density": 1.6,
+    "seed": 1
+   },
+   "points": [
+    [
+     11,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "brick-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "noise-select",
+   "action": "select",
+   "rect": [
+    26,
+    10,
+    49,
+    17
+   ]
+  },
+  {
+   "name": "noise",
+   "action": "texture",
+   "ramp": "steel",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "texture": {
+    "kind": "noise",
+    "density": 1.6,
+    "seed": 1
+   },
+   "points": [
+    [
+     37,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "noise-deselect",
+   "action": "deselect"
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

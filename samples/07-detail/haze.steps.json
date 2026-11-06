@@ -1,0 +1,93 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-60x10.ans"
+ },
+ "steps": [
+  {
+   "name": "ground-select",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    59,
+    9
+   ]
+  },
+  {
+   "name": "ground",
+   "action": "rampShade",
+   "points": [
+    [
+     29,
+     4
+    ]
+   ],
+   "ramp": "sea",
+   "strength": 1,
+   "size": 64,
+   "tip": "square"
+  },
+  {
+   "name": "ground-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "haze-select",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    28,
+    9
+   ]
+  },
+  {
+   "name": "haze",
+   "action": "spray",
+   "ramp": "sea",
+   "size": 64,
+   "tip": "square",
+   "spray": {
+    "kind": "haze",
+    "density": 30,
+    "seed": 1
+   },
+   "points": [
+    [
+     14,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "smoke-select",
+   "action": "select",
+   "rect": [
+    31,
+    0,
+    59,
+    9
+   ]
+  },
+  {
+   "name": "smoke",
+   "action": "spray",
+   "spray": {
+    "kind": "smoke",
+    "density": 30,
+    "seed": 1
+   },
+   "points": [
+    [
+     45,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "smoke-deselect",
+   "action": "deselect"
+  }
+ ]
+}

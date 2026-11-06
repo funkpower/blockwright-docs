@@ -1,0 +1,175 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-60x20.ans"
+ },
+ "steps": [
+  {
+   "name": "wall-select",
+   "action": "select",
+   "rect": [
+    0,
+    9,
+    59,
+    19
+   ]
+  },
+  {
+   "name": "wall",
+   "action": "texture",
+   "ramp": "wood",
+   "light": "NW",
+   "size": 64,
+   "tip": "square",
+   "texture": {
+    "kind": "brick",
+    "density": 1.6,
+    "seed": 69
+   },
+   "points": [
+    [
+     29,
+     14
+    ]
+   ]
+  },
+  {
+   "name": "wall-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "notch-1",
+   "action": "rectangle",
+   "fg": 0,
+   "filled": true,
+   "symmetry": "mirrorX",
+   "from": [
+    3,
+    18
+   ],
+   "to": [
+    6,
+    23
+   ]
+  },
+  {
+   "name": "notch-2",
+   "action": "rectangle",
+   "from": [
+    13,
+    18
+   ],
+   "to": [
+    16,
+    23
+   ]
+  },
+  {
+   "name": "notch-3",
+   "action": "rectangle",
+   "from": [
+    23,
+    18
+   ],
+   "to": [
+    26,
+    23
+   ]
+  },
+  {
+   "name": "gate-arch",
+   "action": "ellipse",
+   "fg": 0,
+   "filled": true,
+   "symmetry": "none",
+   "from": [
+    25,
+    25
+   ],
+   "to": [
+    34,
+    37
+   ]
+  },
+  {
+   "name": "gate",
+   "action": "rectangle",
+   "from": [
+    25,
+    31
+   ],
+   "to": [
+    34,
+    39
+   ]
+  },
+  {
+   "name": "moon-select",
+   "action": "select",
+   "rect": [
+    4,
+    1,
+    11,
+    5
+   ]
+  },
+  {
+   "name": "moon-1",
+   "action": "rampShade",
+   "points": [
+    [
+     7,
+     3
+    ]
+   ],
+   "ramp": "steel",
+   "strength": 1,
+   "size": 7,
+   "tip": "round"
+  },
+  {
+   "name": "moon-2",
+   "action": "rampShade",
+   "points": [
+    [
+     7,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "moon",
+   "action": "rampShade",
+   "points": [
+    [
+     7,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "moon-deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "stars",
+   "action": "spray",
+   "fg": 15,
+   "bg": 0,
+   "size": 64,
+   "tip": "square",
+   "spray": {
+    "kind": "stars",
+    "density": 60,
+    "seed": 1
+   },
+   "points": [
+    [
+     30,
+     4
+    ]
+   ],
+   "symmetry": "mirrorX"
+  }
+ ]
+}
