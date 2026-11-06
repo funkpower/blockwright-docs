@@ -1,0 +1,5 @@
+0,0 blank-edge-rows - row 0 above the art are blank: IRC trims them (a margin needs a black-on-black block)
+24,5 ans-loss - note: 2 cells hold glyphs a CP437 .ans saves as '?' (fine for IRC)
+0,10 blank-edge-rows - row 10 below the art are blank: IRC trims them (a margin needs a black-on-black block)
+2 findings (2 blank-edge-rows), 1 note (1 ans-loss), noise 0.0000, iCE on
+exit status 4

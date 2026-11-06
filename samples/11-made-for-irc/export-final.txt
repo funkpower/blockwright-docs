@@ -1,0 +1,11 @@
+line  bytes   sent
+   1    332    363
+   2     93     97
+   3    112    121
+   4    111    115
+   5    120    132
+   6    111    116
+   7    114    123
+   8     93     96
+   9    332    363
+9 lines, longest 332 bytes, 363 sent, budget 407: 0 over

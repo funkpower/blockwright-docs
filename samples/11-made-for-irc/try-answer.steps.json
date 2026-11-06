@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "start": {
+  "file": "try.bwp"
+ },
+ "steps": [
+  {
+   "name": "margin-0",
+   "action": "keyboard",
+   "fg": 0,
+   "bg": 0,
+   "at": [
+    79,
+    0
+   ],
+   "text": "█"
+  },
+  {
+   "name": "margin-10",
+   "action": "keyboard",
+   "fg": 0,
+   "bg": 0,
+   "at": [
+    79,
+    10
+   ],
+   "text": "█"
+  }
+ ]
+}

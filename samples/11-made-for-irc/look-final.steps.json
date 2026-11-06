@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "start": {
+  "file": "final.bwp"
+ },
+ "steps": [
+  {
+   "name": "irc-view",
+   "action": "deselect",
+   "screenshot": {
+    "of": "ircView"
+   }
+  },
+  {
+   "name": "meter-final",
+   "action": "deselect",
+   "screenshot": {
+    "of": "window",
+    "crop": {
+     "pixels": [
+      263,
+      446,
+      702,
+      304
+     ]
+    }
+   }
+  },
+  {
+   "name": "lint-final",
+   "action": "deselect",
+   "screenshot": {
+    "of": "lint"
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

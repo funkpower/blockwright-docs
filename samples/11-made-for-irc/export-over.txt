@@ -1,0 +1,15 @@
+line  bytes   sent
+   1    422    483  over by 76
+   2      0      0
+   3     71     75
+   4     68     71
+   5     86     95
+   6     68     71
+   7     73     77
+   8      0      0
+   9    422    483  over by 76
+9 lines, longest 422 bytes, 483 sent, budget 407: 2 over
+blockwright-cli: over.bwp: line 1 is 483 bytes as WeeChat's ascii script sends it, over the 407-byte budget by 76
+blockwright-cli: over.bwp: line 9 is 483 bytes as WeeChat's ascii script sends it, over the 407-byte budget by 76
+blockwright-cli: over.txt: not written: lines over the budget (--allow-over-budget writes it anyway)
+exit status 3

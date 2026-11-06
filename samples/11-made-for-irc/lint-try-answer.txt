@@ -1,0 +1,2 @@
+24,5 ans-loss - note: 2 cells hold glyphs a CP437 .ans saves as '?' (fine for IRC)
+clean, 1 note (1 ans-loss), noise 0.0000, iCE on

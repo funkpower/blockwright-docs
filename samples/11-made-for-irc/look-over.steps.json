@@ -1,0 +1,56 @@
+{
+ "version": 1,
+ "start": {
+  "file": "over.bwp"
+ },
+ "steps": [
+  {
+   "name": "irc-view",
+   "action": "deselect",
+   "screenshot": {
+    "of": "ircView"
+   }
+  },
+  {
+   "name": "meter-over",
+   "action": "deselect",
+   "screenshot": {
+    "of": "window",
+    "crop": {
+     "pixels": [
+      263,
+      446,
+      702,
+      304
+     ]
+    }
+   }
+  },
+  {
+   "name": "beside-over",
+   "action": "deselect",
+   "screenshot": {
+    "of": "window",
+    "crop": {
+     "pixels": [
+      263,
+      446,
+      1017,
+      690
+     ]
+    }
+   }
+  },
+  {
+   "name": "lint-over",
+   "action": "deselect",
+   "screenshot": {
+    "of": "lint"
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

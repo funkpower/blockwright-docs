@@ -1,0 +1,12 @@
+line  bytes   sent
+   1    358    403  fit: 16 cells merged
+   2      0      0
+   3     71     75
+   4     68     71
+   5     86     95
+   6     68     71
+   7     73     77
+   8      0      0
+   9    358    403  fit: 16 cells merged
+9 lines, longest 358 bytes, 403 sent, budget 407: 0 over
+fit: 32 cells merged in 2 lines

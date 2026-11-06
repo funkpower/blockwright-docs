@@ -1,0 +1,2709 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-80x9.bwp"
+ },
+ "steps": [
+  {
+   "name": "top-0",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     0,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-1",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-2",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-3",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-4",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     4,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-5",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     5,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-6",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     6,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-7",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     7,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-8",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     8,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-9",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     9,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-10",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     10,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-11",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     11,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-12",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     12,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-13",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     13,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-14",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     14,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-15",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     15,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-16",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     16,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-17",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     17,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-18",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     18,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-19",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     19,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-20",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     20,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-21",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     21,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-22",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     22,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-23",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     23,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-24",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     24,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-25",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     25,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-26",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     26,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-27",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     27,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-28",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     28,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-29",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     29,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-30",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     30,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-31",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     31,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-32",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     32,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-33",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     33,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-34",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     34,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-35",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     35,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-36",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     36,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-37",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     37,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-38",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     38,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-39",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     39,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-40",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     40,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-41",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     41,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-42",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     42,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-43",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     43,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-44",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     44,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-45",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     45,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-46",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     46,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-47",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     47,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-48",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     48,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-49",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     49,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-50",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     50,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-51",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     51,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-52",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     52,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-53",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     53,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-54",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-55",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     55,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-56",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     56,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-57",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     57,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-58",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     58,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-59",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     59,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-60",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     60,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-61",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     61,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-62",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     62,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-63",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     63,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-64",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     64,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-65",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     65,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-66",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     66,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-67",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     67,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-68",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     68,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-69",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     69,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-70",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     70,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-71",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     71,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-72",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     72,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-73",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     73,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-74",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     74,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-75",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     75,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-76",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     76,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-77",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     77,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-78",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     78,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "top-79",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     79,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "bottom-0",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     0,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-1",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     1,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-2",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     2,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-3",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     3,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-4",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     4,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-5",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     5,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-6",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     6,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-7",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     7,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-8",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     8,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-9",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     9,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-10",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     10,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-11",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     11,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-12",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     12,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-13",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     13,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-14",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     14,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-15",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     15,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-16",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     16,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-17",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     17,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-18",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     18,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-19",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     19,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-20",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     20,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-21",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     21,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-22",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     22,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-23",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     23,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-24",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     24,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-25",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     25,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-26",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     26,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-27",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     27,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-28",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     28,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-29",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     29,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-30",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     30,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-31",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     31,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-32",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     32,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-33",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     33,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-34",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     34,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-35",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     35,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-36",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     36,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-37",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     37,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-38",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     38,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-39",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     39,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-40",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     40,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-41",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     41,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-42",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     42,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-43",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     43,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-44",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     44,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-45",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     45,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-46",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     46,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-47",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     47,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-48",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     48,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-49",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     49,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-50",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     50,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-51",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     51,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-52",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     52,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-53",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     53,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-54",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-55",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     55,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-56",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     56,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-57",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     57,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-58",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     58,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-59",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     59,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-60",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     60,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-61",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     61,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-62",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     62,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-63",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     63,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-64",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     64,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-65",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     65,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-66",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     66,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-67",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     67,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-68",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     68,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-69",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     69,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-70",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     70,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-71",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     71,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-72",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     72,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-73",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     73,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-74",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     74,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-75",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     75,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-76",
+   "action": "halfBlock",
+   "fg": 12,
+   "points": [
+    [
+     76,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-77",
+   "action": "halfBlock",
+   "fg": 14,
+   "points": [
+    [
+     77,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-78",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     78,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "bottom-79",
+   "action": "halfBlock",
+   "fg": 11,
+   "points": [
+    [
+     79,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "letter-0",
+   "action": "halfBlock",
+   "fg": 15,
+   "points": [
+    [
+     28,
+     4
+    ],
+    [
+     29,
+     4
+    ],
+    [
+     30,
+     4
+    ],
+    [
+     31,
+     4
+    ],
+    [
+     32,
+     4
+    ],
+    [
+     33,
+     4
+    ],
+    [
+     33,
+     5
+    ],
+    [
+     32,
+     5
+    ],
+    [
+     31,
+     5
+    ],
+    [
+     31,
+     6
+    ],
+    [
+     31,
+     7
+    ],
+    [
+     31,
+     8
+    ],
+    [
+     31,
+     9
+    ],
+    [
+     31,
+     10
+    ],
+    [
+     31,
+     11
+    ],
+    [
+     31,
+     12
+    ],
+    [
+     32,
+     12
+    ],
+    [
+     33,
+     12
+    ],
+    [
+     33,
+     13
+    ],
+    [
+     32,
+     13
+    ],
+    [
+     31,
+     13
+    ],
+    [
+     30,
+     13
+    ],
+    [
+     29,
+     13
+    ],
+    [
+     28,
+     13
+    ],
+    [
+     28,
+     12
+    ],
+    [
+     29,
+     12
+    ],
+    [
+     30,
+     12
+    ],
+    [
+     30,
+     11
+    ],
+    [
+     30,
+     10
+    ],
+    [
+     30,
+     9
+    ],
+    [
+     30,
+     8
+    ],
+    [
+     30,
+     7
+    ],
+    [
+     30,
+     6
+    ],
+    [
+     30,
+     5
+    ],
+    [
+     29,
+     5
+    ],
+    [
+     28,
+     5
+    ],
+    [
+     29,
+     5
+    ],
+    [
+     30,
+     5
+    ],
+    [
+     30,
+     6
+    ],
+    [
+     30,
+     7
+    ],
+    [
+     30,
+     8
+    ],
+    [
+     30,
+     9
+    ],
+    [
+     30,
+     10
+    ],
+    [
+     30,
+     11
+    ],
+    [
+     30,
+     12
+    ],
+    [
+     29,
+     12
+    ],
+    [
+     28,
+     12
+    ],
+    [
+     28,
+     13
+    ],
+    [
+     29,
+     13
+    ],
+    [
+     30,
+     13
+    ],
+    [
+     31,
+     13
+    ],
+    [
+     32,
+     13
+    ],
+    [
+     33,
+     13
+    ],
+    [
+     33,
+     12
+    ],
+    [
+     32,
+     12
+    ],
+    [
+     31,
+     12
+    ],
+    [
+     31,
+     11
+    ],
+    [
+     31,
+     10
+    ],
+    [
+     31,
+     9
+    ],
+    [
+     31,
+     8
+    ],
+    [
+     31,
+     7
+    ],
+    [
+     31,
+     6
+    ],
+    [
+     31,
+     5
+    ],
+    [
+     32,
+     5
+    ],
+    [
+     33,
+     5
+    ],
+    [
+     33,
+     4
+    ],
+    [
+     32,
+     4
+    ],
+    [
+     31,
+     4
+    ],
+    [
+     30,
+     4
+    ],
+    [
+     29,
+     4
+    ],
+    [
+     28,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "letter-1",
+   "action": "halfBlock",
+   "points": [
+    [
+     36,
+     4
+    ],
+    [
+     37,
+     4
+    ],
+    [
+     38,
+     4
+    ],
+    [
+     39,
+     4
+    ],
+    [
+     40,
+     4
+    ],
+    [
+     40,
+     5
+    ],
+    [
+     41,
+     5
+    ],
+    [
+     41,
+     6
+    ],
+    [
+     41,
+     7
+    ],
+    [
+     40,
+     7
+    ],
+    [
+     40,
+     8
+    ],
+    [
+     39,
+     8
+    ],
+    [
+     39,
+     9
+    ],
+    [
+     39,
+     10
+    ],
+    [
+     40,
+     10
+    ],
+    [
+     40,
+     11
+    ],
+    [
+     40,
+     12
+    ],
+    [
+     41,
+     12
+    ],
+    [
+     41,
+     13
+    ],
+    [
+     40,
+     13
+    ],
+    [
+     41,
+     13
+    ],
+    [
+     41,
+     12
+    ],
+    [
+     40,
+     12
+    ],
+    [
+     40,
+     11
+    ],
+    [
+     39,
+     11
+    ],
+    [
+     40,
+     11
+    ],
+    [
+     40,
+     10
+    ],
+    [
+     39,
+     10
+    ],
+    [
+     39,
+     9
+    ],
+    [
+     38,
+     9
+    ],
+    [
+     37,
+     9
+    ],
+    [
+     37,
+     10
+    ],
+    [
+     37,
+     11
+    ],
+    [
+     37,
+     12
+    ],
+    [
+     37,
+     13
+    ],
+    [
+     36,
+     13
+    ],
+    [
+     36,
+     12
+    ],
+    [
+     36,
+     11
+    ],
+    [
+     36,
+     10
+    ],
+    [
+     36,
+     9
+    ],
+    [
+     36,
+     8
+    ],
+    [
+     37,
+     8
+    ],
+    [
+     38,
+     8
+    ],
+    [
+     37,
+     8
+    ],
+    [
+     37,
+     7
+    ],
+    [
+     36,
+     7
+    ],
+    [
+     36,
+     6
+    ],
+    [
+     37,
+     6
+    ],
+    [
+     37,
+     5
+    ],
+    [
+     38,
+     5
+    ],
+    [
+     39,
+     5
+    ],
+    [
+     38,
+     5
+    ],
+    [
+     37,
+     5
+    ],
+    [
+     36,
+     5
+    ],
+    [
+     37,
+     5
+    ],
+    [
+     37,
+     6
+    ],
+    [
+     36,
+     6
+    ],
+    [
+     36,
+     7
+    ],
+    [
+     37,
+     7
+    ],
+    [
+     37,
+     8
+    ],
+    [
+     36,
+     8
+    ],
+    [
+     36,
+     9
+    ],
+    [
+     36,
+     10
+    ],
+    [
+     36,
+     11
+    ],
+    [
+     36,
+     12
+    ],
+    [
+     36,
+     13
+    ],
+    [
+     37,
+     13
+    ],
+    [
+     37,
+     12
+    ],
+    [
+     37,
+     11
+    ],
+    [
+     37,
+     10
+    ],
+    [
+     37,
+     9
+    ],
+    [
+     38,
+     9
+    ],
+    [
+     39,
+     9
+    ],
+    [
+     39,
+     8
+    ],
+    [
+     40,
+     8
+    ],
+    [
+     40,
+     7
+    ],
+    [
+     40,
+     6
+    ],
+    [
+     40,
+     7
+    ],
+    [
+     41,
+     7
+    ],
+    [
+     41,
+     6
+    ],
+    [
+     41,
+     5
+    ],
+    [
+     40,
+     5
+    ],
+    [
+     40,
+     4
+    ],
+    [
+     39,
+     4
+    ],
+    [
+     38,
+     4
+    ],
+    [
+     37,
+     4
+    ],
+    [
+     36,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "letter-2",
+   "action": "halfBlock",
+   "points": [
+    [
+     45,
+     4
+    ],
+    [
+     46,
+     4
+    ],
+    [
+     47,
+     4
+    ],
+    [
+     48,
+     4
+    ],
+    [
+     49,
+     4
+    ],
+    [
+     49,
+     5
+    ],
+    [
+     48,
+     5
+    ],
+    [
+     47,
+     5
+    ],
+    [
+     46,
+     5
+    ],
+    [
+     45,
+     5
+    ],
+    [
+     45,
+     6
+    ],
+    [
+     45,
+     7
+    ],
+    [
+     45,
+     8
+    ],
+    [
+     45,
+     9
+    ],
+    [
+     45,
+     10
+    ],
+    [
+     45,
+     11
+    ],
+    [
+     45,
+     12
+    ],
+    [
+     46,
+     12
+    ],
+    [
+     47,
+     12
+    ],
+    [
+     48,
+     12
+    ],
+    [
+     49,
+     12
+    ],
+    [
+     49,
+     13
+    ],
+    [
+     48,
+     13
+    ],
+    [
+     47,
+     13
+    ],
+    [
+     46,
+     13
+    ],
+    [
+     45,
+     13
+    ],
+    [
+     46,
+     13
+    ],
+    [
+     47,
+     13
+    ],
+    [
+     48,
+     13
+    ],
+    [
+     49,
+     13
+    ],
+    [
+     49,
+     12
+    ],
+    [
+     48,
+     12
+    ],
+    [
+     47,
+     12
+    ],
+    [
+     46,
+     12
+    ],
+    [
+     45,
+     12
+    ],
+    [
+     44,
+     12
+    ],
+    [
+     44,
+     11
+    ],
+    [
+     44,
+     10
+    ],
+    [
+     44,
+     9
+    ],
+    [
+     44,
+     8
+    ],
+    [
+     44,
+     7
+    ],
+    [
+     44,
+     6
+    ],
+    [
+     44,
+     5
+    ],
+    [
+     44,
+     6
+    ],
+    [
+     44,
+     7
+    ],
+    [
+     44,
+     8
+    ],
+    [
+     44,
+     9
+    ],
+    [
+     44,
+     10
+    ],
+    [
+     44,
+     11
+    ],
+    [
+     44,
+     12
+    ],
+    [
+     45,
+     12
+    ],
+    [
+     45,
+     11
+    ],
+    [
+     45,
+     10
+    ],
+    [
+     45,
+     9
+    ],
+    [
+     45,
+     8
+    ],
+    [
+     45,
+     7
+    ],
+    [
+     45,
+     6
+    ],
+    [
+     45,
+     5
+    ],
+    [
+     46,
+     5
+    ],
+    [
+     47,
+     5
+    ],
+    [
+     48,
+     5
+    ],
+    [
+     49,
+     5
+    ],
+    [
+     49,
+     4
+    ],
+    [
+     48,
+     4
+    ],
+    [
+     47,
+     4
+    ],
+    [
+     46,
+     4
+    ],
+    [
+     45,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "star-left",
+   "action": "keyboard",
+   "fg": 14,
+   "bg": 0,
+   "at": [
+    24,
+    4
+   ],
+   "text": "★"
+  },
+  {
+   "name": "star-right",
+   "action": "keyboard",
+   "fg": 14,
+   "bg": 0,
+   "at": [
+    53,
+    4
+   ],
+   "text": "★"
+  }
+ ]
+}
