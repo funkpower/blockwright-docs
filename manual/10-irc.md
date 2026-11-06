@@ -52,7 +52,7 @@ The meter measures each row as Export IRC Text writes it, with the window's Fit,
 
 ## Making rows fit
 
-Three settings in **View > IRC** change how rows are encoded. None has a shortcut. They are the window's, start off each time Blockwright starts, and aren't saved with a document. The meter, the IRC View dock and Export IRC Text use them; **File > Publish to Library...** and **File > Send to WeeChat...** don't.
+Three settings in **View > IRC** change how rows are encoded. No **View > IRC** action, these three included, has a shortcut by default; give one a key on the **Shortcuts** tab of **Edit > Preferences...** (which has no shortcut by default; on macOS it is in the application menu), where they are listed under **View > IRC**. They are the window's, start off each time Blockwright starts, and aren't saved with a document. The meter, the IRC View dock and Export IRC Text use them; **File > Publish to Library...** and **File > Send to WeeChat...** don't.
 
 | Setting | What it does |
 |---|---|
