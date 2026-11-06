@@ -1,5 +1,5 @@
 Title: Light
-Checked: Blockwright 0.1.0 (30be847)
+Checked: Blockwright 0.1.0 (fd10778)
 
 # Light
 
@@ -23,11 +23,11 @@ Which side to light from is up to you. The upper left is the usual choice and Bl
 
 ### The form brush's light
 
-The **Form Brush**'s options, as it starts:
+The **Form Brush**'s options, set for the stone's form in step 7 below:
 
-![The Tool Options dock for the Form Brush: a help text, then Size 1 with Tip Square, Pressure Size with Strength 25%, Ramp steel, Light NW with Form Dome, Form rim light unticked with Glint ticked, Alpha lock ticked, and Symmetry Off](../samples/06-light/form-options.png)
+![The Tool Options dock for the Form Brush: a help text, then Size 26 with Tip Square, Pressure None with Strength 100%, Ramp steel, Light NE with Form Dome, Form rim light ticked with Glint unticked, Alpha lock ticked, and Symmetry Off](../samples/06-light/form-options.png)
 
-Tutorial 05 left **Light** at **NW**. It is a point of the compass: **N**, **NE**, **E**, **SE**, **S**, **SW**, **W** or **NW**, the side the light comes from, with north at the top of the canvas. Eight domes, each lit from the point it stands at round the rose:
+Tutorial 05 left **Light** at **NW**; the stone is lit from **NE**. **Light** is a point of the compass: **N**, **NE**, **E**, **SE**, **S**, **SW**, **W** or **NW**, the side the light comes from, with north at the top of the canvas. Eight domes, each lit from the point it stands at round the rose:
 
 ![Eight grey domes in a ring on black round the words "light from", each labelled with a point of the compass: NW, N and NE across the top, W and E at the sides, SW, S and SE across the bottom. Each dome is white on the side of the point it stands at and falls to dark grey on the side away from it](../samples/06-light/light-rose.ans "2x")
 
@@ -35,9 +35,9 @@ The N dome's white is at its top and the S dome's at its bottom, the E dome's at
 
 ### The rim light brush
 
-The **Rim Light Brush** (**Tools > Rim Light Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>) lights a shape's edge. Under the brush, the cells on the shape's edge that face the light go one rung lighter. The shape is the active layer's cells on the ramp, other than black. One stroke lights only one cell deep, however often it passes over a cell. Either button does the same. Its options add **Light** and **Keep the lint clean**:
+The **Rim Light Brush** (**Tools > Rim Light Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>) lights a shape's edge. Under the brush, the cells on the shape's edge that face the light go one rung lighter. The shape is the active layer's cells on the ramp, other than black. One stroke lights only one cell deep, however often it passes over a cell. Either button does the same. Its options add **Light** and **Keep the lint clean**, here set for the hills' rim in step 4 below:
 
-![The Tool Options dock for the Rim Light Brush: a help text, then Size 1 with Tip Square, Pressure Size, Ramp steel, Light NW, Keep the lint clean unticked, Alpha lock ticked, and Symmetry Off](../samples/06-light/rim-options.png)
+![The Tool Options dock for the Rim Light Brush: a help text, then Size 64 with Tip Square, Pressure None, Ramp grass, Light NE, Keep the lint clean ticked, Alpha lock ticked, and Symmetry Off](../samples/06-light/rim-options.png)
 
 A disc of grey, steel's rung 8, on a layer of its own, before, and after one click from the north-west with **Size** 64 and **Tip** **Square**, big enough to cover it:
 

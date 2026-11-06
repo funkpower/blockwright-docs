@@ -1,5 +1,5 @@
 Title: Detail
-Checked: Blockwright 0.1.0 (2e5b906)
+Checked: Blockwright 0.1.0 (fd10778)
 
 # Detail
 
@@ -23,9 +23,9 @@ Drawing a hundred small forms by hand is slow. The tools in this tutorial lay th
 
 ### The outline brush
 
-The **Outline Brush** (**Tools > Outline Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd>) draws a line one cell wide round a shape, on the shape's own edge cells. Each edge cell under the brush aims for the ramp colour one step darker than the darkest of the shape just inside it, so the line is the shape's own colour, a step down. Where that colour would add a lint finding, the cell takes a lighter shade instead, or keeps what it had. It reads the active layer. Either button does the same, and one stroke draws one line, however often it passes over a cell. Its options add **Outline the selection**:
+The **Outline Brush** (**Tools > Outline Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd>) draws a line one cell wide round a shape, on the shape's own edge cells. Each edge cell under the brush aims for the ramp colour one step darker than the darkest of the shape just inside it, so the line is the shape's own colour, a step down. Where that colour would add a lint finding, the cell takes a lighter shade instead, or keeps what it had. It reads the active layer. Either button does the same, and one stroke draws one line, however often it passes over a cell. Its options add **Outline the selection**, here set for the click over the yellow disc below:
 
-![The Tool Options dock for the Outline Brush: a help text, then Size 1 with Tip Square, Pressure Size, Ramp steel, Outline the selection unticked, Alpha lock unticked, and Symmetry Off](../samples/07-detail/outline-options.png)
+![The Tool Options dock for the Outline Brush: a help text, then Size 20 with Tip Square, Pressure None, Ramp fire, Outline the selection unticked, Alpha lock unticked, and Symmetry Off](../samples/07-detail/outline-options.png)
 
 Two discs on black, yellow on the fire ramp and grey on steel, before, and after one click over each with **Size** 20 and **Tip** **Square**, the yellow with **Ramp** **fire** and the grey with **Ramp** **steel**:
 
@@ -45,9 +45,9 @@ The left pair took one click with the option unticked. The grey box's edge cells
 
 ### The texture stamp
 
-The **Texture Stamp** (**Tools > Texture Stamp**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) lays a field of small lit forms along the ramp: scales, foliage, a coin hoard, brick, or mottled stone. It paints over whatever the cells held, with either button, so make a selection first to keep it to a part of the canvas. Its options add **Light**, **Texture**, **Density** and **Seed**:
+The **Texture Stamp** (**Tools > Texture Stamp**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) lays a field of small lit forms along the ramp: scales, foliage, a coin hoard, brick, or mottled stone. It paints over whatever the cells held, with either button, so make a selection first to keep it to a part of the canvas. Its options add **Light**, **Texture**, **Density** and **Seed**, here set for the scales below:
 
-![The Tool Options dock for the Texture Stamp: a help text, then Size 1 with Tip Square, Pressure Size, Ramp steel, Light NW, Texture Scales, Density 1.6 with Seed 1, Alpha lock unticked, and Symmetry Off](../samples/07-detail/texture-options.png)
+![The Tool Options dock for the Texture Stamp: a help text, then Size 64 with Tip Square, Pressure None, Ramp sea, Light NW, Texture Scales, Density 1.6 with Seed 1, Alpha lock unticked, and Symmetry Off](../samples/07-detail/texture-options.png)
 
 **Texture** is the kind of form. The five kinds, each stamped with one click inside a selection of a box 24 columns by 8 rows, lit from the north-west at **Density** 1.6 and **Seed** 1:
 
@@ -63,9 +63,9 @@ At 0.3 one brick fills the box from column 2 to its right edge and from row 1 to
 
 ### The glyph spray
 
-The **Glyph Spray** (**Tools > Glyph Spray**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd>) scatters stars, haze or smoke over the cells it passes. Its options add **Spray**, **Density** and **Seed**:
+The **Glyph Spray** (**Tools > Glyph Spray**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd>) scatters stars, haze or smoke over the cells it passes. Its options add **Spray**, **Density** and **Seed**, here set for the stars below:
 
-![The Tool Options dock for the Glyph Spray: a help text, then Size 1 with Tip Square, Pressure Size, Ramp steel, Spray Stars, Density 30% with Seed 1, Alpha lock unticked, and Symmetry Off](../samples/07-detail/spray-options.png)
+![The Tool Options dock for the Glyph Spray: a help text, then Size 64 with Tip Square, Pressure None, Ramp steel, Spray Stars, Density 100% with Seed 1, Alpha lock unticked, and Symmetry Off](../samples/07-detail/spray-options.png)
 
 **Stars** are small glyphs in the pen's foreground: `.`, `·`, `∙`, `+`, `*` and `☼`. A star goes only on open ground: no other colour within four columns and two rows of it, so stars keep off shapes. The right button takes stars off again. **Density** is how many stars, as a percentage, 30% to start with. Like the texture, the stars are fixed to the canvas by their **Seed**. A grey disc on black, before, and after one click of white stars over the whole canvas at **Density** 100%, with **Size** 64 and **Tip** **Square**:
 

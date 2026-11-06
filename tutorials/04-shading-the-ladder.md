@@ -1,5 +1,5 @@
 Title: Shading: the ladder
-Checked: Blockwright 0.1.0 (48592c8)
+Checked: Blockwright 0.1.0 (fd10778)
 
 # Shading: the ladder
 
@@ -44,9 +44,9 @@ Each pair of neighbours has four rungs between it, so fire, with five colours, i
 
 ### The shade brush
 
-The **Shade Brush** (**Tools > Shade Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>) climbs one ladder, the pen's: its background is A and its foreground is B. Each time the brush passes over a cell, the cell goes up a rung: space, `░`, `▒`, `▓`, `█`. The right button takes a rung back down. Cells that hold anything else, such as letters or half blocks, are left alone. Its options in the **Tool Options** dock:
+The **Shade Brush** (**Tools > Shade Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>) climbs one ladder, the pen's: its background is A and its foreground is B. Each time the brush passes over a cell, the cell goes up a rung: space, `░`, `▒`, `▓`, `█`. The right button takes a rung back down. Cells that hold anything else, such as letters or half blocks, are left alone. Its options in the **Tool Options** dock, set for the floor's first drag in step 2 below:
 
-![The Tool Options dock for the Shade Brush: a help text, then Size with Tip, Pressure, Alpha lock and Symmetry](../samples/04-shading-the-ladder/shade-options.png)
+![The Tool Options dock for the Shade Brush: a help text, then Size 12 with Tip Square, Pressure None, Alpha lock unticked, and Symmetry Off](../samples/04-shading-the-ladder/shade-options.png)
 
 **Size** is how many cells wide the brush is, and **Tip** is its shape, **Square** or **Round**. **Tools > Smaller Brush** (<kbd>Ctrl</kbd>+<kbd>[</kbd>) and **Tools > Larger Brush** (<kbd>Ctrl</kbd>+<kbd>]</kbd>) change the size from the keyboard.
 
@@ -60,9 +60,9 @@ A bar of blue spaces, before, after four passes of light blue over blue (each pa
 
 ### The ramp shade brush
 
-The **Ramp Shade Brush** (**Tools > Ramp Shade Brush**, <kbd>Ctrl</kbd>+<kbd>T</kbd>) climbs a whole ramp instead of one ladder. The left button lightens each cell under it along the ramp, through the rungs between each pair of colours, and the right button darkens. It reads what each cell already shows, so it doesn't use the pen. Cells whose colours aren't on the ramp are left alone, and it never writes a shade of two colours that aren't neighbours on the ramp. Its options add **Strength** and **Ramp**:
+The **Ramp Shade Brush** (**Tools > Ramp Shade Brush**, <kbd>Ctrl</kbd>+<kbd>T</kbd>) climbs a whole ramp instead of one ladder. The left button lightens each cell under it along the ramp, through the rungs between each pair of colours, and the right button darkens. It reads what each cell already shows, so it doesn't use the pen. Cells whose colours aren't on the ramp are left alone, and it never writes a shade of two colours that aren't neighbours on the ramp. Its options add **Strength** and **Ramp**, here set for the ball's first light click in step 6 below:
 
-![The Tool Options dock for the Ramp Shade Brush: a help text, then Size with Tip, Pressure with Strength at 25%, Ramp, Alpha lock and Symmetry](../samples/04-shading-the-ladder/ramp-shade-options.png)
+![The Tool Options dock for the Ramp Shade Brush: a help text, then Size 29 with Tip Round, Pressure None with Strength 25%, Ramp fire, Alpha lock ticked, and Symmetry Off](../samples/04-shading-the-ladder/ramp-shade-options.png)
 
 A blue bar again, before, and after passes on the ice ramp: the left button climbed about two thirds of it from blue through light blue and light cyan to white, and the right button took the left end down to black:
 
@@ -80,7 +80,7 @@ Shade a form at 25%, so you can stop on any rung. At higher strengths one pass m
 
 ### Pressure
 
-**Pressure** is what a stylus's pressure scales: **Size**, **Strength**, or **None**. It starts at **Size**. A mouse always presses fully, so with a mouse it changes nothing.
+**Pressure** is what a stylus's pressure scales: **Size**, **Strength**, or **None**. It starts at **Size**. A mouse always presses fully, so with a mouse it changes nothing. The **Tool Options** pictures on this page show it at **None**, which paints the same with a mouse.
 
 ### Alpha lock
 

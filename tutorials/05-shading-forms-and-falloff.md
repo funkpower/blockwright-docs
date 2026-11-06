@@ -1,5 +1,5 @@
 Title: Shading: forms and falloff
-Checked: Blockwright 0.1.0 (749832e)
+Checked: Blockwright 0.1.0 (fd10778)
 
 # Shading: forms and falloff
 
@@ -25,9 +25,9 @@ The rest of the page is the tools that go round a form: the **ramp gradient** fo
 
 ### The form brush
 
-The **Form Brush** (**Tools > Form Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>) shades a whole shape along the ramp in one click: a solid lit side, the fall, and the shadow side down to black. The shape is the selection, or with nothing selected the cells the click covers; with alpha lock on, those are the layer's opaque cells under the brush. Make the brush big enough to cover the whole shape. Either button does the same. Its options add **Light** and **Form**:
+The **Form Brush** (**Tools > Form Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>) shades a whole shape along the ramp in one click: a solid lit side, the fall, and the shadow side down to black. The shape is the selection, or with nothing selected the cells the click covers; with alpha lock on, those are the layer's opaque cells under the brush. Make the brush big enough to cover the whole shape. Either button does the same. Its options add **Light** and **Form**, here set for the pillar in step 5 below:
 
-![The Tool Options dock for the Form Brush: a help text, then Size 1 with Tip Square, Pressure Size with Strength 25%, Ramp steel, Light NW with Form Dome, Form rim light unticked with Glint ticked, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/form-options.png)
+![The Tool Options dock for the Form Brush: a help text, then Size 30 with Tip Square, Pressure None with Strength 100%, Ramp steel, Light NW with Form Cylinder, Form rim light unticked with Glint ticked, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/form-options.png)
 
 **Light** is the compass point the light comes from, **NW** (the upper left) to start with. **Strength** is how far each cell moves toward the tone the form gives it: shade a form at 100%, so every cell gets there. **Form rim light** and **Glint** are about light more than form; leave them as they are until tutorial 06.
 
@@ -47,9 +47,9 @@ The cylinder is nine cells across, too few for the ladder to come down from whit
 
 ### The ramp gradient
 
-The **Ramp Gradient** (**Tools > Ramp Gradient**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>) fills with a gradient along the ramp: drag from where it starts to where it ends. It fills the selection, or the whole layer with nothing selected, and alpha lock keeps it to the opaque cells, as for the brushes. The left button runs from the **From** rung to the **To** rung; the right runs the other way. Its options:
+The **Ramp Gradient** (**Tools > Ramp Gradient**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>) fills with a gradient along the ramp: drag from where it starts to where it ends. It fills the selection, or the whole layer with nothing selected, and alpha lock keeps it to the opaque cells, as for the brushes. The left button runs from the **From** rung to the **To** rung; the right runs the other way. Its options, set for the wall in step 2 below:
 
-![The Tool Options dock for the Ramp Gradient: a help text, then Ramp steel, Gradient Linear with Banding Cell-banded, From rung 0 with To rung 12, and Alpha lock unticked](../samples/05-shading-forms-and-falloff/gradient-options.png)
+![The Tool Options dock for the Ramp Gradient: a help text, then Ramp violet, Gradient Radial with Banding Cell-banded, From rung 8 with To rung 1, and Alpha lock unticked](../samples/05-shading-forms-and-falloff/gradient-options.png)
 
 A bar of magenta, selected, before, and after a drag on the violet ramp from its left end to its right, from rung 0 to rung 12:
 
@@ -67,9 +67,9 @@ The radial row is a drag from the middle of its box to the right end, from rung 
 
 ### The soft brush
 
-The **Soft Brush** (**Tools > Soft Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>) is the ramp shade brush with a soft edge: it moves the middle of the tip the most and its edge a rung, in rings that step down a rung at a time. That fade from the middle to the edge is its **falloff**. The left button lightens and the right darkens. Its options add **Hardness**:
+The **Soft Brush** (**Tools > Soft Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>) is the ramp shade brush with a soft edge: it moves the middle of the tip the most and its edge a rung, in rings that step down a rung at a time. That fade from the middle to the edge is its **falloff**. The left button lightens and the right darkens. Its options add **Hardness**, here set for the shadows in step 9 below:
 
-![The Tool Options dock for the Soft Brush: a help text, then Size 1 with Tip Square, Pressure Size with Strength 25%, Ramp steel, Hardness 0%, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/soft-options.png)
+![The Tool Options dock for the Soft Brush: a help text, then Size 8 with Tip Round, Pressure None with Strength 50%, Ramp wood, Hardness 0%, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/soft-options.png)
 
 A field of brown, before, after one click on the wood ramp at 50% with **Size** 11, **Tip** **Round** and **Hardness** 0%, and after the same click with the right button:
 
@@ -91,9 +91,9 @@ At 0% the middle climbed three rungs, to `▓`, and the rungs step down a ring a
 
 ### The smudge brush
 
-The **Smudge Brush** (**Tools > Smudge Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>) picks up the ramp colours under the tip and drags them along the stroke, like a finger through paint, and snaps what it lays back to the ramp's rungs. Each cell of the tip carries its own value, so a wide tip drags a patch. Either button does the same. Its options:
+The **Smudge Brush** (**Tools > Smudge Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>) picks up the ramp colours under the tip and drags them along the stroke, like a finger through paint, and snaps what it lays back to the ramp's rungs. Each cell of the tip carries its own value, so a wide tip drags a patch. Either button does the same. Its options, set for the pillar's shadow in step 10 below:
 
-![The Tool Options dock for the Smudge Brush: a help text, then Size 1 with Tip Square, Pressure Size with Strength 25%, Ramp steel, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/smudge-options.png)
+![The Tool Options dock for the Smudge Brush: a help text, then Size 2 with Tip Square, Pressure None with Strength 50%, Ramp wood, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/smudge-options.png)
 
 A row of brown meeting a row of brown medium shade on red, before, and after one drag on the wood ramp at 50% with **Size** 1, from four cells left of where they meet to ten cells right of it:
 
@@ -107,9 +107,9 @@ A row of brown meeting a row of brown medium shade on red, before, and after one
 
 ### The despeckle brush
 
-The **Despeckle Brush** (**Tools > Despeckle Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>) cleans up specks: a lone cell lighter or darker than every neighbour on the ramp takes the rung most of its neighbours share. Cells off the ramp, black, the ramp's top rung (a glint) and the cells of a Bayer gradient's dither are left alone, and so is any fix that would add a new lint finding. Either button does the same. Its options have no **Strength**:
+The **Despeckle Brush** (**Tools > Despeckle Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>) cleans up specks: a lone cell lighter or darker than every neighbour on the ramp takes the rung most of its neighbours share. Cells off the ramp, black, the ramp's top rung (a glint) and the cells of a Bayer gradient's dither are left alone, and so is any fix that would add a new lint finding. Either button does the same. Its options have no **Strength**; here they are set for the clean-up in step 12 below:
 
-![The Tool Options dock for the Despeckle Brush: a help text, then Size 1 with Tip Square, Pressure Size, Ramp steel, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/despeckle-options.png)
+![The Tool Options dock for the Despeckle Brush: a help text, then Size 12 with Tip Square, Pressure None, Ramp wood, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/despeckle-options.png)
 
 A field of brown medium shade on red with six specks along its middle row, before, and after one drag of a size 5 brush along that row on the wood ramp. The specks, left to right: a cell a rung up, a cell a rung down, a cell two rungs up, a pair of cells a rung up, a cell of yellow (the top rung) and a cell of black:
 
