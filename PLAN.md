@@ -48,7 +48,7 @@ Status is against Blockwright's `main` on 2026-11-05 (`06fbac5`). Issue and PR n
 | 08 | Composing a scene | Selections, move, flip, rotate, paste modes (normal, transparent, under), guides, reference image, Library stamps, Scene Starter | Selections, move/transform, flip, rotate, paste modes, guides, reference image and the Library (dock, Save to Library) merged; the Scene Starter isn't on `main`; samples and Try-it file are `.bwp` (§6) |
 | 09 | Layers and projects | Layer kinds (cells, pixels, text, generator, reference), compositing, the project file, snapshots | Written, checked against `4b72bcc`: step pictures and Try-it file `.bwp` from `replay --project` steps files, dock pictures from `--screenshot`, snapshots from `blockwright-cli snapshot` (the same snapshot as **File > Take Snapshot**, which `replay` has no action for), the flat copy from `convert`; Text, Generator and Reference layers and the layer modes are described, not pictured (Text layers are 10's, generators 12's, the reference image 08's; the app has no control for the mode) |
 | 10 | Letters and text | Lettering by hand, letters that misread at 1× (C/G, R/A, 0/D), TDF text layers | Written, checked against `fd10778`: step pictures, the misreads and Try-it file `.bwp` from `replay --project` steps files (letters drawn with the half-block brush on a Pixels layer, rows recoloured with the rectangle under alpha lock), dock pictures from `--screenshot`; the Text tool, the face picker, the fonts folder, Bake Layer and Text layers are described, not pictured (`replay` has no text action, no CLI command makes a Text layer, and Blockwright ships no TheDraw font) |
-| 11 | Made for IRC | The 407-byte line budget, trailing black and blank rows, glyphs CP437 can't hold, `export --irc`, the row meter, IRC view, lint panel, publish | Written, checked against `fd10778`: the sign, its fix and the Try-it file `.bwp` from `replay --project` steps files on IRC-target projects (`pack --target irc`), meter, IRC View and Lint pictures from `--screenshot`, full-width IRC views from `render --irc`, byte counts and lint output from `export --irc` and `lint`; Fit and Pad are shown through `export --irc --fit`/`--pad` and `render --irc --fit`, not in the window (neither `replay` nor `--screenshot` can switch them), and Publish to Library and the export dialogs are described, not pictured |
+| 11 | Made for IRC | The 407-byte line budget, trailing black and blank rows, glyphs CP437 can't hold, `export --irc`, the row meter, IRC view, lint panel, publish | Written, checked against `e5db865`: the sign, its fix and the Try-it file `.bwp` from `replay --project` steps files on IRC-target projects (`pack --target irc`), meter, IRC View and Lint pictures from `--screenshot`, full-width IRC views from `render --irc`, byte counts and lint output from `export --irc` and `lint`; Fit and Pad are shown through `export --irc --fit`/`--pad` and `render --irc --fit`, not in the window (neither `replay` nor `--screenshot` can switch them), and Publish to Library and the export dialogs are described, not pictured |
 | 12 | Scripts and generators | Generator layers, parameter forms, smart prefabs, the headless CLI | Generator layers and their parameter forms merged (#17); smart prefabs aren't on `main`; CLI `render`, `convert`, `export`, `shade`, `lint`, `replay` merged; samples are `.bwp` (§6) |
 
 Which samples are `.bwp` (§1): the final piece of 04–07, and the samples and Try-it files of 08, 09 and 12, and of every Track B project. 01, 02 and 03 stay flat `.ans`. 10's samples are `.bwp` from `replay --project`, its hand lettering on a Pixels layer, and so are 11's, IRC-target projects, since a flat `.ans` keeps neither the target nor the budget.
@@ -64,19 +64,19 @@ One page per area, in `manual/`. Each page is written when its feature is on Blo
 | Page | Source in Blockwright's `PLAN.md` | Status |
 |---|---|---|
 | Install | Phase 6, packaging | Waits for packages (AUR, Debian/Ubuntu, Fedora) |
-| The window | §11 workspace layout, §4 renderer (zoom, 1× preview) | Written, checked against `c44974c`; no window pictures yet (`--screenshot`, #374, can take them now) |
-| Keyboard mode | §4 keyboard mode | Written, checked against `c44974c` |
+| The window | §11 workspace layout, §4 renderer (zoom, 1× preview) | Written, checked against `c44974c`; Canvas Size (#397 slice 1) and the Glyphs dock's offered sets added from `e5db865`; no window pictures yet (`--screenshot`, #374, can take them now; it can't open a dialog, so Canvas Size isn't pictured) |
+| Keyboard mode | §4 keyboard mode | Written, checked against `c44974c`; sets 17–20 (#400), the saved set and pen (#307) added from `e5db865` |
 | Tools | §4 drawing tools, §10 brushes | Merged tools ready; one section per tool added as each lands |
 | Selections | §4 selections | Ready |
 | Symmetry | §4 mirror mode, §10 symmetry | Ready |
 | Layers | §5, §15 (layer styles) | Written, checked against `4b72bcc` |
 | Library | §12 | Ready for stamps (the Library dock, Save to Library); prefabs and the Scene Starter aren't on `main` |
 | Colour | §4 SAUCE/iCE, palette; Phase 8 24-bit | Written, checked against `c44974c`; 24-bit covers reading only (drawing in 24-bit is Phase 8) |
-| IRC | §8 IRC text, §9 | Written, checked against `c44974c` |
-| Lint | §10 ladder lint, Phase 4 lint panel | Written, checked against `f34d296` |
+| IRC | §8 IRC text, §9 | Written, checked against `e5db865`: every example output from `export --irc` and `render --irc` |
+| Lint | §10 ladder lint, Phase 4 lint panel | Written, checked against `f34d296`; the deliberate single-pixel pattern note (#395) added from `e5db865` |
 | Generators | §7 | Ready (#17) |
 | File formats | §6, §8 | Written, checked against `c44974c` |
-| CLI | `blockwright-cli --help` | Written, checked against `f34d296`; its full help is generated (§4) |
+| CLI | `blockwright-cli --help` | Written, checked against `f34d296`; its full help is generated (§4); exit status 1's unexpected errors (#380) added from `e5db865`; no `replay` section yet |
 | Shortcuts | every action | Generated (§4) |
 | Preferences | — | Nothing to document yet |
 

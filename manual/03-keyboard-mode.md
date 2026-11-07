@@ -3,7 +3,7 @@ Checked: Blockwright 0.1.0 (c44974c)
 
 # Keyboard mode, F-key glyph sets and the pen
 
-Keyboard mode types on the canvas the way a text editor types on a page: a key puts a glyph in the cell under the cursor and moves the cursor on. The F-keys type the block, shade and line glyphs that aren't on a keyboard, from 16 sets you switch between. Everything typed is drawn in the pen's two colours.
+Keyboard mode types on the canvas the way a text editor types on a page: a key puts a glyph in the cell under the cursor and moves the cursor on. The F-keys type the block, shade and line glyphs that aren't on a keyboard, from 20 sets you switch between (16 in a CP437 document under the ANSI target). Everything typed is drawn in the pen's two colours.
 
 [What ANSI art is](../tutorials/01-what-ansi-art-is.md) types its first word this way.
 
@@ -47,7 +47,7 @@ With **Edit > Mirror Mode** (<kbd>Ctrl</kbd>+<kbd>M</kbd>) on and **Edit > Symme
 
 ## The F-key glyph sets
 
-<kbd>F1</kbd> to <kbd>F10</kbd> type the ten glyphs of the current **glyph set**. There are 16 sets, the ones Moebius and PabloDraw have. Set 6, the shades and half blocks, is the one Blockwright starts on each time it starts:
+<kbd>F1</kbd> to <kbd>F10</kbd> type the ten glyphs of the current **glyph set**. There are 20. Sets 1 to 16, the ones Moebius and PabloDraw have, are offered in every document; sets 17 to 20 hold glyphs CP437 doesn't have and are offered only in IRC and UTF-8 documents ([Sets 17 to 20](#sets-17-to-20)). Set 6, the shades and half blocks, is the default. Blockwright starts on the set last picked, and on set 6 the first time:
 
 ![The 16 glyph sets, a row each under F1 to F10, set 6 on blue: 1 single box lines, 2 double box lines, 3 and 4 mixed single and double lines, 5 crossings and symbols, 6 shades and half blocks, 7 faces, card suits and notes, 8 arrows, 9 to 16 maths, Greek, accented letters and brackets](../samples/manual-03-keyboard-mode/glyph-sets.ans "2x")
 
@@ -69,18 +69,28 @@ With **Edit > Mirror Mode** (<kbd>Ctrl</kbd>+<kbd>M</kbd>) on and **Edit > Symme
 | 14 | `ê ë è é É î ï ì í ₧` |
 | 15 | `ô ö ò ó º û ü ù ú Ü` |
 | 16 | ``/ \ ( ) { } [ ] ` '`` |
+| 17 | `▖ ▗ ▘ ▝ ▚ ▞ ▙ ▛ ▜ ▟` |
+| 18 | `▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▔ ▕` |
+| 19 | `▏ ▎ ▍ ▌ ▋ ▊ ▉ █ ▐ ▕` |
+| 20 | `◢ ◣ ◤ ◥ ◆ ◇ ○ ● ★ ☆` |
 
 ### Changing the set
 
 | Key or item | What it does |
 |---|---|
-| **Glyphs > Previous Set**, <kbd>Ctrl</kbd>+<kbd>,</kbd> | The set before; from set 1 it goes round to set 16. |
-| **Glyphs > Next Set**, <kbd>Ctrl</kbd>+<kbd>.</kbd> | The set after; from set 16 it goes round to set 1. |
+| **Glyphs > Previous Set**, <kbd>Ctrl</kbd>+<kbd>,</kbd> | The set before; from set 1 it goes round to the last set the document offers, 16, or 20 in an IRC or UTF-8 document. |
+| **Glyphs > Next Set**, <kbd>Ctrl</kbd>+<kbd>.</kbd> | The set after; from the last set the document offers it goes round to set 1. |
 | **Glyphs > Default Set**, <kbd>Ctrl</kbd>+<kbd>/</kbd> | Back to set 6. |
 | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F1</kbd> to <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd> | Sets 1 to 10. |
-| **Glyphs > Set 1** to **Set 16** | Any set; each item shows its ten glyphs, and the current one is ticked. |
+| **Glyphs > Set 1** to **Set 20** | Any set the document offers; each item shows its ten glyphs, and the current one is ticked. Sets 17 to 20 are in the menu only in IRC and UTF-8 documents. |
 
-Sets 11 to 16 have no key of their own: pick them from the **Glyphs** menu or the Glyphs dock, or step to them.
+Sets 11 to 20 have no key of their own: pick them from the **Glyphs** menu or the Glyphs dock, or step to them. To give a set a key, select it on the **Shortcuts** tab of **Edit > Preferences...** (no shortcut by default; on macOS it is in the application menu), where the sets are listed under **Glyphs**.
+
+### Sets 17 to 20
+
+Sets 17 to 20 are offered in a document under the IRC target (**Format > Target > IRC**, no shortcut) and in a UTF-8 document, such as one read from or saved as a UTF-8 `.ans`, under either target. In a CP437 document under the ANSI target, the only other kind, the **Glyphs** menu, the Glyphs dock's list and stepping leave them out, and the status bar's tooltip names only the keys of the sets offered. If the set in use is one of them when the document stops offering it, the F-keys type set 6.
+
+They can still be given a key in any document. The **Shortcuts** tab lists them under **Glyphs** in every document; in one that hides them, each row ends "(hidden: offered only in IRC and UTF-8 documents)", in grey, and its tooltip adds "Hidden in this document: offered only in IRC and UTF-8 documents. A key given to it is kept, and works there." In a document that hides the set the key does nothing. A key counts as taken whether or not the action that has it is shown: a key one of these sets has is refused for any other action, with "… is already the key for …", and a key another action has is refused for one of these sets. **Help > Keyboard Shortcuts...** (no shortcut) lists a hidden set that has a key, with the same note in its tooltip, and `blockwright --list-actions` lists all four after set 16, each with `"offeredWhen": "in IRC and UTF-8 documents"`.
 
 Moebius picks sets with <kbd>Alt</kbd>+F-keys. Blockwright doesn't, because the desktop takes many of those keys before an editor sees them (<kbd>Alt</kbd>+<kbd>F4</kbd> closes the window), and leaves <kbd>Ctrl</kbd>+F-keys and <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+F-keys alone for the same reason. On a Mac the <kbd>Ctrl</kbd> keys on this page are <kbd>Cmd</kbd>.
 
@@ -89,7 +99,7 @@ Moebius picks sets with <kbd>Alt</kbd>+F-keys. Blockwright doesn't, because the 
 ### Seeing the set
 
 - **The status bar** shows the current set and its glyphs: `F-keys set 6: ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·`. Its tooltip lists each F-key with its glyph and the keys that change the set.
-- **The Glyphs dock**, along the bottom of the window, shows the set as ten cells, with a list of all 16 sets beside them. Clicking a cell does what its F-key does with the active tool: in keyboard mode it types the glyph, with the glyph brush it picks the brush's glyph. Picking a set from the list changes the set.
+- **The Glyphs dock**, along the bottom of the window, shows the set as ten cells, with a list of the sets the document offers beside them. Clicking a cell does what its F-key does with the active tool: in keyboard mode it types the glyph, with the glyph brush it picks the brush's glyph. Picking a set from the list changes the set.
 
 Here is a sign typed in keyboard mode. The frame is set 2 (<kbd>F1</kbd> `╔`, <kbd>F5</kbd> `═`, <kbd>F2</kbd> `╗`, <kbd>F6</kbd> `║`, <kbd>F3</kbd> `╚`, <kbd>F4</kbd> `╝`) in light cyan; the bar is set 6 (<kbd>F1</kbd> `░`, <kbd>F2</kbd> `▒`, <kbd>F3</kbd> `▓`, <kbd>F4</kbd> `█`) in light red; the words are letters in yellow:
 
@@ -97,7 +107,7 @@ Here is a sign typed in keyboard mode. The frame is set 2 (<kbd>F1</kbd> `╔`, 
 
 ## The pen
 
-The **pen** is the two colours everything is drawn in: a **foreground** for the glyph and a **background** for the rest of the cell. Keyboard mode types in both, and the drawing tools use them too. Blockwright starts with grey on black each time it starts.
+The **pen** is the two colours everything is drawn in: a **foreground** for the glyph and a **background** for the rest of the cell. Keyboard mode types in both, and the drawing tools use them too. Blockwright starts with the two colours last picked for the pen, and with grey on black the first time.
 
 | Key or item | What it does |
 |---|---|

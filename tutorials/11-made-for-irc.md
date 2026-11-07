@@ -1,5 +1,5 @@
 Title: Made for IRC
-Checked: Blockwright 0.1.0 (2edd1df)
+Checked: Blockwright 0.1.0 (e5db865)
 
 # Made for IRC
 
@@ -25,7 +25,7 @@ followed by CR LF. The text gets what is left: 498 bytes less the sender's mask 
 
 ### What a row costs
 
-A row's line is its glyphs as UTF-8, a colour code where the colours change, and, under the IRC target, a byte each time bold, italic or underline turns on or off (`^B`, `^]` and `^_`, bytes 0x02, 0x1D and 0x1F). A space is 1 byte; `█`, `▀`, `▄` and the shades are 3 each. A code is `^C` (byte 0x03) and the colour numbers, `^C4,1` for mIRC light red on black, or `^C8` when only the foreground changes. The encoder tries the ways a cell can be drawn, a `▄` as a `▀` with its colours swapped, say, and keeps the shortest line of those it tries ([the manual](../manual/10-irc.md#how-a-row-is-encoded) says which it tries). So the cost of a row is mostly in how often it changes colour:
+A row's line is its glyphs as UTF-8, a colour code where the colours change, and, under the IRC target, a byte each time bold, italic or underline turns on or off (`^B`, `^]` and `^_`, bytes 0x02, 0x1D and 0x1F). A space is 1 byte; `█`, `▀`, `▄` and the shades are 3 each. A code is `^C` (byte 0x03) and the colour numbers, `^C4,1` for mIRC light red on black, or `^C8` when only the foreground changes. The encoder tries the ways a cell can be drawn, a `▄` as a `▀` with its colours swapped, say, and keeps the line shortest as WeeChat's ascii script sends it, the shortest as written breaking a tie, except in a few rows the manual names ([the manual](../manual/10-irc.md#how-a-row-is-encoded) says which ways it tries). So the cost of a row is mostly in how often it changes colour:
 
 - A row in one colour needs one colour code at most; the rest is its glyphs.
 - The bulb row, four colours one a cell across 80 columns, pays a code at every cell: 80 `▄` (240 bytes) and 182 bytes of codes, 422 bytes.
@@ -107,7 +107,7 @@ You'll draw the sign as it first comes to mind, see what IRC makes of it, and fi
 
 6. **Read the meter.** The canvas opens at 2×; in a window 1280 pixels wide, as here, that shows columns 0 to 40 and the meter beside them:
 
-    ![The canvas's columns 0 to 40 at 2× with the row meter on its right. Rows 0 and 8 are the one-cell bulbs; the yellow star is at column 24 of row 4, and the white I and most of the R stand in rows 2 to 6 from column 28. The meter's cells for rows 0 and 8 are red, each reading 483. Rows 1 and 7 have no bar and no number. Rows 2 to 6 have short grey bars reading 75, 71, 95, 71 and 77](../samples/11-made-for-irc/meter-over.png)
+    ![The canvas's columns 0 to 40 at 2× with the row meter on its right. Rows 0 and 8 are the one-cell bulbs; the yellow star is at column 24 of row 4, and the white I and most of the R stand in rows 2 to 6 from column 28. The meter's cells for rows 0 and 8 are red, each reading 483. Rows 1 and 7 have no bar and no number. Rows 2 to 6 have short grey bars reading 75, 68, 88, 68 and 77](../samples/11-made-for-irc/meter-over.png)
 
     The bulb rows are red: over the budget. Hover over row 0's bar: "Row 0: 483 of 407 bytes as WeeChat's ascii script sends it, 422 as written, over by 76". Rows 1 and 7 hold only spaces on black, which IRC sends as empty lines: no bar.
 
@@ -141,7 +141,7 @@ You'll draw the sign as it first comes to mind, see what IRC makes of it, and fi
 
 10. **Close the sides.** Fill column 0 and column 79 of rows 1 to 7, both pixels of each cell, so each is a `█`. Down column 0: yellow, light green, light cyan, light red, yellow, light green, light cyan. Down column 79: light cyan, light red, yellow, light green, light cyan, light red, yellow. Every row now ends on a cell that isn't a space on black: rows 1 to 7 on the `█` in column 79 (foreground as listed, background black); rows 0 and 8 on their last bulb, a `▄` light cyan on black. So the encoder drops nothing from any row, and rows 1 and 7 aren't empty any more:
 
-    ![The canvas's columns 0 to 40 with the row meter. The bulbs are now two cells each, and column 0 of rows 1 to 7 is a full block, yellow, light green, light cyan, light red, yellow, light green, light cyan from the top. The meter's cells are all grey: rows 0 and 8 read 363, rows 1 to 7 read 97, 121, 115, 132, 116, 123 and 96](../samples/11-made-for-irc/meter-final.png)
+    ![The canvas's columns 0 to 40 with the row meter. The bulbs are now two cells each, and column 0 of rows 1 to 7 is a full block, yellow, light green, light cyan, light red, yellow, light green, light cyan from the top. The meter's cells are all grey: rows 0 and 8 read 363, rows 1 to 7 read 93, 114, 112, 124, 112, 116 and 93](../samples/11-made-for-irc/meter-final.png)
 
     The IRC View's status line reads `Every line fits 407 bytes`, and the view has no grey:
 
@@ -157,22 +157,22 @@ You'll draw the sign as it first comes to mind, see what IRC makes of it, and fi
     $ blockwright-cli export --irc final.bwp final.txt
     line  bytes   sent
        1    332    363
-       2     93     97
-       3    112    121
-       4    111    115
-       5    120    132
-       6    111    116
-       7    114    123
-       8     93     96
+       2     91     93
+       3    108    114
+       4    109    112
+       5    118    124
+       6    109    112
+       7    110    116
+       8     91     93
        9    332    363
     9 lines, longest 332 bytes, 363 sent, budget 407: 0 over
     ```
 
     `bytes` is the line as written, `sent` as the script sends it; the budget is checked against `sent`. The table counts lines from 1, the meter rows from 0. The file is [final.txt](../samples/11-made-for-irc/final.txt).
 
-12. **Publish.** **File > Publish to Library...** (no shortcut) puts the piece in an ascii library, a folder with a `funkpower` folder in it. Give the **Library folder**, a **Piece name** (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and **Tags**, comma or space separated, to which `funkpower` is always added. It writes `funkpower/<name>.ans` and `funkpower/<name>.txt` and updates the library's `.tags.json` and `.dates.json`, after a dialog that lists the four files. The `.ans` is CP437, so the stars are written as `?` there, and the dialog warns of it before you say yes. The `.txt` is the IRC text, plain: without Fit, Pad or Swap Shades, whatever **View > IRC** says, and checked against 407 bytes whatever the document's budget, and a piece with a line over is refused. The status bar says *Published funkpower/<name>*.
+12. **Publish.** **File > Publish to Library...** (no shortcut) puts the piece in an ascii library, a folder with a `funkpower` folder in it. Give the **Library folder**, a **Piece name** (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and **Tags**, comma or space separated, to which `funkpower` is always added. It writes `funkpower/<name>.ans` and `funkpower/<name>.txt` and updates the library's `.tags.json` and `.dates.json`, after a dialog that lists the four files. The `.ans` is CP437, so the stars are written as `?` there, and the dialog warns of it before you say yes. The `.txt` is the IRC text, plain: without Fit, Pad or Swap Shades, whatever **View > IRC** says, and held to the document's budget or to 407 bytes, whichever is less, as the script sends it (this document's 407, unless you changed it), and a piece with a line over is refused. The status bar says *Published funkpower/<name>*.
 
-**File > Send to WeeChat...** (no shortcut) copies the piece to a host over ssh and reloads WeeChat's ascii script there. It too refuses an IRC line over 407 bytes as sent, whatever the document's budget; it is not covered further here.
+**File > Send to WeeChat...** (no shortcut) copies the piece to a host over ssh and reloads WeeChat's ascii script there. It too refuses an IRC line over the document's budget or 407 bytes as sent, whichever is less; it is not covered further here.
 
 ## Check it
 
@@ -184,9 +184,9 @@ line  bytes   sent
    1    358    403  fit: 16 cells merged
    2      0      0
    3     71     75
-   4     68     71
-   5     86     95
-   6     68     71
+   4     66     68
+   5     84     88
+   6     66     68
    7     73     77
    8      0      0
    9    358    403  fit: 16 cells merged
@@ -208,9 +208,9 @@ line  bytes   sent
    1    422    483  over by 76
    2      0      0
    3     71     75
-   4     68     71
-   5     86     95
-   6     68     71
+   4     66     68
+   5     84     88
+   6     66     68
    7     73     77
    8      0      0
    9    422    483  over by 76
@@ -255,13 +255,13 @@ It is the finished sign with a blank row above it and one below, meant as a marg
     line  bytes   sent
        1     85     87
        2    332    363
-       3     93     97
-       4    112    121
-       5    111    115
-       6    120    132
-       7    111    116
-       8    114    123
-       9     93     96
+       3     91     93
+       4    108    114
+       5    109    112
+       6    118    124
+       7    109    112
+       8    110    116
+       9     91     93
       10    332    363
       11     85     87
     11 lines, longest 332 bytes, 363 sent, budget 407: 0 over

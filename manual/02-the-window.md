@@ -30,6 +30,35 @@ The canvas is in the middle of the window, centred on a dark background when it 
 
 The window's title is the file's name (`untitled.ans` before the first save), with a `*` while there are unsaved changes.
 
+### Canvas Size
+
+**Format > Canvas Size...** makes the canvas wider, narrower, taller or shorter. It has no shortcut to start with; the **Shortcuts** tab of **Edit > Preferences...** (no shortcut) can give it one. It sits at the top of the **Format** menu, above **Target**.
+
+| Part | What it does |
+|---|---|
+| **Width** | 1 to 400 columns. It starts at the canvas's width. |
+| **Height** | 1 to 5000 rows. It starts at the canvas's height. |
+| `Now 80 × 40` | The size the canvas has now. |
+| **Anchor** | A 3 × 3 grid of buttons: the corners, the middle of each side and the centre. The one picked is where the old canvas stays in the new one; each button's arrow points to its corner or side, and the centre's is a dot. It starts at top left each time the dialog opens. |
+| The summary | What each side gains or loses, such as `2 columns added on the left; 3 columns added on the right`, or `No change`. |
+| `Cut cells can be brought back with Undo.` | A reminder that shrinking can be taken back. |
+
+The top-left anchor keeps every cell at the same column and row: columns come and go on the right, rows at the bottom. The bottom-right anchor puts all the change on the left and at the top. At the centre the change is split between the two sides. When it is an odd number, the extra column goes on the right and the extra row at the bottom, whether they are added or cut: growing an 80-column canvas to 85 at the centre adds 2 columns on the left and 3 on the right.
+
+What happens to each layer ([Layers](07-layers.md)):
+
+- **A Cells or Pixels layer exactly the canvas's size and at its top-left corner** becomes the new size with it. Cells past the new edges are cut. On the bottom layer, when it is a Cells layer, the new cells are a space, grey on black, the cell **File > New** (<kbd>Ctrl</kbd>+<kbd>N</kbd>) fills a canvas with; on any other layer they are transparent. When the new edge cuts through a wide glyph, the half left on the canvas becomes a space with that half's foreground and background.
+- **Every other layer** keeps all its cells and moves with the old canvas: a Cells or Pixels layer of another size or place, and every Text, Generator and Reference layer. Part of such a layer can end up off the canvas, and growing the canvas again shows it. A layer's place is held to the limits of a project's coordinates, about 2.1 billion cells either way, so one already stored that far out moves no further. A Generator layer doesn't run again.
+- **A Reference layer's picture** moves with the old canvas: 8 pixels for each column (9 with 9 px letter spacing) and 16 pixels for each row. Its place is held to 16777216 pixels either way from the canvas's corner, so a picture already that far out moves no further.
+
+Locked and hidden layers change in the same way. The selection moves with the old canvas and is cut to the new one; it is cleared if none of it is left. The cell cursor moves too, and is kept on the canvas.
+
+The whole change is one undo step, named `Canvas Size`, and **Edit > Undo** (<kbd>Ctrl</kbd>+<kbd>Z</kbd>) puts back every cell, every layer's place and the picture's place, along with the selection and cursor. Picking the size the canvas already has does nothing and adds no step.
+
+Blockwright refuses a size, and says why in a message box starting `The canvas can't be made that size:`, when the layers would then hold more than 16000000 cells between them (`the layers would hold over 16000000 cells`) or when it couldn't draw a canvas that big (`the canvas is too large to display`). A 400 × 5000 canvas can be drawn with 8-pixel cells but not with 9 px letter spacing. A refused size changes nothing.
+
+An `.ans` saved after a resize has the new size, and so do its SAUCE width and height. The CLI has no command to resize a canvas.
+
 ### The status bar
 
 The status bar along the bottom of the window shows, from the left:
@@ -54,7 +83,7 @@ Each panel around the canvas is a dock: drag its title bar to move it to another
 | **Library** | Right | The stamps and text styles of the library, as thumbnails with a category list and a search box. | No |
 | **Lint** | Right, bottom, in front | The lint's findings for the canvas, one a row; activating a row puts the cell cursor on its cell. | Yes |
 | **IRC View** | Right, bottom, behind Lint | The canvas as an IRC client shows the exported lines, with a red bar where a line over the budget is cut. | Yes |
-| **Glyphs** | Bottom | The current F-key set as ten cells and a list of all 16 sets ([Keyboard mode, F-key glyph sets and the pen](03-keyboard-mode.md)). | Yes |
+| **Glyphs** | Bottom | The current F-key set as ten cells and a list of the sets the document offers ([Keyboard mode, F-key glyph sets and the pen](03-keyboard-mode.md)). | Yes |
 
 Lint and IRC View share a place as two tabs; the one at the back updates when it comes to the front.
 

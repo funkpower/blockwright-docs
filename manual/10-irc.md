@@ -1,5 +1,5 @@
 Title: IRC: byte budget, row meter, IRC view, export
-Checked: Blockwright 0.1.0 (4916cd6)
+Checked: Blockwright 0.1.0 (e5db865)
 
 # IRC: byte budget, row meter, IRC view, export
 
@@ -24,6 +24,8 @@ Set the budget with **View > IRC > Budget...** (no shortcut). The IRC Budget dia
 | Preset | `EFnet / WeeChat (407 bytes)` or `Custom`. Picking the preset sets the bytes to 407 |
 | Budget | The bytes a line may take, 1 to 512. A number other than the preset's makes it Custom |
 | Mask, Channel | Your `nick!user@host` and the channel. With both filled in the budget is worked out as 498 less their lengths, and the preset becomes Custom. While either is empty, holds a space, or leaves no room for text, the budget isn't worked out and stays as it was, with no message |
+
+Under the fields a note says: "Publish to Library and Send to WeeChat hold lines to this budget or to 407 bytes, the ascii script's EFnet limit, whichever is less." (see [Export IRC Text](#export-irc-text)).
 
 The budget belongs to the document. Changing it is a step on the undo stack, and a project saves it (its profile, `efnet-weechat` or `custom`, and the bytes). An `.ans` has nowhere to keep it: a document whose budget has been changed is one an `.ans` doesn't hold whole (see [File formats](13-file-formats.md#saving-a-project-as-a-flat-file)).
 
@@ -113,7 +115,7 @@ The dock scrolls with the canvas on both axes, with no setting to turn that off:
 
 ## Export IRC Text
 
-**File > Export IRC Text...** (no shortcut) writes the lines the row meter measures to a text file: the canvas as IRC lines, one message each. It is above **File > Publish to Library...** and **File > Send to WeeChat...** (no shortcut either), which write their own lines, without Fit, Pad or Swap Shades, and hold them to the 407-byte budget whatever the document's budget is (Send to WeeChat holds only the IRC text it sends, which it sends under the IRC target or for a UTF-8 document).
+**File > Export IRC Text...** (no shortcut) writes the lines the row meter measures to a text file: the canvas as IRC lines, one message each. It is above **File > Publish to Library...** and **File > Send to WeeChat...** (no shortcut either), which write their own lines, without Fit, Pad or Swap Shades. Those two hold the lines to the document's budget or to 407 bytes, whichever is less, measured as the script sends them: a budget under 407 holds them to it, and one over 407 still stops at 407, the ascii script's EFnet limit. Send to WeeChat holds only the IRC text it sends, which it sends under the IRC target or for a UTF-8 document; a CP437 document under the ANSI target goes as its `.ans` alone, and no budget is checked. A piece with a line over is refused, and nothing is written. With a budget of 350, say, the refusal reads "over the document's own 350-byte IRC budget as WeeChat's ascii script sends it: line 1 is 400 bytes"; with a budget of 407 or more it reads "over the 407-byte IRC budget as WeeChat's ascii script sends it, so it would be cut on IRC: line 1 is 450 bytes". Each line over is named. Publish shows the refusal under "Could not publish:", Send on its own.
 
 1. Any tool's edit in progress lands first.
 2. If any line is over the budget as sent, a warning says how many and how long the longest is: "2 lines are over the 407-byte budget, the longest 602 bytes as WeeChat's ascii script sends them: the script cuts them short. Export anyway?" (for one line, "1 line is over the 407-byte budget, at … bytes as WeeChat's ascii script sends it: the script cuts it short."). **Save** goes on, **Cancel**, the default, stops.
@@ -125,13 +127,14 @@ The file is UTF-8, each line ended by a line feed, the blank lines above and bel
 
 ## How a row is encoded
 
-The encoder searches the ways each cell can be drawn and writes the shortest line of those it tries:
+The encoder searches the ways each cell can be drawn. Of the lines it tries, it writes the one shortest as WeeChat's ascii script sends it (see [The IRC View dock](#the-irc-view-dock)), and of those the one shortest as written. The line shortest as written can be longer as sent, since the script writes every colour number with two digits and writes no colour code in front of a space, not underlined, on the background it has already set. Two kinds of row are written shortest as written instead. One is a row with a cluster (a glyph of more than one code point, such as a letter and its accent), a lone code point the script may join to the cell before it, such as a combining mark, or a control character: the encoder can't tell what the script would send for it, and measures it once written. The other is a row whose line shortest as sent could send more than the line shortest as written at some other budget, since the script sends a line over its budget in its own shortest form where that is shorter: the line shortest as written is kept there.
 
 - A colour is set with `^C` (byte 0x03) only when it changes: `^Cfg,bg` when the background changes, `^Cfg` alone when only the foreground does, unless the next glyph is a comma, which a client would read as the start of a background. Before a comma the encoder writes the background again (`^Cfg,bg`) or follows the number with `^B^B` (0x02 twice, bold on and off again), whichever is shorter, and the background when the two are the same length. `A` in white and then `,5` in light red, all on black, is `^C0,1A^C4,1,5`: `,1` and `^B^B` are both two bytes, so the background is written. On light blue, mIRC's 12, the same cells are `^C0,12A^C4^B^B,5`, as `,12` is a byte longer than `^B^B`. A colour number under 10 takes one digit unless the character after it is a digit. The palette colours map onto mIRC's numbers as below; a 24-bit colour is drawn as the nearest of mIRC's 99, so under the IRC target a swatch from mIRC 16 to 98 is written as its own number, except six whose colour is also a lower number's and which are written as that one: 52 as 4, 54 as 8, 58 as 11, 62 as 13, 88 as 1 and 98 as 0.
-- A cell that can be drawn more than one way is drawn whichever way gives the shortest line the encoder tries: a solid cell as a space in its colour or a █; ▀ as ▄ with the colours swapped, and ▄ as ▀ (▌ and ▐ the same); a glyph in its own background as a solid cell. Shades are drawn as they are unless Swap Shades is on. A cell with bold, italic or underline, a wide glyph followed by its continuation and a cluster are drawn only as themselves; a `日` with no continuation after it is drawn as a letter is, so in its own background it can be a space or a █. Not every line is tried. Where a solid cell drawn as a space changes the background, its code has to set a foreground too, and the encoder tries only these foregrounds for that code: the one already set, the background's own number, and 1 when the one already set is 10 to 98. Until a row sets a foreground, the one already set counts as 99, the client's own colour: with iCE colours on, a space grey on light blue and then `A` white on light blue are `^C99,12 ^C0A` (10 bytes). The next cell's foreground is never tried: `A` white on black, then a space grey on blue and `B` yellow on blue, are `^C0,1A^C0,2 ^C8B` (13 bytes), though `^C0,1A^C8,2 B` (11) draws the same cells. Nor does the code in front of a `█` ever change the background, unless the cell is bold, italic or underlined or the `█` has a combining mark: a `█` light red on black, then a space grey on blue, are `^C4█^C2█` (10 bytes), though `^C4,2█ ^O` (9) draws the same cells.
+- A cell that can be drawn more than one way is drawn whichever way gives the shortest line: a solid cell as a space in its colour or a █; ▀ as ▄ with the colours swapped, and ▄ as ▀ (▌ and ▐ the same); a glyph in its own background as a solid cell. Shades are drawn as they are unless Swap Shades is on. A cell with bold, italic or underline, a wide glyph followed by its continuation and a cluster are drawn only as themselves; a `日` with no continuation after it is drawn as a letter is, so in its own background it can be a space or a █.
+- Not every line is tried. A colour code sometimes has to set a colour its glyph doesn't show: a foreground in front of a space, which shows only its background, or a background in front of a █, which shows only its foreground. Where a space changes the background, the encoder tries these foregrounds for its code: the one already set, the background's own number, 1 when a foreground of 10 or more has been set, and the foregrounds the next cell can be drawn with (the next cell not drawn in the space's own colour alone). Until a row sets a foreground, the one already set is the client's own colour, written as 99. So `A` white on black, then a space grey on blue and `B` yellow on blue, are `^C0,1A^C8,2 B` (11 bytes written, 15 sent): the space's code sets the `B`'s yellow, and the `B` needs no code of its own. Where a █ changes only the foreground, the encoder also tries a code that sets the background the next cell needs: `A` white on black, then a █ light red on black and `B` light red on blue, are `^C0,1A^C4,2█B` (13 written, 17 sent).
 - Bold, italic and underline are switched on and off with `^B`, `^]` and `^_` (0x02, 0x1D, 0x1F), after any colour code.
 - A row whose last glyph written is a space ends with `^O` (0x0F), which resets the colours, so the client doesn't carry the background on past it.
-- Spaces on black at the start of a row are kept, and encoded as any cell is: a space, grey on black, and then `A`, white on black, are `^C1,1 ^C0A`, and an underlined space keeps its line (one light red on black, then `A`, grey on black, is `^C4,1^_ ^C15^_A`). The cells at the end that are a space on black and not underlined are left off, each taken as [Making rows fit](#making-rows-fit) says (a NUL as a space, an uncovered cell as a grey-on-black space, a control code as its glyph). Pad keeps them, and writes a row's last cell, when it shows black alone, as a `█` with a black foreground and no background code of its own.
+- Spaces on black at the start of a row are kept, and encoded as any cell is: a space, grey on black, and then `A`, white on black, are `^C0,1 A` (6 bytes written, 8 sent), and an underlined space keeps its line (one light red on black, then `A`, grey on black, is `^C4,1^_ ^C15^_A`). The cells at the end that are a space on black and not underlined are left off, each taken as [Making rows fit](#making-rows-fit) says (a NUL as a space, an uncovered cell as a grey-on-black space, a control code as its glyph). Pad keeps them, and writes a row's last cell, when it shows black alone, as a `█` with a black foreground and no background code of its own.
 - A glyph is written as UTF-8. NUL is written as a space, another control code (0x01-0x1F, 0x7F) as its CP437 glyph, and a C1 control (U+0080-U+009F), U+2028, U+2029 or a code point that isn't a Unicode scalar value as `?`. A cluster is written whole, with any NUL in it as a space, unless it holds one of those or another control code, when it is written as `?` (and a space, when its continuation follows). A wide glyph followed by its continuation is written whole where a UTF-8 `.ans` would write it whole, and otherwise as `?` and a space, so the row keeps its columns. One with no continuation after it is a cell like any other: `日` alone is written whole, where a UTF-8 `.ans` writes `?`.
 - A cell is written as the visible layers combine it ([How the layers combine](07-layers.md#how-the-layers-combine)); an uncovered cell, one no visible layer adds anything to, as a space, grey on black, with no bold, italic or underline.
 
@@ -154,8 +157,8 @@ A row in one colour is cheap: the first row of the canvas below, 80 blue spaces,
 $ blockwright-cli export --irc budget.ans budget.txt
 line  bytes   sent
    1     85     87
-   2    205    213
-   3    258    293
+   2    201    207
+   3    240    258
    4    476    602  over by 195
    5    494    561  over by 154
    6    244    246
@@ -165,7 +168,7 @@ blockwright-cli: budget.ans: line 5 is 561 bytes as WeeChat's ascii script sends
 blockwright-cli: budget.txt: not written: lines over the budget (--allow-over-budget writes it anyway)
 ```
 
-Nothing is written and the exit status is 3. Rows 2 and 3 hold the same nine rungs; row 3, which changes rung every two cells, takes 53 more bytes as written and 80 more as sent. Row 4 takes the rungs in a scattered order and row 5 is half blocks in four colours on four backgrounds, so both change colour at almost every cell. Row 6, light green ▄▀ on blue, comes out as `^C2,9` and ▀▄▀▄…: the same picture, drawn as blue on light green with the halves swapped.
+Nothing is written and the exit status is 3. Rows 2 and 3 hold the same nine rungs; row 3, which changes rung every two cells, takes 39 more bytes as written and 51 more as sent. Row 4 takes the rungs in a scattered order and row 5 is half blocks in four colours on four backgrounds, so both change colour at almost every cell. Row 6, light green ▄▀ on blue, comes out as `^C2,9` and ▀▄▀▄…: the same picture, drawn as blue on light green with the halves swapped.
 
 With `--fit`:
 
@@ -173,13 +176,13 @@ With `--fit`:
 $ blockwright-cli export --irc --fit budget.ans budget.txt
 line  bytes   sent
    1     85     87
-   2    205    213
-   3    258    293
+   2    201    207
+   3    240    258
    4    340    407  fit: 31 cells merged
-   5    351    406  fit: 48 cells merged
+   5    355    407  fit: 44 cells merged
    6    244    246
-6 lines, longest 351 bytes, 407 sent, budget 407: 0 over
-fit: 79 cells merged in 2 lines
+6 lines, longest 355 bytes, 407 sent, budget 407: 0 over
+fit: 75 cells merged in 2 lines
 ```
 
 A smaller budget merges more:
@@ -187,21 +190,21 @@ A smaller budget merges more:
 ```
 $ blockwright-cli export --irc --budget 300 --fit budget.ans budget.txt
 …
-   4    252    298  fit: 42 cells merged
-   5    253    299  fit: 63 cells merged
+   4    252    297  fit: 42 cells merged
+   5    270    300  fit: 66 cells merged
    6    244    246
-6 lines, longest 258 bytes, 299 sent, budget 300: 0 over
-fit: 105 cells merged in 2 lines
+6 lines, longest 270 bytes, 300 sent, budget 300: 0 over
+fit: 108 cells merged in 2 lines
 ```
 
-Swap Shades saves bytes in the shaded rows and leaves the rest:
+Swap Shades saves bytes in rows 3 and 4 and leaves the rest as they were:
 
 ```
 $ blockwright-cli export --irc --swap-shades budget.ans budget.txt
 line  bytes   sent
    1     85     87
    2    201    207
-   3    240    266
+   3    238    251
    4    370    443  over by 36
    5    494    561  over by 154
    6    244    246
@@ -224,27 +227,27 @@ Without Pad, the blank rows above and below are left off, each row loses the bla
 ```
 $ blockwright-cli export --irc edges.ans edges.txt
 line  bytes   sent
-   1     39     43
-   2     41     46
+   1     39     41
+   2     39     43
    3      0      0
-   4     41     46
-   5     39     43
-5 lines, longest 41 bytes, 46 sent, budget 407: 0 over
+   4     39     43
+   5     39     41
+5 lines, longest 39 bytes, 43 sent, budget 407: 0 over
 ```
 
-The first line is `^C1,1` and two spaces (the left margin, kept), then `^C1,2` and the panel's spaces, then `^O`. A client shows the stripe and the right margin in its own background. With `--pad` every row is kept, and as each ends in black, each ends on a █ with a black foreground: rows 1, 3, 4, 5 and 7 on the black the row set, and rows 2 and 6, which are `^C1,1`, two spaces, `^C1,2`, the panel's spaces and `██`, on the panel's blue:
+The first line is `^C1,2` and two black █ on the blue (the left margin, kept, drawn as blocks in the black so that one code sets the panel's blue too), then the panel's 28 spaces, then `^O`. Lines 2 and 4 start `^C1,1` and two spaces, the margin as spaces on black. A client shows the stripe and the right margin in its own background. With `--pad` every row is kept, and as each ends in black, each ends on a █ with a black foreground: rows 1, 4 and 7, `^C1,1` and the row's spaces, on the black the row set; rows 2 and 6, `^C1,2`, `██`, the panel's spaces and `██`, on the panel's blue; and rows 3 and 5, which end `^C1██` after the panel's text, on the panel's blue too:
 
 ```
 $ blockwright-cli export --irc --pad edges.ans edges.txt
 line  bytes   sent
    1     38     40
-   2     44     48
-   3     48     55
+   2     44     46
+   3     46     51
    4     38     40
-   5     48     55
-   6     44     48
+   5     46     51
+   6     44     46
    7     38     40
-7 lines, longest 48 bytes, 55 sent, budget 407: 0 over
+7 lines, longest 46 bytes, 51 sent, budget 407: 0 over
 ```
 
 The lint reports both as [trailing-black](11-lint.md#trailing-black) and [blank-edge-rows](11-lint.md#blank-edge-rows).

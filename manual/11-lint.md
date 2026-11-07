@@ -287,6 +287,8 @@ $ blockwright-cli lint noise.ans
 
 **Fix:** shade in bands that follow the form. Dither should step its density one way over many rows, not scatter.
 
+A pattern of single pixels drawn on purpose counts too. In a row of marquee bulbs, say, a yellow `▀` on black in every other column between two red bands, each bulb's top pixel is unlike all four of its neighbours (the black on either side and below it, the red above), so it counts as a lonely pixel. Only a bulb on the piece's outer edge, or beside the black spaces a row ends with (which the check trims off, as the file leaves them out), is left out, since a neighbour is missing. A piece with a few such rows can go over 0.02 and get this finding. That is expected: the check counts pixels and can't tell a pattern from speckle. If the pattern is what you meant, leave it as it is.
+
 ### lone-pixel
 
 One pixel of a half block that is lighter on a named ramp than the colour all around it, when all eight neighbouring pixels are that colour and it isn't black: a highlight a single pixel big.

@@ -80,7 +80,7 @@ Writes the piece as IRC text with mIRC colour codes, one line per row, and print
 | `--swap-shades` | Let the encoder draw a shade as its opposite with the colours reversed when that is shorter |
 | `--allow-over-budget` | Write the file even when lines are over the budget |
 
-A line over the budget is reported with how far over it is. Without `--allow-over-budget` the output isn't written and the exit status is 3. Cells IRC text can't hold, such as a control character, are written as `?`, with a warning that counts them and names the first. `export --irc` refuses to write over its input.
+A line over the budget, measured as WeeChat's ascii script sends it, is reported with how far over it is. Without `--allow-over-budget` the output isn't written and the exit status is 3. Cells IRC text can't hold, such as a control character, are written as `?`, with a warning that counts them and names the first. `export --irc` refuses to write over its input.
 
 ### shade
 
@@ -162,12 +162,16 @@ These run programs: a generator layer's output comes from the program its `gener
 
 `--timeout` is the seconds a generator may run, 1 to 3600 (default 30). If any run fails, nothing is written.
 
+### The editor's action list
+
+`blockwright --list-actions` is an option of the editor, `blockwright`, not of `blockwright-cli`. It prints every menu and dock action as a JSON list and exits: each action's `id`, menu, text, default `shortcuts`, tips and more. It lists every action, including ones the open document doesn't offer. Glyph sets 17 to 20 (`glyphSet17` to `glyphSet20`), which are offered only under the IRC target or in a UTF-8 document ([Sets 17 to 20](03-keyboard-mode.md#sets-17-to-20)), carry `"offeredWhen": "in IRC and UTF-8 documents"`; no other action has `offeredWhen`.
+
 ## Exit status
 
 | Status | Meaning |
 |---|---|
 | 0 | Success |
-| 1 | An input that can't be read or an output that can't be written; a `convert`, `shade`, `pack`, `unpack` or `snapshot` that would lose data, without `--allow-lossy`; a `library check` that found a problem; a generator or scene that failed. Nothing is written |
+| 1 | An input that can't be read or an output that can't be written; a `convert`, `shade`, `pack`, `unpack` or `snapshot` that would lose data, without `--allow-lossy`; a `library check` that found a problem; a generator or scene that failed. Nothing is written. Also an error the command didn't expect, such as one from the file system: it prints `blockwright-cli: <command>: ` and the error's message, and ends the run |
 | 2 | A usage error: an unknown command or option, an option the command doesn't take, a missing argument, a value out of range |
 | 3 | `export --irc` found a line over the budget, without `--allow-over-budget`. Nothing is written |
 | 4 | `lint` found something other than a note |
