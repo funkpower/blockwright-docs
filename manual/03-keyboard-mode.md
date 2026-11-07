@@ -3,7 +3,7 @@ Checked: Blockwright 0.1.0 (c44974c)
 
 # Keyboard mode, F-key glyph sets and the pen
 
-Keyboard mode types on the canvas the way a text editor types on a page: a key puts a glyph in the cell under the cursor and moves the cursor on. The F-keys type the block, shade and line glyphs that aren't on a keyboard, from 20 sets you switch between (16 in a CP437 document under the ANSI target). Everything typed is drawn in the pen's two colours.
+Keyboard mode types on the canvas the way a text editor types on a page: a key puts a glyph in the cell under the cursor and moves the cursor on. The F-keys type the block, shade and line glyphs that aren't on a keyboard, from 21 sets you switch between (16 in a CP437 document under the ANSI target). Everything typed is drawn in the pen's two colours.
 
 [What ANSI art is](../tutorials/01-what-ansi-art-is.md) types its first word this way.
 
@@ -47,7 +47,7 @@ With **Edit > Mirror Mode** (<kbd>Ctrl</kbd>+<kbd>M</kbd>) on and **Edit > Symme
 
 ## The F-key glyph sets
 
-<kbd>F1</kbd> to <kbd>F10</kbd> type the ten glyphs of the current **glyph set**. There are 20. Sets 1 to 16, the ones Moebius and PabloDraw have, are offered in every document; sets 17 to 20 hold glyphs CP437 doesn't have and are offered only in IRC and UTF-8 documents ([Sets 17 to 20](#sets-17-to-20)). Set 6, the shades and half blocks, is the default. Blockwright starts on the set last picked, and on set 6 the first time:
+<kbd>F1</kbd> to <kbd>F10</kbd> type the ten glyphs of the current **glyph set**. There are 21. Sets 1 to 16, the ones Moebius and PabloDraw have, are offered in every document; sets 17 to 21 hold glyphs CP437 doesn't have and are offered only in IRC and UTF-8 documents ([Sets 17 to 21](#sets-17-to-21)). Set 6, the shades and half blocks, is the default. Blockwright starts on the set last picked, and on set 6 the first time or when the set last picked is one the document doesn't offer:
 
 ![The 16 glyph sets, a row each under F1 to F10, set 6 on blue: 1 single box lines, 2 double box lines, 3 and 4 mixed single and double lines, 5 crossings and symbols, 6 shades and half blocks, 7 faces, card suits and notes, 8 arrows, 9 to 16 maths, Greek, accented letters and brackets](../samples/manual-03-keyboard-mode/glyph-sets.ans "2x")
 
@@ -73,24 +73,27 @@ With **Edit > Mirror Mode** (<kbd>Ctrl</kbd>+<kbd>M</kbd>) on and **Edit > Symme
 | 18 | `▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▔ ▕` |
 | 19 | `▏ ▎ ▍ ▌ ▋ ▊ ▉ █ ▐ ▕` |
 | 20 | `◢ ◣ ◤ ◥ ◆ ◇ ○ ● ★ ☆` |
+| 21 | `✦ ✧ ✶ ✷ ✸ ✹ ⋆ ✱ ✺ ❖` |
 
 ### Changing the set
 
 | Key or item | What it does |
 |---|---|
-| **Glyphs > Previous Set**, <kbd>Ctrl</kbd>+<kbd>,</kbd> | The set before; from set 1 it goes round to the last set the document offers, 16, or 20 in an IRC or UTF-8 document. |
+| **Glyphs > Previous Set**, <kbd>Ctrl</kbd>+<kbd>,</kbd> | The set before; from set 1 it goes round to the last set the document offers, 16, or 21 in an IRC or UTF-8 document. |
 | **Glyphs > Next Set**, <kbd>Ctrl</kbd>+<kbd>.</kbd> | The set after; from the last set the document offers it goes round to set 1. |
 | **Glyphs > Default Set**, <kbd>Ctrl</kbd>+<kbd>/</kbd> | Back to set 6. |
 | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F1</kbd> to <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd> | Sets 1 to 10. |
-| **Glyphs > Set 1** to **Set 20** | Any set the document offers; each item shows its ten glyphs, and the current one is ticked. Sets 17 to 20 are in the menu only in IRC and UTF-8 documents. |
+| **Glyphs > Set 1** to **Set 21** | Any set the document offers; each item shows its ten glyphs, and the current one is ticked. Sets 17 to 21 are in the menu only in IRC and UTF-8 documents. |
 
-Sets 11 to 20 have no key of their own: pick them from the **Glyphs** menu or the Glyphs dock, or step to them. To give a set a key, select it on the **Shortcuts** tab of **Edit > Preferences...** (no shortcut by default; on macOS it is in the application menu), where the sets are listed under **Glyphs**.
+Sets 11 to 21 have no key of their own: pick them from the **Glyphs** menu or the Glyphs dock, or step to them. To give a set a key, select it on the **Shortcuts** tab of **Edit > Preferences...** (no shortcut by default; on macOS it is in the application menu), where the sets are listed under **Glyphs**.
 
-### Sets 17 to 20
+### Sets 17 to 21
 
-Sets 17 to 20 are offered in a document under the IRC target (**Format > Target > IRC**, no shortcut) and in a UTF-8 document, such as one read from or saved as a UTF-8 `.ans`, under either target. In a CP437 document under the ANSI target, the only other kind, the **Glyphs** menu, the Glyphs dock's list and stepping leave them out, and the status bar's tooltip names only the keys of the sets offered. If the set in use is one of them when the document stops offering it, the F-keys type set 6.
+Sets 17 to 21 are offered in a document under the IRC target (**Format > Target > IRC**, no shortcut) and in a UTF-8 document, such as one read from or saved as a UTF-8 `.ans`, under either target. In a CP437 document under the ANSI target, the only other kind, the **Glyphs** menu, the Glyphs dock's list and stepping leave them out, and the status bar's tooltip names only the keys of the sets offered. If the set in use is one of them when the document stops offering it, the F-keys type set 6.
 
-They can still be given a key in any document. The **Shortcuts** tab lists them under **Glyphs** in every document; in one that hides them, each row ends "(hidden: offered only in IRC and UTF-8 documents)", in grey, and its tooltip adds "Hidden in this document: offered only in IRC and UTF-8 documents. A key given to it is kept, and works there." In a document that hides the set the key does nothing. A key counts as taken whether or not the action that has it is shown: a key one of these sets has is refused for any other action, with "… is already the key for …", and a key another action has is refused for one of these sets. **Help > Keyboard Shortcuts...** (no shortcut) lists a hidden set that has a key, with the same note in its tooltip, and `blockwright --list-actions` lists all four after set 16, each with `"offeredWhen": "in IRC and UTF-8 documents"`.
+They can still be given a key in any document. The **Shortcuts** tab lists them under **Glyphs** in every document; in one that hides them, each row ends "(hidden: offered only in IRC and UTF-8 documents)", in grey (set 21's reads "Set 21: ✦✧✶✷✸✹⋆✱✺❖ (hidden: offered only in IRC and UTF-8 documents)"), and its tooltip adds "Hidden in this document: offered only in IRC and UTF-8 documents. A key given to it is kept, and works there." In a document that hides the set the key does nothing. A key counts as taken whether or not the action that has it is shown: a key one of these sets has is refused for any other action, with "… is already the key for …", and a key another action has is refused for one of these sets. **Help > Keyboard Shortcuts...** (no shortcut) lists a hidden set that has a key, with the same note in its tooltip, and `blockwright --list-actions` lists all five after set 16, each with `"offeredWhen": "in IRC and UTF-8 documents"`.
+
+Set 21 holds sparkles, stars and asterisks no other set has: `✦ ✧ ✶ ✷ ✸ ✹ ⋆ ✱ ✺ ❖`. With it picked the status bar reads `F-keys set 21: ✦ ✧ ✶ ✷ ✸ ✹ ⋆ ✱ ✺ ❖`, and the **Glyphs** menu and the Glyphs dock's list call it `Set 21: ✦✧✶✷✸✹⋆✱✺❖`. Unifont, the font the editor draws them with, has all but `⋆` 16 pixels wide, so the editor squeezes those into one cell, as it does `★` and `☆`; an IRC client draws each in one column in its own font. Like 11 to 20 it has no key until you give it one. In an IRC or UTF-8 document **Next Set** steps from 20 to 21 and from 21 round to 1, and **Previous Set** from 1 to 21.
 
 Moebius picks sets with <kbd>Alt</kbd>+F-keys. Blockwright doesn't, because the desktop takes many of those keys before an editor sees them (<kbd>Alt</kbd>+<kbd>F4</kbd> closes the window), and leaves <kbd>Ctrl</kbd>+F-keys and <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+F-keys alone for the same reason. On a Mac the <kbd>Ctrl</kbd> keys on this page are <kbd>Cmd</kbd>.
 

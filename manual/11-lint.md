@@ -47,7 +47,7 @@ blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc] [--js
 |---|---|
 | `--ramp R` | Check this ramp: a name (`fire`, `sunset`, `ice`, `grass`, `steel`, `skin`, `sea`, `toxic`, `violet`, `wood`) or palette indices 0-15 from dark to light, such as `0,8,7,15`. Give it more than once for several. Without it every named ramp is checked and the craft pairs are allowed; with it they aren't |
 | `--box x0,y0,x1,y1` | The subject's box, corners inclusive. Only findings that touch it are reported, and the [`flat`](#flat) check runs inside it. A box past the canvas's right or bottom edge is cut to the canvas |
-| `--target ansi\|irc` | Lint for an `.ans` or for IRC. Without it a project is linted for its own target, and a flat file for ANSI. See [The IRC target](#the-irc-target) |
+| `--target ansi|irc` | Lint for an `.ans` or for IRC. Without it a project is linted for its own target, and a flat file for ANSI. See [The IRC target](#the-irc-target) |
 | `--json` | Print the findings as JSON instead of text |
 
 The text output is one line per finding, then the summary:

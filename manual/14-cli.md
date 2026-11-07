@@ -19,6 +19,14 @@ An `.ans` is read as UTF-8 when it starts with a byte order mark, or when it is 
 
 An option given to a command that doesn't take it is a usage error.
 
+In a project format before 5.0 (the project's `manifest.json` gives the version), a cell's attributes hold only blink: bold, italic and underline came with 5.0. If any cell of a project in such a format has another attribute bit set, which no earlier build wrote, every command that reads the project clears those bits as it reads and says so on stderr, naming the file and the number of cells (`1 cell` when there is one):
+
+```
+blockwright-cli: note: old.bwp: cleared attribute bits no earlier build wrote from 2 cells
+```
+
+The command goes on as usual: its output on stdout and its exit status are the same as without the note. `replay` prints it for a project it starts from, after the steps file's name (`blockwright-cli: note: steps.json: start: old.bwp: ...`), and so does `blockwright --screenshot` (`blockwright: note: steps.json: start: old.bwp: ...`). A newer project with an attribute bit Blockwright doesn't know is refused instead (`...: cell 0 has an unknown attribute`, exit status 1).
+
 ## Commands
 
 ### info
@@ -51,7 +59,7 @@ Draws the piece as a PNG with the IBM VGA font.
 | Option | What it does |
 |---|---|
 | `--scale N` | Integer zoom, nearest neighbour, 1 to 8 (default 1) |
-| `--font-width 8\|9` | Glyph width in pixels (default: the SAUCE letter spacing, else 8) |
+| `--font-width 8|9` | Glyph width in pixels (default: the SAUCE letter spacing, else 8) |
 | `--irc` | Draw the IRC view instead: the mIRC palette, without what IRC drops, each line cut at the budget. Prints how many rows were cut, as `IRC view: 0 rows cut at 407 bytes` |
 | `--budget N` | With `--irc`: the bytes a line may take, 1 to 512. Default: a project's own budget, else 407 |
 | `--fit`, `--pad`, `--swap-shades` | With `--irc`: as for [export --irc](#export-irc) |
@@ -100,7 +108,7 @@ Runs one pass of a shading brush over part of the piece. Without a mode it is th
 | `--steps N` | Rungs to move each cell, 1 to 64 (default 1) |
 | `--box x0,y0,x1,y1` | The cells to work on, counted from 0, corners included (default: the whole piece) |
 | `--mask <mask>` | A piece the size of the input whose non-blank cells are the selection; with `--box`, those of them inside the box |
-| `--form dome\|cylinder\|plane` | Shade the selection as that form |
+| `--form dome|cylinder|plane` | Shade the selection as that form |
 | `--glint` | With `--form`: a glint of the ramp's top rung at the brightest point |
 | `--despeckle` | Clear the selection's specks |
 | `--rim` | Light the selection's edge cells that face the light |
@@ -162,16 +170,91 @@ These run programs: a generator layer's output comes from the program its `gener
 
 `--timeout` is the seconds a generator may run, 1 to 3600 (default 30). If any run fails, nothing is written.
 
+### replay
+
+```
+blockwright-cli replay [options] <steps.json> -o <dir>
+```
+
+`replay` plays a steps file: a start and a list of edits, each made through the editor's own brushes, shapes, selection and layer operations. After each step it writes the canvas, flattened and with its SAUCE, to `<dir>` as `NN-<name>.ans`, where `NN` is the step's number from `01` (with more digits in a file of 100 steps or more: `001`); a step with `"capture": "before-after"` writes `NN-<name>-before.ans` and `NN-<name>-after.ans`. `<dir>` is made if it isn't there. Nothing is written unless every step applies, and the same file writes the same bytes every run. Files already in `<dir>` stay unless this run writes one of the same name.
+
+| Option | What it does |
+|---|---|
+| `-o`, `--output <dir>` | Where the files go. Required |
+| `--project` | Also write each capture as `NN-<name>.bwp` |
+| `--render` | Also write each capture as `NN-<name>.png` |
+| `--scale N` | With `--render`: zoom 1 to 8 (default 1) |
+| `--font-width 8|9` | With `--render`: glyph width (default: the SAUCE's, else 8) |
+| `--allow-lossy` | Write an `.ans` that loses something; a warning says what |
+| `--output-encoding cp437|utf-8` | The `.ans` files' text (default CP437) |
+
+A steps file is JSON. In brief:
+
+```
+{"version": 1,
+ "start": {"blank": [80, 25]},
+ "steps": [{"name": "word", "action": "keyboard", "at": [1, 1], "text": "Hi", "fg": 14},
+           {"name": "box", "action": "rectangle", "from": [0, 0], "to": [7, 5], "fg": 4}]}
+```
+
+- `"start"` is `{"file": ...}` (an `.ans`, `.xb`, `.bin` or project, relative to the steps file), `{"sample": ...}` or `{"blank": [w, h]}`. `"ice"` sets a blank start's iCE colours (default on).
+- Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …) or a layer command (`newCellsLayer`, `setActiveLayer`, …). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row: the example's rectangle from pixel `[0, 0]` to `[7, 5]` covers cell rows 0 to 2.
+- Any step but a `view` step may also set Tool Options (`"fg"` and `"bg"` 0 to 15, `"size"`, `"ramp"`, `"symmetry"` and more), which hold for the steps after it.
+
+`blockwright-cli replay --help` gives the whole format: every action, its keys, and every Tool Option with its range and default. A step that can't be applied (an unknown action or key, a value out of range, a point off the canvas, nothing selected to transform) stops the replay with exit status 1 and a message naming the step, such as `blockwright-cli: bad.json: step 2 (off): cell (20, 1) is off the 8 x 3 canvas`.
+
+A steps file can also carry what only the editor's window uses ([Pictures of the window](#pictures-of-the-window)). `replay` passes over a step's `"screenshot"` and the file's `"window"`, but it has no window to set a view in, so it refuses a file with a `view` step before it reads the start or writes anything, with exit status 1:
+
+```
+blockwright-cli: v.json: step 2 (zoomed): view sets the window's zoom, scroll and IRC options, and blockwright-cli replay has no window; replay this file with blockwright --screenshot
+```
+
+### Pictures of the window
+
+```
+blockwright --screenshot <steps.json> -o <dir>
+```
+
+`--screenshot` is an option of the editor, `blockwright`, not of `blockwright-cli`. It plays the same steps file in the editor's window, offscreen, and writes a PNG for each step that has a `"screenshot"`, as `NN-<name>.png`, `NN` numbered as for `replay`. A picture taken before the step is `NN-<name>-before.png`; the one taken after is `NN-<name>-after.png` when `"when"` is `"both"` or the step has `"capture": "before-after"`. A `"screenshot"` is:
+
+```
+{"of": "window" | a dock or widget's object name,
+ "crop": {"cells": [x, y, w, h]} | {"pixels": [x, y, w, h]},
+ "when": "before" | "after" | "both"}
+```
+
+`"of"` is `"window"` when left out, and `"when"` is `"after"`. A crop of `"cells"` needs `"of"` to hold the canvas, with the cells in view. The file's top-level `"window": [w, h]` sizes the window, 1280 × 800 without one. A file with no step that asks for a screenshot writes no picture and exits with status 0, saying `blockwright: ok.json: no step asks for a screenshot`.
+
+A `view` step sets what the window shows, for the pictures after it:
+
+```
+{"name": "fit-on", "action": "view", "ircFit": true}
+```
+
+| Key | Value | What it sets |
+|---|---|---|
+| `"zoom"` | 1 to 8 | The canvas's zoom, as **View > Zoom In** (<kbd>Ctrl</kbd>+<kbd>=</kbd>) and **View > Zoom Out** (<kbd>Ctrl</kbd>+<kbd>-</kbd>) set it ([Views](02-the-window.md#views)) |
+| `"scrollTo"` | `[x, y]`, a cell | Scrolls so that cell is at the canvas view's top left, as far as the scroll bars go: at the canvas's right or bottom edge they stop short |
+| `"ircFit"` | `true` or `false` | **View > IRC > Fit Lines to the Budget** (no shortcut) on or off |
+| `"ircPad"` | `true` or `false` | **View > IRC > Pad Lines** (no shortcut) on or off |
+| `"ircSwapShades"` | `true` or `false` | **View > IRC > Swap Shades** (no shortcut) on or off |
+
+The three IRC settings are the ones in [Making rows fit](10-irc.md#making-rows-fit), and the row meter and the IRC View dock follow them as they do the menu. Every key is optional, but a view step needs at least one; an empty one is refused (`step 1 (empty): view needs at least one of "zoom", "scrollTo", "ircFit", "ircPad" or "ircSwapShades"`). A key left out leaves that setting as it was. A view step takes a `"screenshot"` but no Tool Options: `"fg"` on one is refused with `step 1 (v): view takes no "fg"`. A `"scrollTo"` cell must be on the canvas as it stands at that step; one off it is refused (`step 2 (far): scrollTo cell (20, 0) is off the 20 x 10 canvas`). Every refusal exits with status 1.
+
+A view step takes effect where it stands and holds until a later view step changes it. A screenshot taken `"before"` a view step shows the view the steps before it left. Until the first view step the window has a new window's view: zoom 2, scrolled to the top left, Fit, Pad and Swap Shades off. Within one step the zoom is set before the scroll. A view step changes the window, not the piece: it makes no undo step and doesn't mark the document modified.
+
+On a screen whose scale isn't a whole number (150%, say), the cell before the one scrolled to can show up to one of the window's own pixels at the view's edge (one and a half screen pixels at 150%), and the IRC View can start a column or a row early.
+
 ### The editor's action list
 
-`blockwright --list-actions` is an option of the editor, `blockwright`, not of `blockwright-cli`. It prints every menu and dock action as a JSON list and exits: each action's `id`, menu, text, default `shortcuts`, tips and more. It lists every action, including ones the open document doesn't offer. Glyph sets 17 to 20 (`glyphSet17` to `glyphSet20`), which are offered only under the IRC target or in a UTF-8 document ([Sets 17 to 20](03-keyboard-mode.md#sets-17-to-20)), carry `"offeredWhen": "in IRC and UTF-8 documents"`; no other action has `offeredWhen`.
+`blockwright --list-actions` is an option of the editor, `blockwright`, not of `blockwright-cli`. It prints every menu and dock action as a JSON list and exits: each action's `id`, menu, text, default `shortcuts`, tips and more. It lists every action, including ones the open document doesn't offer. Glyph sets 17 to 21 (`glyphSet17` to `glyphSet21`), which are offered only under the IRC target or in a UTF-8 document ([Sets 17 to 21](03-keyboard-mode.md#sets-17-to-21)), carry `"offeredWhen": "in IRC and UTF-8 documents"`; no other action has `offeredWhen`.
 
 ## Exit status
 
 | Status | Meaning |
 |---|---|
 | 0 | Success |
-| 1 | An input that can't be read or an output that can't be written; a `convert`, `shade`, `pack`, `unpack` or `snapshot` that would lose data, without `--allow-lossy`; a `library check` that found a problem; a generator or scene that failed. Nothing is written. Also an error the command didn't expect, such as one from the file system: it prints `blockwright-cli: <command>: ` and the error's message, and ends the run |
+| 1 | An input that can't be read or an output that can't be written; a `convert`, `shade`, `pack`, `unpack` or `snapshot` that would lose data, without `--allow-lossy`; a `library check` that found a problem; a generator or scene that failed; a `replay` step that can't be applied, or any `view` step in a file given to `replay`. Nothing is written. Also an error the command didn't expect, such as one from the file system: it prints `blockwright-cli: <command>: ` and the error's message, and ends the run |
 | 2 | A usage error: an unknown command or option, an option the command doesn't take, a missing argument, a value out of range |
 | 3 | `export --irc` found a line over the budget, without `--allow-over-budget`. Nothing is written |
 | 4 | `lint` found something other than a note |

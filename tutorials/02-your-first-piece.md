@@ -34,13 +34,13 @@ A cleared cell is a space in the default colours, grey on black.
 
 ### F-key sets
 
-Most of the glyphs ANSI art is drawn with aren't on a keyboard, so the F-keys type them. <kbd>F1</kbd> to <kbd>F10</kbd> give ten glyphs, and which ten depends on the **F-key set**. There are sixteen sets:
+Most of the glyphs ANSI art is drawn with aren't on a keyboard, so the F-keys type them. <kbd>F1</kbd> to <kbd>F10</kbd> give ten glyphs, and which ten depends on the **F-key set**. A new piece like this one has sixteen sets (a piece for IRC, or one read or saved as UTF-8, has five more, [sets 17 to 21](../manual/03-keyboard-mode.md#sets-17-to-21)):
 
 ![The sixteen F-key sets, numbered 1 to 16 down the side, with the glyph each of F1 to F10 types across; set 6 is highlighted](../samples/02-your-first-piece/sets.ans)
 
-Sets 1 to 4 are the four kinds of box-drawing frame, single and double lines and the two mixes. Set 6, the shade and half blocks, is the one Blockwright starts with; set 7 has the card suits and set 16 the ASCII brackets and slashes.
+Sets 1 to 4 are the four kinds of box-drawing frame, single and double lines and the two mixes. Set 6, the shade and half blocks, is the default: Blockwright starts on it the first time, and after that on the set you last picked, or on set 6 again when that was one of sets 17 to 21 and the piece doesn't offer it; set 7 has the card suits and set 16 the ASCII brackets and slashes.
 
-The status bar shows the set you're on, *F-keys set 6: ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·*, and so does the **Glyphs** dock at the bottom of the window: ten buttons labelled F1 to F10, which type their glyph when clicked, and a list to pick the set from. The **Glyphs** menu changes the set from the keyboard:
+The status bar shows the set you're on, such as *F-keys set 6: ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·*, and so does the **Glyphs** dock at the bottom of the window: ten buttons labelled F1 to F10, which type their glyph when clicked, and a list to pick the set from. The **Glyphs** menu changes the set from the keyboard:
 
 - <kbd>Ctrl</kbd>+<kbd>,</kbd> and <kbd>Ctrl</kbd>+<kbd>.</kbd>, the previous and the next set (**Previous Set**, **Next Set**);
 - <kbd>Ctrl</kbd>+<kbd>/</kbd>, back to set 6 (**Default Set**);

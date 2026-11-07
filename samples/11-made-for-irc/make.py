@@ -135,11 +135,12 @@ def replay(name, start, steps, keep, shots=None, window=None):
     as UTF-8, which holds the ★."""
     path = write_steps(name, start, steps, window)
     number = {step["name"]: i + 1 for i, step in enumerate(steps)}
-    with tempfile.TemporaryDirectory() as tmp:
-        cmd = [CLI, "replay", str(path), "-o", tmp, "--project", "--output-encoding", "utf-8"]
-        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
-        for step, dest in keep.items():
-            shutil.copyfile(Path(tmp) / f"{number[step]:02d}-{step}.bwp", HERE / dest)
+    if keep:  # the CLI's replay has no window, so it refuses a "view" step
+        with tempfile.TemporaryDirectory() as tmp:
+            cmd = [CLI, "replay", str(path), "-o", tmp, "--project", "--output-encoding", "utf-8"]
+            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
+            for step, dest in keep.items():
+                shutil.copyfile(Path(tmp) / f"{number[step]:02d}-{step}.bwp", HERE / dest)
     if not shots:
         return
     with tempfile.TemporaryDirectory() as tmp:
@@ -186,13 +187,17 @@ def irc_view(piece, png, *options):
 
 def look(name, start, shots):
     """Pictures of the editor with `start` open, a step each: shots is a list
-    of (step name, "of", crop), the PNG named after the step. Each step is a
-    Deselect, which changes nothing. A first step takes the IRC View, which
-    brings its tab to the front of the dock it shares with Lint; that picture
-    isn't kept."""
+    of (step name, "of", crop) or (step name, "of", crop, view), the PNG
+    named after the step. Each step is a Deselect, which changes nothing, or,
+    given a view (the "view" step's fields, such as {"ircFit": True}), a
+    "view" step, which changes the window and not the piece. A first step
+    takes the IRC View, which brings its tab to the front of the dock it
+    shares with Lint; that picture isn't kept."""
     steps = [shot({"name": "irc-view", "action": "deselect"}, "ircView")]
-    steps += [shot({"name": n, "action": "deselect"}, of, crop) for n, of, crop in shots]
-    replay(name, start, steps, {}, {n: f"{n}.png" for n, _, _ in shots}, window=WINDOW)
+    for n, of, crop, *view in shots:
+        step = {"name": n, "action": "view", **view[0]} if view else {"name": n, "action": "deselect"}
+        steps.append(shot(step, of, crop))
+    replay(name, start, steps, {}, {s[0]: f"{s[0]}.png" for s in shots}, window=WINDOW)
 
 
 W, H = 80, 9
@@ -252,7 +257,8 @@ irc_view("over.bwp", "irc-fit.png", "--fit")
 irc_view("final.bwp", "irc-final.png")
 METER = [263, 446, 702, 304]   # the canvas's columns 0-40 and the row meter
 BESIDE = [263, 446, 1017, 690]  # the same, and the IRC View under them
-look("look-over", "over.bwp", [("meter-over", "window", METER), ("beside-over", "window", BESIDE), ("lint-over", "lint", None)])
+look("look-over", "over.bwp", [("meter-over", "window", METER), ("beside-over", "window", BESIDE), ("lint-over", "lint", None),
+                               ("meter-fit", "window", METER, {"ircFit": True})])
 look("look-final", "final.bwp", [("meter-final", "window", METER), ("lint-final", "lint", None)])
 
 # Try it: the finished sign on a canvas a row taller at the top and the

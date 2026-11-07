@@ -51,7 +51,7 @@ Where the black matters, end the row on a cell the encoder keeps: a frame, a bor
 A CP437 `.ans` holds 256 glyphs. IRC text is UTF-8, which carries `★` and most other glyphs CP437 lacks. Blockwright saves an `.ans` either way: **File > Save As...** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>) offers **ANSI art (\*.ans)**, CP437, and **ANSI art, UTF-8 (\*.ans)**, which keeps the stars. **Format > Target** says which the document is made for: **ANSI (.ans)**, "The 16 colours and the glyphs an .ans holds", or **IRC**, "mIRC's 99 colours; saving as .ans, XBIN or BIN reports what it can't hold". Changing it is a step on the undo stack, and a project keeps it. Under the IRC target:
 
 - the palette has mIRC's 99 colours: the first 16 swatches are the 16 colours, the rest mIRC 16 to 98, though six of those go out as the lower number of the same colour: 52, 54, 58, 62, 88 and 98 as 4, 8, 11, 13, 1 and 0;
-- the **Keyboard** tool types Unicode, not only CP437, and the **Glyphs** menu offers four more F-key sets, 17 to 20, of glyphs CP437 doesn't have (set 20 is `◢◣◤◥◆◇○●★☆`), as it does for a UTF-8 document under either target;
+- the **Keyboard** tool types Unicode, not only CP437, and the **Glyphs** menu offers five more F-key sets, 17 to 21, of glyphs CP437 doesn't have (set 20 is `◢◣◤◥◆◇○●★☆`, set 21 `✦✧✶✷✸✹⋆✱✺❖`), as it does for a UTF-8 document under either target;
 - Lint's [`ans-loss`](../manual/11-lint.md#ans-loss) note counts the cells a CP437 `.ans` save would write as `?`, where under the ANSI target [`no-cp437`](../manual/11-lint.md#no-cp437) flags them.
 
 A note isn't a fault: the piece is fine for IRC. It matters when the piece is also saved as a CP437 `.ans`, which writes `?` in those cells, or published: **Publish to Library** writes its `.ans` as CP437 whatever the document is saved as. A UTF-8 `.ans` keeps them.
@@ -70,7 +70,7 @@ A note isn't a fault: the piece is fine for IRC. It matters when the piece is al
 
 **Fit** merges the least visible colours of a row that is over the budget into their neighbours', until the row fits or there is nothing left it may merge. The cells it may change are ones such as a space or a no-break space, a `█`, an `A` red on red, and the half blocks and shades `▀▄▌▐░▒▓`, none of them bold, italic or underlined; [Fit](../manual/10-irc.md#making-rows-fit) in the manual gives the full rule. It never changes a letter or a `★` in two colours, a letter on black, say, nor a cell with bold, italic or underline, nor a letter with a combining mark (`q` + U+0301), even one red on red, nor either cell of a wide glyph followed by its continuation and written whole, such as `日`. When merging what it may still leaves the row over, Fit gives the row back as it was, and the row stays over: a row of 80 `★` on black, light red and red by turns (mIRC 4 and 5), is 402 bytes written and 483 sent, and Fit can change none of its cells. It changes what the client shows, and the canvas keeps the colours it had: it is for a row a cell or two over, not a fix for a row that changes colour at every cell (**Check it** below). The fix is in the drawing: fewer colour changes a row.
 
-None of these actions has a shortcut by default: **Format > Target > ANSI (.ans)** and **IRC**; **View > IRC > Row Meter**, **IRC View**, **Budget...**, **Fit Lines to the Budget**, **Pad Lines** and **Swap Shades**; **Window > IRC View** and **Window > Lint**; **Glyphs > Set 11** to **Set 20** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F1</kbd> to <kbd>F10</kbd> pick sets 1 to 10 only); and **File > Export IRC Text...**, **File > Publish to Library...** and **File > Send to WeeChat...**.
+None of these actions has a shortcut by default: **Format > Target > ANSI (.ans)** and **IRC**; **View > IRC > Row Meter**, **IRC View**, **Budget...**, **Fit Lines to the Budget**, **Pad Lines** and **Swap Shades**; **Window > IRC View** and **Window > Lint**; **Glyphs > Set 11** to **Set 21** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F1</kbd> to <kbd>F10</kbd> pick sets 1 to 10 only); and **File > Export IRC Text...**, **File > Publish to Library...** and **File > Send to WeeChat...**.
 
 To give one of the **View > IRC** actions a key, open **Edit > Preferences...** (it has no shortcut by default; on macOS it is in the application menu) and pick the **Shortcuts** tab. Find the action under **View > IRC**, or type part of its name in the search field; the list leaves off the dots, so search for `Budget`, not `Budget...`. Click the action, press the key in **Key**, then **OK**. Keyboard mode types or edits with a letter, digit, arrow or other such key, alone or with <kbd>Shift</kbd>, so the editor takes one only with <kbd>Ctrl</kbd> or <kbd>Meta</kbd> held, <kbd>Shift</kbd> too if you like. Qt names these two by their role: on Windows and Linux <kbd>Meta</kbd> is the Windows or Super key, and on macOS <kbd>Ctrl</kbd> is the Command key and <kbd>Meta</kbd> the Control key. The F-keys and <kbd>Alt</kbd> have rules of their own. A key the editor can't use, or that another action has, is refused, and the reason shows under the list.
 
@@ -176,7 +176,11 @@ You'll draw the sign as it first comes to mind, see what IRC makes of it, and fi
 
 ## Check it
 
-**Fit is not the fix.** Open [over.bwp](../samples/11-made-for-irc/over.bwp) and turn on **View > IRC > Fit Lines to the Budget** (no shortcut). The meter's bulb rows go amber, and the tooltip ends ", 16 cells merged to fit". The same from the command line:
+**Fit is not the fix.** Open [over.bwp](../samples/11-made-for-irc/over.bwp) and turn on **View > IRC > Fit Lines to the Budget** (no shortcut). The meter's bulb rows go amber, and the tooltip ends ", 16 cells merged to fit":
+
+![The same columns 0 to 40 and row meter as before, with Fit on. The canvas is unchanged. The meter's cells for rows 0 and 8 are amber, each reading 403; rows 2 to 6 still read 75, 68, 88, 68 and 77](../samples/11-made-for-irc/meter-fit.png)
+
+The same from the command line:
 
 ```
 $ blockwright-cli export --irc --fit over.bwp over.txt

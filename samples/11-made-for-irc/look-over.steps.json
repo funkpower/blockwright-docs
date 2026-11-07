@@ -47,6 +47,22 @@
    "screenshot": {
     "of": "lint"
    }
+  },
+  {
+   "name": "meter-fit",
+   "action": "view",
+   "ircFit": true,
+   "screenshot": {
+    "of": "window",
+    "crop": {
+     "pixels": [
+      263,
+      446,
+      702,
+      304
+     ]
+    }
+   }
   }
  ],
  "window": [
