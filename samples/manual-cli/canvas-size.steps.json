@@ -1,0 +1,78 @@
+{
+ "version": 1,
+ "start": {
+  "blank": [
+   12,
+   4
+  ]
+ },
+ "steps": [
+  {
+   "name": "sky",
+   "action": "fill",
+   "at": [
+    0,
+    0
+   ],
+   "fg": 1
+  },
+  {
+   "name": "sun",
+   "action": "ellipse",
+   "from": [
+    2,
+    1
+   ],
+   "to": [
+    6,
+    5
+   ],
+   "fg": 14,
+   "filled": true
+  },
+  {
+   "name": "grass",
+   "action": "rectangle",
+   "from": [
+    0,
+    6
+   ],
+   "to": [
+    11,
+    7
+   ],
+   "fg": 2,
+   "screenshot": {
+    "crop": {
+     "cells": [
+      0,
+      0,
+      12,
+      4
+     ]
+    },
+    "scale": 2
+   }
+  },
+  {
+   "name": "grow",
+   "action": "canvasSize",
+   "size": [
+    16,
+    6
+   ],
+   "anchor": "centre",
+   "screenshot": {
+    "crop": {
+     "cells": [
+      0,
+      0,
+      16,
+      6
+     ]
+    },
+    "scale": 2
+   }
+  }
+ ]
+}

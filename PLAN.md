@@ -64,7 +64,7 @@ One page per area, in `manual/`. Each page is written when its feature is on Blo
 | Page | Source in Blockwright's `PLAN.md` | Status |
 |---|---|---|
 | Install | Phase 6, packaging | Waits for packages (AUR, Debian/Ubuntu, Fedora) |
-| The window | §11 workspace layout, §4 renderer (zoom, 1× preview) | Written, checked against `c44974c`; Canvas Size (#397 slice 1) and the Glyphs dock's offered sets added from `e5db865`; no window pictures yet (`--screenshot`, #374, can take them now; it can't open a dialog, so Canvas Size isn't pictured) |
+| The window | §11 workspace layout, §4 renderer (zoom, 1× preview) | Written, checked against `c44974c`; Canvas Size (#397 slice 1) and the Glyphs dock's offered sets added from `e5db865`; the pointer to the CLI's `canvasSize` step (#420) added from `ad9b67d`; no window pictures yet (`--screenshot`, #374, can take them now; it can't open a dialog, so Canvas Size isn't pictured) |
 | Keyboard mode | §4 keyboard mode | Written, checked against `c44974c`; sets 17–20 (#400), the saved set and pen (#307) added from `e5db865`; set 21 (#399) added from `9cad05f` |
 | Tools | §4 drawing tools, §10 brushes | Merged tools ready; one section per tool added as each lands |
 | Selections | §4 selections | Ready |
@@ -76,7 +76,7 @@ One page per area, in `manual/`. Each page is written when its feature is on Blo
 | Lint | §10 ladder lint, Phase 4 lint panel | Written, checked against `f34d296`; the deliberate single-pixel pattern note (#395) added from `e5db865` |
 | Generators | §7 | Ready (#17) |
 | File formats | §6, §8 | Written, checked against `c44974c` |
-| CLI | `blockwright-cli --help` | Written, checked against `f34d296`; its full help is generated (§4); exit status 1's unexpected errors (#380) added from `e5db865`; `replay`, Pictures of the window (`blockwright --screenshot` and its `view` steps, #398), the note on a project's stray attribute bits (#370) and `--list-actions`' sets 17–21 (#399) added from `9cad05f`; a screenshot's `"scale"` and `"pointer"`, the fixed screens and the bundled Noto Sans (#416, #417), and `replay`'s `NN` digits added from `b4b9c49`, with the pointer pictured (`samples/manual-cli/`) |
+| CLI | `blockwright-cli --help` | Written, checked against `f34d296`; its full help is generated (§4); exit status 1's unexpected errors (#380) added from `e5db865`; `replay`, Pictures of the window (`blockwright --screenshot` and its `view` steps, #398), the note on a project's stray attribute bits (#370) and `--list-actions`' sets 17–21 (#399) added from `9cad05f`; a screenshot's `"scale"` and `"pointer"`, the fixed screens and the bundled Noto Sans (#416, #417), and `replay`'s `NN` digits added from `b4b9c49`, with the pointer pictured (`samples/manual-cli/`); the `canvasSize` step (#420) and `"sampleMerged"` on fill and eyedropper steps (#419), with the IRC eyedropper's formatting pick and the glyph brush painting with it, added from `ad9b67d`, every claim run through `replay` (and the 9 px refusal through `--screenshot`), the refusals quoted from them, both pictured (`samples/manual-cli/`) |
 | Shortcuts | every action | Generated (§4) |
 | Preferences | — | Nothing to document yet |
 

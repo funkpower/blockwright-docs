@@ -57,7 +57,7 @@ The whole change is one undo step, named `Canvas Size`, and **Edit > Undo** (<kb
 
 Blockwright refuses a size, and says why in a message box starting `The canvas can't be made that size:`, when the layers would then hold more than 16000000 cells between them (`the layers would hold over 16000000 cells`) or when it couldn't draw a canvas that big (`the canvas is too large to display`). A 400 × 5000 canvas can be drawn with 8-pixel cells but not with 9 px letter spacing. A refused size changes nothing.
 
-An `.ans` saved after a resize has the new size, and so do its SAUCE width and height. The CLI has no command to resize a canvas.
+An `.ans` saved after a resize has the new size, and so do its SAUCE width and height. The CLI has no command of its own to resize a canvas; a steps file's `canvasSize` step makes the same change ([Resizing the canvas](14-cli.md#resizing-the-canvas)).
 
 ### The status bar
 

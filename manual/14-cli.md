@@ -198,8 +198,8 @@ A steps file is JSON. In brief:
 ```
 
 - `"start"` is `{"file": ...}` (an `.ans`, `.xb`, `.bin` or project, relative to the steps file), `{"sample": ...}` or `{"blank": [w, h]}`. `"ice"` sets a blank start's iCE colours (default on).
-- Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …) or a layer command (`newCellsLayer`, `setActiveLayer`, …). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row: the example's rectangle from pixel `[0, 0]` to `[7, 5]` covers cell rows 0 to 2.
-- Any step but a `view` step may also set Tool Options (`"fg"` and `"bg"` 0 to 15, `"size"`, `"ramp"`, `"symmetry"` and more), which hold for the steps after it.
+- Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …), a layer command (`newCellsLayer`, `setActiveLayer`, …) or `canvasSize` ([Resizing the canvas](#resizing-the-canvas)). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row: the example's rectangle from pixel `[0, 0]` to `[7, 5]` covers cell rows 0 to 2.
+- Any step but a `view` or `canvasSize` step may also set Tool Options (`"fg"` and `"bg"` 0 to 15, `"size"`, `"ramp"`, `"symmetry"` and more), which hold for the steps after it. `"sampleMerged"` is one of them, but only a `fill` or `eyedropper` step takes it ([Sample merged](#sample-merged)).
 
 `blockwright-cli replay --help` gives the whole format: every action, its keys, and every Tool Option with its range and default. A step that can't be applied (an unknown action or key, a value out of range, a point off the canvas, nothing selected to transform) stops the replay with exit status 1 and a message naming the step, such as `blockwright-cli: bad.json: step 2 (off): cell (20, 1) is off the 8 x 3 canvas`.
 
@@ -207,6 +207,83 @@ A steps file can also carry what only the editor's window uses ([Pictures of the
 
 ```
 blockwright-cli: v.json: step 2 (zoomed): view sets the window's zoom, scroll and IRC options, and blockwright-cli replay has no window; replay this file with blockwright --screenshot
+```
+
+#### Resizing the canvas
+
+A `canvasSize` step does what **Format > Canvas Size...** does ([Canvas Size](02-the-window.md#canvas-size)):
+
+```
+{"name": "grow", "action": "canvasSize", "size": [16, 6], "anchor": "centre"}
+```
+
+| Key | Value | What it sets |
+|---|---|---|
+| `"size"` | `[w, h]`, two whole numbers: 1 to 400 columns by 1 to 5000 rows | The new canvas, in cells. Required |
+| `"anchor"` | `top-left`, `top`, `top-right`, `left`, `centre`, `right`, `bottom-left`, `bottom` or `bottom-right` | Where the old canvas sits in the new one, as the dialog's grid of nine. `top-left` when left out, where the dialog starts |
+
+The step changes the piece as the dialog does. At the `centre` anchor an odd column is added or cut on the right and an odd row at the bottom.
+
+- **A Cells or Pixels layer exactly the canvas's size and at its top-left corner** becomes the new size. Cells past the new edges are cut. The cells it gains are a space, grey on black, on the bottom layer when that is a Cells layer, and transparent on any other.
+- **Every other layer** keeps all its cells and moves with the old canvas: a Cells or Pixels layer of another size or place, and every Text, Generator and Reference layer. A Reference layer's picture moves 8 pixels a column (9 with 9 px letter spacing) and 16 a row. Locked and hidden layers change in the same way.
+- **The selection** moves with the cells and is cut to the new canvas, and is gone if none of it is left, so a later step that needs one is refused (`step 3 (d): deleteSelection needs a selection: select or selectAll first`).
+- **A symmetry centre** (`"symmetry": {"mode": "radial", "folds": …, "centre": [x, y]}` on an earlier step) doesn't move with the art: it stays on its cell. If the new canvas doesn't have that cell, the centre moves to the nearest cell it does have.
+- The active layer, the clipboard and the other Tool Options stay as they are. Later steps' points are checked against the new size: `step 2 (dot): cell (5, 0) is off the 4 x 2 canvas`.
+
+A 12 × 4 sun over grass, grown to 16 × 6 about the centre, before and after (`blockwright --screenshot`, scale 2; [canvas-size.steps.json](../samples/manual-cli/canvas-size.steps.json)):
+
+![A yellow sun on a blue sky over a strip of green grass, filling the canvas](../samples/manual-cli/canvas-size-before.png)
+![The same picture with a black border of new cells around it: two columns on each side, one row above and one below](../samples/manual-cli/canvas-size-after.png)
+
+A step at the canvas's own size changes nothing. `replay` still writes its capture and notes on stderr, with exit status 0:
+
+```
+blockwright-cli: note: c.json: step 1 (same): changes nothing
+```
+
+The step takes no Tool Options, because its `"size"` is the canvas's, not the brush's. It takes `"capture"` and a `"screenshot"` as any step does, but no `"pointer"`, since it has no point. Each of these is refused with exit status 1, and nothing is written:
+
+```
+blockwright-cli: c.json: step 1 (grow): canvasSize needs "size": [width, height], the new canvas in cells
+blockwright-cli: c.json: step 1 (grow): "size" must be [width, height], the new canvas in cells
+blockwright-cli: c.json: step 1 (grow): "size width" must be a whole number 1 to 400
+blockwright-cli: c.json: step 1 (grow): "size height" must be a whole number 1 to 5000
+blockwright-cli: c.json: step 1 (grow): "anchor" takes top-left, top, top-right, left, centre, right, bottom-left, bottom, bottom-right, not "center"
+blockwright-cli: c.json: step 1 (grow): "anchor" must be a string, not a number
+blockwright-cli: c.json: step 1 (grow): canvasSize takes no "fg"
+blockwright-cli: c.json: step 1 (grow): "screenshot pointer" needs a step the pointer makes, with "points", "from" and "to", "at" or select's "rect"; this canvasSize step has none
+blockwright-cli: c.json: step 9 (grow): the canvas can't be made 400 x 5000: the layers would hold over 16000000 cells
+```
+
+The last is the dialog's own refusal: the layers together may hold no more than 16000000 cells. `blockwright --screenshot` refuses all of them too, and one more, as the dialog does: a canvas it can't draw. 400 × 5000 can be drawn with 8-pixel cells but not with 9 px letter spacing, so on a piece with 9 px letter spacing `replay` makes it and `--screenshot` stops there, whether or not the step asks for a picture:
+
+```
+blockwright: step 1 (grow): the canvas is too large to display
+```
+
+#### Sample merged
+
+`"sampleMerged": true` or `false`, on a `fill` or `eyedropper` step, is **Sample merged** in Tool Options. It is off unless a step turns it on, as in the editor.
+
+- **Off**, the two tools read the active layer alone. Fill floods the layer's own pixels, so on a clear layer it fills the whole layer. The eyedropper picks from the layer's own cell, and a pick from a transparent cell or pixel leaves the pen as it was, with a note: `blockwright-cli: note: m.json: step 2 (pick): pixel (0, 0) is transparent; the pen is unchanged`.
+- **On**, they read the canvas as it shows: every visible layer combined, leaving out hidden and Reference layers. Fill finds the area there and paints it into the active layer. On a Cells layer that isn't alpha-locked, a clear cell the area only half covers takes its other half from what the layers below show there, so that colour lands in the active layer too. A layer above the active one can bound the area, but its colours aren't copied into the active layer.
+
+Like any Tool Option it holds for the steps after it, on later `fill` and `eyedropper` steps, until a step sets it again. A `fill` or `eyedropper` step with no `"at"` only sets it. `blockwright --screenshot` ticks the box in Tool Options.
+
+A red frame on the bottom layer, and a fill inside it with the yellow pen on a clear Cells layer above: off, then on ([sample-merged.steps.json](../samples/manual-cli/sample-merged.steps.json)):
+
+![The whole canvas yellow: the fill covered the clear layer and hides the frame](../samples/manual-cli/sample-merged-off.png)
+![The red frame on black with its inside filled yellow](../samples/manual-cli/sample-merged-on.png)
+![Tool Options for Fill, its help ending above the Alpha lock box, unticked, and the Sample merged box, ticked](../samples/manual-cli/sample-merged-options.png)
+
+Under the IRC target the eyedropper picks as the editor's does: a left-button pick takes the cell's bold, italic and underline into the pen along with its colour, and the glyph brush then paints with them on a Cells layer. A right-button pick takes the background colour alone.
+
+Only `fill` and `eyedropper` take the key: on any other step it is refused, even as `false`. A value that isn't `true` or `false` is refused too. Each stops the replay with exit status 1:
+
+```
+blockwright-cli: m.json: step 2 (fill): "sampleMerged" must be true or false, not a number
+blockwright-cli: m.json: step 2 (pick): "sampleMerged" must be true or false, not a string
+blockwright-cli: m.json: step 2 (dab): halfBlock takes no "sampleMerged"
 ```
 
 ### Pictures of the window
