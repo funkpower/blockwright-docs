@@ -176,7 +176,7 @@ These run programs: a generator layer's output comes from the program its `gener
 blockwright-cli replay [options] <steps.json> -o <dir>
 ```
 
-`replay` plays a steps file: a start and a list of edits, each made through the editor's own brushes, shapes, selection and layer operations. After each step it writes the canvas, flattened and with its SAUCE, to `<dir>` as `NN-<name>.ans`, where `NN` is the step's number from `01` (with more digits in a file of 100 steps or more: `001`); a step with `"capture": "before-after"` writes `NN-<name>-before.ans` and `NN-<name>-after.ans`. `<dir>` is made if it isn't there. Nothing is written unless every step applies, and the same file writes the same bytes every run. Files already in `<dir>` stay unless this run writes one of the same name.
+`replay` plays a steps file: a start and a list of edits, each made through the editor's own brushes, shapes, selection and layer operations. After each step it writes the canvas, flattened and with its SAUCE, to `<dir>` as `NN-<name>.ans`, where `NN` is the step's number from `01`, with as many digits as the number of steps has and never fewer than two (`001` to `120` for 120 steps); a step with `"capture": "before-after"` writes `NN-<name>-before.ans` and `NN-<name>-after.ans`. `<dir>` is made if it isn't there. Nothing is written unless every step applies, and the same file writes the same bytes every run. Files already in `<dir>` stay unless this run writes one of the same name.
 
 | Option | What it does |
 |---|---|
@@ -203,7 +203,7 @@ A steps file is JSON. In brief:
 
 `blockwright-cli replay --help` gives the whole format: every action, its keys, and every Tool Option with its range and default. A step that can't be applied (an unknown action or key, a value out of range, a point off the canvas, nothing selected to transform) stops the replay with exit status 1 and a message naming the step, such as `blockwright-cli: bad.json: step 2 (off): cell (20, 1) is off the 8 x 3 canvas`.
 
-A steps file can also carry what only the editor's window uses ([Pictures of the window](#pictures-of-the-window)). `replay` passes over a step's `"screenshot"` and the file's `"window"`, but it has no window to set a view in, so it refuses a file with a `view` step before it reads the start or writes anything, with exit status 1:
+A steps file can also carry what only the editor's window uses ([Pictures of the window](#pictures-of-the-window)). `replay` takes no picture and passes over the file's `"window"`, but it still reads each step's `"screenshot"` and refuses the file over an error in the `"screenshot"` itself (a bad `"scale"` or `"pointer"`, below), though not one that needs the window. It has no window to set a view in, so it refuses a file with a `view` step before it reads the start or writes anything, with exit status 1:
 
 ```
 blockwright-cli: v.json: step 2 (zoomed): view sets the window's zoom, scroll and IRC options, and blockwright-cli replay has no window; replay this file with blockwright --screenshot
@@ -220,10 +220,33 @@ blockwright --screenshot <steps.json> -o <dir>
 ```
 {"of": "window" | a dock or widget's object name,
  "crop": {"cells": [x, y, w, h]} | {"pixels": [x, y, w, h]},
- "when": "before" | "after" | "both"}
+ "when": "before" | "after" | "both",
+ "scale": 1 | 2,
+ "pointer": true | false}
 ```
 
-`"of"` is `"window"` when left out, and `"when"` is `"after"`. A crop of `"cells"` needs `"of"` to hold the canvas, with the cells in view. The file's top-level `"window": [w, h]` sizes the window, 1280 × 800 without one. A file with no step that asks for a screenshot writes no picture and exits with status 0, saying `blockwright: ok.json: no step asks for a screenshot`.
+`"of"` is `"window"` when left out, `"when"` is `"after"`, `"scale"` is 1 and `"pointer"` is `false`. A crop of `"cells"` needs `"of"` to hold the canvas, with the cells in view; one of `"pixels"` is in the pixels of `"of"`. The file's top-level `"window": [w, h]` sizes the window, 1280 × 800 without one. A file with no step that asks for a screenshot writes no picture and exits with status 0, saying `blockwright: ok.json: no step asks for a screenshot`.
+
+`"scale": 2` draws the picture at twice the pixels each way. It isn't an enlargement: the window keeps its size and is laid out again at a device pixel ratio of 2, as a high-DPI screen shows it, so the default 1280 × 800 window comes out 2560 × 1600 and a crop gives twice its pixels. Any scale but 1 or 2 is refused (`step 1 (dab): "screenshot scale" must be a whole number 1 to 2`).
+
+`"pointer": true` draws a mouse pointer, a plain black arrow with a white edge, with its tip where the step left the mouse: at the step's last point (`"to"`, `"at"`, the last of `"points"`, the bottom-right cell of a `select` step's `"rect"`), or at its first in a picture taken before the step. The tip is at the middle of the cell, or of the half of the cell a half-block pixel is. A line, before and after, at scale 2:
+
+![A black canvas with a white-edged arrow pointer near its top left, where the line will start](../samples/manual-cli/pointer-before.png)
+![The same canvas with a yellow line from the top left down to the lower right, and the pointer's tip at its end](../samples/manual-cli/pointer-after.png)
+
+A pointer is refused, with exit status 1 and nothing written, when its value isn't `true` or `false`, when the step has no point to put it at (a tool step with no points, a menu, layer or dock action, a `move` or `moveSelection` by an offset, a `view` step), and when the picture doesn't show the point:
+
+```
+blockwright: p.json: step 1 (dab): "screenshot pointer" must be true or false, not a number
+blockwright: p.json: step 1 (all): "screenshot pointer" needs a step the pointer makes, with "points", "from" and "to", "at" or select's "rect"; this selectAll step has none
+blockwright: step 1 (dab): a pointer needs "of" to hold the canvas, and "layers" doesn't
+blockwright: step 1 (dab): the pointer's cell [190, 3] is not in view in the 1280 x 800 window
+blockwright: step 1 (dab): the pointer's cell [8, 3] is outside the picture
+```
+
+The first two, and the refused scale, are errors in the file itself, so `blockwright-cli replay` refuses the file over them too, with the same message after `blockwright-cli:`. The last three need the window, so only `--screenshot` meets them.
+
+The pictures don't depend on the machine's screen or settings. The window runs offscreen on fixed screens at 96 dpi that no scaling setting in the environment reaches, in Qt's Fusion style with default settings, and its text is in Noto Sans at 10 pt, built into Blockwright, so the same steps file makes the same PNG bytes on every run. Noto Sans has no `█ ▓ ▒ ░`, so where the window's own widgets show those (the Glyphs bar's set names, the status bar's F-keys, Tool Options' help) they come from a system font, and on another machine the docks can sit a pixel or two higher or lower and Tool Options' help can wrap differently. The canvas is drawn in Blockwright's own fonts everywhere.
 
 A `view` step sets what the window shows, for the pictures after it:
 
@@ -242,8 +265,6 @@ A `view` step sets what the window shows, for the pictures after it:
 The three IRC settings are the ones in [Making rows fit](10-irc.md#making-rows-fit), and the row meter and the IRC View dock follow them as they do the menu. Every key is optional, but a view step needs at least one; an empty one is refused (`step 1 (empty): view needs at least one of "zoom", "scrollTo", "ircFit", "ircPad" or "ircSwapShades"`). A key left out leaves that setting as it was. A view step takes a `"screenshot"` but no Tool Options: `"fg"` on one is refused with `step 1 (v): view takes no "fg"`. A `"scrollTo"` cell must be on the canvas as it stands at that step; one off it is refused (`step 2 (far): scrollTo cell (20, 0) is off the 20 x 10 canvas`). Every refusal exits with status 1.
 
 A view step takes effect where it stands and holds until a later view step changes it. A screenshot taken `"before"` a view step shows the view the steps before it left. Until the first view step the window has a new window's view: zoom 2, scrolled to the top left, Fit, Pad and Swap Shades off. Within one step the zoom is set before the scroll. A view step changes the window, not the piece: it makes no undo step and doesn't mark the document modified.
-
-On a screen whose scale isn't a whole number (150%, say), the cell before the one scrolled to can show up to one of the window's own pixels at the view's edge (one and a half screen pixels at 150%), and the IRC View can start a column or a row early.
 
 ### The editor's action list
 

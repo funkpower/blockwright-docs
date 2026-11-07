@@ -1,0 +1,37 @@
+{
+ "version": 1,
+ "start": {
+  "blank": [
+   16,
+   8
+  ]
+ },
+ "steps": [
+  {
+   "name": "line",
+   "action": "line",
+   "from": [
+    2,
+    2
+   ],
+   "to": [
+    12,
+    13
+   ],
+   "fg": 14,
+   "screenshot": {
+    "crop": {
+     "cells": [
+      0,
+      0,
+      16,
+      8
+     ]
+    },
+    "when": "both",
+    "scale": 2,
+    "pointer": true
+   }
+  }
+ ]
+}

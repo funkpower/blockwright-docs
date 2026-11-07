@@ -25,7 +25,7 @@ Set the budget with **View > IRC > Budget...** (no shortcut). The IRC Budget dia
 | Budget | The bytes a line may take, 1 to 512. A number other than the preset's makes it Custom |
 | Mask, Channel | Your `nick!user@host` and the channel. With both filled in the budget is worked out as 498 less their lengths, and the preset becomes Custom. While either is empty, holds a space, or leaves no room for text, the budget isn't worked out and stays as it was, with no message |
 
-Under the fields a note says: "Publish to Library and Send to WeeChat hold lines to this budget or to 407 bytes, the ascii script's EFnet limit, whichever is less." (see [Export IRC Text](#export-irc-text)).
+Under the fields a note says: "Publish to Library and Send to WeeChat hold lines to this budget or to 407 bytes, the ascii script's EFnet limit, whichever is less. A Send with the ANSI target in CP437 sends no .txt and checks no budget." (see [Export IRC Text](#export-irc-text)).
 
 The budget belongs to the document. Changing it is a step on the undo stack, and a project saves it (its profile, `efnet-weechat` or `custom`, and the bytes). An `.ans` has nowhere to keep it: a document whose budget has been changed is one an `.ans` doesn't hold whole (see [File formats](13-file-formats.md#saving-a-project-as-a-flat-file)).
 
