@@ -118,7 +118,7 @@ You'll draw the letters on a Pixels layer, look at them at 1×, and colour them.
 
 3. **The pen.** Take the **Half-Block Brush** (**Tools > Half-Block Brush**, <kbd>Ctrl</kbd>+<kbd>B</kbd>). Check that **Pencil 4-connected** is ticked and **Alpha lock** is not, and set **Symmetry** to **Off**. Left-click yellow, the fifteenth swatch:
 
-    ![The Tool Options dock for the Half-Block Brush: its help text, then Pencil 4-connected ticked and Alpha lock unticked](../samples/10-letters-and-text/brush-options.png)
+    ![The Tool Options dock for the Half-Block Brush: its help text, then Pencil 4-connected ticked, Alpha lock unticked and Symmetry Off](../samples/10-letters-and-text/brush-options.png)
 
 4. **C and R.** Draw each letter from the face above, a pixel for each `#`, with its top left corner at pixel row 2: the C from column 2, the R from column 9. Click a pixel at a time, or drag along a stem; with **Pencil 4-connected** a drag steps only sideways and up or down, so it doesn't cut a corner:
 
@@ -138,9 +138,9 @@ You'll draw the letters on a Pixels layer, look at them at 1×, and colour them.
 
     The 1 is columns 33 to 36, `▄██·` on row 1 and `████` on row 5. The 0 is columns 38 to 43, `▄████▄` on row 1 and `▀████▀` on row 5.
 
-7. **Read it at 1×.** Open the **Preview (1x)** dock (**Window > Preview (1x)**) if it isn't showing. Check each letter: the C open, the R with its leg, the round 0, the gap after the G. The dock is narrower than this canvas, so it shows the left part, through the 1 and the edge of the 0, and scrolls for the rest. Here it is with the colours of the last step:
+7. **Read it at 1×.** Open the **Preview (1x)** dock (**Window > Preview (1x)**) if it isn't showing. Check each letter: the C open, the R with its leg, the round 0, the gap after the G. The dock is narrower than this canvas, so it shows the left part, through the 1 and a sliver of the 0, and scrolls for the rest. Here it is with the colours of the last step:
 
-    ![The Preview (1x) dock: CRAG, the 1 and the left edge of the 0 at their real size, white, yellow, light red and red from top to foot, with a horizontal scroll bar at the bottom](../samples/10-letters-and-text/preview.png)
+    ![The Preview (1x) dock: CRAG and the 1 at their real size, with a one-pixel sliver of the 0 at the right edge, white, yellow, light red and red from top to foot, with a horizontal scroll bar at the bottom](../samples/10-letters-and-text/preview.png)
 
 8. **Lock the layer.** Tick the **Alpha Lock** box in the **title** row of the **Layers** dock (or **Alpha lock** in **Tool Options**). From here on the tools paint only the letters' pixels.
 

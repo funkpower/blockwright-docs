@@ -9,15 +9,7 @@
    "action": "newPixelLayer",
    "rename": "title",
    "screenshot": {
-    "of": "layers",
-    "crop": {
-     "pixels": [
-      0,
-      0,
-      310,
-      205
-     ]
-    }
+    "of": "layers"
    }
   },
   {
@@ -303,7 +295,7 @@
       0,
       0,
       256,
-      640
+      718
      ]
     }
    }

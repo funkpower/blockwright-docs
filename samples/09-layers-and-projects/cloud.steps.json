@@ -49,15 +49,7 @@
     0
    ],
    "screenshot": {
-    "of": "layers",
-    "crop": {
-     "pixels": [
-      0,
-      0,
-      310,
-      205
-     ]
-    }
+    "of": "layers"
    }
   },
   {
@@ -65,15 +57,7 @@
    "action": "layerProperties",
    "visible": false,
    "screenshot": {
-    "of": "layers",
-    "crop": {
-     "pixels": [
-      0,
-      0,
-      310,
-      205
-     ]
-    }
+    "of": "layers"
    }
   }
  ],

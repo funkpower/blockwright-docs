@@ -113,7 +113,7 @@ You'll draw the sign as it first comes to mind, see what IRC makes of it, and fi
 
 7. **The IRC View.** Open it with **View > IRC > IRC View** (no shortcut). In the default layout it is on the right, tabbed with **Lint**:
 
-    ![The window's left part and right column. On the left, the canvas's columns 0 to 40 and the row meter as in the last picture, with grey canvas background under row 8. On the right, part of the palette and the B, I and U buttons, the Layers dock with its one Background layer, of kind Cells, and the Library dock with its list of folders and the tops of two of the bundled stamps, then the IRC View dock: the sign at 1×, its left part to about column 35, rows 1 and 7 dark grey, the top and bottom bulbs in mIRC's colours, the star and the I in rows 2 to 6, with a horizontal scroll bar, and under it 2 rows cut at 407 bytes](../samples/11-made-for-irc/beside-over.png)
+    ![The window's left part and right column. On the left, the canvas's columns 0 to 40 and the row meter as in the last picture, with grey canvas background under row 8. On the right, part of the palette and the B, I and U buttons, the Layers dock with its one Background layer, of kind Cells, and the Library dock with its search box and the top of its list of folders, then the IRC View dock: the sign at 1×, its left part to about column 35, rows 1 and 7 dark grey, the top bulbs in mIRC's colours, the star and the I in rows 2 to 6, and the tops of the bottom bulbs, cut off by a horizontal scroll bar, and under it 2 rows cut at 407 bytes](../samples/11-made-for-irc/beside-over.png)
 
     The dock draws at 1× and scrolls on its own. The whole view, as `blockwright-cli render --irc --scale 2 over.bwp` draws it:
 
@@ -149,7 +149,7 @@ You'll draw the sign as it first comes to mind, see what IRC makes of it, and fi
 
     Lint is down to the note:
 
-    ![The Lint dock with one row, in italics: 24,4 ans-loss, note: 2 cells hold glyphs a … cut off at the dock's edge](../samples/11-made-for-irc/lint-final.png)
+    ![The Lint dock with one row, in italics: 24,4 ans-loss, note: 2 cells hold gly… cut off at the dock's edge](../samples/11-made-for-irc/lint-final.png)
 
 11. **Export.** **File > Export IRC Text...** (no shortcut). A line over the budget would bring a warning first, "N lines are over the 407-byte budget, the longest … bytes as WeeChat's ascii script sends them: the script cuts them short. Export anyway?", with **Save** and **Cancel**; a glyph IRC text can't carry would bring another. Save the file as `final.txt`; the status bar says *Exported 9 IRC lines to …*. The file is UTF-8, a line for each row the export keeps (here all 9), each ended by a line feed. From the command line, with each line's size:
 

@@ -8,15 +8,7 @@
    "name": "opened",
    "action": "deselect",
    "screenshot": {
-    "of": "layers",
-    "crop": {
-     "pixels": [
-      0,
-      0,
-      310,
-      205
-     ]
-    }
+    "of": "layers"
    }
   }
  ],

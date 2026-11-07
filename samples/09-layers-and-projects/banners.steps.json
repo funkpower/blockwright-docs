@@ -14,15 +14,7 @@
    "action": "newPixelLayer",
    "rename": "banners",
    "screenshot": {
-    "of": "layers",
-    "crop": {
-     "pixels": [
-      0,
-      0,
-      310,
-      205
-     ]
-    }
+    "of": "layers"
    }
   },
   {
@@ -57,15 +49,7 @@
    "name": "raise",
    "action": "raiseLayer",
    "screenshot": {
-    "of": "layers",
-    "crop": {
-     "pixels": [
-      0,
-      0,
-      310,
-      205
-     ]
-    }
+    "of": "layers"
    }
   }
  ],

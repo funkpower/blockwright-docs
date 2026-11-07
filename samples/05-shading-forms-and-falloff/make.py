@@ -294,10 +294,10 @@ CLEAN = [{"name": "despeckle", "action": "despeckle", "size": 12, "tip": "square
 start = blank(W, H)
 steps = WALL + FLOOR + PILLAR + BALL + SHADOWS + SMUDGE + WEAR + CLEAN
 at = {step["name"]: i for i, step in enumerate(steps)}
-for name, args in [("wall", ("toolOptions", [0, 0, 256, 905])), ("pillar", ("toolOptions", [0, 0, 256, 862])),
-                   ("lock", ("layers", [0, 0, 310, 205])), ("shadow-1", ("toolOptions", [0, 0, 256, 752])),
-                   ("smudge", ("toolOptions", [0, 0, 256, 682])), ("wear-3", ("lint",)),
-                   ("despeckle", ("toolOptions", [0, 0, 256, 667])), ("check", ("lint",))]:
+for name, args in [("wall", ("toolOptions", [0, 0, 256, 967])), ("pillar", ("toolOptions", [0, 0, 256, 890])),
+                   ("lock", ("layers",)), ("shadow-1", ("toolOptions", [0, 0, 256, 756])),
+                   ("smudge", ("toolOptions", [0, 0, 256, 701])), ("wear-3", ("lint",)),
+                   ("despeckle", ("toolOptions", [0, 0, 256, 632])), ("check", ("lint",))]:
     steps[at[name]] = shot(steps[at[name]], *args)
 replay("final", start, steps,
        {"wall": "step-01.ans", "floor": "step-02.ans", "pillar-base": "step-03.ans", "pillar": "step-04.ans",

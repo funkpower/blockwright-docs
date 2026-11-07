@@ -215,8 +215,8 @@ def shot(step, of, crop=None, when=None):
 start = blank(W, H)
 steps = FLOOR + BALL + LOCK + lit(0.25) + HIGHLIGHT + SHADOW
 at = {step["name"]: i for i, step in enumerate(steps)}
-for name, args in [("floor-1", ("toolOptions", [0, 0, 256, 603])), ("lock", ("layers",)),
-                   ("lit-1", ("toolOptions", [0, 0, 256, 682])), ("highlight", ("lint",)),
+for name, args in [("floor-1", ("toolOptions", [0, 0, 256, 662])), ("lock", ("layers",)),
+                   ("lit-1", ("toolOptions", [0, 0, 256, 725])), ("highlight", ("lint",)),
                    ("shadow-3", ("lint",))]:
     steps[at[name]] = shot(steps[at[name]], *args)
 replay("final", start, steps,

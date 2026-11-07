@@ -35,7 +35,6 @@ DATE = "20261105"
 CLI = os.environ.get("BLOCKWRIGHT_CLI") or "blockwright-cli"
 GUI = os.environ.get("BLOCKWRIGHT") or "blockwright"
 WINDOW = [1280, 1300]
-DOCK = [0, 0, 310, 205]
 
 # A face 10 pixels tall with 2-pixel stems: five cell rows a letter. The
 # letters are 6 columns wide and the 1 is 4. The *_bad ones are the
@@ -294,8 +293,8 @@ BANDS = [{"name": f"row-{y}", "action": "rectangle", "fg": c, "filled": True, "f
          for y, c in ROWS]
 start = blank(W, H)
 steps = [title_layer()] + letters + LOCK + BANDS
-steps[0] = shot(steps[0], "layers", DOCK)
-steps[1] = shot(steps[1], "toolOptions", [0, 0, 256, 640])
+steps[0] = shot(steps[0], "layers")
+steps[1] = shot(steps[1], "toolOptions", [0, 0, 256, 718])
 steps[-1] = shot(steps[-1], "preview")
 replay("final", start, steps,
        {"letter-1": "step-01.bwp", "letter-3": "step-02.bwp", "letter-5": "step-03.bwp", "row-5": "final.bwp"},

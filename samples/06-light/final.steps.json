@@ -110,7 +110,7 @@
       0,
       0,
       256,
-      750
+      731
      ]
     }
    }
@@ -182,15 +182,7 @@
    "action": "layerProperties",
    "alphaLocked": true,
    "screenshot": {
-    "of": "layers",
-    "crop": {
-     "pixels": [
-      0,
-      0,
-      310,
-      205
-     ]
-    }
+    "of": "layers"
    }
   },
   {
@@ -218,7 +210,7 @@
       0,
       0,
       256,
-      812
+      890
      ]
     }
    }

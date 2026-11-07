@@ -129,7 +129,7 @@ start = blank(40, 12)
 steps = flat("yellow", [3, 2, 16, 8], "fire", 3, "round", 14) + flat("grey", [23, 2, 36, 8], "steel", 2, "round", 14)
 steps += [{"name": "line-yellow", "action": "outline", "ramp": "fire", "size": 20, "tip": "square", "points": [[9, 5]]},
           {"name": "line-grey", "action": "outline", "ramp": "steel", "points": [[29, 5]]}]
-steps[-2] = shot(steps[-2], "toolOptions", [0, 0, 256, 920])
+steps[-2] = shot(steps[-2], "toolOptions", [0, 0, 256, 908])
 replay("outline", start, steps, {"grey": "outline-before.ans", "line-grey": "outline.ans"},
        {"line-yellow": "outline-options.png"}, window=[1280, 1300])
 
@@ -159,7 +159,7 @@ for kind, ramp, x, y in KINDS:
 for kind, ramp, x, y in KINDS:
     steps += stamp(kind, [x, y, x + 23, y + 7], kind, ramp)
 at = {step["name"]: i for i, step in enumerate(steps)}
-steps[at["scales"]] = shot(steps[at["scales"]], "toolOptions", [0, 0, 256, 912])
+steps[at["scales"]] = shot(steps[at["scales"]], "toolOptions", [0, 0, 256, 903])
 replay("textures", start, steps, {"noise": "textures.ans"}, {"scales": "texture-options.png"}, window=[1280, 1300])
 
 # Density sets a brick's size: 0.3, 1.6 and 2.5.
@@ -177,7 +177,7 @@ start = blank(40, 12)
 steps = flat("moon", [5, 2, 18, 8], "steel", 2, "round", 14)
 steps += [shot({"name": "stars", "action": "spray", "fg": WHITE, "bg": BLACK, "size": 64, "tip": "square",
                 "spray": {"kind": "stars", "density": 100, "seed": 1}, "points": [[20, 6]]},
-               "toolOptions", [0, 0, 256, 900])]
+               "toolOptions", [0, 0, 256, 909])]
 replay("stars", start, steps, {"moon": "stars-before.ans", "stars": "stars.ans"}, {"stars": "spray-options.png"},
        window=[1280, 1300])
 
@@ -236,7 +236,7 @@ CHECK = [{"name": "check", "action": "deselect"}]
 start = blank(W, H)
 steps = WALL + NOTCHES + GATE + MOON + STARS + DOOR + LINE + CHECK
 at = {step["name"]: i for i, step in enumerate(steps)}
-for name, args in [("door-line", ("layers", [0, 0, 310, 205])), ("check", ("lint",))]:
+for name, args in [("door-line", ("layers",)), ("check", ("lint",))]:
     steps[at[name]] = shot(steps[at[name]], *args)
 replay("final", start, steps,
        {"wall-deselect": "step-01.ans", "notch-3": "step-02.ans", "gate": "step-03.ans", "moon": "step-04.ans",

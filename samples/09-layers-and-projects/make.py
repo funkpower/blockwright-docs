@@ -26,7 +26,6 @@ CLI = os.environ.get("BLOCKWRIGHT_CLI") or "blockwright-cli"
 GUI = os.environ.get("BLOCKWRIGHT") or "blockwright"
 CASTLE = "../07-detail/final.bwp"
 WINDOW = [1280, 1300]
-DOCK = [0, 0, 310, 205]
 
 
 def write_steps(name, start, steps, window=None):
@@ -67,7 +66,7 @@ def snapshot(project):
 
 
 def dock(step):
-    return dict(step, screenshot={"of": "layers", "crop": {"pixels": DOCK}})
+    return dict(step, screenshot={"of": "layers"})
 
 
 # The idea: the castle's two layers apart. The door hidden leaves the

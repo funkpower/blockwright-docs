@@ -169,9 +169,9 @@ You'll build the piece back to front: the wall, its battlements and gate, the mo
 
     ![The finished piece: the wall with its battlements and gate, the grey door outlined in dark grey, under the moon and the stars](../samples/07-detail/final.bwp "2x")
 
-    Eighteen cells of the door's edge went to dark grey `█`: row 14 from column 27 to 32, `26, 15`, `27, 15`, `32, 15` and `33, 15`, and columns 26 and 33 from row 16 to 19. Row 19, where the door runs off the bottom of the canvas, has no line across it. The **Lint** dock lists eight findings:
+    Eighteen cells of the door's edge went to dark grey `█`: row 14 from column 27 to 32, `26, 15`, `27, 15`, `32, 15` and `33, 15`, and columns 26 and 33 from row 16 to 19. Row 19, where the door runs off the bottom of the canvas, has no line across it. The **Lint** dock lists eight findings; scroll its list for the last:
 
-    ![The Lint dock reading All named ramps: eight findings, blank-edge-rows at 0,0, trailing-black at 0,8, 0,12 and 34,16, and speckle at 6,13 and 25,13 on fire and at 38,13 and 14,17 on skin](../samples/07-detail/lint.png)
+    ![The Lint dock reading All named ramps: seven of the eight findings in view, blank-edge-rows at 0,0, trailing-black at 0,8, 0,12 and 34,16, and speckle at 6,13 and 25,13 on fire and at 38,13 on skin, with the list's scroll bar beside them; under the list, 8 findings (4 speckle, 3 trailing-black, 1 blank-edge-rows), noise 0.0000, iCE on](../samples/07-detail/lint.png)
 
     The four specks are spaces near brick ends, red at `6, 13` and `25, 13` and brown at `38, 13` and `14, 17`, read along **fire** and **skin**, ramps that run through red too: the list at the top of the dock starts at **All named ramps**. Pick **wood**, the ramp the wall is on, and the specks go. The other four are about IRC: a blank top row, rows 8 and 12 all black, and the black at the end of row 16. Black sky and black mortar raise them; tutorial 11, *Made for IRC*, deals with them.
 

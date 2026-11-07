@@ -257,8 +257,8 @@ CHECK = [{"name": "check", "action": "deselect"}]
 start = blank(W, H)
 steps = SKY + HILLS + HILLS_RIM + BOULDER + STONE + CHECK
 at = {step["name"]: i for i, step in enumerate(steps)}
-for name, args in [("hills-rim", ("toolOptions", [0, 0, 256, 750])), ("stone", ("toolOptions", [0, 0, 256, 812])),
-                   ("stone-lock", ("layers", [0, 0, 310, 205])), ("check", ("lint",))]:
+for name, args in [("hills-rim", ("toolOptions", [0, 0, 256, 731])), ("stone", ("toolOptions", [0, 0, 256, 890])),
+                   ("stone-lock", ("layers",)), ("check", ("lint",))]:
     steps[at[name]] = shot(steps[at[name]], *args)
 replay("final", start, steps,
        {"sky": "step-01.ans", "hills": "step-02.ans", "hills-rim": "step-03.ans", "boulder": "step-04.ans",
