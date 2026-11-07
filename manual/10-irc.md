@@ -1,5 +1,5 @@
 Title: IRC: byte budget, row meter, IRC view, export
-Checked: Blockwright 0.1.0 (d4b8e58)
+Checked: Blockwright 0.1.0 (4916cd6)
 
 # IRC: byte budget, row meter, IRC view, export
 
@@ -46,7 +46,7 @@ Row 3: 602 of 407 bytes as WeeChat's ascii script sends it, 476 as written, over
 Row 3: 407 of 407 bytes as WeeChat's ascii script sends it, 340 as written, 31 cells merged to fit
 ```
 
-The first is row 3 of the canvas under [How a row is encoded](#how-a-row-is-encoded), the second the same row with Fit on. A row over the budget whose size as sent depends on the Unicode version of the script's Python adds a clause starting "where the script's Python has". At a fractional display scale, such as 125%, hovering over a bar can give an earlier row's figures, and further down the canvas it can be several rows earlier.
+The first is row 3 of the canvas under [How a row is encoded](#how-a-row-is-encoded), the second the same row with Fit on. A row over the budget whose size as sent depends on the Unicode version of the script's Python adds a clause starting "where the script's Python has".
 
 The meter measures each row as Export IRC Text writes it, with the window's Fit, Pad and Swap Shades settings and the document's iCE colours (with iCE off a bright background is saved as blink on the dark colour, which IRC shows dark; under the IRC target a cell whose background is an RGB colour, an mIRC colour past 15 say, is sent as it is). What counts against the budget is the line as WeeChat's ascii script sends it, which writes the line again its own way, so a line can be longer sent than written, and a line over the budget can be shorter (see [The IRC View dock](#the-irc-view-dock)). It counts what the canvas shows, every visible layer, and a tool's edit still in progress: a floating selection or a drag shows in the meter before it lands.
 
