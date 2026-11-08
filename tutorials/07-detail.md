@@ -87,6 +87,8 @@ The **Clone Stamp** (**Tools > Clone Stamp**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<
 
 **Aligned**, in its options, is ticked to start with: a second stroke keeps the distance the first one set, so it goes on copying the same stretch. Untick it and each stroke starts again from the source. The stamp reads the canvas as it was when the stroke began, so a copy that runs over its own source copies what was there before. It copies within the active layer. Under symmetry each mirrored or turned copy reads from the source's mirrored or turned spot, not from the source itself, and the cells it finds there are copied as they are, not flipped. **File > New** and **File > Open** forget the source: <kbd>Ctrl</kbd>+click again before you paint.
 
+A steps file's `clone` step sets the source and paints a stroke the same way ([The clone stamp](../manual/14-cli.md#the-clone-stamp)).
+
 ### Symmetry
 
 Mirror mode repeats a stroke. **Edit > Mirror Mode** (<kbd>Ctrl</kbd>+<kbd>M</kbd>) turns it on and off. **Edit > Symmetry** picks what it repeats a stroke as, **Mirror X**, **Mirror Y**, **Mirror X and Y** or **Radial**, and picking one turns mirror mode on. The same choice is the **Symmetry** list at the foot of the **Tool Options** dock, where **Off** turns mirror mode off. It is one setting, shared by the brushes, the stamps, the spray, the rectangle, the ellipse, the line and the fill. The **Ramp Gradient** has no **Symmetry**.

@@ -176,7 +176,19 @@ These run programs: a generator layer's output comes from the program its `gener
 blockwright-cli replay [options] <steps.json> -o <dir>
 ```
 
-`replay` plays a steps file: a start and a list of edits, each made through the editor's own brushes, shapes, selection and layer operations. After each step it writes the canvas, flattened and with its SAUCE, to `<dir>` as `NN-<name>.ans`, where `NN` is the step's number from `01`, with as many digits as the number of steps has and never fewer than two (`001` to `120` for 120 steps); a step with `"capture": "before-after"` writes `NN-<name>-before.ans` and `NN-<name>-after.ans`. `<dir>` is made if it isn't there. Nothing is written unless every step applies, and the same file writes the same bytes every run. Files already in `<dir>` stay unless this run writes one of the same name.
+`replay` plays a steps file: a start and a list of edits, each made through the editor's own brushes, shapes, selection and layer operations. After each step it writes the canvas, flattened and with its SAUCE, to `<dir>` as `NN-<name>.ans`, where `NN` is the step's number from `01`, with as many digits as the number of steps has and never fewer than two (`001` to `120` for 120 steps); a step with `"capture": "before-after"` writes `NN-<name>-before.ans` and `NN-<name>-after.ans`. `<dir>` is made if it isn't there. Nothing is written unless every step applies, and the same file writes the same bytes every run but for one thing, the date of the SAUCE record a capture gets when its start has none: a `blank` start, or a file without a record. That date is today's, or, when `SOURCE_DATE_EPOCH` is set, that day in UTC. Files already in `<dir>` stay unless this run writes one of the same name.
+
+To make the output the same on any day, set `SOURCE_DATE_EPOCH` to seconds since 1970-01-01 UTC, as `import-scene` takes it:
+
+```
+SOURCE_DATE_EPOCH=1767225600 blockwright-cli replay steps.json -o out
+```
+
+Each capture whose start has no record is then dated `20260101`. A start's own record keeps its date, and a `--project` capture carries no record, so neither changes. An empty value counts as unset. A value that isn't digits alone, or is past the end of 9999, is a usage error, with exit status 2, before the steps file is read:
+
+```
+blockwright-cli: SOURCE_DATE_EPOCH is seconds since 1970-01-01 UTC as digits, up to the end of 9999, not 'abc'
+```
 
 | Option | What it does |
 |---|---|
@@ -198,8 +210,8 @@ A steps file is JSON. In brief:
 ```
 
 - `"start"` is `{"file": ...}` (an `.ans`, `.xb`, `.bin` or project, relative to the steps file), `{"sample": ...}` or `{"blank": [w, h]}`. `"ice"` sets a blank start's iCE colours (default on).
-- Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …), a layer command (`newCellsLayer`, `setActiveLayer`, …) or `canvasSize` ([Resizing the canvas](#resizing-the-canvas)). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row: the example's rectangle from pixel `[0, 0]` to `[7, 5]` covers cell rows 0 to 2.
-- Any step but a `view` or `canvasSize` step may also set Tool Options (`"fg"` and `"bg"` 0 to 15, `"size"`, `"ramp"`, `"symmetry"` and more), which hold for the steps after it. `"sampleMerged"` is one of them, but only a `fill` or `eyedropper` step takes it ([Sample merged](#sample-merged)).
+- Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …), a layer command (`newCellsLayer`, `setActiveLayer`, …), `canvasSize` ([Resizing the canvas](#resizing-the-canvas)) or `clone` ([The clone stamp](#the-clone-stamp)). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row: the example's rectangle from pixel `[0, 0]` to `[7, 5]` covers cell rows 0 to 2.
+- Any step but a `view` or `canvasSize` step may also set Tool Options (`"fg"` and `"bg"` 0 to 15, `"size"`, `"ramp"`, `"symmetry"` and more), which hold for the steps after it. `"sampleMerged"` is one of them, but only a `fill` or `eyedropper` step takes it ([Sample merged](#sample-merged)), and `"aligned"` is another, which only a `clone` step takes.
 
 `blockwright-cli replay --help` gives the whole format: every action, its keys, and every Tool Option with its range and default. A step that can't be applied (an unknown action or key, a value out of range, a point off the canvas, nothing selected to transform) stops the replay with exit status 1 and a message naming the step, such as `blockwright-cli: bad.json: step 2 (off): cell (20, 1) is off the 8 x 3 canvas`.
 
@@ -285,6 +297,54 @@ blockwright-cli: m.json: step 2 (fill): "sampleMerged" must be true or false, no
 blockwright-cli: m.json: step 2 (pick): "sampleMerged" must be true or false, not a string
 blockwright-cli: m.json: step 2 (dab): halfBlock takes no "sampleMerged"
 ```
+
+#### The clone stamp
+
+A `clone` step is the **Clone Stamp** ([The clone stamp](../tutorials/07-detail.md#the-clone-stamp)). `"source"` is the cell <kbd>Ctrl</kbd>+click sets, and `"points"` are the stroke that copies from it:
+
+```
+{"name": "source", "action": "clone", "source": [93, 36]},
+{"name": "head", "action": "clone", "size": 4, "points": [[62, 44], [72, 44]]},
+{"name": "body", "action": "clone", "points": [[62, 48], [72, 48]], "aligned": false}
+```
+
+| Key | Value | What it sets |
+|---|---|---|
+| `"source"` | `[x, y]`, a cell on the canvas | The cell to copy from, set before the stroke. It holds for later `clone` steps, across steps of other kinds, until a `clone` step sets another |
+| `"points"` | Cells, as any brush stroke's | Where the copy goes: every cell the brush covers takes the cell at the stroke's distance from it. On the first stroke after a source, or with Aligned off, that is the distance from the source to the first point, so the cell under the first point takes the source cell. Without points the step sets only the source and Tool Options, and writes its capture with no note |
+| `"aligned"` | `true` or `false` | **Aligned** in Tool Options: on unless a step turns it off. Like any Tool Option it holds for the steps after it |
+
+A stroke needs a source, on its own step or an earlier `clone` step. `"button"` is taken, as by any stroke, but either button copies the same.
+
+- **Aligned on**, the first stroke after a source sets the distance from the source to where the stroke starts, and every later stroke copies at that distance, so a second stroke goes on copying the same stretch. A new `"source"` starts again: the next stroke sets the distance afresh.
+- **Aligned off**, every stroke copies from the source again. It still sets the distance, so a stroke after Aligned is turned back on keeps the distance of the last stroke, not of the first.
+- The step reads the canvas as it was when the stroke began, so a copy that runs over its own source copies what was there before. With the source on the `A` of `ABCDEFGH` and a stroke along the same row from the `B` to the `E`, the row becomes `AABCDFGH`.
+- It copies whole cells, glyph and both colours, and only within the active layer: on a clear layer it finds nothing to copy. **Size** and **Tip** set the cells each point covers. A selection and **Alpha lock** limit the cells it writes, and under **Symmetry** each mirrored or turned copy reads from the source's mirrored or turned cell, as in the editor.
+- `blockwright --screenshot` marks the source with a dotted box round its cell and shows **Aligned** in Tool Options. With `"pointer": true` the pointer is on the source before the step, as the <kbd>Ctrl</kbd>+click comes first, and after it on the stroke's last point, or on the source when the step has no points.
+
+The fox in [Spruce Island](../samples/manual-cli/spruce-island.ans), a 120 × 50 piece by funkpower, copied onto the snow with a 4 × 4 square brush: the source set on its face, a first stroke along row 44, and a second along row 48, each from column 62 to 72 (`blockwright --screenshot`, scale 1, in a window large enough to show the cells cropped; [clone-aligned.steps.json](../samples/manual-cli/clone-aligned.steps.json) and [clone-unaligned.steps.json](../samples/manual-cli/clone-unaligned.steps.json)):
+
+![A red-brown fox sitting on the right, in front of a grey wall with a shuttered window, and grey snow with white drifts below. The pointer is on a cell of the fox's face, the source, with a dotted box round it](../samples/manual-cli/clone-source.png)
+![The same, with the fox's head copied onto the snow at the lower left, the dark wall behind it copied too, and the dotted box still round the source cell](../samples/manual-cli/clone-head.png)
+
+With Aligned on, the second stroke carries on below the first, and the copy is the whole fox. With Aligned off, it starts from the source again and copies the head a second time:
+
+![The fox's body copied onto the snow below the copied head, so the copy at the lower left is the whole fox](../samples/manual-cli/clone-aligned.png)
+![Two copies of the fox's head stacked on the snow at the lower left](../samples/manual-cli/clone-unaligned.png)
+![Tool Options for the Clone Stamp after the second file: Size 4, Tip Square, and the Aligned box unticked](../samples/manual-cli/clone-options.png)
+
+A stroke that copies blank onto blank changes nothing, and `replay` notes it on stderr, with exit status 0: `blockwright-cli: note: c.json: step 3 (dab): changes nothing`. Each of these is refused with exit status 1, and nothing is written:
+
+```
+blockwright-cli: c.json: step 2 (dab): clone needs a source to copy from: "source": [x, y], the cell Ctrl+click sets, on this step or an earlier clone step
+blockwright-cli: c.json: step 2 (source): source cell (9, 1) is off the 8 x 4 canvas
+blockwright-cli: c.json: step 2 (source): "source" must be [x, y], not a string
+blockwright-cli: c.json: step 2 (source): "aligned" must be true or false, not a number
+blockwright-cli: c.json: step 2 (dab): halfBlock takes no "aligned"
+blockwright-cli: c.json: step 2 (source): clone takes no "sampleMerged"
+```
+
+Only a `clone` step takes `"aligned"`, even as `true`, and a `clone` step takes no `"sampleMerged"`.
 
 ### Pictures of the window
 

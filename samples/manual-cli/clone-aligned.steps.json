@@ -1,0 +1,80 @@
+{
+ "version": 1,
+ "window": [
+  2800,
+  2100
+ ],
+ "start": {
+  "file": "spruce-island.ans"
+ },
+ "steps": [
+  {
+   "name": "source",
+   "action": "clone",
+   "source": [
+    93,
+    36
+   ],
+   "screenshot": {
+    "crop": {
+     "cells": [
+      58,
+      32,
+      48,
+      18
+     ]
+    },
+    "pointer": true
+   }
+  },
+  {
+   "name": "head",
+   "action": "clone",
+   "size": 4,
+   "points": [
+    [
+     62,
+     44
+    ],
+    [
+     72,
+     44
+    ]
+   ],
+   "screenshot": {
+    "crop": {
+     "cells": [
+      58,
+      32,
+      48,
+      18
+     ]
+    }
+   }
+  },
+  {
+   "name": "body",
+   "action": "clone",
+   "points": [
+    [
+     62,
+     48
+    ],
+    [
+     72,
+     48
+    ]
+   ],
+   "screenshot": {
+    "crop": {
+     "cells": [
+      58,
+      32,
+      48,
+      18
+     ]
+    }
+   }
+  }
+ ]
+}

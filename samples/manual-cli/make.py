@@ -16,6 +16,14 @@ out of the window before and after it.
 sample-merged-off.png and sample-merged-on.png show "sampleMerged": a red
 frame on the bottom layer and a fill inside it on a clear layer above, off
 and then on; sample-merged-options.png is Tool Options with the box ticked.
+
+clone-source.png, clone-head.png and clone-aligned.png show clone steps on
+funkpower's Spruce Island (spruce-island.ans, a copy of the piece): the
+source set on the fox's face with the pointer on it, then two strokes of a
+4 x 4 brush on the snow, the second carrying on below the first.
+clone-unaligned.png is the second stroke with "aligned": false, copying the
+head again, and clone-options.png is Tool Options with Aligned unticked. Both
+files set a window large enough for the crop to be in view.
 """
 
 import json
@@ -34,10 +42,11 @@ def crop(w, h, **more):
     return {"crop": {"cells": [0, 0, w, h]}, **more}
 
 
-def play(name, start, steps, pictures):
+def play(name, start, steps, pictures, window=None):
     """Write <name>.steps.json, play it, and copy each picture {shot: page name}."""
     path = HERE / f"{name}.steps.json"
-    path.write_text(json.dumps({"version": 1, "start": start, "steps": steps}, indent=1) + "\n")
+    head = {"version": 1, "window": window} if window else {"version": 1}
+    path.write_text(json.dumps({**head, "start": start, "steps": steps}, indent=1) + "\n")
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run([GUI, "--screenshot", str(path), "-o", tmp], check=True, stdout=subprocess.DEVNULL)
         for shot, page in pictures.items():
@@ -70,3 +79,17 @@ play("sample-merged", {"blank": [W, H]}, [
     {"name": "options", "action": "fill", "screenshot": {"of": "toolOptions", "crop": {"pixels": [0, 0, 256, 544]}}},
 ], {"03-off.png": "sample-merged-off.png", "06-on.png": "sample-merged-on.png",
     "07-options.png": "sample-merged-options.png"})
+
+FOX = {"crop": {"cells": [58, 32, 48, 18]}}
+SOURCE = [
+    {"name": "source", "action": "clone", "source": [93, 36], "screenshot": {**FOX, "pointer": True}},
+    {"name": "head", "action": "clone", "size": 4, "points": [[62, 44], [72, 44]], "screenshot": FOX},
+]
+play("clone-aligned", {"file": "spruce-island.ans"}, SOURCE + [
+    {"name": "body", "action": "clone", "points": [[62, 48], [72, 48]], "screenshot": FOX},
+], {"01-source.png": "clone-source.png", "02-head.png": "clone-head.png", "03-body.png": "clone-aligned.png"},
+    window=[2800, 2100])
+play("clone-unaligned", {"file": "spruce-island.ans"}, SOURCE + [
+    {"name": "body", "action": "clone", "points": [[62, 48], [72, 48]], "aligned": False, "screenshot": FOX},
+    {"name": "options", "action": "clone", "screenshot": {"of": "toolOptions", "crop": {"pixels": [0, 0, 360, 535]}}},
+], {"03-body.png": "clone-unaligned.png", "04-options.png": "clone-options.png"}, window=[2800, 2100])
