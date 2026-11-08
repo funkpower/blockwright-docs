@@ -1,5 +1,5 @@
 Title: Scripts and generators
-Checked: Blockwright 0.1.0 (bb1c676)
+Checked: Blockwright 0.1.0 (07846f9)
 
 # Scripts and generators
 
@@ -23,7 +23,7 @@ Three things follow from that:
 
 A generator is a directory: a `generator.json` naming the command and declaring the parameters, the program, and a `params.json` of values the form writes. The program reads one line of JSON on its standard input (the canvas, the layer, the parameters) and writes an `.ans` on its standard output. With a **key** colour, its blank cells on that background are transparent, so the layers below show through. The manual's [Writing a generator](../manual/12-generators.md#writing-a-generator) has every key and type.
 
-Blockwright has no menu item that adds a generator to an open project, and **Layer > Bake Layer** doesn't take a Generator layer. Adding one is a job for the command line, `blockwright-cli add-generator`, and keeping its cells without the program is a copy and paste, both below. One other way in makes Generator layers: **File > Open Scene...** (no shortcut) opens a Python scene as a new project, a Generator layer for each layer the scene lists. It asks first in the same **Run Generators** dialog, this time to run the scene, and then a progress dialog, **Open Scene**, says *Listing the scene's layers...* and *Running layer N of M (name)...* for each one ([Opening a scene](../manual/12-generators.md#opening-a-scene)). This tutorial doesn't need it.
+Blockwright has no menu item that adds a generator to an open project: that is a job for the command line, `blockwright-cli add-generator`, below. One other way in makes Generator layers: **File > Open Scene...** (no shortcut) opens a Python scene as a new project, a Generator layer for each layer the scene lists. It asks first in the same **Run Generators** dialog, this time to run the scene, and then a progress dialog, **Open Scene**, says *Listing the scene's layers...* and *Running layer N of M (name)...* for each one ([Opening a scene](../manual/12-generators.md#opening-a-scene)). This tutorial doesn't need it.
 
 Smart prefabs, parts that redraw themselves to fit, aren't in the app yet.
 
@@ -54,7 +54,7 @@ Positions are column then row from `0, 0` at the top left. You'll need a termina
 
 4. **Open it.** Open `night.bwp`:
 
-    ![The same sky with three low ridges, the far one peaking at row 19 across columns 11 to 19: light blue at the back, then dark grey, with the light red glow showing from columns 59 to 65, where no ridge reaches](../samples/12-scripts-and-generators/ridges-1.bwp "2x")
+    ![The same sky with three low ridges, the far one peaking at row 19 across columns 11 to 19: light blue at the back, then dark grey, with the light red glow showing in row 23 from columns 54 to 71 and 74 to 76, the far ridge along the bottom row under it](../samples/12-scripts-and-generators/ridges-1.bwp "2x")
 
     These cells are the ones `add-generator` drew: opening runs nothing.
 
@@ -90,7 +90,7 @@ Positions are column then row from `0, 0` at the top left. You'll need a termina
 
 ### Bake the ridges
 
-A Generator layer's cells change whenever its form does, and **Bake Layer** refuses one. To keep these ridges as plain cells, copy them onto a Cells layer:
+A Generator layer's cells change whenever its form does. **Layer > Bake Layer** (no shortcut) would turn the **ridges** layer itself into a Cells layer of these cells and drop its program and form. To keep the ridges as plain cells and the generator too, copy them onto a Cells layer:
 
 10. With the **ridges** layer active, **Selection > Select All** (<kbd>Ctrl</kbd>+<kbd>A</kbd>), which takes the **Select** tool in hand, then **Edit > Copy** (<kbd>Ctrl</kbd>+<kbd>C</kbd>).
 11. **Layer > New Cells Layer** (no shortcut) adds an empty Cells layer above **ridges**. Double-click its name in the **Layers** dock and call it `ridges (baked)`.
@@ -99,7 +99,7 @@ A Generator layer's cells change whenever its form does, and **Bake Layer** refu
 
     ![The Layers dock: ridges (baked), its name cut off at the column's edge, a Cells layer, ticked and selected; ridges, a Generator layer, unticked; sky, a Cells layer, ticked](../samples/12-scripts-and-generators/layers.png)
 
-The hidden **ridges** layer keeps its program and form, so you can come back to it. The baked one is yours to paint on.
+The hidden **ridges** layer keeps its program and form, so you can come back to it. The baked one is yours to paint on. When you don't need the program any more, **Bake Layer** with **ridges** active does it in one step: the layer keeps its name and becomes a Cells layer of what it shows, and **Edit > Undo** (<kbd>Ctrl</kbd>+<kbd>Z</kbd>), which reads **Undo Bake Generator**, brings the generator back.
 
 ### A generator of your own
 
@@ -247,7 +247,7 @@ The rest of the piece needs no window. Close `night.bwp` first: each of these co
     files:       7
       scripts/2/generator.json  542 bytes
       scripts/2/params.json  94 bytes
-      scripts/2/ridges.awk  5834 bytes
+      scripts/2/ridges.awk  6166 bytes
       scripts/2/ridges.sh  185 bytes
       scripts/4/generator.json  536 bytes
       scripts/4/meteors.py  1575 bytes
@@ -339,7 +339,7 @@ The script writes every cell on a black background, so a meteor over the coloure
 $ blockwright-cli add-generator night.bwp meteors
 blockwright-cli: night.bwp: layer 6 (meteors): python3 exited with status 1:
 Traceback (most recent call last):
-  File "…/meteors.py", line 36, in <module>
+  File "./meteors.py", line 36, in <module>
     cells[cell] = ("/", p["color"])
                         ~^^^^^^^^^
 KeyError: 'color'
@@ -349,7 +349,7 @@ The command exits with status 1 and writes nothing: `night.bwp` is as it was. Th
 
 **Painting on a Generator layer.** Select **meteors** and paint with any brush: nothing changes. Paint on **ridges (baked)** instead, or on a new layer.
 
-**The baked layer doesn't follow the form.** Show **ridges** again and set its **Seed** to 41: the generator's ridges change, but **ridges (baked)** over it still shows seed 2026, and covers them wherever it has cells. Bake again, or delete the baked layer, when you want the new ones.
+**The baked layer doesn't follow the form.** Show **ridges** again and set its **Seed** to 41: the generator's ridges change, but **ridges (baked)** over it still shows seed 2026, and covers them wherever it has cells. To keep the new ones, delete **ridges (baked)** and copy the ridges again (steps 10 to 13); or, done with the form, delete it and bake **ridges** itself with **Bake Layer**.
 
 ## Try it
 

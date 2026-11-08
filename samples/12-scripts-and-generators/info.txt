@@ -17,7 +17,7 @@ snapshots:   0
 files:       7
   scripts/2/generator.json  542 bytes
   scripts/2/params.json  94 bytes
-  scripts/2/ridges.awk  5834 bytes
+  scripts/2/ridges.awk  6166 bytes
   scripts/2/ridges.sh  185 bytes
   scripts/4/generator.json  536 bytes
   scripts/4/meteors.py  1575 bytes

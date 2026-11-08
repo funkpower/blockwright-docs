@@ -1,5 +1,5 @@
 Title: Layers: the five kinds, the dock and the menu
-Checked: Blockwright 0.1.0 (4b72bcc)
+Checked: Blockwright 0.1.0 (07846f9)
 
 # Layers: the five kinds, the dock and the menu
 
@@ -68,7 +68,7 @@ The dock's own hint, under the list, puts it in one line: `Cells: glyphs and sha
 - **Cells** for anything drawn with glyphs: shading with `░▒▓`, line drawing, typed text, detail. It is the kind every tool paints.
 - **Pixels** for shapes drawn in half-block pixels that sit over other work: a figure, a moon, a line of hills. The halves the layer leaves transparent show the layer below in the same cell (until it has a layer style switched on), so the shape can be moved or redrawn without repainting the background, and its edges over a shaded field stay clean.
 - **Text** for lettering you still want to edit: a title in a TheDraw font or big whole-cell letters. Bake it (below) when you want to paint over the letters.
-- **Generator** for art a program makes from parameters, such as a Python scene opened with **File > Open Scene...**, when you want to change the parameters and run it again.
+- **Generator** for art a program makes from parameters, such as a Python scene opened with **File > Open Scene...**, when you want to change the parameters and run it again. Bake it (below) when you want to keep its cells and paint over them.
 - **Reference** for a photo or sketch to trace. It never reaches the export.
 
 ## The Layers dock
@@ -112,7 +112,7 @@ The **Layer** menu has the dock's actions and the ones that change a layer's con
 | **Raise Layer** | As ▲. |
 | **Lower Layer** | As ▼. |
 | **Layer Style…** | Opens the **Layer Style** dialog for the active layer: its effects, in the order they draw, each with a box to switch it on or off (plate, glow, shadow, outline, fill, shade and bevel), and **Preset**, which starts from a text style in the Library. Greyed out unless the active layer is a Cells, Pixels or live Text layer. |
-| **Bake Layer** | Makes the active layer a Cells layer of what it shows: a live Text layer keeps its cells and drops its text, and a styled Cells or Pixels layer keeps its styled cells and drops its style. A style with every effect switched off draws nothing, so baking it only drops the style, and a Pixels layer stays a Pixels layer. The text or style can't be edited after, except by undoing the bake, which is one step. Greyed out unless the active layer is a live Text layer or has a style. |
+| **Bake Layer** | Makes the active layer a Cells layer of what it shows: a live Text layer keeps its cells and drops its text, a Generator layer keeps the cells its last run left, with its name, offset, visibility, mode and locks, and drops its program and form, and a styled Cells or Pixels layer keeps its styled cells and drops its style. A style with every effect switched off draws nothing, so baking it only drops the style, and a Pixels layer stays a Pixels layer. The text, form or style can't be edited after, except by undoing the bake, which is one step. Greyed out unless the active layer is a live Text layer, a Generator layer, or a Cells or Pixels layer with a style: a plain Cells or Pixels layer, a Text layer without a live text source and a Reference layer can't be baked. |
 | **Reference Opacity** | **25%**, **50%**, **75%** or **100%** for the active Reference layer; greyed out on any other kind. |
 
 ## Moving a layer

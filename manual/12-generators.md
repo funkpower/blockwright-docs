@@ -1,5 +1,5 @@
 Title: Generator layers and scripts
-Checked: Blockwright 0.1.0 (bb1c676)
+Checked: Blockwright 0.1.0 (07846f9)
 
 # Generator layers and scripts
 
@@ -87,7 +87,9 @@ A seed is a parameter like any other: Blockwright has none of its own. The sampl
 
 ## Baking
 
-**Layer > Bake Layer** doesn't take a Generator layer. To keep a generator's cells without the program, `blockwright-cli import-scene --bake` writes each scene layer as the cells it made ([CLI](14-cli.md#generators)). **Ridges at dusk** keeps a hidden `ridges (baked)` layer, a Cells layer with the `ridges` cells and no program behind it; its **Baked** variant shows it.
+**Layer > Bake Layer** (no shortcut) with a Generator layer active turns it into a Cells layer of the cells its last run left. The layer keeps its name, offset, visibility, mode and locks; a hidden or locked Generator layer bakes too. Its form is gone and its cells can be painted. The bake is one undo step, **Edit > Undo Bake Generator**, and undoing it brings back the Generator layer with its form and parameters. The generator's directory stays in the project, under `scripts/<id>/`, unused, so the undo has it to go back to.
+
+To keep the generator as well, copy its cells onto a Cells layer instead: **Selection > Select All**, **Edit > Copy**, **Layer > New Cells Layer**, and **Edit > Paste** at cell `0, 0` (tutorial 12's [Bake the ridges](../tutorials/12-scripts-and-generators.md#bake-the-ridges)). Outside the window, `blockwright-cli import-scene --bake` writes each scene layer as the cells it made ([CLI](14-cli.md#generators)). **Ridges at dusk** keeps a hidden `ridges (baked)` layer, a Cells layer with the `ridges` cells and no program behind it; its **Baked** variant shows it.
 
 ## Opening a scene
 
@@ -138,7 +140,7 @@ The program runs in a fresh temporary directory holding a copy of the generator'
 A run fails, and the layer keeps its cells, when the program:
 
 - can't start: *layer 3 (ridges): could not run ./ridges: No such file or directory*;
-- exits with another status: *layer 3 (ridges): sh exited with status 1*, followed by the end of what it wrote to its standard error;
+- exits with another status: *layer 3 (ridges): sh exited with status 1*, followed by the end of what it wrote to its standard error, where a file in the temporary directory reads `./name` and the directory itself `<generator dir>`;
 - crashes: *… crashed*;
 - runs longer than 30 seconds: *… took longer than 30000 ms; stopped*;
 - writes more than 32 MiB: *… wrote more than 33554432 bytes; stopped*;
@@ -154,6 +156,5 @@ A project keeps each Generator layer's cells, the last output, as it keeps a Cel
 
 - **Programs, not built-ins.** Each generator is a program the project names, run with your permissions. Open a project's generators only if you trust where it came from.
 - **What the computer has.** A generator runs only where its program does: `sh` and `awk`, `python3`, or whatever it names. On a computer without them, a run fails and the layer keeps its cells.
-- **Not paintable.** Painting tools and typing don't change a Generator layer's cells ([Layers](07-layers.md#generator)).
+- **Not paintable.** Painting tools and typing don't change a Generator layer's cells ([Layers](07-layers.md#generator)); bake it, or a copy of it, to paint on them ([Baking](#baking)).
 - **One at a time.** A generator runs on its own thread, one run at a time; a commit made while one runs waits for it.
-- **No bake in the app.** **Bake Layer** doesn't take a Generator layer ([Baking](#baking)).

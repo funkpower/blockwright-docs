@@ -33,7 +33,6 @@ form-*.png and layers.png: the Layers dock and its generator form, from
 
 import json
 import os
-import re
 import shutil
 import subprocess
 import tempfile
@@ -83,9 +82,6 @@ def run(tmp, args, transcript=None):
     if transcript:
         status = f"exit status {r.returncode}\n" if r.returncode else ""
         out = f"$ blockwright-cli {' '.join(args)}\n" + r.stdout + r.stderr + status
-        # a failed program's error names the scratch directory Blockwright ran
-        # it in, a new one every run
-        out = re.sub(r'"/[^"]*/(meteors\.py)"', r'"…/\1"', out)
         (HERE / transcript).write_text(out, encoding="utf-8")
     elif r.returncode:
         raise SystemExit(f"{args}: exit status {r.returncode}\n{r.stdout}{r.stderr}")
