@@ -25,7 +25,7 @@ The Library dock can be moved and floated but not closed, so its **Window** menu
 
 ## The Library dock
 
-![The Library dock: a search box reading "Search names and tags", a category list with All highlighted over buildings, classic and elements, a grid of stamp thumbnails with their names (Barn, Castle keep, Fence, House, Lighthouse, Log cabin, Stone bridge, Windmill, Wall of fire, the four frames, Snowy boulder, Cliff edge, Far mountain range, Grey peaks, Hill), and a Refresh button at the bottom](../samples/manual-08-library/dock.png)
+![The Library dock: a search box reading "Search names and tags", a category list with All highlighted over buildings, classic and elements, a grid of stamp thumbnails with their names (Barn, Castle keep, Fence, House, Lighthouse, Log cabin, Stone bridge, Windmill, Wall of fire, the four frames, Snowy boulder, Cliff edge, Far mountain range), each name whole, wrapped onto a second line when it is long, and a Refresh button at the bottom](../samples/manual-08-library/dock.png)
 
 From the top:
 

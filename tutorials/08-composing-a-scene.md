@@ -115,7 +115,7 @@ To place parts over a photo or a sketch, **File > Open Reference Image...** puts
 
 The **Library** dock (**Window > Library**) holds stamps: parts kept as files, the bundled ones and your own. Search them, or pick a category:
 
-![The Library dock: a search box, a category list starting All, buildings, classic, elements, and a grid of stamp thumbnails with their names](../samples/08-composing-a-scene/library.png)
+![The Library dock: a search box, a category list starting All, buildings, classic, elements, and a grid of stamp thumbnails with their names under them (Barn, Castle keep, Fence, House, Lighthouse, Log cabin)](../samples/08-composing-a-scene/library.png)
 
 Double-click a stamp, or press <kbd>Enter</kbd> on it, and it floats at the cell cursor; drag one onto the canvas and it floats where you drop it. Either way the **Select** tool is now in hand and the stamp is a float like a paste. It lands in **Transparent** mode whatever **Paste** says, unless you change **Paste** while it floats. Move, flip or turn it, and press <kbd>Enter</kbd>.
 
