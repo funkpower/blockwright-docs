@@ -1,5 +1,5 @@
 Title: The Library: stamps, Save to Library and text styles
-Checked: Blockwright 0.1.0 (bb1c676)
+Checked: Blockwright 0.1.0 (f9ec75e)
 
 # The Library: stamps, Save to Library and text styles
 
@@ -73,11 +73,15 @@ A fresh install has 63 stamps and 11 text styles:
 
 Double-click a stamp, or select it and press <kbd>Enter</kbd>, and it floats with its top left corner at the cell cursor. Drag it onto the canvas, and it floats with its top left corner on the cell you drop it on. The Select tool is taken in hand, and the cell cursor moves to the corner.
 
-The stamp is now a float, the same as a paste ([Selections](05-selections.md#the-float)): drag it or move it with the arrow keys, flip it or turn it, and put it down with <kbd>Enter</kbd> or a click. <kbd>Esc</kbd> drops it. Nothing is changed until it is put down, and then it is one edit. A float already up when you place a stamp is put down first.
+The stamp is now a float, the same as a paste ([Selections](05-selections.md#the-float)): drag it or move it with the arrow keys, flip it or turn it, and put it down with <kbd>Enter</kbd> or a click. <kbd>Esc</kbd> drops it. Nothing is changed until it is put down, and then it is one edit. A float already up when you place a stamp is put down first; if it can't land, the new stamp isn't placed.
 
 A stamp lands in **Transparent** mode, whatever the **Paste** setting: its blank cells, spaces on black, leave the canvas under them as it was. While it floats, **Selection > Paste Mode** and **Paste** in **Tool Options** show **Transparent**. Pick another mode while it floats and the stamp lands in that one, and that mode becomes the setting ([Paste modes](05-selections.md#paste-modes)).
 
-It lands on the layer that is active when it is put down. Clicking another layer in the Layers dock puts the float down on the old one first. A layer that can't take the stamp, a hidden, locked, Generator, Reference or live Text layer, or a Pixels layer when a cell of the stamp isn't something half blocks can show, takes nothing: the float goes and the canvas is as it was, with no message.
+It lands on the layer that is active when it is put down. Clicking another layer in the Layers dock puts the float down on the old one first, or drops it if it can't land there.
+
+A layer that can't take the stamp refuses it before it floats, and the status bar says why: *Could not place* and the stamp's file, then the reason, such as *the layer is locked*, *the layer is hidden*, *a live Text layer is drawn from its text*, or *a Pixels layer holds no ░▒*, naming each glyph of the stamp that half blocks can't show. A float already up stays up.
+
+The one exception is a stamp whose only such glyphs are `▌` and `▐`. On a Pixels layer it floats, shown as it is, but it can't be put down until **Selection > Rotate Clockwise** or **Rotate Counterclockwise** turns them into `▀` and `▄`; a flip doesn't. Until then <kbd>Enter</kbd> or a click says *Could not place* and the file, then *a Pixels layer holds no ▌▐; rotate it (Selection > Rotate) or press Esc to drop it*, and the float stays where it is with nothing written. A stamp that holds `▀` or `▄` as well floats but never lands, as a turn puts those on their side; its message ends only *press Esc to drop it*. A float that can't land, and what else it refuses or drops, is in [A float that can't land](05-selections.md#a-float-that-cant-land).
 
 A stamp is placed as the Library last read it, not from its file at that moment: after changing a stamp's files, press **Refresh**.
 
@@ -155,6 +159,6 @@ The user library folder is made the first time something is saved to it. Copy a 
 - **Name.** 1 to 35 characters, all in CP437.
 - **Category and tags.** A category can't be empty; a tag can't hold a comma. Neither can hold a control character.
 - **IRC.** **Save to Library** doesn't check a stamp's rows against the IRC budget; `blockwright-cli library check` does.
-- **Placing.** The float keeps at least one cell on the canvas; the cells off the canvas are lost when it lands. A layer that refuses the stamp takes nothing, with no message.
+- **Placing.** The float keeps at least one cell on the canvas; the cells off the canvas are lost when it lands. A layer that can't take the stamp refuses it, and the status bar says why.
 - **Managing.** The dock doesn't rename, move or delete stamps; do it to the files and **Refresh**.
 - **Steps files.** A steps file has no step that places or saves a stamp, so `replay` and `--screenshot` can't show one being placed.

@@ -1,5 +1,5 @@
 Title: Layers: the five kinds, the dock and the menu
-Checked: Blockwright 0.1.0 (07846f9)
+Checked: Blockwright 0.1.0 (f9ec75e)
 
 # Layers: the five kinds, the dock and the menu
 
@@ -96,7 +96,7 @@ Under the list are the hint and the buttons:
 
 A new layer is the canvas's size, all transparent, named `Layer N` with the lowest free N, and becomes the active layer. The tooltips of **+ Cells** and **+ Pixels** and of their menu items explain the kind they add, and the status bar says `Add a Cells layer above the active layer: glyphs and shades` or `Add a Pixels layer above the active layer: half-block drawing` while the pointer is on the menu item.
 
-Each change in the dock is one undo step: undoing an add or a delete makes the layer that was active active again. Before any change in the dock, the tool lands what it holds (a drag, a floating selection) on the layer it was editing.
+Each change in the dock is one undo step: undoing an add or a delete makes the layer that was active active again. Before any change in the dock, the tool lands what it holds (a drag, a floating selection) on the layer it was editing; a floating selection that can't land there is dropped instead ([A float that can't land](05-selections.md#a-float-that-cant-land)).
 
 When the active layer is a Generator layer, its form is under the buttons: a field for each parameter the generator declares, with its value, and **Run**, which runs the generator again as it is. A field commits when it is let go or stepped: a slider released, a spin box stepped by its arrows, the mouse wheel or the arrow keys, a box ticked or cleared, an entry picked, or a typed value ended with <kbd>Enter</kbd> or by focus leaving it; each commit is one undo step, and the generator runs again shortly after. Undo and redo put back both the parameters and the cells, and run nothing.
 

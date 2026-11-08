@@ -1,5 +1,5 @@
 Title: Selections, clipboard and paste modes
-Checked: Blockwright 0.1.0 (bb1c676)
+Checked: Blockwright 0.1.0 (f9ec75e)
 
 # Selections, clipboard and paste modes
 
@@ -48,9 +48,30 @@ Nothing is changed until the float is put down. The canvas shows it as it will l
 - a click outside it, which puts it down and starts a new selection where you clicked;
 - taking another tool, typing, or saving.
 
-Once it is down, the selection is the rectangle where it landed. <kbd>Esc</kbd> puts a lifted float back where it came from, and drops a pasted one. With no float, <kbd>Esc</kbd> deselects. **Edit > Undo**, **Redo** or a new canvas drops the float too.
+Once it is down, the selection is the rectangle where it landed. <kbd>Esc</kbd> puts a lifted float back where it came from, and drops a pasted one. With no float, <kbd>Esc</kbd> deselects. An **Edit > Undo** or **Redo** that changes cells or which layer is active, or a new canvas, drops the float too; one that leaves the active layer and its cells as they were, such as the undo of a lock, leaves it up.
 
 The cells a lift leaves are blank: transparent on any layer but the bottom one, and on the bottom layer a space in grey on black, so a flat `.ans` stays opaque. A Pixels layer is left transparent even at the bottom. A float lands in the paste mode, the same as a paste, so a part moved in **Transparent** mode doesn't take its blank cells with it.
+
+### A float that can't land
+
+Some floats can't land where they are:
+
+- **On a layer that takes no edit**: a locked, hidden, Generator or Reference layer, or a live Text layer. A lift doesn't check the layer, and an **Undo** or **Redo** that locks or hides the layer, or makes it a live Text or Generator layer again, can leave a float on it.
+- **On a Pixels layer, holding a glyph the layer can't show as half blocks**: a paste from a Cells layer with a shade in it, say, or a block lifted from the Pixels layer and turned a quarter, whose `▀` and `▄` are now `▐` and `▌`.
+
+Such a float still floats, shown as it is. Put it down and Blockwright refuses, in any paste mode: the float stays where it is, nothing is written, and the status bar says why:
+
+*Could not put the floating selection down: a Pixels layer holds no ▐; rotate it (Selection > Rotate) or press Esc to drop it*
+
+A [Library stamp](08-library.md#placing-a-stamp) says *Could not place* and its file instead. `▌` and `▐` are the only glyphs a turn mends: **Rotate Clockwise** or **Rotate Counterclockwise** makes them `▀` and `▄`, and the float can land. A flip or a half turn leaves them on their side. A float that holds `▀` or `▄` as well never lands, as a turn puts those on their side. When no turn would help, as with a shade or a locked layer, the message leaves out *rotate it (Selection > Rotate) or*.
+
+While it can't land:
+
+- <kbd>Enter</kbd>, a click on or off the float, **Select All**, **Deselect**, a paste, a new stamp or text style, taking another tool, typing and the F-keys, and an <kbd>Alt</kbd>+drag that moves the layer are refused the same way.
+- **Save**, **Save As...**, a snapshot, **Canvas Size...**, **Export IRC Text...**, **Publish to Library...** and **Send to WeeChat...** are refused too: *Not saved: the floating selection can't land: …*, or the like.
+- **New**, **Open** and closing the window ask first, even when nothing else has changed, and say the float can't land. **Save** can't keep it; **Discard** drops it with any other changes.
+- A change to the layers drops it, with nothing written, and says *Dropped the floating selection, which can't land: …*: making another layer active, adding, deleting, moving, hiding, showing, locking or unlocking a layer, changing its other properties, a bake, or an iCE switch that restyles a layer. Renaming a layer or ticking its alpha lock leaves the float up.
+- <kbd>Esc</kbd> drops it, and so does an **Undo** or **Redo** that changes cells or which layer is active. **Delete** clears it as it clears any float.
 
 ## Copy, cut and paste
 
@@ -130,5 +151,5 @@ Every other glyph is kept as it is: letters, digits, the shades `░ ▒ ▓` an
 - **The canvas edge.** A float keeps at least one cell on the canvas, and the cells off the canvas are lost when it lands. A turn in place loses the cells it carries past the edge.
 - **The system clipboard.** Cells don't go to it or come from it.
 - **Mirror mode.** With **Edit > Mirror Mode** on (<kbd>Ctrl</kbd>+<kbd>M</kbd>) and the symmetry set to **Mirror X**, putting a float down, a flip or turn in place, and a clear are mirrored across the canvas too. **Mirror Y**, **Mirror X and Y** and **Radial** aren't applied to them ([Mirror mode and symmetry](06-symmetry.md#typing-and-pasting)).
-- **Layers that refuse cells.** A layer that can't take a cell refuses it, as it does from any tool: a Pixels layer takes only what it can show as half blocks, and a layer with its alpha locked keeps its transparent cells transparent ([Layers](07-layers.md)). When the layer refuses a move outright, the cells stay where they were and the selection goes back round them.
+- **Layers that refuse cells.** A float the layer can't hold doesn't land at all ([A float that can't land](#a-float-that-cant-land)). A layer with its alpha locked keeps its transparent cells transparent, as it does from any tool ([Layers](07-layers.md)). When the layer refuses a move outright, the cells stay where they were and the selection goes back round them.
 - **Undo.** Undo restores cells, not the selection.
