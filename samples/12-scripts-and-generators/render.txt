@@ -1,0 +1,1 @@
+$ blockwright-cli render --scale 2 night.bwp night.png

@@ -1,0 +1,6 @@
+01-moon.ans
+01-moon.bwp
+02-disc.ans
+02-disc.bwp
+03-shadow.ans
+03-shadow.bwp

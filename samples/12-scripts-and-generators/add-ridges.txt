@@ -1,0 +1,2 @@
+$ blockwright-cli add-generator --name ridges night.bwp ridges-at-dusk/scripts/3
+layer 2 (ridges): 80x25

@@ -1,0 +1,2 @@
+$ blockwright-cli lint night.bwp
+clean, noise 0.0042, iCE on

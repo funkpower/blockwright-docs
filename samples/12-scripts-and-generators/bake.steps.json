@@ -1,0 +1,60 @@
+{
+ "version": 1,
+ "start": {
+  "file": "ridges-6.bwp"
+ },
+ "steps": [
+  {
+   "name": "pick",
+   "action": "setActiveLayer",
+   "layer": "ridges"
+  },
+  {
+   "name": "all",
+   "action": "selectAll"
+  },
+  {
+   "name": "copy",
+   "action": "copy"
+  },
+  {
+   "name": "new",
+   "action": "newCellsLayer",
+   "rename": "ridges (baked)"
+  },
+  {
+   "name": "paste",
+   "action": "paste",
+   "at": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "drop",
+   "action": "deselect"
+  },
+  {
+   "name": "pick-again",
+   "action": "setActiveLayer",
+   "layer": "ridges"
+  },
+  {
+   "name": "hide",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "back",
+   "action": "setActiveLayer",
+   "layer": "ridges (baked)",
+   "screenshot": {
+    "of": "layers"
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

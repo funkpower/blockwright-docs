@@ -1,0 +1,2 @@
+$ blockwright-cli add-generator night.bwp meteors
+layer 4 (meteors): 80x25

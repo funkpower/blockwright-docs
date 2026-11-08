@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "start": {
+  "file": "night.bwp"
+ },
+ "steps": [
+  {
+   "name": "moon",
+   "action": "newPixelLayer",
+   "rename": "moon"
+  },
+  {
+   "name": "disc",
+   "action": "ellipse",
+   "from": [
+    50,
+    3
+   ],
+   "to": [
+    57,
+    10
+   ],
+   "fg": 15,
+   "filled": true
+  },
+  {
+   "name": "shadow",
+   "action": "ellipse",
+   "from": [
+    52,
+    2
+   ],
+   "to": [
+    59,
+    9
+   ],
+   "fg": 0,
+   "filled": true
+  }
+ ]
+}

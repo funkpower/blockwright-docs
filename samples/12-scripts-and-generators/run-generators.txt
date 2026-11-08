@@ -1,0 +1,4 @@
+$ blockwright-cli run-generators night
+layer 2 (ridges): 80x25
+layer 4 (meteors): 80x25
+2 generators run

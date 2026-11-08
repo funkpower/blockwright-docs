@@ -3,7 +3,7 @@ Checked: Blockwright 0.1.0 (bb1c676)
 
 # Generator layers and scripts
 
-A Generator layer holds the output of a program: the program draws the layer's cells from a few parameters, and the layer keeps the cells it drew. Change a parameter in the Layers dock and the program runs again. This page covers the generators the samples carry, the parameter form, running, seeding and baking, how a generator is written and saved, and its limits. How a Generator layer sits among the other kinds is in [Layers](07-layers.md#generator); the commands that add and run generators outside the window are in [the CLI](14-cli.md#generators).
+A Generator layer holds the output of a program: the program draws the layer's cells from a few parameters, and the layer keeps the cells it drew. Change a parameter in the Layers dock and the program runs again. This page covers the generators the samples carry, the parameter form, running, seeding and baking, how a generator is written and saved, and its limits. How a Generator layer sits among the other kinds is in [Layers](07-layers.md#generator); the commands that add and run generators outside the window are in [the CLI](14-cli.md#generators). Tutorial 12, [Scripts and generators](../tutorials/12-scripts-and-generators.md), sets the ridges' form, bakes them, writes a generator of its own and runs both from the command line.
 
 Smart prefabs, parts that redraw themselves to fit, aren't in the app yet.
 

@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "start": {
+  "file": "ridges-1.bwp"
+ },
+ "steps": [
+  {
+   "name": "pick",
+   "action": "setActiveLayer",
+   "layer": "ridges",
+   "screenshot": {
+    "of": "generatorForm"
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

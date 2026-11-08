@@ -1,0 +1,11 @@
+{
+  "command": ["python3", "meteors.py"],
+  "key": 0,
+  "params": [
+    {"name": "seed", "type": "integer", "label": "Seed", "min": 0, "max": 9999, "default": 1},
+    {"name": "count", "type": "integer", "label": "Meteors", "min": 0, "max": 8, "default": 3},
+    {"name": "length", "type": "integer", "label": "Length", "min": 2, "max": 10, "default": 5},
+    {"name": "bottom", "type": "integer", "label": "Lowest row", "min": 0, "max": 24, "default": 7},
+    {"name": "colour", "type": "colour", "label": "Tail", "default": 11}
+  ]
+}

@@ -5,6 +5,8 @@ Checked: Blockwright 0.1.0 (f34d296)
 
 `blockwright-cli` is Blockwright without the window. It converts, renders, exports, shades and lints pieces, packs and unpacks projects, and runs generator layers, so scripts can do what the editor does.
 
+Tutorial 12, [Scripts and generators](../tutorials/12-scripts-and-generators.md#from-the-terminal), finishes a piece with `replay`, `info`, `render`, `lint`, `export --irc` and `run-generators`.
+
 ```
 blockwright-cli [options] command [args...]
 ```

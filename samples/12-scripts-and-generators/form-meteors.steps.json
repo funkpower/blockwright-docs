@@ -1,0 +1,20 @@
+{
+ "version": 1,
+ "start": {
+  "file": "meteors-1.bwp"
+ },
+ "steps": [
+  {
+   "name": "pick",
+   "action": "setActiveLayer",
+   "layer": "meteors",
+   "screenshot": {
+    "of": "generatorForm"
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}
