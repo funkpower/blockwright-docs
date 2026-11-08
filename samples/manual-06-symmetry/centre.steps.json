@@ -1,0 +1,50 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-41x17.ans"
+ },
+ "steps": [
+  {
+   "name": "arrows",
+   "action": "glyph",
+   "glyph": "►",
+   "fg": 14,
+   "bg": 0,
+   "size": 1,
+   "tip": "square",
+   "points": [
+    [
+     12,
+     2
+    ],
+    [
+     15,
+     2
+    ]
+   ],
+   "symmetry": {
+    "mode": "radial",
+    "folds": 4,
+    "centre": [
+     10,
+     6
+    ]
+   },
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      440,
+      256,
+      215
+     ]
+    }
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

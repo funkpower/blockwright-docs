@@ -1,0 +1,14 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "04-generator-ridges",
+  "variant": "Another seed"
+ },
+ "steps": [
+  {
+   "name": "pick",
+   "action": "setActiveLayer",
+   "layer": "ridges (seed 12)"
+  }
+ ]
+}

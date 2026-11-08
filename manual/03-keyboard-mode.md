@@ -43,7 +43,7 @@ Five CP437 glyphs can't be typed either: `○ ◙ ♪ → ←`. Their bytes, 9, 
 
 Typing goes into the active layer. On a layer that is hidden or locked, a generator layer, a reference layer or a live text layer, nothing is typed. A pixels layer holds only spaces and the blocks `█ ▀ ▄`, so any other glyph typed on one doesn't land.
 
-With **Edit > Mirror Mode** (<kbd>Ctrl</kbd>+<kbd>M</kbd>) on and **Edit > Symmetry > Mirror X** picked, every glyph typed is also put in the mirrored column across the canvas's centre, flipped left to right, so `┌` on the left gives `┐` on the right. The other symmetry modes don't repeat typing.
+With **Edit > Mirror Mode** (<kbd>Ctrl</kbd>+<kbd>M</kbd>) on and **Edit > Symmetry > Mirror X** picked, every glyph typed is also put in the mirrored column across the canvas's centre, flipped left to right, so `┌` on the left gives `┐` on the right. The other symmetry modes don't repeat typing ([Mirror mode and symmetry](06-symmetry.md#typing-and-pasting)).
 
 ## The F-key glyph sets
 

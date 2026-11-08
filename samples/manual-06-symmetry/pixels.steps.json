@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-41x17.ans"
+ },
+ "steps": [
+  {
+   "name": "layer",
+   "action": "newPixelLayer",
+   "rename": "pixels"
+  },
+  {
+   "name": "line",
+   "action": "line",
+   "fg": 14,
+   "from": [
+    22,
+    4
+   ],
+   "to": [
+    34,
+    10
+   ],
+   "symmetry": {
+    "mode": "radial",
+    "folds": 5
+   }
+  }
+ ]
+}

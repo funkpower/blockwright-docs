@@ -121,7 +121,7 @@ At 6 folds:
 
 The turn is made on screen, where a cell is twice as tall as it is wide, and each image is rounded to the nearest cell. At 4 folds the quarter turn clockwise is `▀` along row 9 from column 26 to 30 and `▐` down column 32 from row 9 to 12: the glyphs are turned a quarter too, and the six cells of the top line come back as four down the side. The half turn is `▄` along row 14 from column 13 to 18 and `▐` down column 18 from row 11 to 13, the exact flip both ways. The three-quarter turn is `▌` down column 8 from row 5 to 7 and `▄` along row 7 from column 10 to 14. At 6 folds the half turn is the same, and the four images a sixth and a third of a turn either way keep `▀` and `▌` as they are, since CP437 has no half blocks on the slant. Their lines run as steps of whole cells: at the upper left, `▀` at `12, 2` and `13, 2`, at `11, 3` and `12, 3`, and at `11, 4`.
 
-Mirror mode stays on, from tool to tool, until you turn it off. Under **Mirror X**, typing and pasting are mirrored too. Turn it off as soon as the symmetric part is done: **Symmetry** **Off**, or <kbd>Ctrl</kbd>+<kbd>M</kbd>.
+Mirror mode stays on, from tool to tool, until you turn it off. Under **Mirror X**, typing and pasting are mirrored too. Turn it off as soon as the symmetric part is done: **Symmetry** **Off**, or <kbd>Ctrl</kbd>+<kbd>M</kbd>. The manual's [Mirror mode and symmetry](../manual/06-symmetry.md) has the rest: which tools follow it, the glyph each image takes, and its limits.
 
 ## Do it
 

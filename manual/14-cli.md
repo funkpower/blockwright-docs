@@ -162,7 +162,7 @@ blockwright-cli run-generators [--layer ID]... [--timeout S] <project>
 blockwright-cli import-scene [--timeout S] [--bake] [--author NAME] [--date CCYYMMDD] <scene.py> <out>
 ```
 
-These run programs: a generator layer's output comes from the program its `generator.json` names.
+These run programs: a generator layer's output comes from the program its `generator.json` names. What a generator reads and writes, and its form in the window, are in [Generator layers and scripts](12-generators.md#writing-a-generator).
 
 - `add-generator` adds a generator layer on top of the project, from a directory with a `generator.json` (and a `params.json` and scripts), runs it once and saves the project. `--name` names the layer (default: the directory's name).
 - `run-generators` runs the project's generator layers again, bottom first, and saves their output. `--layer` picks one layer by id (as `info` lists them); give it more than once for several.

@@ -51,7 +51,7 @@ A Generator layer holds a program's cached output as glyph cells with foreground
 
 Change its parameters and press **Run** in the Layers dock; painting tools cannot edit the output. The cached cells composite like a Cells layer and export in the visible composite. Opening or exporting does not run the generator, so a project with generator layers shows and exports the same on a machine that doesn't have the program.
 
-**File > Open Scene...** opens a Python scene as a new project, one Generator layer per scene layer, after asking to run it. Running a generator runs a program on your computer with your permissions, so Blockwright asks before a project's generators first run in a session, with **No** the default; a run that is refused or fails leaves the layer's cells as they were and says why in the status bar. The commands that add and run generator layers outside the window are in [the CLI](14-cli.md).
+**File > Open Scene...** opens a Python scene as a new project, one Generator layer per scene layer, after asking to run it. Running a generator runs a program on your computer with your permissions, so Blockwright asks before a project's generators first run in a session, with **No** the default; a run that is refused or fails leaves the layer's cells as they were and says why in the status bar. The commands that add and run generator layers outside the window are in [the CLI](14-cli.md). The generators the samples carry, the form, running and writing a generator are in [Generator layers and scripts](12-generators.md).
 
 ### Reference
 
