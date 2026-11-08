@@ -30,6 +30,8 @@ Blockwright has no built-in generators. A generator is a program kept inside the
 
 The ridges are lines of value noise from the seed, far to near, each darker than the one behind it; **Roughness** adds a finer line on top, **Sharp peaks** folds the noise into peaks, and no peak rises above **Highest row**. The stars are scattered over rows 0 to **Lowest row**, never two side by side, on a chars-only layer, so each takes the sky's colours under it. The ridges and stars need a POSIX `sh` and `awk` on the `PATH`, which a stock Windows install doesn't have; the fog needs `python3`.
 
+The ridges and stars generators inside the projects the pictures below link to are Blockwright's own and are under the [GNU General Public License, version 3 or later](https://www.gnu.org/licenses/gpl-3.0.html), as Blockwright is; the rest of these docs is under CC BY-SA 4.0.
+
 **Ridges at dusk** as it opens, with the `ridges` layer at its defaults:
 
 ![A sunset sky over three mountain ridges, light blue behind dark grey behind slate, a lake below them, pines on both sides and a cabin with a lit window on the shore, stars at the top](../samples/manual-12-generators/ridges.bwp)

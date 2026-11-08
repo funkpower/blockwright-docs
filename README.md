@@ -39,3 +39,5 @@ The build clears its output directory first, so it only builds into an empty or 
 ## Licence
 
 The text and the sample art are funkpower's, licensed under [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/) (CC BY-SA 4.0), unless a file says otherwise. The full licence is in `LICENSE`.
+
+The exception is the ridges and stars generator scripts packed inside some sample projects (`.bwp`): they come from Blockwright's own samples and are under the GNU General Public License, version 3 or later, as Blockwright is. `samples/README.md` lists them.

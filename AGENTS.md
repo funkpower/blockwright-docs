@@ -42,4 +42,4 @@ The repo, its history, issues and PRs are public. Tracked files, commit messages
 
 ## Licence
 
-The text and the sample art are funkpower's, under CC BY-SA 4.0 (`LICENSE`), unless a file says otherwise. Don't add anything that can't be shared under it.
+The text and the sample art are funkpower's, under CC BY-SA 4.0 (`LICENSE`), unless a file says otherwise. Don't add anything that can't be shared under it. The one exception is Blockwright's own generator scripts packed inside sample `.bwp` projects, which stay under Blockwright's GPL-3.0-or-later; `samples/README.md` lists them, and a page that offers such a project says so beside the download.
