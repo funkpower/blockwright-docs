@@ -359,7 +359,7 @@ A `text` step is the **Text** tool ([Text layers and TheDraw fonts](../tutorials
 | Key | Value | What it sets |
 |---|---|---|
 | `"at"` | `[x, y]`, a cell on the canvas | Where the click goes, and the top-left cell of the letters. It must be off every visible, unlocked text layer, anywhere in the layer's box, not just on its letters: a click there would edit that layer, and a step only makes new ones. A click on a hidden or locked text layer makes a new layer |
-| `"text"` | A string of 1 to 4096 characters | What is typed, as typed (not NFC-composed, unlike a `keyboard` step). `"\n"` is <kbd>Enter</kbd> and starts a new line; any other character from U+0000 to U+001F, and U+007F, is refused. A character the face has no glyph for is kept in the text and leaves a blank as wide as a space |
+| `"text"` | A string of 1 to 4096 characters | What is typed, as typed (not NFC-composed, unlike a `keyboard` step). A character the face has no glyph for is kept in the text and leaves a blank as wide as a space |
 | `"textOptions"` | An object, each key optional | The Text tool's Tool Options, below. The keys a step leaves out keep their settings. Only a `text` step takes it |
 
 | `"textOptions"` key | Value | Tool Options row | Default |
@@ -373,6 +373,7 @@ A `text` step is the **Text** tool ([Text layers and TheDraw fonts](../tutorials
 | `"align"` | `"left"`, `"centre"` or `"right"` | **Align** | `"left"` |
 | `"letterSpacing"`, `"lineSpacing"` | 0 to 64 | **Spacing**: **Letters** and **Lines** | 0 |
 
+- `"text"` is taken as typed: `"\n"` is <kbd>Enter</kbd> and starts a new line, and any other control character (U+0000 to U+001F, U+007F, or the C1 controls U+0080 to U+009F) is refused, as the Text tool drops them; U+00A0 and above are typed.
 - Each step with `"at"` makes a layer `Text N` just above the active layer and makes it the active layer, as a click and typing do in the editor. Its blank cells are clear, so the art below shows through. The text's colour is `"colour"`, not `"fg"`: a `text` step takes `"fg"` and `"bg"`, as any step does, but they don't colour it.
 - A big style puts in its own colours, unless the step gives `"bigColours"`, and draws in the `block` face. A later step that picks another big style puts in that style's colours in the same way: Big 3D's are 8 and 0, yellow and white. The face stays `block` after `"bigStyle": "none"`, until a step sets another. Under a big style Tool Options greys out **Face** and **Colour**, so a step refuses a `"face"` other than `"block"`, and any `"colour"`. Without a big style **Colours** is greyed out too, so `"bigColours"` needs one, set on the same step or one before it.
 - TheDraw fonts aren't among the faces a step takes, and no step changes an existing layer's text.
