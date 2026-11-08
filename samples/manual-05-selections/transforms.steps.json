@@ -1,0 +1,162 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-37x5.ans"
+ },
+ "steps": [
+  {
+   "name": "pole",
+   "action": "glyph",
+   "glyph": "▐",
+   "fg": 15,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "foot",
+   "action": "glyph",
+   "glyph": "┴",
+   "fg": 15,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "pennant",
+   "action": "glyph",
+   "glyph": "▀",
+   "fg": 4,
+   "bg": 0,
+   "points": [
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "tip",
+   "action": "glyph",
+   "glyph": "►",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     4,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "select-flag",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    4,
+    3
+   ]
+  },
+  {
+   "name": "copy-flag",
+   "action": "copy"
+  },
+  {
+   "name": "paste-1",
+   "action": "paste",
+   "at": [
+    8,
+    0
+   ]
+  },
+  {
+   "name": "turn-1",
+   "action": "flipHorizontal"
+  },
+  {
+   "name": "stamp-1",
+   "action": "deselect"
+  },
+  {
+   "name": "paste-2",
+   "action": "paste",
+   "at": [
+    16,
+    0
+   ]
+  },
+  {
+   "name": "turn-2",
+   "action": "flipVertical"
+  },
+  {
+   "name": "stamp-2",
+   "action": "deselect"
+  },
+  {
+   "name": "paste-3",
+   "action": "paste",
+   "at": [
+    24,
+    0
+   ]
+  },
+  {
+   "name": "turn-3",
+   "action": "rotateClockwise"
+  },
+  {
+   "name": "stamp-3",
+   "action": "deselect"
+  },
+  {
+   "name": "paste-4",
+   "action": "paste",
+   "at": [
+    32,
+    0
+   ]
+  },
+  {
+   "name": "turn-4",
+   "action": "rotateCounterClockwise"
+  },
+  {
+   "name": "stamp-4",
+   "action": "deselect"
+  }
+ ]
+}

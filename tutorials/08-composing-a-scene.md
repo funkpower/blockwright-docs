@@ -41,6 +41,8 @@ How a float lands is the **Paste** setting in the **Tool Options** dock while th
 
 A transparent cell of the float, one nobody painted, never lands in any mode. The difference between **Normal** and **Transparent** is a space on black that was painted: a layer opened from an `.ans` is full of them, and there **Normal** lands each one as a black box. The setting can be changed while a float is up, and the float shows how it will land.
 
+The manual's [Selections](../manual/05-selections.md) has every item of the **Edit** and **Selection** menus the tool uses, exactly which cells count as blank, what each flip and turn does to each glyph, and the limits.
+
 ## Do it
 
 You'll set the pine, stand the dead tree on the shore as a fallen log, put the ridge behind the pine, and grow a young pine from the big one's top. The positions are column then row from `0, 0` at the top left; zoom in (<kbd>Ctrl</kbd>+<kbd>=</kbd>) so you can count cells.
@@ -120,6 +122,8 @@ Double-click a stamp, or press <kbd>Enter</kbd> on it, and it floats at the cell
 To keep a part of your own, select it and choose **Selection > Save to Library...**: give it a name, a category and tags. The name has to be one CP437 can write, and a name already in the library asks before it replaces it. The pine in step 2 would make one.
 
 The **Scene Starter**, a scene laid out from the Library in one go, isn't in the app yet.
+
+The manual's [Library](../manual/08-library.md) has the dock, frames and bands that resize, the **Save to Library** dialog and where stamps are kept.
 
 ## Check it
 

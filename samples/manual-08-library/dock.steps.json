@@ -1,0 +1,22 @@
+{
+ "version": 1,
+ "window": [
+  1280,
+  2200
+ ],
+ "start": {
+  "blank": [
+   80,
+   25
+  ]
+ },
+ "steps": [
+  {
+   "name": "dock",
+   "action": "deselect",
+   "screenshot": {
+    "of": "libraryDock"
+   }
+  }
+ ]
+}

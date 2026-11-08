@@ -1,0 +1,203 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-42x8.ans"
+ },
+ "steps": [
+  {
+   "name": "hill-1",
+   "action": "ellipse",
+   "fg": 2,
+   "filled": true,
+   "from": [
+    0,
+    6
+   ],
+   "to": [
+    13,
+    15
+   ]
+  },
+  {
+   "name": "hill-2",
+   "action": "ellipse",
+   "fg": 2,
+   "filled": true,
+   "from": [
+    14,
+    6
+   ],
+   "to": [
+    27,
+    15
+   ]
+  },
+  {
+   "name": "hill-3",
+   "action": "ellipse",
+   "fg": 2,
+   "filled": true,
+   "from": [
+    28,
+    6
+   ],
+   "to": [
+    41,
+    15
+   ]
+  },
+  {
+   "name": "ground",
+   "action": "rectangle",
+   "fg": 2,
+   "filled": true,
+   "symmetry": "none",
+   "from": [
+    0,
+    12
+   ],
+   "to": [
+    41,
+    15
+   ]
+  },
+  {
+   "name": "sun",
+   "action": "glyph",
+   "glyph": "█",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     0
+    ],
+    [
+     4,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     4,
+     1
+    ],
+    [
+     5,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "select-sun",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    5,
+    2
+   ]
+  },
+  {
+   "name": "copy-sun",
+   "action": "copy"
+  },
+  {
+   "name": "clear-sun",
+   "action": "deleteSelection"
+  },
+  {
+   "name": "paste-normal",
+   "action": "paste",
+   "at": [
+    4,
+    2
+   ],
+   "pasteMode": "normal"
+  },
+  {
+   "name": "stamp-normal",
+   "action": "deselect"
+  },
+  {
+   "name": "paste-transparent",
+   "action": "paste",
+   "at": [
+    18,
+    2
+   ],
+   "pasteMode": "transparent"
+  },
+  {
+   "name": "stamp-transparent",
+   "action": "deselect"
+  },
+  {
+   "name": "paste-under",
+   "action": "paste",
+   "at": [
+    32,
+    2
+   ],
+   "pasteMode": "under",
+   "screenshot": {
+    "of": "canvasView",
+    "crop": {
+     "cells": [
+      28,
+      0,
+      14,
+      8
+     ]
+    },
+    "scale": 2
+   }
+  },
+  {
+   "name": "stamp-under",
+   "action": "deselect"
+  }
+ ],
+ "window": [
+  1600,
+  1000
+ ]
+}
