@@ -1,0 +1,92 @@
+{
+ "version": 1,
+ "start": {
+  "file": "start.bwp"
+ },
+ "steps": [
+  {
+   "name": "parts-active",
+   "action": "setActiveLayer",
+   "layer": "parts"
+  },
+  {
+   "name": "select-pine",
+   "action": "select",
+   "rect": [
+    48,
+    1,
+    58,
+    11
+   ]
+  },
+  {
+   "name": "move-pine",
+   "action": "moveSelection",
+   "by": [
+    -4,
+    2
+   ]
+  },
+  {
+   "name": "flip-pine",
+   "action": "flipHorizontal"
+  },
+  {
+   "name": "stamp-pine",
+   "action": "deselect"
+  },
+  {
+   "name": "select-snag",
+   "action": "select",
+   "rect": [
+    40,
+    4,
+    40,
+    7
+   ]
+  },
+  {
+   "name": "rotate-snag",
+   "action": "rotateClockwise"
+  },
+  {
+   "name": "move-log",
+   "action": "moveSelection",
+   "by": [
+    -26,
+    8
+   ]
+  },
+  {
+   "name": "stamp-log",
+   "action": "deselect"
+  },
+  {
+   "name": "select-ridge",
+   "action": "select",
+   "rect": [
+    14,
+    2,
+    33,
+    5
+   ]
+  },
+  {
+   "name": "cut-ridge",
+   "action": "cut"
+  },
+  {
+   "name": "paste-ridge",
+   "action": "paste",
+   "at": [
+    27,
+    9
+   ],
+   "pasteMode": "normal"
+  },
+  {
+   "name": "stamp-ridge",
+   "action": "deselect"
+  }
+ ]
+}

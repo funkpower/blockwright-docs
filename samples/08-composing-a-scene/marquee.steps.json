@@ -1,0 +1,46 @@
+{
+ "version": 1,
+ "start": {
+  "file": "start.bwp"
+ },
+ "steps": [
+  {
+   "name": "parts-active",
+   "action": "setActiveLayer",
+   "layer": "parts"
+  },
+  {
+   "name": "scroll",
+   "action": "view",
+   "scrollTo": [
+    36,
+    0
+   ]
+  },
+  {
+   "name": "select-pine",
+   "action": "select",
+   "rect": [
+    48,
+    1,
+    58,
+    11
+   ],
+   "screenshot": {
+    "of": "canvasView",
+    "crop": {
+     "cells": [
+      36,
+      0,
+      24,
+      14
+     ]
+    }
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

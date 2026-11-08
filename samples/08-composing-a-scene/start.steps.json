@@ -1,0 +1,1227 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-60x20.ans"
+ },
+ "steps": [
+  {
+   "name": "shore",
+   "action": "rectangle",
+   "fg": 2,
+   "filled": true,
+   "symmetry": "none",
+   "from": [
+    0,
+    26
+   ],
+   "to": [
+    59,
+    27
+   ]
+  },
+  {
+   "name": "bank",
+   "action": "rectangle",
+   "fg": 6,
+   "from": [
+    0,
+    28
+   ],
+   "to": [
+    59,
+    29
+   ]
+  },
+  {
+   "name": "lake",
+   "action": "rectangle",
+   "fg": 1,
+   "from": [
+    0,
+    30
+   ],
+   "to": [
+    59,
+    39
+   ]
+  },
+  {
+   "name": "moon",
+   "action": "ellipse",
+   "fg": 15,
+   "from": [
+    4,
+    2
+   ],
+   "to": [
+    11,
+    9
+   ]
+  },
+  {
+   "name": "moon-shine-1",
+   "action": "halfBlock",
+   "fg": 15,
+   "points": [
+    [
+     5,
+     31
+    ],
+    [
+     10,
+     31
+    ]
+   ]
+  },
+  {
+   "name": "moon-shine-2",
+   "action": "halfBlock",
+   "fg": 15,
+   "points": [
+    [
+     6,
+     33
+    ],
+    [
+     7,
+     33
+    ]
+   ]
+  },
+  {
+   "name": "moon-shine-3",
+   "action": "halfBlock",
+   "fg": 15,
+   "points": [
+    [
+     9,
+     33
+    ],
+    [
+     11,
+     33
+    ]
+   ]
+  },
+  {
+   "name": "moon-shine-4",
+   "action": "halfBlock",
+   "fg": 15,
+   "points": [
+    [
+     4,
+     35
+    ],
+    [
+     5,
+     35
+    ]
+   ]
+  },
+  {
+   "name": "moon-shine-5",
+   "action": "halfBlock",
+   "fg": 15,
+   "points": [
+    [
+     7,
+     35
+    ],
+    [
+     8,
+     35
+    ]
+   ]
+  },
+  {
+   "name": "moon-shine-6",
+   "action": "halfBlock",
+   "fg": 15,
+   "points": [
+    [
+     8,
+     37
+    ],
+    [
+     10,
+     37
+    ]
+   ]
+  },
+  {
+   "name": "moon-shine",
+   "action": "halfBlock",
+   "fg": 15,
+   "points": [
+    [
+     6,
+     39
+    ],
+    [
+     7,
+     39
+    ]
+   ]
+  },
+  {
+   "name": "star-1",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     17,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "star-2",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     27,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "star-3",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     35,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "star-4",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     58,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "star-5",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     15,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "star-6",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     57,
+     11
+    ]
+   ]
+  },
+  {
+   "name": "parts-layer",
+   "action": "newCellsLayer",
+   "rename": "parts"
+  },
+  {
+   "name": "pine-dark-1",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     53,
+     3
+    ],
+    [
+     53,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-2",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     52,
+     4
+    ],
+    [
+     53,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-3",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     52,
+     5
+    ],
+    [
+     53,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-4",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     51,
+     6
+    ],
+    [
+     53,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-5",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     51,
+     7
+    ],
+    [
+     53,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-6",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     50,
+     8
+    ],
+    [
+     53,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-7",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     50,
+     9
+    ],
+    [
+     53,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-8",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     51,
+     10
+    ],
+    [
+     53,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-9",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     51,
+     11
+    ],
+    [
+     53,
+     11
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-10",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     50,
+     12
+    ],
+    [
+     53,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-11",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     50,
+     13
+    ],
+    [
+     53,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-12",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     49,
+     14
+    ],
+    [
+     53,
+     14
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-13",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     49,
+     15
+    ],
+    [
+     53,
+     15
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-14",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     50,
+     16
+    ],
+    [
+     53,
+     16
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-15",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     50,
+     17
+    ],
+    [
+     53,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-16",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     49,
+     18
+    ],
+    [
+     53,
+     18
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-17",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     49,
+     19
+    ],
+    [
+     53,
+     19
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark-18",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     48,
+     20
+    ],
+    [
+     53,
+     20
+    ]
+   ]
+  },
+  {
+   "name": "pine-dark",
+   "action": "halfBlock",
+   "fg": 2,
+   "points": [
+    [
+     48,
+     21
+    ],
+    [
+     53,
+     21
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-1",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     4
+    ],
+    [
+     54,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-2",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     5
+    ],
+    [
+     54,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-3",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     6
+    ],
+    [
+     55,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-4",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     7
+    ],
+    [
+     55,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-5",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     8
+    ],
+    [
+     56,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-6",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     9
+    ],
+    [
+     56,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-7",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     10
+    ],
+    [
+     55,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-8",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     11
+    ],
+    [
+     55,
+     11
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-9",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     12
+    ],
+    [
+     56,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-10",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     13
+    ],
+    [
+     56,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-11",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     14
+    ],
+    [
+     57,
+     14
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-12",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     15
+    ],
+    [
+     57,
+     15
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-13",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     16
+    ],
+    [
+     56,
+     16
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-14",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     17
+    ],
+    [
+     56,
+     17
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-15",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     18
+    ],
+    [
+     57,
+     18
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-16",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     19
+    ],
+    [
+     57,
+     19
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit-17",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     20
+    ],
+    [
+     58,
+     20
+    ]
+   ]
+  },
+  {
+   "name": "pine-lit",
+   "action": "halfBlock",
+   "fg": 10,
+   "points": [
+    [
+     54,
+     21
+    ],
+    [
+     58,
+     21
+    ]
+   ]
+  },
+  {
+   "name": "pine-trunk",
+   "action": "halfBlock",
+   "fg": 6,
+   "points": [
+    [
+     53,
+     22
+    ],
+    [
+     53,
+     23
+    ]
+   ]
+  },
+  {
+   "name": "snag",
+   "action": "glyph",
+   "glyph": "▐",
+   "fg": 6,
+   "bg": 0,
+   "points": [
+    [
+     40,
+     4
+    ],
+    [
+     40,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit-1",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     18,
+     5
+    ],
+    [
+     18,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit-2",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     17,
+     6
+    ],
+    [
+     18,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit-3",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     16,
+     7
+    ],
+    [
+     18,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit-4",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     27,
+     7
+    ],
+    [
+     27,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit-5",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     15,
+     8
+    ],
+    [
+     18,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit-6",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     26,
+     8
+    ],
+    [
+     27,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit-7",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     14,
+     9
+    ],
+    [
+     18,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit-8",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     24,
+     9
+    ],
+    [
+     27,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit-9",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     14,
+     10
+    ],
+    [
+     18,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit-10",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     24,
+     10
+    ],
+    [
+     27,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit-11",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     14,
+     11
+    ],
+    [
+     18,
+     11
+    ]
+   ]
+  },
+  {
+   "name": "ridge-lit",
+   "action": "halfBlock",
+   "fg": 7,
+   "points": [
+    [
+     24,
+     11
+    ],
+    [
+     27,
+     11
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-1",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     19,
+     4
+    ],
+    [
+     19,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-2",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     19,
+     5
+    ],
+    [
+     20,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-3",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     19,
+     6
+    ],
+    [
+     21,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-4",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     28,
+     6
+    ],
+    [
+     28,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-5",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     19,
+     7
+    ],
+    [
+     22,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-6",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     28,
+     7
+    ],
+    [
+     29,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-7",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     19,
+     8
+    ],
+    [
+     23,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-8",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     28,
+     8
+    ],
+    [
+     30,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-9",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     19,
+     9
+    ],
+    [
+     23,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-10",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     28,
+     9
+    ],
+    [
+     31,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-11",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     19,
+     10
+    ],
+    [
+     23,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-12",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     28,
+     10
+    ],
+    [
+     32,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark-13",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     19,
+     11
+    ],
+    [
+     23,
+     11
+    ]
+   ]
+  },
+  {
+   "name": "ridge-dark",
+   "action": "halfBlock",
+   "fg": 8,
+   "points": [
+    [
+     28,
+     11
+    ],
+    [
+     33,
+     11
+    ]
+   ]
+  }
+ ]
+}

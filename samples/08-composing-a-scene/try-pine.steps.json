@@ -1,0 +1,40 @@
+{
+ "version": 1,
+ "start": {
+  "file": "try.bwp"
+ },
+ "steps": [
+  {
+   "name": "parts-active",
+   "action": "setActiveLayer",
+   "layer": "parts"
+  },
+  {
+   "name": "select-tier",
+   "action": "select",
+   "rect": [
+    47,
+    3,
+    51,
+    6
+   ]
+  },
+  {
+   "name": "copy-tier",
+   "action": "copy"
+  },
+  {
+   "name": "paste-tier",
+   "action": "paste",
+   "at": [
+    55,
+    9
+   ],
+   "pasteMode": "transparent"
+  },
+  {
+   "name": "stamp-tier",
+   "action": "deselect"
+  }
+ ]
+}

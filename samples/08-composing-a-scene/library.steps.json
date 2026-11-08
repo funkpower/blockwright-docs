@@ -1,0 +1,27 @@
+{
+ "version": 1,
+ "start": {
+  "file": "start.bwp"
+ },
+ "steps": [
+  {
+   "name": "library",
+   "action": "deselect",
+   "screenshot": {
+    "of": "libraryDock",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      321,
+      500
+     ]
+    }
+   }
+  }
+ ],
+ "window": [
+  1280,
+  2200
+ ]
+}

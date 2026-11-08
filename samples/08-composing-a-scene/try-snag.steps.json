@@ -1,0 +1,39 @@
+{
+ "version": 1,
+ "start": {
+  "file": "try.bwp"
+ },
+ "steps": [
+  {
+   "name": "parts-active",
+   "action": "setActiveLayer",
+   "layer": "parts"
+  },
+  {
+   "name": "select-log",
+   "action": "select",
+   "rect": [
+    14,
+    12,
+    17,
+    12
+   ]
+  },
+  {
+   "name": "rotate-log",
+   "action": "rotateCounterClockwise"
+  },
+  {
+   "name": "move-snag",
+   "action": "moveSelection",
+   "by": [
+    4,
+    -3
+   ]
+  },
+  {
+   "name": "stamp-snag",
+   "action": "deselect"
+  }
+ ]
+}
