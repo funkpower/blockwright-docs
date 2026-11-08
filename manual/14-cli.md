@@ -210,8 +210,8 @@ A steps file is JSON. In brief:
 ```
 
 - `"start"` is `{"file": ...}` (an `.ans`, `.xb`, `.bin` or project, relative to the steps file), `{"sample": ...}` or `{"blank": [w, h]}`. `"ice"` sets a blank start's iCE colours (default on).
-- Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …), a layer command (`newCellsLayer`, `setActiveLayer`, …), `canvasSize` ([Resizing the canvas](#resizing-the-canvas)) or `clone` ([The clone stamp](#the-clone-stamp)). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row: the example's rectangle from pixel `[0, 0]` to `[7, 5]` covers cell rows 0 to 2.
-- Any step but a `view` or `canvasSize` step may also set Tool Options (`"fg"` and `"bg"` 0 to 15, `"size"`, `"ramp"`, `"symmetry"` and more), which hold for the steps after it. `"sampleMerged"` is one of them, but only a `fill` or `eyedropper` step takes it ([Sample merged](#sample-merged)), and `"aligned"` is another, which only a `clone` step takes.
+- Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …), a layer command (`newCellsLayer`, `setActiveLayer`, …), `canvasSize` ([Resizing the canvas](#resizing-the-canvas)), `clone` ([The clone stamp](#the-clone-stamp)) or `text` ([The text tool](#the-text-tool)). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row: the example's rectangle from pixel `[0, 0]` to `[7, 5]` covers cell rows 0 to 2.
+- Any step but a `view` or `canvasSize` step may also set Tool Options (`"fg"` and `"bg"` 0 to 15, `"size"`, `"ramp"`, `"symmetry"` and more), which hold for the steps after it. `"sampleMerged"` is one of them, but only a `fill` or `eyedropper` step takes it ([Sample merged](#sample-merged)), `"aligned"` another, which only a `clone` step takes ([The clone stamp](#the-clone-stamp)), and `"textOptions"`, the Text tool's settings, a third, which only a `text` step takes ([The text tool](#the-text-tool)).
 
 `blockwright-cli replay --help` gives the whole format: every action, its keys, and every Tool Option with its range and default. A step that can't be applied (an unknown action or key, a value out of range, a point off the canvas, nothing selected to transform) stops the replay with exit status 1 and a message naming the step, such as `blockwright-cli: bad.json: step 2 (off): cell (20, 1) is off the 8 x 3 canvas`.
 
@@ -345,6 +345,65 @@ blockwright-cli: c.json: step 2 (source): clone takes no "sampleMerged"
 ```
 
 Only a `clone` step takes `"aligned"`, even as `true`, and a `clone` step takes no `"sampleMerged"`.
+
+#### The text tool
+
+A `text` step is the **Text** tool ([Text layers and TheDraw fonts](../tutorials/10-letters-and-text.md#text-layers-and-thedraw-fonts)): a click at `"at"`, then `"text"` typed there, which makes a new live text layer. `"textOptions"` holds the rows Tool Options shows for the tool:
+
+```
+{"name": "caption", "action": "text", "at": [28, 9], "text": "winter", "textOptions": {"colour": 0}},
+{"name": "headline", "action": "text", "at": [40, 0], "text": "SNOW", "textOptions": {"bigStyle": "shadow", "bigColours": [0, 1]}},
+{"name": "restyle", "action": "text", "textOptions": {"bigStyle": "3d", "letterSpacing": 1}}
+```
+
+| Key | Value | What it sets |
+|---|---|---|
+| `"at"` | `[x, y]`, a cell on the canvas | Where the click goes, and the top-left cell of the letters. It must be off every visible, unlocked text layer, anywhere in the layer's box, not just on its letters: a click there would edit that layer, and a step only makes new ones. A click on a hidden or locked text layer makes a new layer |
+| `"text"` | A string of 1 to 4096 characters | What is typed, as typed (not NFC-composed, unlike a `keyboard` step). `"\n"` is <kbd>Enter</kbd> and starts a new line; any other character from U+0000 to U+001F, and U+007F, is refused. A character the face has no glyph for is kept in the text and leaves a blank as wide as a space |
+| `"textOptions"` | An object, each key optional | The Text tool's Tool Options, below. The keys a step leaves out keep their settings. Only a `text` step takes it |
+
+| `"textOptions"` key | Value | Tool Options row | Default |
+|---|---|---|---|
+| `"face"` | `"block"`, `"vga"` or `"mini"`, the bundled faces | **Face** | `"block"` |
+| `"bigStyle"` | `"none"`, `"shadow"`, `"3d"`, `"outline"`, `"block"` or `"rainbow"` | **Big style** | `"none"` |
+| `"bigColours"` | An array of 1 to 16 mIRC colour numbers, 0 to 15 | **Colours**, beside **Big style** | The big style's own |
+| `"colour"` | 0 to 15, a palette index | **Colour** | 7 |
+| `"case"` | `"as-typed"` or `"capitals"` | **Case** | `"as-typed"` |
+| `"wrap"` | 0 to 65535 columns, 0 for none | **Wrap** | 0 |
+| `"align"` | `"left"`, `"centre"` or `"right"` | **Align** | `"left"` |
+| `"letterSpacing"`, `"lineSpacing"` | 0 to 64 | **Spacing**: **Letters** and **Lines** | 0 |
+
+- Each step with `"at"` makes a layer `Text N` just above the active layer and makes it the active layer, as a click and typing do in the editor. Its blank cells are clear, so the art below shows through. The text's colour is `"colour"`, not `"fg"`: a `text` step takes `"fg"` and `"bg"`, as any step does, but they don't colour it.
+- A big style puts in its own colours, unless the step gives `"bigColours"`, and draws in the `block` face. A later step that picks another big style puts in that style's colours in the same way: Big 3D's are 8 and 0, yellow and white. The face stays `block` after `"bigStyle": "none"`, until a step sets another. Under a big style Tool Options greys out **Face** and **Colour**, so a step refuses a `"face"` other than `"block"`, and any `"colour"`. Without a big style **Colours** is greyed out too, so `"bigColours"` needs one, set on the same step or one before it.
+- TheDraw fonts aren't among the faces a step takes, and no step changes an existing layer's text.
+- A step with `"textOptions"` and no `"at"` sets them as Tool Options does. With a text layer active, they go on that layer's settings, which become the defaults for the next text, and on the layer, unless it is locked: a locked layer stays as it is and only the defaults change. With another kind of layer active, only the defaults change.
+- `blockwright --screenshot` shows the Text tool's rows in Tool Options. With `"pointer": true` the pointer is on `"at"`, where the click goes. A step with neither `"at"` nor `"textOptions"` sets nothing and isn't noted, so it can take a picture of the settings the steps before it left.
+
+On the sky of [Spruce Island](../samples/manual-cli/spruce-island.ans), a 120 × 50 piece by funkpower: `winter` in black in the `block` face, `SNOW` above it in Big shadow with mIRC white letters and a black shadow, and a step with no `"at"` that restyles the headline, the active layer, to Big 3D with a column between letters (`blockwright --screenshot`, scale 1, in a window large enough to show every Tool Options row; [text.steps.json](../samples/manual-cli/text.steps.json)):
+
+![The grey sky of Spruce Island with the dark tops of trees and hills along the bottom and right, and the word winter typed across it in large black letters. The pointer is at the top-left of the w, where the click went](../samples/manual-cli/text-caption.png)
+![The same, with SNOW above it in tall white letters edged in black, its top on the top row of the canvas](../samples/manual-cli/text-headline.png)
+![Tool Options for the Text tool after the headline: the face list with block picked and vga and mini greyed out, Big style Big shadow with Colours 0,1, Colour greyed out at Black, Case As typed, Wrap None, Align Left, and Spacing Letters 0 and Lines 0](../samples/manual-cli/text-options.png)
+![The same sky after the restyle step, with SNOW redrawn in yellow letters with a white edge, a column further apart, and winter unchanged below it](../samples/manual-cli/text-restyle.png)
+
+A step with no `"at"` whose settings Tool Options already shows (the active text layer's, else the defaults) changes nothing, and `replay` notes it on stderr, with exit status 0: `blockwright-cli: note: t.json: step 2 (same): changes nothing`. Its defaults don't change either. Each of these is refused with exit status 1, and nothing is written:
+
+```
+blockwright-cli: t.json: step 2 (again): cell (7, 1) is on the text layer "Text 1", which a Text tool click there edits; a text step makes a new text layer, so click off every visible, unlocked text layer
+blockwright-cli: t.json: step 1 (title): "text" holds a control character the Text tool doesn't type (U+0009); only "\n", Enter, starts a new line
+blockwright-cli: t.json: step 1 (title): "text" must be 1 to 4096 characters
+blockwright-cli: t.json: step 1 (title): text needs "text" to type at its "at" cell: a click with nothing typed makes no text layer
+blockwright-cli: t.json: step 1 (title): "text" needs an "at" cell to start from
+blockwright-cli: t.json: step 1 (title): "textOptions face" takes a bundled face (block, vga, mini), not "thedraw"
+blockwright-cli: t.json: step 1 (title): "textOptions face" "vga" can't be picked under a big style, which draws in the block face (Tool Options' face picker is off)
+blockwright-cli: t.json: step 1 (title): "textOptions colour" can't be set under a big style, which "bigColours" colours (Tool Options' colour is off)
+blockwright-cli: t.json: step 1 (title): "textOptions bigColours" needs a big style (Tool Options' colours are off without one)
+blockwright-cli: t.json: step 1 (title): "textOptions bigColours" must be an array of 1 to 16 mIRC colours 0 to 15
+blockwright-cli: t.json: step 1 (title): "textOptions align" takes left, centre, right, not "center"
+blockwright-cli: t.json: step 1 (edge): line takes no "textOptions"
+```
+
+The first is a click at `[7, 1]`, beside an `i` typed at `[1, 1]` in the `block` face: the letter is two columns short of it, but the layer's 8 × 4 box takes it in. A `text` step takes no `"button"` and no `"sampleMerged"`.
 
 ### Pictures of the window
 

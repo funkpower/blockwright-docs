@@ -41,7 +41,7 @@ A cell erased on a Pixels layer is transparent, even when the layer is the botto
 
 A Text layer holds text rendered as glyph cells with foreground and background colours.
 
-Edit live text with the Text tool and Tool Options; painting tools cannot change it. Clicking a Text layer with the Text tool edits it; clicking anywhere else and typing starts a new Text layer there, named `Text N`, just above the active layer. Without a live text source, the cells can be painted like a Cells layer.
+Edit live text with the Text tool and Tool Options; painting tools cannot change it. Clicking a Text layer with the Text tool edits it; clicking anywhere else and typing starts a new Text layer there, named `Text N`, just above the active layer; a `text` step in a `replay` steps file does the same ([The text tool](14-cli.md#the-text-tool)). Without a live text source, the cells can be painted like a Cells layer.
 
 Opaque text cells normally replace cells below and cannot be covered by Pixels layers, whichever is on top; transparent cells show through. A Cells or Generator layer above that writes its own glyph over a text cell makes it plain cells again ([How the layers combine](#how-the-layers-combine)). Exports flatten the visible rendered text into character cells.
 

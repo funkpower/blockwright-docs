@@ -1,0 +1,94 @@
+{
+ "version": 1,
+ "window": [
+  2800,
+  1300
+ ],
+ "start": {
+  "file": "spruce-island.ans"
+ },
+ "steps": [
+  {
+   "name": "caption",
+   "action": "text",
+   "at": [
+    28,
+    9
+   ],
+   "text": "winter",
+   "textOptions": {
+    "colour": 0
+   },
+   "screenshot": {
+    "crop": {
+     "cells": [
+      24,
+      0,
+      64,
+      16
+     ]
+    },
+    "pointer": true
+   }
+  },
+  {
+   "name": "headline",
+   "action": "text",
+   "at": [
+    40,
+    0
+   ],
+   "text": "SNOW",
+   "textOptions": {
+    "bigStyle": "shadow",
+    "bigColours": [
+     0,
+     1
+    ]
+   },
+   "screenshot": {
+    "crop": {
+     "cells": [
+      24,
+      0,
+      64,
+      16
+     ]
+    }
+   }
+  },
+  {
+   "name": "options",
+   "action": "text",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      475,
+      360,
+      590
+     ]
+    }
+   }
+  },
+  {
+   "name": "restyle",
+   "action": "text",
+   "textOptions": {
+    "bigStyle": "3d",
+    "letterSpacing": 1
+   },
+   "screenshot": {
+    "crop": {
+     "cells": [
+      24,
+      0,
+      64,
+      16
+     ]
+    }
+   }
+  }
+ ]
+}

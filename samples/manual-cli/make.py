@@ -24,6 +24,14 @@ source set on the fox's face with the pointer on it, then two strokes of a
 clone-unaligned.png is the second stroke with "aligned": false, copying the
 head again, and clone-options.png is Tool Options with Aligned unticked. Both
 files set a window large enough for the crop to be in view.
+
+text-caption.png, text-headline.png, text-options.png and text-restyle.png
+show text steps on Spruce Island's sky: a plain text layer in the block face
+with the pointer at its click, a headline in Big shadow above it, Tool Options
+with the headline's settings (cropped from the Face row down), and the
+headline restyled by a step with no "at" to Big 3D with a column between
+letters. The file sets a window large enough for the crop and for every Tool
+Options row.
 """
 
 import json
@@ -93,3 +101,14 @@ play("clone-unaligned", {"file": "spruce-island.ans"}, SOURCE + [
     {"name": "body", "action": "clone", "points": [[62, 48], [72, 48]], "aligned": False, "screenshot": FOX},
     {"name": "options", "action": "clone", "screenshot": {"of": "toolOptions", "crop": {"pixels": [0, 0, 360, 535]}}},
 ], {"03-body.png": "clone-unaligned.png", "04-options.png": "clone-options.png"}, window=[2800, 2100])
+
+SKY = {"crop": {"cells": [24, 0, 64, 16]}}
+play("text", {"file": "spruce-island.ans"}, [
+    {"name": "caption", "action": "text", "at": [28, 9], "text": "winter", "textOptions": {"colour": 0},
+     "screenshot": {**SKY, "pointer": True}},
+    {"name": "headline", "action": "text", "at": [40, 0], "text": "SNOW",
+     "textOptions": {"bigStyle": "shadow", "bigColours": [0, 1]}, "screenshot": SKY},
+    {"name": "options", "action": "text", "screenshot": {"of": "toolOptions", "crop": {"pixels": [0, 475, 360, 590]}}},
+    {"name": "restyle", "action": "text", "textOptions": {"bigStyle": "3d", "letterSpacing": 1}, "screenshot": SKY},
+], {"01-caption.png": "text-caption.png", "02-headline.png": "text-headline.png",
+    "03-options.png": "text-options.png", "04-restyle.png": "text-restyle.png"}, window=[2800, 1300])
