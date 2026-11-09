@@ -1,5 +1,5 @@
 Title: The Library: stamps, Save to Library and text styles
-Checked: Blockwright 0.1.0 (f9ec75e)
+Checked: Blockwright 0.1.0 (6c9a81a)
 
 # The Library: stamps, Save to Library and text styles
 
@@ -81,7 +81,7 @@ It lands on the layer that is active when it is put down. Clicking another layer
 
 A layer that can't take the stamp refuses it before it floats, and the status bar says why: *Could not place* and the stamp's file, then the reason, such as *the layer is locked*, *the layer is hidden*, *a live Text layer is drawn from its text*, or *a Pixels layer holds no ░▒*, naming each glyph of the stamp that half blocks can't show. A float already up stays up.
 
-The one exception is a stamp whose only such glyphs are `▌` and `▐`. On a Pixels layer it floats, shown as it is, but it can't be put down until **Selection > Rotate Clockwise** or **Rotate Counterclockwise** turns them into `▀` and `▄`; a flip doesn't. Until then <kbd>Enter</kbd> or a click says *Could not place* and the file, then *a Pixels layer holds no ▌▐; rotate it (Selection > Rotate) or press Esc to drop it*, and the float stays where it is with nothing written. A stamp that holds `▀` or `▄` as well floats but never lands, as a turn puts those on their side; its message ends only *press Esc to drop it*. A float that can't land, and what else it refuses or drops, is in [A float that can't land](05-selections.md#a-float-that-cant-land).
+The one exception is a stamp whose only such glyphs are `▌` and `▐`. On a Pixels layer it floats, shown as it is, but it can't be put down until **Selection > Rotate Clockwise** or **Rotate Counterclockwise** turns them into `▀` and `▄`; a flip doesn't. Until then <kbd>Enter</kbd> or a click says *Could not place* and the file, then *a Pixels layer holds no ▌▐; rotate it (Selection > Rotate) or press Esc to drop it*, and the float stays where it is with nothing written. A stamp that holds `▀` or `▄` as well floats but never lands, as a turn puts those on their side; its message ends only *press Esc to drop it*. A stamp already floating can also be left on a layer that takes no edit by an **Undo** that hides or locks its layer again; it stays up, and <kbd>Enter</kbd> says *Could not place* and the file, then *the layer is hidden; press Esc to drop it* or *the layer is locked; press Esc to drop it*. A float that can't land, and what else it refuses or drops, is in [A float that can't land](05-selections.md#a-float-that-cant-land).
 
 A stamp is placed as the Library last read it, not from its file at that moment: after changing a stamp's files, press **Refresh**.
 
