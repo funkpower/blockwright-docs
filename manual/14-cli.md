@@ -211,7 +211,7 @@ A steps file is JSON. In brief:
            {"name": "box", "action": "rectangle", "from": [0, 0], "to": [7, 5], "fg": 4}]}
 ```
 
-- `"start"` is `{"file": ...}` (an `.ans`, `.xb`, `.bin` or project, relative to the steps file), `{"sample": ...}` or `{"blank": [w, h]}`. `"ice"` sets a blank start's iCE colours (default on).
+- `"start"` is `{"file": ...}` (an `.ans`, `.xb`, `.bin` or project, relative to the steps file: [Paths in a steps file](#paths-in-a-steps-file)), `{"sample": ...}` or `{"blank": [w, h]}`. `"ice"` sets a blank start's iCE colours (default on).
 - Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …), a layer command (`newCellsLayer`, `setActiveLayer`, …), `canvasSize` ([Resizing the canvas](#resizing-the-canvas)), `clone` ([The clone stamp](#the-clone-stamp)) or `text` ([The text tool](#the-text-tool)). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row: the example's rectangle from pixel `[0, 0]` to `[7, 5]` covers cell rows 0 to 2.
 - Any step but a `view` or `canvasSize` step may also set Tool Options (`"fg"` and `"bg"` 0 to 15, `"size"`, `"ramp"`, `"symmetry"` and more), which hold for the steps after it. `"sampleMerged"` is one of them, but only a `fill` or `eyedropper` step takes it ([Sample merged](#sample-merged)), `"aligned"` another, which only a `clone` step takes ([The clone stamp](#the-clone-stamp)), and `"textOptions"`, the Text tool's settings, a third, which only a `text` step takes ([The text tool](#the-text-tool)).
 
@@ -222,6 +222,26 @@ A steps file can also carry what only the editor's window uses ([Pictures of the
 ```
 blockwright-cli: v.json: step 2 (zoomed): view sets the window's zoom, scroll and IRC options, and blockwright-cli replay has no window; replay this file with blockwright --screenshot
 ```
+
+#### Paths in a steps file
+
+A steps file names two kinds of file: its start, `"start": {"file": ...}`, and the font file of a `text` step's TheDraw face ([A TheDraw font](#a-thedraw-font)). Both paths are relative to the steps file's own directory, with `/` between directories, and `..` may leave that directory, so steps files in different folders can share a fonts folder: `"../fonts/titles.tdf"`. An absolute path (one that starts with `/`, or with a drive letter and `:`), a path with a `\` or a NUL character in it and an empty path are refused, so a steps file and the files beside it replay the same on any machine.
+
+`replay` reads every file the steps name before it applies the first step, and a `.tdf` may be at most 4 MiB (4194304 bytes). A path it refuses, or a file it can't read, stops the replay naming the step (or `start`) and the path, with exit status 1, and nothing is written:
+
+```
+blockwright-cli: p.json: start: "file" "/tmp/piece.ans" is absolute; a steps file names its files relative to its own directory
+blockwright-cli: p.json: start: "file" "C:/art/piece.ans" is absolute; a steps file names its files relative to its own directory
+blockwright-cli: p.json: step 1 (title): "textOptions face tdf" "..\fonts\titles.tdf" has a \ in it; write / between directories, relative to the steps file
+blockwright-cli: p.json: step 1 (title): "textOptions face tdf" is empty
+blockwright-cli: p.json: step 1 (title): "textOptions face tdf" holds a NUL character
+blockwright-cli: p.json: start: piece.ans: no such file
+blockwright-cli: p.json: step 1 (title): ../fonts/missing.tdf: no such file
+blockwright-cli: p.json: step 1 (title): ../fonts/dir: is a directory
+blockwright-cli: p.json: step 1 (title): ../fonts/big.tdf: larger than 4194304 bytes, the most it may be
+```
+
+The last four name the path as read: the steps file's directory as you gave it on the command line, then the path. Run from another folder, `blockwright-cli replay steps/p.json -o out` names `steps/../fonts/missing.tdf`.
 
 #### Resizing the canvas
 
@@ -366,7 +386,7 @@ A `text` step is the **Text** tool ([Text layers and TheDraw fonts](../tutorials
 
 | `"textOptions"` key | Value | Tool Options row | Default |
 |---|---|---|---|
-| `"face"` | `"block"`, `"vga"` or `"mini"`, the bundled faces | **Face** | `"block"` |
+| `"face"` | `"block"`, `"vga"` or `"mini"`, the bundled faces, or a TheDraw font, `{"tdf": ..., "font": ...}` ([A TheDraw font](#a-thedraw-font)) | **Face** | `"block"` |
 | `"bigStyle"` | `"none"`, `"shadow"`, `"3d"`, `"outline"`, `"block"` or `"rainbow"` | **Big style** | `"none"` |
 | `"bigColours"` | An array of 1 to 16 mIRC colour numbers, 0 to 15 | **Colours**, beside **Big style** | The big style's own |
 | `"colour"` | 0 to 15, a palette index | **Colour** | 7 |
@@ -378,7 +398,7 @@ A `text` step is the **Text** tool ([Text layers and TheDraw fonts](../tutorials
 - `"text"` is taken as typed: `"\n"` is <kbd>Enter</kbd> and starts a new line, and any other control character (U+0000 to U+001F, U+007F, or the C1 controls U+0080 to U+009F) is refused, as the Text tool drops them; U+00A0 and above are typed.
 - Each step with `"at"` makes a layer `Text N` just above the active layer and makes it the active layer, as a click and typing do in the editor. Its blank cells are clear, so the art below shows through. The text's colour is `"colour"`, not `"fg"`: a `text` step takes `"fg"` and `"bg"`, as any step does, but they don't colour it.
 - A big style puts in its own colours, unless the step gives `"bigColours"`, and draws in the `block` face. A later step that picks another big style puts in that style's colours in the same way: Big 3D's are 8 and 0, yellow and white. The face stays `block` after `"bigStyle": "none"`, until a step sets another. Under a big style Tool Options greys out **Face** and **Colour**, so a step refuses a `"face"` other than `"block"`, and any `"colour"`. Without a big style **Colours** is greyed out too, so `"bigColours"` needs one, set on the same step or one before it.
-- TheDraw fonts aren't among the faces a step takes, and no step changes an existing layer's text.
+- No step changes an existing layer's text.
 - A step with `"textOptions"` and no `"at"` sets them as Tool Options does. With a text layer active, they go on that layer's settings, which become the defaults for the next text, and on the layer, unless it is locked: a locked layer stays as it is and only the defaults change. With another kind of layer active, only the defaults change.
 - `blockwright --screenshot` shows the Text tool's rows in Tool Options. With `"pointer": true` the pointer is on `"at"`, where the click goes. A step with neither `"at"` nor `"textOptions"` sets nothing and isn't noted, so it can take a picture of the settings the steps before it left.
 
@@ -397,7 +417,7 @@ blockwright-cli: t.json: step 1 (title): "text" holds a control character the Te
 blockwright-cli: t.json: step 1 (title): "text" must be 1 to 4096 characters
 blockwright-cli: t.json: step 1 (title): text needs "text" to type at its "at" cell: a click with nothing typed makes no text layer
 blockwright-cli: t.json: step 1 (title): "text" needs an "at" cell to start from
-blockwright-cli: t.json: step 1 (title): "textOptions face" takes a bundled face (block, vga, mini), not "thedraw"
+blockwright-cli: t.json: step 1 (title): "textOptions face" takes a bundled face (block, vga, mini) or a TheDraw font ({"tdf": ..., "font": ...}), not "thedraw"
 blockwright-cli: t.json: step 1 (title): "textOptions face" "vga" can't be picked under a big style, which draws in the block face (Tool Options' face picker is off)
 blockwright-cli: t.json: step 1 (title): "textOptions colour" can't be set under a big style, which "bigColours" colours (Tool Options' colour is off)
 blockwright-cli: t.json: step 1 (title): "textOptions bigColours" needs a big style (Tool Options' colours are off without one)
@@ -407,6 +427,48 @@ blockwright-cli: t.json: step 1 (edge): line takes no "textOptions"
 ```
 
 The first is a click at `[7, 1]`, beside an `i` typed at `[1, 1]` in the `block` face: the letter is two columns short of it, but the layer's 8 × 4 box takes it in. A `text` step takes no `"button"` and no `"sampleMerged"`.
+
+##### A TheDraw font
+
+`"face"` may name a TheDraw font instead of a bundled face: a `.tdf` file and the font's name in it. Blockwright ships no TheDraw fonts, so the file is one of yours, named relative to the steps file ([Paths in a steps file](#paths-in-a-steps-file)). Here `fonts/titles.tdf`, beside the folder the steps file is in, holds three fonts, `BW Outline`, `BW Block` and `BW Colour`, at places 0, 1 and 2:
+
+```
+{"name": "title", "action": "text", "at": [1, 1], "text": "Funk", "textOptions": {"face": {"tdf": "../fonts/titles.tdf", "font": "BW Outline"}}},
+{"name": "restyle", "action": "text", "textOptions": {"face": {"tdf": "../fonts/titles.tdf", "font": "BW Block", "index": 1}}},
+{"name": "caption", "action": "text", "at": [1, 16], "text": "art", "textOptions": {"letterSpacing": 1}}
+```
+
+| `"face"` key | Value | What it names |
+|---|---|---|
+| `"tdf"` | A path to a `.tdf` file, relative to the steps file | The font file. Required |
+| `"font"` | The font's name as the file holds it, not empty | The font in the file. Required |
+| `"index"` | 0 to 255 | The font's place in the file, counting from 0. Needed only when two fonts in the file have the name; when it is given, the font at that place must have the name |
+
+- The face is picked as in the face picker, and it holds for later `text` steps as a bundled face does: `caption` above sets `art` in `BW Block` too, on a new layer `Text 2`.
+- The font draws in its own colours, as in the editor ([Text layers and TheDraw fonts](../tutorials/10-letters-and-text.md#text-layers-and-thedraw-fonts)): a step may set `"colour"`, but the letters don't change.
+- When a layer is set in the font, a new one or the active one restyled, the font file is copied into the project as `fonts/<sha256>.tdf`, named by the sha256 of its bytes ([Projects (.bwp)](13-file-formats.md#projects-bwp)), so a `--project` capture opens and draws its text without the steps file's fonts. A step that changes only the defaults (no text layer active, or a locked one) copies nothing; the file goes in with the first layer set in the font. A project keeps only the files its text layers use: restyle the one layer in a font into another file's font, and the next capture no longer holds the first file.
+- A project holds at most 16 font files, so a step that would leave the text layers using a 17th file is refused.
+- A big style draws in the `block` face, so a step refuses a TheDraw font under one, as it refuses `"vga"`.
+- A step with no `"at"` that names the face Tool Options already shows changes nothing, and `replay` notes it, as for any other setting.
+
+Each of these is refused with exit status 1, and nothing is written. A font the file doesn't hold, a name two of its fonts share, and an `"index"` that doesn't fit list the fonts the file holds:
+
+```
+blockwright-cli: t.json: step 1 (title): font "BW Shadow" is not in ../fonts/titles.tdf; it holds 0 "BW Outline", 1 "BW Block", 2 "BW Colour"
+blockwright-cli: t.json: step 1 (title): 2 fonts in ../fonts/twins.tdf are named "BW Outline"; give "index" to pick one: it holds 0 "BW Outline", 1 "BW Outline"
+blockwright-cli: t.json: step 1 (title): ../fonts/titles.tdf has no font at index 3; it holds 0 "BW Outline", 1 "BW Block", 2 "BW Colour"
+blockwright-cli: t.json: step 1 (title): the font at index 0 in ../fonts/titles.tdf is "BW Outline", not "BW Block"; it holds 0 "BW Outline", 1 "BW Block", 2 "BW Colour"
+blockwright-cli: t.json: step 1 (title): "textOptions face index" must be a whole number 0 to 255
+blockwright-cli: t.json: step 1 (title): ../fonts/notes.tdf: not a TheDraw font file: TheDraw font, byte 0: no TheDraw font signature
+blockwright-cli: t.json: step 1 (title): "textOptions face" needs "tdf", the .tdf file's path
+blockwright-cli: t.json: step 1 (title): "textOptions face" needs "font", the font's name in the file
+blockwright-cli: t.json: step 1 (title): "textOptions face font" is empty
+blockwright-cli: t.json: step 1 (title): "textOptions face" has no "file"
+blockwright-cli: t.json: step 1 (title): "textOptions face" "BW Block" (../fonts/titles.tdf) can't be picked under a big style, which draws in the block face (Tool Options' face picker is off)
+blockwright-cli: t.json: step 17 (word-17): the text layers would use over 16 TheDraw font files, more than a project holds
+```
+
+A file that isn't a TheDraw font is refused with the reason the font reader gives, here a file that doesn't start like one. A key the face doesn't take is refused as a key it has none of: a `"file"` beside `"tdf"` and `"font"` gives the `has no "file"` line. A path that is refused, or a file that can't be read, stops the replay before the first step ([Paths in a steps file](#paths-in-a-steps-file)).
 
 ### Pictures of the window
 

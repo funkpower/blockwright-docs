@@ -333,7 +333,7 @@ Besides the art formats above, these are read:
 | PNG and JPEG pictures | **File > Open Reference Image...** (`Images (*.png *.jpg *.jpeg)`), as a reference layer; a project keeps the picture under `refs/` |
 | Python scenes (`.py`) | **File > Open Scene...** and `blockwright-cli import-scene`, which run the scene and open it as a project with a generator layer for each of its layers |
 | A generator's directory (`generator.json`, and `params.json` and scripts) | `blockwright-cli add-generator` |
-| TheDraw fonts (`.tdf`) | The fonts folder set in Preferences, for text layers; a project keeps the fonts its text layers use under `fonts/` |
+| TheDraw fonts (`.tdf`) | The fonts folder set in Preferences, for text layers, and a `text` step in a `blockwright-cli replay` steps file ([A TheDraw font](14-cli.md#a-thedraw-font)); a project keeps the fonts its text layers use under `fonts/` |
 | Library stamps (an `.ans` and its `.json` sidecar) and text styles (`.style.json`) | The Library, from the bundled library and the user's; `blockwright-cli library list` and `library check` |
 | The ascii library's `.tags.json` and `.dates.json` | **File > Publish to Library...**, which reads and rewrites them |
 

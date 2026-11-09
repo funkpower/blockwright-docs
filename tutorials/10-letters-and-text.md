@@ -86,7 +86,7 @@ The text's settings are in the **Tool Options** dock, and each change is one und
 | **Align** | **Left**, **Centre** or **Right**: where each line sits in the text's box |
 | **Spacing** | **Letters**, blank columns between letters on top of the face's own, and **Lines**, blank cell rows between lines, each 0 to 64 |
 
-A `text` step in a `replay` steps file clicks, types and sets these rows too, in a bundled face, and `blockwright --screenshot` pictures it ([The text tool](../manual/14-cli.md#the-text-tool)).
+A `text` step in a `replay` steps file clicks, types and sets these rows too, in a bundled face or in a TheDraw font from a `.tdf` file the steps file names ([A TheDraw font](../manual/14-cli.md#a-thedraw-font)), and `blockwright --screenshot` pictures it ([The text tool](../manual/14-cli.md#the-text-tool)).
 
 The faces are Blockwright's three bundled ones, `block`, `vga` and `mini`, and the TheDraw fonts (`.tdf`) in your fonts folder. Blockwright ships no TheDraw fonts. Set the folder in **Edit > Preferences**, on the **Fonts** tab, under **Fonts folder**; with none set, Blockwright looks in `~/tdfiglet/fonts` if it is there. The tab counts the fonts it read and lists the files it couldn't. With no folder, text layers can use the bundled faces and the fonts a project already holds.
 
