@@ -172,7 +172,7 @@ PASTE = {"name": "paste-pine", "action": "paste", "at": [34, 8]}
 STAMP_COPY = {"name": "stamp-copy", "action": "deselect"}
 
 PINE = [PARTS_ACTIVE, SELECT_PINE, MOVE_PINE, FLIP, STAMP_PINE]
-steps = PINE + SNAG + RIDGE + [UNDER, STAMP_RIDGE] + [shot(COPY[0], "toolOptions", pixels=[0, 0, 256, 830]), COPY[1], PASTE, STAMP_COPY]
+steps = PINE + SNAG + RIDGE + [UNDER, STAMP_RIDGE] + [shot(COPY[0], "toolOptions", pixels=[0, 0, 256, 920]), COPY[1], PASTE, STAMP_COPY]
 replay("final", "start.bwp", steps,
        {"move-pine": "step-01.bwp", "flip-pine": "step-02.bwp", "rotate-snag": "step-03.bwp",
         "move-log": "step-04.bwp", "cut-ridge": "step-05.bwp", "paste-ridge": "step-06.bwp",
