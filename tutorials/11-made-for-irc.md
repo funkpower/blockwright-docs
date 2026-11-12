@@ -1,5 +1,5 @@
 Title: Made for IRC
-Checked: Blockwright 0.1.0 (e5db865)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # Made for IRC
 
@@ -115,7 +115,7 @@ You'll draw the sign as it first comes to mind, see what IRC makes of it, and fi
 
     ![The window's left part and right column. On the left, the canvas's columns 0 to 40 and the row meter as in the last picture, with grey canvas background under row 8. On the right, part of the palette and the B, I and U buttons, the Layers dock with its one Background layer, of kind Cells, and the Library dock with its search box and the top of its list of folders, then the IRC View dock: the sign at 1×, its left part to about column 35, rows 1 and 7 dark grey, the top bulbs in mIRC's colours, the star and the I in rows 2 to 6, and the tops of the bottom bulbs, cut off by a horizontal scroll bar, and under it 2 rows cut at 407 bytes](../samples/11-made-for-irc/beside-over.png)
 
-    The dock draws at 1× and scrolls on its own. The whole view, as `blockwright-cli render --irc --scale 2 over.bwp` draws it:
+    The dock draws at 1× and follows the canvas's scroll: when the canvas scrolls or zooms, the dock's left column and top row become the canvas's, as far as the dock's own scroll bars go, and a scroll of the dock by hand holds until the canvas next scrolls or zooms ([the manual](../manual/10-irc.md#the-irc-view-dock)). The whole view, as `blockwright-cli render --irc --scale 2 over.bwp` draws it:
 
     ![The IRC view of the sign, 80 columns at 2×. Rows 0 and 8 show bulbs in mIRC light red, yellow, light green and light cyan to column 66, then the client's dark grey from column 67 to 79, with a thin red bar at the left edge of column 67. Rows 1 and 7 are dark grey across. Rows 2 to 6 are black up to the art and dark grey after it: rows 2 and 6 from column 50, after the C; rows 3 and 5 from column 46, after the R; row 4 from column 54, after the right-hand star](../samples/11-made-for-irc/irc-over.png)
 
