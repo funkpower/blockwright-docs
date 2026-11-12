@@ -20,6 +20,7 @@ import argparse
 import html.parser
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -97,6 +98,10 @@ REAL_APP_TIMEOUT = 120
 PROBE_META = "Title: Probe\nChecked: Blockwright 0.1.0 (test)\n\n# Probe\n\n## A heading\n\n"
 
 
+# The maintainer's release checklist, built at the site root and linked from no page.
+CHECKLIST = "release-checklist"
+
+
 class Fail(Exception):
     pass
 
@@ -143,7 +148,9 @@ class Scratch:
         check(code == 0, f"expected exit 0, got {code}: {self.out.strip()[-300:]}")
 
     def page(self, rel="manual/99-probe.html"):
-        return (self.repo / "site" / rel).read_text(encoding="utf-8")
+        f = self.repo / "site" / rel
+        check(f.is_file(), f"site/{rel} wasn't built")
+        return f.read_text(encoding="utf-8")
 
     def deploy(self, dest):
         """Run scripts/deploy on the stand-in site with BW_DOCS_DEST=dest and the
@@ -299,7 +306,8 @@ def baseline(s):
 @scenario
 def robots_txt(s):
     """The site gets a robots.txt that allows everything, listed in the manifest,
-    in site/ and in --out, and no page carries a robots meta tag."""
+    in site/ and in --out, and no page carries a robots meta tag but the
+    standalone release checklist, which carries noindex."""
     allow = "User-agent: *\nAllow: /\n"
     x = s.base / "x"
     for args, out in [((), s.repo / "site"), (("--out", x), x)]:
@@ -308,8 +316,14 @@ def robots_txt(s):
         check((out / "robots.txt").read_text(encoding="utf-8") == allow, f"{out}/robots.txt isn't allow-all")
         listed = (out / MANIFEST).read_text(encoding="utf-8").splitlines()
         check("robots.txt" in listed, f"robots.txt not in {out}/{MANIFEST}")
+        check((out / (CHECKLIST + ".html")).is_file(), f"no {CHECKLIST}.html in {out}")
         for f in sorted(out.rglob("*.html")):
-            check('name="robots"' not in f.read_text(encoding="utf-8"), f"robots meta tag in {f.relative_to(out)}")
+            text = f.read_text(encoding="utf-8")
+            if f.relative_to(out).as_posix() == CHECKLIST + ".html":
+                check(text.count('name="robots"') == 1 and '<meta name="robots" content="noindex">' in text,
+                      f"{f.relative_to(out)} doesn't carry exactly one noindex robots meta tag")
+            else:
+                check('name="robots"' not in text, f"robots meta tag in {f.relative_to(out)}")
     s.passed("--out", x)  # a site holding robots.txt is one the build wrote
 
 
@@ -750,19 +764,20 @@ def marker_in_list_item(s):
 
 MISSPELLED = ["<!--list: manual-->", "<!-- list: Manual -->", "<!-- List: manual -->",
               "<!-- generated: cli_help -->", "<!-- list:  manual -->", "<!-- list: tutorial -->",
-              "<!-- generated: help -->", "<!-- generated: shortcut -->"]
+              "<!-- generated: help -->", "<!-- generated: shortcut -->",
+              "<!-- generated: check-list -->"]
 
 
 @scenario
 def marker_misspelled(s):
     """A misspelled marker in column 0 fails the build, and the message names the
-    marker it found and the four it accepts, not the column-0 rule."""
+    marker it found and the five it accepts, not the column-0 rule."""
     for body in MISSPELLED:
         s.probe(body)
         try:
             s.failed(says=f"{body} is not a marker the build knows")
-            for m in ["<!-- generated: cli-help -->", "<!-- generated: shortcuts -->", "<!-- list: tutorials -->",
-                      "<!-- list: manual -->"]:
+            for m in ["<!-- generated: cli-help -->", "<!-- generated: shortcuts -->", "<!-- generated: checklist -->",
+                      "<!-- list: tutorials -->", "<!-- list: manual -->"]:
                 check(m in s.out, f"{m} not named in: {s.out.strip()[-300:]}")
             check(COLUMN_0 not in s.out, f"column-0 hint given: {s.out.strip()[-300:]}")
         except Fail as e:
@@ -889,11 +904,13 @@ def menu_on_every_page(s):
 
 @scenario
 def menu_lists_every_page(s):
-    """Every page in the site is linked from every page's menu, a section's pages
-    are listed in the order its index lists them, and a stub is shown unlinked
-    and dimmed, as in the index."""
+    """Every page in the site but the standalone release checklist is linked from
+    every page's menu (the checklist from none), a section's pages are listed in
+    the order its index lists them, and a stub is shown unlinked and dimmed, as
+    in the index."""
     pages = menu_site(s)
-    built = set(pages)
+    check(CHECKLIST + ".html" in pages, "the release checklist wasn't built")
+    built = set(pages) - {CHECKLIST + ".html"}
     indexes = {"tutorials": pages["tutorials/index.html"], "manual": pages["manual/index.html"]}
     for name, mp in pages.items():
         check(len(mp.menus) == 1, f"{name}: {len(mp.menus)} site menus")
@@ -919,9 +936,15 @@ def menu_lists_every_page(s):
 def menu_marks_current(s):
     """On every page aria-current="page" is set exactly once, in the menu, on the
     link to the page itself, and the page's section (none on the home page) is
-    the one marked "here"."""
+    the one marked "here"; on the standalone release checklist, which the menu
+    doesn't list, nothing is marked."""
     pages = menu_site(s)
+    check(CHECKLIST + ".html" in pages, "the release checklist wasn't built")
     for name, mp in pages.items():
+        if name == CHECKLIST + ".html":
+            check(not mp.current and not any("here" in c for c in mp.parts),
+                  f"{name}: marked in the menu: {mp.current}, {mp.parts}")
+            continue
         check(len(mp.current) == 1, f"{name}: aria-current set {len(mp.current)} times")
         tag, href, value, in_menu = mp.current[0]
         check(tag == "a" and value == "page" and in_menu, f"{name}: aria-current is {value!r} on <{tag}> "
@@ -1133,6 +1156,180 @@ def shortcuts_app_hangs(s):
     for bad in ["0", "-5", "soon", "nan"]:
         s.failed("--cli", cli, "--app", app, says=f"BW_DOCS_APP_TIMEOUT: {bad!r} isn't a number of seconds",
                  env=dict(os.environ, BW_DOCS_APP_TIMEOUT=bad))
+
+
+# 12. <!-- generated: checklist --> lists every page's status and Checked: commit,
+# on a standalone page that nothing links to.
+
+
+def cli_commit(s):
+    """The commit the real CLI's --version names."""
+    line = subprocess.run([s.real_cli(), "--version"], stdin=subprocess.DEVNULL, capture_output=True, text=True,
+                          timeout=REAL_APP_TIMEOUT).stdout.splitlines()[0]
+    return line.rsplit("(", 1)[1].rstrip(")")
+
+
+def checklist_rows(page):
+    """{title: (status, checked, ready)} from the checklist tables on page."""
+    rows = {}
+    for tr in re.findall(r"<tr><td>(.*?)</td></tr>", page):
+        cells = tr.split("</td><td>")
+        title = re.sub(r"<[^>]+>", "", cells[0])
+        rows[title] = tuple(re.sub(r"<[^>]+>", "", c) for c in cells[1:])
+    return rows
+
+
+@scenario
+def checklist_renders(s):
+    """The release checklist, at the site root, lists every tutorial and manual
+    page, each with the commit its Checked: line names, ready when that is the
+    CLI's commit and behind when it isn't; a stub is unlinked and not written.
+    No other page links to it: not the home page, an index, a menu or a pager."""
+    s.passed()
+    page = s.page(CHECKLIST + ".html")
+    check("generated: checklist" not in page, "the marker was left in the page")
+    rows = checklist_rows(page)
+    commit = cli_commit(s)
+    want = 0
+    for section in ("tutorials", "manual"):
+        for src in sorted((s.repo / section).glob("*.md")):
+            if src.name == "index.md":
+                continue
+            want += 1
+            text = src.read_text(encoding="utf-8")
+            title = re.search(r"^Title: (.+)$", text, re.M) or re.search(r"^# (.+)$", text, re.M)
+            title = title.group(1).strip()
+            check(title in rows, f"{src.name} ({title}) isn't listed")
+            status, checked, ready = rows[title]
+            m = re.search(r"^Checked: .*\(([0-9a-f]+)\)$", text, re.M)
+            if m:
+                check(checked == m.group(1), f"{title}: checked against {checked!r}, the page says {m.group(1)}")
+                check(ready == ("ready" if m.group(1) == commit else "behind"), f"{title}: {ready!r} at {commit}")
+                href = f"{section}/{src.stem}.html"
+                check(f'<a href="{href}">' in page, f"{title} isn't linked")
+            else:
+                check(checked == "" and ready == "not written", f"{title}: a stub shows {checked!r}, {ready!r}")
+                check(f">{title}</a>" not in page, f"the stub {title} is linked")
+    check(len(rows) == want, f"{len(rows)} rows for {want} pages")
+    check("Release checklist" not in rows, "the checklist lists itself")
+    check(not list((s.repo / "site" / "manual").glob("*checklist*")), "a checklist page in manual/")
+    check(rows["Installing Blockwright"][0] == "Waits for packages", f"Install's status: {rows['Installing Blockwright']}")
+    check(rows["What ANSI art is"][0] == "Written", f"tutorial 01's status: {rows['What ANSI art is']}")
+    check(f"<p>Blockwright 0.1.0 ({commit}): " in page, f"the summary doesn't name {commit}")
+    site = s.repo / "site"
+    for f in sorted(site.rglob("*.html")):
+        name = f.relative_to(site).as_posix()
+        text = f.read_text(encoding="utf-8")
+        links = [h for h in re.findall(r'href="([^"#]*)', text) if h and resolve(name, h) == CHECKLIST + ".html"]
+        check(name == CHECKLIST + ".html" or not links, f"{name} links to the checklist: {links}")
+        check(name == CHECKLIST + ".html" or "Release checklist" not in text, f"{name} names the checklist")
+    pager = re.search(r'<nav class="pager">.*?</nav>', s.page("manual/16-preferences.html"), re.S)
+    check(pager and 'rel="next"' not in pager.group(0), f"manual 16's pager has a next page: {pager and pager.group(0)}")
+
+
+@scenario
+def checklist_stable(s):
+    """Two builds give the same checklist, byte for byte."""
+    s.passed()
+    first = s.page(CHECKLIST + ".html")
+    s.passed()
+    check(s.page(CHECKLIST + ".html") == first, "the checklist changed between builds")
+
+
+@scenario
+def checklist_behind(s):
+    """A page checked against the CLI's commit is ready; checked against an older
+    one it is behind, naming that commit, and the summary counts it."""
+    commit = cli_commit(s)
+    older = "c44974c" if commit != "c44974c" else "06fbac5"
+    src = s.repo / "manual" / "06-symmetry.md"
+    text = src.read_text(encoding="utf-8")
+    s.write("manual/06-symmetry.md", re.sub(r"^Checked: .*$", f"Checked: Blockwright 0.1.0 ({commit})", text,
+                                            count=1, flags=re.M))
+    s.passed()
+    page = s.page(CHECKLIST + ".html")
+    check(checklist_rows(page)["Mirror mode and symmetry"] == ("Written", commit, "ready"),
+          f"at {commit}: {checklist_rows(page)['Mirror mode and symmetry']}")
+    ready = int(re.search(r": (\d+) of \d+ pages ready", page).group(1))
+    s.write("manual/06-symmetry.md", re.sub(r"^Checked: .*$", f"Checked: Blockwright 0.1.0 ({older})", text,
+                                            count=1, flags=re.M))
+    s.passed()
+    page = s.page(CHECKLIST + ".html")
+    check(checklist_rows(page)["Mirror mode and symmetry"] == ("Written", older, "behind"),
+          f"at {older}: {checklist_rows(page)['Mirror mode and symmetry']}")
+    check(f": {ready - 1} of " in page, "the summary didn't count it as no longer ready")
+
+
+CHECKLIST_PLAN = """# Plan
+
+| # | Tutorial | Covers | Status |
+|---|---|---|---|
+| 01 | Alpha one | a | Written, checked against `aaaaaaa` |
+| 02 | Beta | b | Waits for `#12` <soon> & more |
+
+| Page | Source | Status |
+|---|---|---|
+| Gamma | x \\| y | Written for stamps (partly); the rest |
+"""
+CHECKLIST_HTML = """<p>Blockwright 0.1.0 (1234abc): 1 of 4 pages ready, 2 behind, 1 not written.</p>
+<p>A page is ready when it is written and was last checked against <code>1234abc</code>. A page checked against another commit is behind: its steps and options have to be checked again against this one.</p>
+<h3 id="checklist-tutorials">Tutorials</h3>
+<table class="checklist">
+<thead><tr><th>Page</th><th>Status</th><th>Checked against</th><th>Ready</th></tr></thead>
+<tbody>
+<tr><td><a href="tutorials/01-alpha-one.html">Alpha &amp; one</a></td><td>Written</td><td><code>aaaaaaa</code></td><td>behind</td></tr>
+<tr><td>Beta</td><td>Waits for <code>#12</code> &lt;soon&gt; &amp; more</td><td></td><td>not written</td></tr>
+</tbody>
+</table>
+<h3 id="checklist-manual">Manual</h3>
+<table class="checklist">
+<thead><tr><th>Page</th><th>Status</th><th>Checked against</th><th>Ready</th></tr></thead>
+<tbody>
+<tr><td><a href="manual/01-gamma.html">Gamma</a></td><td>Written for stamps</td><td><code>1234abcdef0</code></td><td>ready</td></tr>
+<tr><td><a href="manual/02-delta.html">Delta</a></td><td></td><td><code>bbbbbbb</code></td><td>behind</td></tr>
+</tbody>
+</table>"""
+
+
+def checklist_stand_in(s, commit):
+    """The stand-in plan and pages, built with a stand-in CLI at commit; returns
+    the checklist page."""
+    for section in ("tutorials", "manual"):
+        for src in (s.repo / section).glob("*.md"):
+            if src.name != "index.md":
+                src.unlink()
+    s.write("PLAN.md", CHECKLIST_PLAN)
+    s.write("tutorials/01-alpha-one.md", "Title: Alpha & one\nChecked: Blockwright 0.1.0 (aaaaaaa)\n\n# Alpha\n")
+    s.write("tutorials/02-beta.md", "# Beta\n\nNot written yet.\n")
+    s.write("manual/01-gamma.md", "Title: Gamma\nChecked: Blockwright 0.1.0 (1234abcdef0)\n\n# Gamma\n")
+    s.write("manual/02-delta.md", "Title: Delta\nChecked: Blockwright 0.1.0 (bbbbbbb)\n\n# Delta\n")
+    s.write(CHECKLIST + ".md", "Title: Release checklist\n\n# Release checklist\n\n<!-- generated: checklist -->\n")
+    cli = s.cli(f'--version) echo "blockwright-cli 0.1.0 ({commit})"; exit 0 ;;')
+    s.passed("--cli", cli)
+    return s.page(CHECKLIST + ".html")
+
+
+@scenario
+def checklist_exact(s):
+    """With a stand-in CLI and plan, the checklist renders exactly: status cut to
+    its leading words and escaped, a table cell holding an escaped pipe, a page
+    with no plan row, a stub, and a full commit matching the CLI's short one."""
+    page = checklist_stand_in(s, "1234abc")
+    check(CHECKLIST_HTML in page, f"the checklist differs: {page[page.find('<p>Blockwright'):][:900]}")
+
+
+@scenario
+def checklist_dirty(s):
+    """A CLI built from a changed tree (its commit ends -dirty) is no commit: a
+    page checked against the commit it was changed from is behind."""
+    checklist_stand_in(s, "1234abc-dirty")
+    s.write("manual/01-gamma.md", "Title: Gamma\nChecked: Blockwright 0.1.0 (1234abc)\n\n# Gamma\n")
+    s.passed("--cli", s.cli('--version) echo "blockwright-cli 0.1.0 (1234abc-dirty)"; exit 0 ;;'))
+    page = s.page(CHECKLIST + ".html")
+    rows = checklist_rows(page)
+    check(rows["Gamma"] == ("Written for stamps", "1234abc", "behind"), f"Gamma: {rows['Gamma']}")
+    check("Blockwright 0.1.0 (1234abc-dirty): 0 of 4 pages ready, 3 behind, 1 not written." in page,
+          f"the summary: {page[page.find('<p>Blockwright'):][:120]}")
 
 
 def main():

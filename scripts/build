@@ -7,7 +7,9 @@ Pages are `index.md`, `tutorials/*.md` and `manual/*.md`, each section with
 an `index.md` of its own. A page other than an index is published
 when its metadata block carries `Checked:` (the Blockwright build its steps
 were checked against); the others are stubs, listed as not written yet and
-never linked.
+never linked. The maintainer's pages in `STANDALONE` (`release-checklist.md`)
+are built at the site root, always, outside both sections: no list, menu or
+pager names them, and each carries a `noindex` robots meta tag.
 
 An image whose source is an `.ans` or a `.bwp` project
 (`![alt](../samples/x/y.ans "2x")`) is drawn by `blockwright-cli render` (a
@@ -21,7 +23,12 @@ page draws), which is copied into the site at the same path.
 
 `<!-- generated: cli-help -->` at the start of a line of its own (in column 0:
 not indented, not in a list item or blockquote), outside code, becomes the
-output of `blockwright-cli --help`. `<!-- generated: shortcuts -->` becomes
+output of `blockwright-cli --help`. `<!-- generated: checklist -->` becomes a
+table per section of every tutorial and manual page: its
+status in `PLAN.md` (the leading words of the Status cell of the row in a table
+with a Tutorial or Page column whose name, made a slug, is the page's file name
+without its number), the commit its `Checked:` names, and whether that is the
+CLI's commit (ready), another one (behind) or none (not written). `<!-- generated: shortcuts -->` becomes
 a table per menu of every action `blockwright --list-actions` lists: its name,
 its default keys and what it does. The app's `--version` must name the same
 Blockwright commit as the CLI's, and the app may take $BW_DOCS_APP_TIMEOUT
@@ -32,16 +39,18 @@ before `-->`. Markers are replaced inside Python-Markdown, after it has set
 fenced code aside, so a marker is code exactly when Markdown shows it as code.
 A marker comment still in a page's HTML fails the build: one in the wrong place
 with a message naming the column-0 rule, a misspelled one (any `<!-- generated:`
-or `<!-- list:` comment, in any case, that isn't one of the four) with a
-message naming the four.
+or `<!-- list:` comment, in any case, that isn't one of the five) with a
+message naming the five.
 
 Every page carries the site menu (`theme/page.html`'s `$nav`): the home link,
 then each section's index and its pages in the order the index lists them,
 stubs dimmed and unlinked; the page itself is marked `aria-current="page"` and
-its section `here`.
+its section `here`. A standalone page carries the menu too, with nothing in it
+marked.
 
 The site also gets `robots.txt`, which lets crawlers fetch everything, and,
-when `ROBOTS` is set, a robots meta tag on every page.
+when `ROBOTS` is set, a robots meta tag on every page but the standalone ones,
+which always carry `noindex`.
 
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
@@ -76,6 +85,9 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parent.parent
 SECTIONS = {"tutorials": "Tutorials", "manual": "Manual"}
+# The maintainer's pages at the site root: built always, linked from no list,
+# menu or pager, and kept out of search engines (PLAN.md §6).
+STANDALONE = ("release-checklist.md",)
 SITE_NAME = "Blockwright"
 SCALE_RE = re.compile(r"^([1-8])x$")
 # Images drawn by blockwright-cli render, and images copied as they are.
@@ -91,8 +103,10 @@ MANIFEST = ".blockwright-docs-manifest"
 EXTERNAL_RE = re.compile(r"^[a-z][a-z0-9+.-]*:|^//", re.I)
 MARKER_RE = re.compile(r"^<!-- (generated|list): ([a-z-]+) -->[ \t]*$")
 # The markers a page may use, exactly as written.
-MARKERS = ("<!-- generated: cli-help -->", "<!-- generated: shortcuts -->", "<!-- list: tutorials -->",
-           "<!-- list: manual -->")
+MARKERS = ("<!-- generated: cli-help -->", "<!-- generated: shortcuts -->", "<!-- generated: checklist -->",
+           "<!-- list: tutorials -->", "<!-- list: manual -->")
+# The commit in a version or a Checked: line: "Blockwright 0.1.0 (c44974c)".
+COMMIT_RE = re.compile(r"\(([^()\s]+)\)\s*$")
 # How long the app may take to answer --version or --list-actions before the
 # build gives up, in seconds; $BW_DOCS_APP_TIMEOUT sets another.
 APP_TIMEOUT = 120
@@ -262,7 +276,8 @@ class Page:
             m = re.search(r"^# (.+)$", src.read_text(encoding="utf-8"), re.M)
             self.title = m.group(1).strip() if m else src.stem
         self.is_index = src.name == "index.md"
-        self.published = bool(self.checked) or self.is_index
+        self.standalone = not self.section and not self.is_index
+        self.published = bool(self.checked) or self.is_index or self.standalone
 
 
 def collect_pages():
@@ -272,6 +287,9 @@ def collect_pages():
         for src in sorted((ROOT / section).glob("*.md")):
             if src.name != "index.md":
                 pages.append(Page(src))
+    for name in STANDALONE:
+        if (ROOT / name).is_file():
+            pages.append(Page(ROOT / name))
     return pages
 
 
@@ -426,6 +444,90 @@ def shortcuts(app, cli_version, timeout):
     return "\n".join(parts), f"{name}, Qt {m.group(1)}"
 
 
+def slug(text):
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+
+
+def plan_statuses():
+    """{(section, slug): status} from PLAN.md: every table with a Status column
+    and a Tutorial (tutorials) or Page (manual) column, the status cut to its
+    leading words (before the first comma, colon, semicolon or bracket)."""
+    try:
+        text = (ROOT / "PLAN.md").read_text(encoding="utf-8")
+    except OSError as e:
+        raise BuildError(f"<!-- generated: checklist --> needs PLAN.md: {e.strerror}")
+    found = {}
+    header = None
+    for line in text.splitlines():
+        if not line.startswith("|"):
+            header = None
+            continue
+        cells = [c.strip() for c in re.split(r"(?<!\\)\|", line.strip())[1:-1]]
+        if header is None:
+            header = cells
+            continue
+        if all(re.fullmatch(r":?-+:?", c) for c in cells):
+            continue
+        row = dict(zip(header, cells))
+        for column, section in (("Tutorial", "tutorials"), ("Page", "manual")):
+            if column in row and "Status" in row:
+                found[(section, slug(row[column]))] = re.split(r"[,:;(]", row["Status"], maxsplit=1)[0].strip()
+    return found
+
+
+def inline_code(text):
+    """text escaped, with `code` spans as <code>."""
+    return re.sub(r"`([^`]+)`", r"<code>\1</code>", html.escape(text, quote=False))
+
+
+def same_commit(a, b):
+    """Whether a and b name one commit: the same hex, or one a prefix of the other
+    at 7 digits or more. A build from a changed tree ("ebd3feb-dirty") is no
+    commit, so no page was checked against it."""
+    if not (re.fullmatch(r"[0-9a-f]+", a) and re.fullmatch(r"[0-9a-f]+", b)):
+        return False
+    return a == b or (min(len(a), len(b)) >= 7 and (a.startswith(b) or b.startswith(a)))
+
+
+def checklist(pages, here, cli_version):
+    """The tables <!-- generated: checklist --> becomes on here: every tutorial
+    and manual page, with its PLAN.md status, the commit its Checked:
+    names and whether that is the CLI's (cli_version, the first line of its
+    --version)."""
+    m = COMMIT_RE.search(cli_version.strip())
+    if not m:
+        raise BuildError(f"<!-- generated: checklist -->: the CLI's version names no commit: {cli_version.strip()}")
+    commit = m.group(1)
+    name = re.sub(r"^\S+", "Blockwright", cli_version.strip(), count=1)
+    statuses = plan_statuses()
+    counts = {"ready": 0, "behind": 0, "not written": 0}
+    tables = []
+    for section, title in SECTIONS.items():
+        rows = []
+        for p in section_pages(pages, section):
+            status = statuses.get((section, slug(re.sub(r"^\d+-", "", p.src.stem))), "")
+            if p.published:
+                href = os.path.relpath(p.out, here.out.parent)
+                cell = f'<a href="{html.escape(href)}">{html.escape(p.title)}</a>'
+                cm = COMMIT_RE.search(p.checked)
+                checked = f"<code>{html.escape(cm.group(1))}</code>" if cm else html.escape(p.checked)
+                ready = "ready" if cm and same_commit(cm.group(1), commit) else "behind"
+            else:
+                cell, checked, ready = html.escape(p.title), "", "not written"
+            counts[ready] += 1
+            rows.append(f"<tr><td>{cell}</td><td>{inline_code(status)}</td><td>{checked}</td><td>{ready}</td></tr>")
+        tables.append(f'<h3 id="checklist-{section}">{title}</h3>\n<table class="checklist">\n<thead><tr><th>Page</th>'
+                      "<th>Status</th><th>Checked against</th><th>Ready</th></tr></thead>\n<tbody>\n"
+                      + "\n".join(rows) + "\n</tbody>\n</table>")
+    total = sum(counts.values())
+    summary = (f"<p>{html.escape(name)}: {counts['ready']} of {total} pages ready, {counts['behind']} behind, "
+               f"{counts['not written']} not written.</p>\n"
+               f"<p>A page is ready when it is written and was last checked against <code>{html.escape(commit)}</code>. "
+               "A page checked against another commit is behind: its steps and options have to be checked again "
+               "against this one.</p>")
+    return summary + "\n" + "\n".join(tables)
+
+
 class Builder:
     def __init__(self, out, cli, app=None):
         self.out = out
@@ -558,7 +660,7 @@ class Builder:
                 attrs += ' aria-current="page"'
             return f'<a{attrs} href="{html.escape(href)}">{html.escape(text)}</a>'
 
-        home = next(p for p in self.pages if not p.section)
+        home = next(p for p in self.pages if not p.section and p.is_index)
         parts = []
         for section, name in SECTIONS.items():
             index = next(p for p in self.pages if p.section == section and p.is_index)
@@ -585,6 +687,8 @@ class Builder:
                 if name == "shortcuts":
                     table, self.app_used = shortcuts(self.app, self.version, self.app_timeout)
                     return table
+                if name == "checklist":
+                    return checklist(self.pages, page, self.version)
                 raise BuildError(unknown_marker(page, f"<!-- generated: {name} -->"))
             if name not in SECTIONS:
                 raise BuildError(unknown_marker(page, f"<!-- list: {name} -->"))
@@ -608,8 +712,9 @@ class Builder:
         checked = ""
         if page.checked:
             checked = f'<p class="checked">Describes {html.escape(page.checked)}.</p>'
-        title = SITE_NAME if not page.section else f"{page.title} · {SITE_NAME}"
-        robots = f'<meta name="robots" content="{html.escape(ROBOTS)}">\n' if ROBOTS else ""
+        title = SITE_NAME if not page.section and page.is_index else f"{page.title} · {SITE_NAME}"
+        robots = "noindex" if page.standalone else ROBOTS
+        robots = f'<meta name="robots" content="{html.escape(robots)}">\n' if robots else ""
         doc = self.template.substitute(
             title=html.escape(title),
             robots=robots,

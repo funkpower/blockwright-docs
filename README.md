@@ -12,6 +12,7 @@ Published at <https://blockwright-docs.pumpin.online/>. Every commit to `main` i
 | `manual/` | One Markdown file per area of the app |
 | `samples/<tutorial>/` | The `.ans` files a tutorial shows, step by step, and what makes them |
 | `index.md` | The home page |
+| `release-checklist.md` | The maintainer's release checklist: which pages are behind the dev build, at `/release-checklist.html`, linked from no other page |
 | `theme/` | The page template and stylesheet |
 | `scripts/build` | Builds the site into `site/` (not tracked) |
 | `scripts/test-build` | Checks the build against scratch copies of the repo |
