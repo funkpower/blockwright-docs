@@ -1,5 +1,5 @@
 Title: Composing a scene
-Checked: Blockwright 0.1.0 (bb1c676)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # Composing a scene
 
@@ -119,7 +119,7 @@ The **Library** dock (**Window > Library**) holds stamps: parts kept as files, t
 
 Double-click a stamp, or press <kbd>Enter</kbd> on it, and it floats at the cell cursor; drag one onto the canvas and it floats where you drop it. Either way the **Select** tool is now in hand and the stamp is a float like a paste. It lands in **Transparent** mode whatever **Paste** says, unless you change **Paste** while it floats. Move, flip or turn it, and press <kbd>Enter</kbd>.
 
-To keep a part of your own, select it and choose **Selection > Save to Library...**: give it a name, a category and tags. The name has to be one CP437 can write, and a name already in the library asks before it replaces it. The pine in step 2 would make one.
+To keep a part of your own, select it and choose **Selection > Save to Library...**: give it a name, a category and tags. The name has to be one CP437 can write, and a name already in the library asks before it replaces it. The pine in step 2 would make one, but hide **Background** first (clear its box in the **Layers** dock): unlike Copy, which takes the active layer, Save to Library takes what the visible layers show, and with the sky showing the stamp would carry the stars at `58, 5` and `57, 11`. Tick its box again once the stamp is saved: a hidden layer stays out of the window and out of every export.
 
 The **Scene Starter**, a scene laid out from the Library in one go, isn't in the app yet.
 

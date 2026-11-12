@@ -1,0 +1,70 @@
+{
+ "version": 1,
+ "start": {
+  "blank": [
+   32,
+   8
+  ]
+ },
+ "steps": [
+  {
+   "name": "hello",
+   "action": "keyboard",
+   "at": [
+    1,
+    1
+   ],
+   "text": "HELLO",
+   "fg": 7,
+   "bg": 0
+  },
+  {
+   "name": "ansi",
+   "action": "keyboard",
+   "at": [
+    1,
+    3
+   ],
+   "text": "ANSI",
+   "fg": 14
+  },
+  {
+   "name": "art",
+   "action": "keyboard",
+   "at": [
+    1,
+    5
+   ],
+   "text": " ART",
+   "fg": 15,
+   "bg": 1,
+   "screenshot": {
+    "of": "palette"
+   }
+  },
+  {
+   "name": "space",
+   "action": "keyboard",
+   "at": [
+    5,
+    5
+   ],
+   "text": " ",
+   "screenshot": {
+    "of": "preview",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      307,
+      170
+     ]
+    }
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

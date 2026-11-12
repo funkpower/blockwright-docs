@@ -4,9 +4,18 @@
 The step files are the canvas each step of "Do it" leaves (typing in keyboard
 mode puts the glyph in the pen's colours and moves the cursor one cell right).
 final.ans is funkpower's 0xCAFE, copied from the ascii library, not made here.
+
+The pictures of the editor's docks come from the same words typed as a steps
+file (do-it.steps.json), one keyboard step a word, played in the window by
+`blockwright --screenshot` (the editor is $BLOCKWRIGHT, else blockwright).
 """
 
+import json
+import os
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -87,3 +96,42 @@ c.text(2, 3, "♥", LIGHT_RED, BLACK)
 c.text(4, 3, "hot coffee", GREY, BLACK)
 c.text(15, 3, "♥", LIGHT_RED, BLACK)
 save(c, "try.ans", "Open 24/7")
+
+
+
+# The docks: the words of "Do it" typed as keyboard steps, and the window
+# pictured at the last two. The pen of each step holds for the steps after
+# it; the last space of step 4 is a step of its own, so the Palette is
+# pictured with the pen white on blue and the Preview with the words whole.
+GUI = os.environ.get("BLOCKWRIGHT") or "blockwright"
+
+
+def key(name, at, text, **pen):
+    return dict({"name": name, "action": "keyboard", "at": at, "text": text}, **pen)
+
+
+steps = [
+    key("hello", [1, 1], "HELLO", fg=GREY, bg=BLACK),
+    key("ansi", [1, 3], "ANSI", fg=YELLOW),
+    key("art", [1, 5], " ART", fg=WHITE, bg=BLUE),
+    key("space", [5, 5], " "),
+]
+SHOTS = {
+    # Step 4: the pen white on blue.
+    "art": ("pen.png", {"of": "palette"}),
+    # Step 6: the canvas at 1x.
+    "space": ("preview.png", {"of": "preview", "crop": {"pixels": [0, 0, 307, 170]}}),
+}
+number = {}
+for i, step in enumerate(steps):
+    number[step["name"]] = i + 1
+    if step["name"] in SHOTS:
+        step["screenshot"] = SHOTS[step["name"]][1]
+# The taller window gives the Preview dock room for the whole canvas.
+body = {"version": 1, "start": {"blank": [32, 8]}, "steps": steps, "window": [1280, 1300]}
+path = HERE / "do-it.steps.json"
+path.write_text(json.dumps(body, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+with tempfile.TemporaryDirectory() as tmp:
+    subprocess.run([GUI, "--screenshot", str(path), "-o", tmp], check=True, stdout=subprocess.DEVNULL)
+    for name, (dest, _) in SHOTS.items():
+        shutil.copyfile(Path(tmp) / f"{number[name]:02d}-{name}.png", HERE / dest)

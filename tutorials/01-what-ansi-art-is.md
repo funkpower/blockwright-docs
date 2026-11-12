@@ -1,5 +1,5 @@
 Title: What ANSI art is
-Checked: Blockwright 0.1.0 (c44974c)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # What ANSI art is
 
@@ -49,7 +49,7 @@ You'll make a small canvas and type on it, then look at it at its real size.
 
 1. **Start Blockwright.** It opens on the start screen. Under **New**, set **Width** to 32 and **Height** to 8 (the buttons under them set the usual sizes, 80 × 25, 80 × 40 and 80 × 50), leave **iCE colours** ticked, and press **New** (or <kbd>Enter</kbd>). The canvas is 32 blank cells by 8: spaces, grey on black.
 
-2. **Type a word.** Blockwright starts in keyboard mode (**Tools > Keyboard**, <kbd>Ctrl</kbd>+<kbd>K</kbd>), which types like a text editor. Click the cell one in from the top-left corner to put the cursor there, and type `HELLO`. Each key puts a glyph in a cell, in the foreground and background colours you're drawing with (grey on black to start), and moves the cursor one cell right.
+2. **Type a word.** Blockwright starts in keyboard mode (**Tools > Keyboard**, <kbd>Ctrl</kbd>+<kbd>K</kbd>), which types like a text editor. Click the cell one in from the top-left corner to put the cursor there, and type `HELLO`. Each key puts a glyph in a cell, in the foreground and background colours you're drawing with, and moves the cursor one cell right. The pen is grey on black the first time Blockwright runs; after that it starts with the colours you last drew with, so if it isn't grey on black, press <kbd>Ctrl</kbd>+<kbd>D</kbd> (**Colours > Default Colours**) before you type.
 
     ![HELLO in grey near the top-left of a black canvas](../samples/01-what-ansi-art-is/step-02.ans "2x")
 
@@ -61,11 +61,17 @@ You'll make a small canvas and type on it, then look at it at its real size.
 
     ![ART in white on a blue bar, a space either side](../samples/01-what-ansi-art-is/step-04.ans "2x")
 
+    The Palette now shows the pen: the big square at its left is the foreground over the background, and the swatches mark them F and B.
+
+    ![The Palette dock with the pen white on blue: the white foreground square over the blue background square, beside the sixteen swatches in two rows of eight, F marking white and B marking blue](../samples/01-what-ansi-art-is/pen.png)
+
     <kbd>Ctrl</kbd>+<kbd>D</kbd> (**Colours > Default Colours**) puts the pen back to grey on black.
 
 5. **Find a cell.** Click any cell. The status bar at the bottom shows where the cursor is: its column and row, counted from 0 at the top-left, then the canvas size, the cell width in pixels and the zoom. The H you typed first is at `1, 1`.
 
 6. **Look at it at 1×.** The canvas is zoomed so you can draw (**View > Zoom In** and **Zoom Out**, <kbd>Ctrl</kbd>+<kbd>=</kbd> and <kbd>Ctrl</kbd>+<kbd>-</kbd>). The **Preview (1x)** dock on the right shows the piece at its real size, the way most people will see it.
+
+    ![The Preview (1x) dock with the canvas at its real size: HELLO in grey, ANSI in yellow and ART in white on a blue bar, on black](../samples/01-what-ansi-art-is/preview.png)
 
 ## Check it
 
@@ -75,7 +81,7 @@ You'll make a small canvas and type on it, then look at it at its real size.
 
 The same goes for letters in a lettered piece: read every word at 1× and check that no letter could be taken for another (C and G, 0 and D, 5 and S).
 
-**A glyph that isn't in CP437 isn't typed.** Type `€` and the status bar says *€ has no CP437 glyph; not typed*, and the canvas doesn't change.
+**A glyph that isn't in CP437 isn't typed.** Type `€` and the status bar says *€ has no CP437 code; not typed (target: ANSI, CP437)*, and the canvas doesn't change.
 
 ## Try it
 
