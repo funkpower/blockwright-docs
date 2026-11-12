@@ -10,9 +10,10 @@ result. With --build or --deploy, FILE is used as the copy's scripts/build or
 scripts/deploy instead, to try another version of the script against the same
 scenarios. The deploy scenarios copy a small stand-in site/ and give rsync a
 stand-in ssh that logs its arguments and runs the rsync server in a scratch
-directory, so no host is contacted. Needs what the build needs: Python-Markdown
-and a blockwright-cli; the deploy scenarios need rsync 3.2.3 or later. Exits 1
-if any scenario fails.
+directory, so no host is contacted. Needs what the build needs: Python-Markdown,
+a blockwright-cli and the Blockwright app beside it or on PATH (the shortcuts
+page runs its --list-actions); the deploy scenarios need rsync 3.2.3 or later.
+Exits 1 if any scenario fails.
 """
 
 import argparse
@@ -45,6 +46,54 @@ case "$path" in
 esac
 cd "{home}" && exec sh -c "$*"
 """
+APP_VERSION = "blockwright 0.1.0 (test)\nQt 6.12.0\n\ncredits\n"
+# A stand-in --list-actions: a menu that comes back after another, a standard
+# key, standard keys some keyboards have (F14, Undo), a hint, Ctrl++, a tool's tooltip that starts with its name and key,
+# Qt's tooltip of a menu text with a tab, an action offered only in some
+# documents, and text that needs escaping.
+ACTIONS = [
+    {"id": "newFile", "menu": "File", "text": "New", "shortcuts": ["Ctrl+N"], "standardKey": "New",
+     "statusTip": "", "toolTip": "New"},
+    {"id": "undo", "menu": "File", "text": "Undo", "shortcuts": ["Ctrl+Z", "F14", "Undo"], "standardKey": "Undo",
+     "statusTip": "", "toolTip": "Undo"},
+    {"id": "zoomIn", "menu": "View > Zoom", "text": "Zoom <In>", "shortcuts": ["Ctrl+=", "Ctrl++"],
+     "statusTip": "", "toolTip": "Zoom <In> (Ctrl+=)\nMakes the cells bigger &\nsharper."},
+    {"id": "deleteSelection", "menu": "File", "text": "Delete", "shortcuts": [], "hint": "Del",
+     "statusTip": "", "toolTip": "Delete\tDel"},
+    {"id": "glyphSet21", "menu": "Glyphs", "text": "Set 21: \u2726", "shortcuts": [], "statusTip": "Sparkles",
+     "toolTip": "Set 21", "offeredWhen": "in IRC and UTF-8 documents"},
+]
+ACTIONS_HTML = """<p>These are the keys Blockwright 0.1.0 (test) starts with on Qt 6.12.0.</p>
+<p>Keys marked <em>(standard)</em> are the platform's standard keys for that action: the table gives the ones Qt gives a Linux desktop, and another platform, or another version of Qt, can give the action other keys.</p>
+<p><kbd>F14</kbd> and <kbd>Undo</kbd> are keys some keyboards have.</p>
+<h3 id="keys-file">File</h3>
+<table class="keys">
+<thead><tr><th>Action</th><th>Shortcut</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td>New</td><td><kbd>Ctrl</kbd>+<kbd>N</kbd> <em>(standard)</em></td><td></td></tr>
+<tr><td>Undo</td><td><kbd>Ctrl</kbd>+<kbd>Z</kbd>, <kbd>F14</kbd>, <kbd>Undo</kbd> <em>(standard)</em></td><td></td></tr>
+<tr><td>Delete</td><td><kbd>Del</kbd></td><td></td></tr>
+</tbody>
+</table>
+<h3 id="keys-view-zoom">View &gt; Zoom</h3>
+<table class="keys">
+<thead><tr><th>Action</th><th>Shortcut</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td>Zoom &lt;In&gt;</td><td><kbd>Ctrl</kbd>+<kbd>=</kbd>, <kbd>Ctrl</kbd>+<kbd>+</kbd></td><td>Makes the cells bigger &amp; sharper.</td></tr>
+</tbody>
+</table>
+<h3 id="keys-glyphs">Glyphs</h3>
+<table class="keys">
+<thead><tr><th>Action</th><th>Shortcut</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td>Set 21: \u2726</td><td></td><td>Sparkles Offered only in IRC and UTF-8 documents.</td></tr>
+</tbody>
+</table>"""
+# The version a stand-in CLI from Scratch.test_cli() names, which matches a
+# stand-in app's APP_VERSION.
+TEST_CLI_VERSION = "blockwright-cli 0.1.0 (test)"
+# How long the tests give the real app to answer.
+REAL_APP_TIMEOUT = 120
 PROBE_META = "Title: Probe\nChecked: Blockwright 0.1.0 (test)\n\n# Probe\n\n## A heading\n\n"
 
 
@@ -77,20 +126,20 @@ class Scratch:
         """A published manual page holding body."""
         self.write("manual/99-probe.md", PROBE_META + body + "\n")
 
-    def build(self, *args):
+    def build(self, *args, env=None):
         r = subprocess.run([sys.executable, "-I", str(self.repo / "scripts" / "build"), *map(str, args)],
-                           cwd=self.repo, capture_output=True, text=True)
+                           cwd=self.repo, capture_output=True, text=True, env=env)
         self.out = r.stdout + r.stderr
         return r.returncode
 
-    def failed(self, *args, says):
-        code = self.build(*args)
+    def failed(self, *args, says, env=None):
+        code = self.build(*args, env=env)
         check(code == 1, f"expected exit 1, got {code}: {self.out.strip()[-300:]}")
         check("Traceback" not in self.out, f"traceback: {self.out.strip()[-300:]}")
         check(says in self.out, f"expected {says!r} in: {self.out.strip()[-300:]}")
 
-    def passed(self, *args):
-        code = self.build(*args)
+    def passed(self, *args, env=None):
+        code = self.build(*args, env=env)
         check(code == 0, f"expected exit 0, got {code}: {self.out.strip()[-300:]}")
 
     def page(self, rel="manual/99-probe.html"):
@@ -169,6 +218,56 @@ class Scratch:
         p.write_text(f'#!/bin/sh\ncase "$1" in\n{script}\nesac\nexec "{real}" "$@"\n')
         p.chmod(0o755)
         return p
+
+    def test_cli(self):
+        """A stand-in blockwright-cli that names TEST_CLI_VERSION, the commit a
+        stand-in app names, and runs the real one for everything else."""
+        return self.cli(f'--version) echo "{TEST_CLI_VERSION}"; exit 0 ;;')
+
+    def real_app(self):
+        real = shutil.which(os.environ.get("BLOCKWRIGHT_APP", "")) or shutil.which("blockwright-dev") \
+            or shutil.which("blockwright")
+        check(real, "no Blockwright app")
+        return real
+
+    def run_real_app(self, *args):
+        """The real app's stdout for args; fails the scenario if it fails or
+        runs past REAL_APP_TIMEOUT."""
+        try:
+            r = subprocess.run([self.real_app(), *args], stdin=subprocess.DEVNULL, capture_output=True, text=True,
+                               env=dict(os.environ, QT_QPA_PLATFORM="offscreen"), timeout=REAL_APP_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            raise Fail(f"the app's {' '.join(args)} didn't finish in {REAL_APP_TIMEOUT} s")
+        check(r.returncode == 0, f"{' '.join(args)} exited {r.returncode}")
+        return r.stdout
+
+    def real_actions(self):
+        return json.loads(self.run_real_app("--list-actions"))
+
+    def app(self, listing=None, version=APP_VERSION, script="", name="fake-app"):
+        """A stand-in Blockwright app in a new directory: --version prints
+        version and --list-actions prints listing (a list, as JSON, or a
+        string as it is), unless script (sh case arms on "$1") handles the call
+        first."""
+        n = 1
+        while (self.base / f"app-bin-{n}").exists():
+            n += 1
+        d = self.base / f"app-bin-{n}"
+        d.mkdir()
+        (d / "version").write_text(version, encoding="utf-8")
+        text = listing if isinstance(listing, str) else json.dumps(listing or ACTIONS, ensure_ascii=False)
+        (d / "actions.json").write_text(text, encoding="utf-8")
+        p = d / name
+        p.write_text(f'#!/bin/sh\ncase "$1" in\n{script}\n--version) cat "{d}/version" ;;\n'
+                     f'--list-actions) cat "{d}/actions.json" ;;\n*) exit 2 ;;\nesac\n')
+        p.chmod(0o755)
+        return p
+
+    def shortcuts(self, *args):
+        """Builds with the shortcuts marker on the probe page; returns the page."""
+        self.probe("<!-- generated: shortcuts -->")
+        self.passed(*args)
+        return self.page()
 
 
 def tiny_png():
@@ -651,18 +750,19 @@ def marker_in_list_item(s):
 
 MISSPELLED = ["<!--list: manual-->", "<!-- list: Manual -->", "<!-- List: manual -->",
               "<!-- generated: cli_help -->", "<!-- list:  manual -->", "<!-- list: tutorial -->",
-              "<!-- generated: help -->"]
+              "<!-- generated: help -->", "<!-- generated: shortcut -->"]
 
 
 @scenario
 def marker_misspelled(s):
     """A misspelled marker in column 0 fails the build, and the message names the
-    marker it found and the three it accepts, not the column-0 rule."""
+    marker it found and the four it accepts, not the column-0 rule."""
     for body in MISSPELLED:
         s.probe(body)
         try:
             s.failed(says=f"{body} is not a marker the build knows")
-            for m in ["<!-- generated: cli-help -->", "<!-- list: tutorials -->", "<!-- list: manual -->"]:
+            for m in ["<!-- generated: cli-help -->", "<!-- generated: shortcuts -->", "<!-- list: tutorials -->",
+                      "<!-- list: manual -->"]:
                 check(m in s.out, f"{m} not named in: {s.out.strip()[-300:]}")
             check(COLUMN_0 not in s.out, f"column-0 hint given: {s.out.strip()[-300:]}")
         except Fail as e:
@@ -895,6 +995,141 @@ def deploy_manifest(s):
     www = s.home / "www"
     s.holds_site(www, extra=[MANIFEST])
     check((www / MANIFEST).read_text() == theirs, "the remote manifest was overwritten")
+
+
+# 11. <!-- generated: shortcuts --> runs the app's --list-actions.
+
+@scenario
+def shortcuts_renders(s):
+    """The marker becomes a table per menu holding every action the real app
+    lists, with its keys, and names the app's Qt; the published page has them too."""
+    actions = s.real_actions()
+    page = s.shortcuts()
+    check("generated: shortcuts" not in page, "the marker was left in the page")
+    for menu in dict.fromkeys(a["menu"] for a in actions):
+        check(f">{menu.replace('>', '&gt;')}</h3>" in page, f"no heading for {menu}")
+    rows = page.count("<tr><td>")
+    check(rows == len(actions), f"{rows} rows for {len(actions)} actions")
+    check('<h3 id="keys-edit">Edit</h3>' in page, "no Edit heading with its id")
+    check("<tr><td>Undo</td><td><kbd>Ctrl</kbd>+<kbd>Z</kbd>" in page, "Undo isn't Ctrl+Z")
+    check("<em>(standard)</em>" in page, "no key marked standard")
+    check("Offered only in IRC and UTF-8 documents." in page, "the glyph sets don't say where they're offered")
+    qt = s.run_real_app("--version").splitlines()[1].strip()
+    check(f"starts with on {qt}.</p>" in page, f"the page doesn't name {qt}")
+    check("shortcuts from Blockwright" in s.out and qt in s.out, f"the summary doesn't name the app: {s.out.strip()}")
+    check('id="keys-edit"' in s.page("manual/15-shortcuts.html"), "the Shortcuts page has no Edit table")
+
+
+@scenario
+def shortcuts_exact(s):
+    """A stand-in --list-actions renders exactly: menus in first-seen order, keys
+    as <kbd>, hints after shortcuts, the tooltip's name and keys dropped, where an
+    action is offered, and everything escaped."""
+    page = s.shortcuts("--cli", s.test_cli(), "--app", s.app())
+    check(ACTIONS_HTML in page, f"the tables differ: {page[page.find('<p>These'):][:600]}")
+    check("shortcuts from Blockwright 0.1.0 (test), Qt 6.12.0" in s.out, f"summary: {s.out.strip()}")
+
+
+@scenario
+def shortcuts_stable(s):
+    """Two builds with the real app give the same page, byte for byte."""
+    first = s.shortcuts(), s.page("manual/15-shortcuts.html")
+    s.passed()
+    check(s.page() == first[0], "the probe page changed between builds")
+    check(s.page("manual/15-shortcuts.html") == first[1], "the Shortcuts page changed between builds")
+
+
+@scenario
+def shortcuts_app_missing(s):
+    """An app asked for that isn't there fails the build and says which option
+    named it; one asked for is never passed over for another."""
+    s.probe("<!-- generated: shortcuts -->")
+    missing = s.base / "no-such-app"
+    s.failed("--app", missing, says=f"--app: {missing} isn't an executable")
+    s.failed(says=f"BLOCKWRIGHT_APP: {missing} isn't an executable",
+             env=dict(os.environ, BLOCKWRIGHT_APP=str(missing)))
+    s.failed("--app", missing, says=f"--app: {missing} isn't an executable",
+             env=dict(os.environ, BLOCKWRIGHT_APP=s.real_app()))
+
+
+@scenario
+def shortcuts_no_app(s):
+    """With no app beside the CLI or on PATH, a page with the marker fails the
+    build and says how to name one; without the marker the build doesn't need one."""
+    empty = s.base / "empty-bin"
+    empty.mkdir()
+    env = {k: v for k, v in os.environ.items() if k != "BLOCKWRIGHT_APP"}
+    env["PATH"] = str(empty)
+    cli = s.cli("")
+    s.failed("--cli", cli, says="needs the Blockwright app", env=env)
+    check("pass --app or set BLOCKWRIGHT_APP" in s.out, f"no hint: {s.out.strip()[-300:]}")
+    s.write("manual/15-shortcuts.md", "Title: Shortcuts\nChecked: Blockwright 0.1.0 (test)\n\n# Shortcuts\n")
+    s.passed("--cli", cli, env=env)
+
+
+@scenario
+def shortcuts_app_fails(s):
+    """An app that fails, or prints no action list, or a --version without a Qt
+    line, fails the build with what went wrong, not a traceback."""
+    s.probe("<!-- generated: shortcuts -->")
+    cli = s.test_cli()
+    for app, says in [
+        (s.app(script='--list-actions) echo "no display" >&2; exit 3 ;;'), "exited 3: no display"),
+        (s.app(listing="Usage: blockwright [file]"), "--list-actions printed no action list"),
+        (s.app(listing='[{"menu": "File"}]'), "--list-actions printed no action list"),
+        (s.app(listing='{"menu": "File"}'), "--list-actions printed no action list"),
+        (s.app(listing="[]"), "--list-actions listed no actions"),
+        (s.app(version="blockwright 0.1.0 (test)\n"), "--version names no Qt on its second line"),
+    ]:
+        try:
+            s.failed("--cli", cli, "--app", app, says=says)
+        except Fail as e:
+            raise Fail(f"{says}: {e}")
+
+
+@scenario
+def shortcuts_beside_cli(s):
+    """With no --app, the app installed beside the CLI is the one run (the deploy
+    passes only --cli), ahead of any on PATH."""
+    app = s.app(name="blockwright-dev")
+    cli = app.with_name("blockwright-cli-dev")
+    shutil.copyfile(s.test_cli(), cli)
+    cli.chmod(0o755)
+    env = {k: v for k, v in os.environ.items() if k != "BLOCKWRIGHT_APP"}
+    s.probe("<!-- generated: shortcuts -->")
+    s.passed("--cli", cli, env=env)
+    check(ACTIONS_HTML in s.page(), "the app beside the CLI wasn't the one run")
+
+
+@scenario
+def shortcuts_other_commit(s):
+    """An app from another Blockwright commit than the CLI fails the build,
+    naming both, whether --app names it or it is found on PATH."""
+    s.probe("<!-- generated: shortcuts -->")
+    other = "blockwright 0.1.0 (deadbee)"
+    cli_version = subprocess.run([s.real_cli(), "--version"], stdin=subprocess.DEVNULL, capture_output=True,
+                                 text=True, timeout=REAL_APP_TIMEOUT).stdout.splitlines()[0]
+    cli_version = cli_version.replace("blockwright-cli-dev", "blockwright-cli")
+    s.failed("--app", s.app(version=other + "\nQt 6.8.2\n"), says=f"is {other} but the CLI is {cli_version}")
+    # The CLI has no app beside it, so the build looks on PATH.
+    app = s.app(version=other + "\nQt 6.8.2\n", name="blockwright-dev")
+    env = {k: v for k, v in os.environ.items() if k != "BLOCKWRIGHT_APP"}
+    env["PATH"] = f"{app.parent}{os.pathsep}{env['PATH']}"
+    s.failed("--cli", s.cli(""), says=f"{app} is {other} but the CLI is {cli_version}", env=env)
+
+
+@scenario
+def shortcuts_app_hangs(s):
+    """An app that doesn't answer in $BW_DOCS_APP_TIMEOUT seconds fails the
+    build; a timeout that isn't a number above 0 is refused."""
+    s.probe("<!-- generated: shortcuts -->")
+    app = s.app(script="--list-actions) exec sleep 30 ;;")
+    cli = s.test_cli()
+    s.failed("--cli", cli, "--app", app, says=f"{app} --list-actions didn't finish in 1 s",
+             env=dict(os.environ, BW_DOCS_APP_TIMEOUT="1"))
+    for bad in ["0", "-5", "soon", "nan"]:
+        s.failed("--cli", cli, "--app", app, says=f"BW_DOCS_APP_TIMEOUT: {bad!r} isn't a number of seconds",
+                 env=dict(os.environ, BW_DOCS_APP_TIMEOUT=bad))
 
 
 def main():

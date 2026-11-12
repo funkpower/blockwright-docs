@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the docs site from the Markdown pages and the samples.
 
-    scripts/build [--out DIR] [--cli PATH]
+    scripts/build [--out DIR] [--cli PATH] [--app PATH]
 
 Pages are `index.md`, `tutorials/*.md` and `manual/*.md`, each section with
 an `index.md` of its own. A page other than an index is published
@@ -21,15 +21,19 @@ page draws), which is copied into the site at the same path.
 
 `<!-- generated: cli-help -->` at the start of a line of its own (in column 0:
 not indented, not in a list item or blockquote), outside code, becomes the
-output of `blockwright-cli --help`. `<!-- list: tutorials -->`
+output of `blockwright-cli --help`. `<!-- generated: shortcuts -->` becomes
+a table per menu of every action `blockwright --list-actions` lists: its name,
+its default keys and what it does. The app's `--version` must name the same
+Blockwright commit as the CLI's, and the app may take $BW_DOCS_APP_TIMEOUT
+seconds (default 120) to answer. `<!-- list: tutorials -->`
 and `<!-- list: manual -->` become the list of that section's pages. A marker
 is written exactly so: lowercase, one space after `<!--`, after the colon and
 before `-->`. Markers are replaced inside Python-Markdown, after it has set
 fenced code aside, so a marker is code exactly when Markdown shows it as code.
 A marker comment still in a page's HTML fails the build: one in the wrong place
 with a message naming the column-0 rule, a misspelled one (any `<!-- generated:`
-or `<!-- list:` comment, in any case, that isn't one of the three) with a
-message naming the three.
+or `<!-- list:` comment, in any case, that isn't one of the four) with a
+message naming the four.
 
 Every page carries the site menu (`theme/page.html`'s `$nav`): the home link,
 then each section's index and its pages in the order the index lists them,
@@ -53,6 +57,7 @@ any output inside the repo other than `site/`, and any that contains the repo.
 
 import argparse
 import html
+import json
 import os
 import re
 import shutil
@@ -86,7 +91,11 @@ MANIFEST = ".blockwright-docs-manifest"
 EXTERNAL_RE = re.compile(r"^[a-z][a-z0-9+.-]*:|^//", re.I)
 MARKER_RE = re.compile(r"^<!-- (generated|list): ([a-z-]+) -->[ \t]*$")
 # The markers a page may use, exactly as written.
-MARKERS = ("<!-- generated: cli-help -->", "<!-- list: tutorials -->", "<!-- list: manual -->")
+MARKERS = ("<!-- generated: cli-help -->", "<!-- generated: shortcuts -->", "<!-- list: tutorials -->",
+           "<!-- list: manual -->")
+# How long the app may take to answer --version or --list-actions before the
+# build gives up, in seconds; $BW_DOCS_APP_TIMEOUT sets another.
+APP_TIMEOUT = 120
 # A marker, or something meant as one, left in a page's HTML: the comment up to
 # its close when it has one.
 LEFT_MARKER_RE = re.compile(r"<!--\s*(?:generated|list)\s*:(?:[^>]*-->)?", re.I)
@@ -111,6 +120,29 @@ def find_cli(explicit):
         if shutil.which(name):
             return shutil.which(name)
     raise BuildError("no blockwright-cli: pass --cli or set BLOCKWRIGHT_CLI")
+
+
+def find_app(explicit, cli):
+    """The Blockwright app (the window's binary) that <!-- generated: shortcuts -->
+    runs, or None when there is none. One asked for is used or refused, as for
+    --cli; else the app installed beside the CLI (blockwright-dev beside
+    blockwright-cli-dev, blockwright beside blockwright-cli), else
+    blockwright-dev or blockwright on PATH."""
+    for asked, how in [(explicit, "--app"), (os.environ.get("BLOCKWRIGHT_APP"), "BLOCKWRIGHT_APP")]:
+        if asked:
+            found = shutil.which(asked)
+            if not found:
+                raise BuildError(f"{how}: {asked} isn't an executable")
+            return found
+    cli = Path(cli)
+    if "blockwright-cli" in cli.name:
+        beside = shutil.which(str(cli.with_name(cli.name.replace("blockwright-cli", "blockwright", 1))))
+        if beside:
+            return beside
+    for name in ["blockwright-dev", "blockwright"]:
+        if shutil.which(name):
+            return shutil.which(name)
+    return None
 
 
 def run(cmd):
@@ -271,16 +303,142 @@ def cli_help(cli):
     return "<pre class=\"help\">" + html.escape(out.rstrip()) + "</pre>"
 
 
+def app_timeout():
+    """APP_TIMEOUT, or the seconds $BW_DOCS_APP_TIMEOUT names."""
+    asked = os.environ.get("BW_DOCS_APP_TIMEOUT")
+    if asked is None:
+        return APP_TIMEOUT
+    try:
+        seconds = float(asked)
+    except ValueError:
+        seconds = 0
+    if not 0 < seconds < float("inf"):
+        raise BuildError(f"BW_DOCS_APP_TIMEOUT: {asked!r} isn't a number of seconds above 0")
+    return seconds
+
+
+def run_app(app, timeout, *args):
+    """The app's stdout for args, run with no display. The app sets
+    QT_QPA_PLATFORM=offscreen itself for --list-actions; setting it here too
+    does no harm."""
+    env = dict(os.environ, QT_QPA_PLATFORM="offscreen")
+    try:
+        r = subprocess.run([app, *args], capture_output=True, text=True, encoding="utf-8", errors="replace", env=env,
+                           stdin=subprocess.DEVNULL, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        raise BuildError(f"{app} {' '.join(args)} didn't finish in {timeout:g} s")
+    except OSError as e:
+        raise BuildError(f"{app} {' '.join(args)} couldn't run: {e.strerror}")
+    if r.returncode != 0:
+        raise BuildError(f"{app} {' '.join(args)} exited {r.returncode}: {r.stderr.strip()}")
+    return r.stdout
+
+
+KEY_RE = re.compile(r"^((?:(?:Ctrl|Shift|Alt|Meta)\+)*)(.+)$")
+
+
+def kbd(key):
+    """A key in portable text (Ctrl+Shift+B, Ctrl++) as <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>."""
+    mods, last = KEY_RE.match(key).groups()
+    return "+".join(f"<kbd>{html.escape(k)}</kbd>" for k in mods.split("+")[:-1] + [last])
+
+
+def does(action):
+    """What an action does, as the app says it: its status tip, else its tooltip
+    when that says more than its name."""
+    text = action["statusTip"].strip()
+    if not text:
+        lines = action["toolTip"].strip().splitlines()
+        # Qt's own tooltip is the menu text, keys after a tab ("Delete\tDel");
+        # a tool's starts with its name and key: "Keyboard (Ctrl+K)"
+        if lines:
+            lines[0] = lines[0].split("\t")[0].strip()
+        if lines and (lines[0] == action["text"] or re.fullmatch(re.escape(action["text"]) + r" \(.*\)", lines[0])):
+            lines = lines[1:]
+        text = " ".join(line.strip() for line in lines if line.strip())
+    if action.get("offeredWhen"):
+        text = (text + " " if text else "") + f"Offered only {action['offeredWhen']}."
+    return text
+
+
+def shortcuts(app, cli_version, timeout):
+    """The tables <!-- generated: shortcuts --> becomes (every action
+    `blockwright --list-actions` lists, a table per menu in its order, each
+    action's name, default keys and what it does), and the app's version and Qt.
+    The app must be from the same Blockwright commit as the CLI (cli_version,
+    the first line of its --version)."""
+    if not app:
+        raise BuildError("<!-- generated: shortcuts --> needs the Blockwright app: none beside the CLI and no "
+                         "blockwright-dev or blockwright on PATH; pass --app or set BLOCKWRIGHT_APP")
+    version = run_app(app, timeout, "--version").splitlines()
+    m = re.fullmatch(r"Qt (\d[\d.]*)", version[1].strip()) if len(version) > 1 else None
+    if not version or not m:
+        raise BuildError(f"{app} --version names no Qt on its second line; the shortcuts page needs a "
+                         "Blockwright whose --version does (#463)")
+    name = re.sub(r"^\S+", "Blockwright", version[0].strip(), count=1)
+    # "blockwright 0.1.0 (ae536de)" and "blockwright-cli 0.1.0 (ae536de)": the
+    # same once the program's name is dropped.
+    if version[0].split()[1:] != cli_version.split()[1:]:
+        raise BuildError(f"{app} is {version[0].strip()} but the CLI is {cli_version.strip()}; the shortcuts page "
+                         "needs the app from the same Blockwright commit as the CLI")
+    out = run_app(app, timeout, "--list-actions")
+    try:
+        actions = json.loads(out)
+        groups = {}
+        for a in actions:
+            groups.setdefault(a["menu"], []).append(a)
+            a["text"], a["shortcuts"], a["statusTip"], a["toolTip"]
+    except (ValueError, TypeError, KeyError) as e:
+        raise BuildError(f"{app} --list-actions printed no action list ({e}): {out.strip()[:200]}")
+    if not actions:
+        raise BuildError(f"{app} --list-actions listed no actions")
+    parts = [f"<p>These are the keys {html.escape(name)} starts with on Qt {m.group(1)}.</p>"]
+    if any(a.get("standardKey") for a in actions):
+        parts.append("<p>Keys marked <em>(standard)</em> are the platform's standard keys for that action: the "
+                     "table gives the ones Qt gives a Linux desktop, and another platform, or another version "
+                     "of Qt, can give the action other keys.</p>")
+        # Qt gives some standard actions a key of its own (Undo, F14) that
+        # some keyboards have; a key with a modifier is made of ordinary keys.
+        own = dict.fromkeys(k for a in actions if a.get("standardKey") for k in a["shortcuts"]
+                            if not KEY_RE.match(k).group(1))
+        if own:
+            keys = [kbd(k) for k in own]
+            listed = keys[0] if len(keys) == 1 else ", ".join(keys[:-1]) + " and " + keys[-1]
+            parts.append(f"<p>{listed} {'is a key' if len(keys) == 1 else 'are keys'} some keyboards have.</p>")
+    ids = set()
+    for menu, rows in groups.items():
+        slug = "keys-" + (re.sub(r"[^a-z0-9]+", "-", menu.lower()).strip("-") or "other")
+        n, base = 2, slug
+        while slug in ids:
+            slug, n = f"{base}-{n}", n + 1
+        ids.add(slug)
+        parts.append(f'<h3 id="{slug}">{html.escape(menu)}</h3>')
+        parts.append('<table class="keys">\n<thead><tr><th>Action</th><th>Shortcut</th><th>What it does</th></tr>'
+                     "</thead>\n<tbody>")
+        for a in rows:
+            keys = list(a["shortcuts"]) + [k for k in a.get("hint", "").split(", ") if k]
+            cell = ", ".join(kbd(k) for k in keys)
+            if keys and a.get("standardKey"):
+                cell += " <em>(standard)</em>"
+            parts.append(f"<tr><td>{html.escape(a['text'])}</td><td>{cell}</td>"
+                         f"<td>{html.escape(does(a))}</td></tr>")
+        parts.append("</tbody>\n</table>")
+    return "\n".join(parts), f"{name}, Qt {m.group(1)}"
+
+
 class Builder:
-    def __init__(self, out, cli):
+    def __init__(self, out, cli, app=None):
         self.out = out
         self.cli = cli
+        self.app = app
+        self.app_used = None
         self.rendered = {}
         self.errors = []
         self.pages = collect_pages()
         self.by_out = {p.out: p for p in self.pages}
         self.template = Template((ROOT / "theme" / "page.html").read_text(encoding="utf-8"))
         self.version = run([cli, "--version"]).splitlines()[0].replace("blockwright-cli-dev", "blockwright-cli")
+        self.app_timeout = app_timeout()
 
     def render_sample(self, ans, scale):
         """Draw ans (a path from ROOT to an .ans or .bwp) at scale; returns the
@@ -424,6 +582,9 @@ class Builder:
             if kind == "generated":
                 if name == "cli-help":
                     return cli_help(self.cli)
+                if name == "shortcuts":
+                    table, self.app_used = shortcuts(self.app, self.version, self.app_timeout)
+                    return table
                 raise BuildError(unknown_marker(page, f"<!-- generated: {name} -->"))
             if name not in SECTIONS:
                 raise BuildError(unknown_marker(page, f"<!-- list: {name} -->"))
@@ -501,7 +662,8 @@ class Builder:
         if self.errors:
             raise BuildError("\n".join(self.errors))
         n = sum(p.published for p in self.pages)
-        print(f"build: {n} pages, {len(self.rendered)} pictures, {self.version}, into {self.out}")
+        app = f", shortcuts from {self.app_used}" if self.app_used else ""
+        print(f"build: {n} pages, {len(self.rendered)} pictures, {self.version}{app}, into {self.out}")
 
 
 def main():
@@ -509,9 +671,12 @@ def main():
     ap.add_argument("--out", type=Path, default=ROOT / "site", help="output directory (default: site/)")
     ap.add_argument("--cli", help="the blockwright-cli to render with (default: $BLOCKWRIGHT_CLI, "
                     "blockwright-cli-dev, blockwright-cli)")
+    ap.add_argument("--app", help="the Blockwright app whose --list-actions makes the shortcuts page (default: "
+                    "$BLOCKWRIGHT_APP, the app beside the CLI, blockwright-dev, blockwright)")
     args = ap.parse_args()
     try:
-        Builder(args.out.resolve(), find_cli(args.cli)).build()
+        cli = find_cli(args.cli)
+        Builder(args.out.resolve(), cli, find_app(args.app, cli)).build()
     except BuildError as e:
         sys.exit(f"build: {e}")
 

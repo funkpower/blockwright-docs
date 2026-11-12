@@ -21,12 +21,13 @@ Published at <https://blockwright-docs.pumpin.online/>. Every commit to `main` i
 
 ## Build
 
-Needs Python 3, Python-Markdown (`python-markdown` on Arch, `python3-markdown` on Debian, Ubuntu and Fedora) and `blockwright-cli`:
+Needs Python 3, Python-Markdown (`python-markdown` on Arch, `python3-markdown` on Debian, Ubuntu and Fedora) and `blockwright-cli`, with the Blockwright app beside it or on `PATH` for the shortcuts page:
 
 ```
 scripts/build                      # into site/
 scripts/build --out /some/dir      # elsewhere, outside the repo
 scripts/build --cli path/to/blockwright-cli
+scripts/build --app path/to/blockwright  # the app the shortcuts page runs (from the CLI's commit)
 scripts/test-build                 # the build's own checks
 ```
 
