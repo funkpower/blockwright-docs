@@ -57,7 +57,9 @@ Blockwright keeps these settings, and the other things it remembers between runs
 | macOS | `~/Library/Preferences/com.blockwright.Blockwright.plist` |
 | Windows | The registry key `HKEY_CURRENT_USER\Software\Blockwright\Blockwright` |
 
-On Linux the file is plain text. The **Preferences** settings are these entries. **OK** writes each one by its own rule, below, so **OK** with nothing changed on any tab changes nothing in the file, unless it was edited by hand. While IRC is the target or any action has an entry, though, **OK** writes the whole file again with its entries only, so comments and blank lines added by hand are lost.
+On Linux the file is plain text. **OK** writes each **Preferences** entry by its own rule, below, so **OK** with nothing changed on any tab changes nothing in the file, unless it was edited by hand. While IRC is the target or any action has an entry, though, **OK** writes the whole file again with its entries only, so comments and blank lines added by hand are lost.
+
+The **Preferences** settings are these entries:
 
 ```ini
 [document]
