@@ -1,5 +1,5 @@
 Title: Scripts and generators
-Checked: Blockwright 0.1.0 (07846f9)
+Checked: Blockwright 0.1.0 (9cc0b09)
 
 # Scripts and generators
 
@@ -305,7 +305,7 @@ The rest of the piece needs no window. Close `night.bwp` first: each of these co
 
     The ridge rows cost most, up to 289 bytes, because their colours change along the row. A sky shade row is 80 glyphs of 3 bytes in one pair of colours, 244 bytes; line 12, row 11, is solid blue: 85 bytes.
 
-21. **Run the generators from the terminal.** `run-generators` runs a project's generators again, without asking, and saves. It runs what is in each `scripts/<id>/params.json`, so to change a parameter, change that file. A `.bwp` is a zip; `unpack` opens it into a directory, and `pack` puts it back:
+21. **Run the visible generators from the terminal.** `run-generators` runs a project's visible generators again, without asking, and saves. It runs what is in each `scripts/<id>/params.json`, so to change a parameter, change that file. A `.bwp` is a zip; `unpack` opens it into a directory, and `pack` puts it back:
 
     ```
     $ blockwright-cli unpack night.bwp night
@@ -315,15 +315,15 @@ The rest of the piece needs no window. Close `night.bwp` first: each of these co
 
     ```
     $ blockwright-cli run-generators night
-    layer 2 (ridges): 80x25
+    layer 2 (ridges): hidden, not run
     layer 4 (meteors): 80x25
-    2 generators run
+    1 generator run
     $ blockwright-cli pack night night-5.bwp
     ```
 
     ![The finished piece with meteors from seed 5: four heads in row 6 at columns 4, 11, 19 and 22, one in row 7 at column 73, and the moon at columns 50 to 55](../samples/12-scripts-and-generators/seed-5.bwp "2x")
 
-    It ran the hidden **ridges** layer too, with the parameters it already had, so its cells came out the same. `--layer 4` runs the meteors alone. A command that runs generators doesn't ask first: run it only on projects you trust.
+    It left the hidden **ridges** layer alone and said so: a hidden layer shows nothing, so running it would change nothing you see, and its program would still run with your rights. To run a hidden generator, name it: `--layer 2` runs the ridges, hidden or not, and `--layer 4` runs the meteors alone. `--layer` runs only the layers it names; give it more than once for several. A command that runs generators doesn't ask first: run it only on projects you trust.
 
 ## Check it
 
