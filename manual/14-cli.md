@@ -1,5 +1,5 @@
 Title: blockwright-cli
-Checked: Blockwright 0.1.0 (f34d296)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # blockwright-cli
 
@@ -15,9 +15,11 @@ blockwright-cli [options] command [args...]
 
 Every command that reads a piece takes an ANSI file (`.ans`), an XBIN (`.xb`) or a BIN (`.bin`). It also takes a project, a `.bwp` zip or a project directory, and reads it as its flattened composite: the visible layers merged as the editor shows them. Commands that write a piece (`convert`, `shade`) write XBIN to an output named `.xb`, BIN to one named `.bin`, and ANSI otherwise. `convert`, `shade`, `export --irc` and `render` refuse an output named `.bwp` (exit status 1): `pack` writes a project.
 
+What a command reads must be a regular file, or for a project a directory. A FIFO (`/dev/stdin` from a pipe, or `<(...)`), a device, a socket or any other directory is refused, naming what it is, with exit status 1: `blockwright-cli: in.ans: is a FIFO, not a regular file`.
+
 An `.ans` is read as UTF-8 when it starts with a byte order mark, or when it is all well-formed UTF-8 with a sequence of three bytes or more (the block and box glyphs terminals draw with); otherwise it is read as CP437. `--encoding auto|cp437|utf-8` says which, for `info`, `convert`, `render`, `export`, `shade`, `lint`, `pack` and `unpack`; `info` prints the one it was read as.
 
-`convert` and `shade` write an `.ans` as CP437 unless `--output-encoding utf-8` is given. The SAUCE record stays CP437, and a UTF-8 `.ans` starts with a byte order mark only when its text has no sequence of three bytes or more, so that a reader still takes it for UTF-8. `snapshot` writes the project's own encoding, or the one `--output-encoding` gives. XBIN and BIN are CP437, so `--output-encoding utf-8` to an `.xb` or `.bin` output is a usage error. Everything else is written as CP437.
+`convert`, `shade` and `replay` write an `.ans` as CP437 unless `--output-encoding utf-8` is given. The SAUCE record stays CP437, and a UTF-8 `.ans` starts with a byte order mark only when its text has no sequence of three bytes or more, so that a reader still takes it for UTF-8. `snapshot` writes the project's own encoding, or the one `--output-encoding` gives. XBIN and BIN are CP437, so `--output-encoding utf-8` to an `.xb` or `.bin` output is a usage error. Everything else is written as CP437.
 
 An option given to a command that doesn't take it is a usage error.
 
@@ -76,10 +78,10 @@ Draws the piece as a PNG with the IBM VGA font.
 blockwright-cli export --irc [--budget N] [--fit] [--pad] [--swap-shades] [--allow-over-budget] <in> <out>
 ```
 
-Writes the piece as IRC text with mIRC colour codes, one line per row, and prints a table of each line's size in bytes (headed `line  bytes`), then a summary:
+Writes the piece as IRC text with mIRC colour codes, one line per row, and prints a table of each line's size in bytes, as written and as WeeChat's ascii script sends it (headed `line  bytes   sent`), then a summary:
 
 ```
-40 lines, longest 256 bytes, budget 407: 0 over
+50 lines, longest 350 bytes, 352 sent, budget 407: 0 over
 ```
 
 | Option | What it does |

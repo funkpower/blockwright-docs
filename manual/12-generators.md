@@ -1,5 +1,5 @@
 Title: Generator layers and scripts
-Checked: Blockwright 0.1.0 (9cc0b09)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # Generator layers and scripts
 

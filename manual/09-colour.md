@@ -1,9 +1,9 @@
 Title: Palette, iCE colours and 24-bit colour
-Checked: Blockwright 0.1.0 (c44974c)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # Palette, iCE colours and 24-bit colour
 
-A cell has a foreground and a background, each one of 16 colours. This page covers the 16 colours, the Palette dock that picks them, iCE colours (the setting that decides whether the bright eight work as backgrounds), and what happens to files that use more colours than 16.
+A cell has a foreground and a background, each one of 16 colours, or under the IRC target one of mIRC's 99. This page covers the 16 colours, mIRC's colours past them, the Palette dock that picks them, iCE colours (the setting that decides whether the bright eight work as backgrounds), and what happens to files that use more colours than 16.
 
 [What ANSI art is](../tutorials/01-what-ansi-art-is.md) introduces the 16 colours and iCE colours.
 
@@ -26,9 +26,15 @@ Blockwright draws with the 16 colours of the PC's VGA text mode, numbered 0 to 1
 
 This is the order the PC numbered its colours in, and the order the Palette dock, the **Colours** menu and `blockwright-cli` use. The ANSI escape codes number the first eight differently (`31` is red, `34` is blue); Blockwright converts between the two when it reads and writes `.ans` files.
 
+## mIRC's 99 colours
+
+A document under the IRC target (**Format > Target > IRC**, no shortcut) can also use mIRC's colours 16 to 98, after the 16. A cell holds each of them as its exact RGB, and IRC text writes it as its mIRC number ([IRC](10-irc.md#how-a-row-is-encoded)). Changing the target changes what the Palette dock offers, not the cells: a cell in one of these colours keeps it under the ANSI target.
+
+An `.ans`, XBIN or BIN file holds only the 16. Saving a cell in any other colour to one, under either target, writes the nearest of the 16 and warns: `3 cells are in colours the file can't hold, saved as the nearest of the 16` (`1 cell is in a colour …` for one). A project keeps them.
+
 ## The Palette dock
 
-The **Palette** dock is on the right of the window and can't be closed. It shows the pen on the left and the 16 colours in two rows of eight beside it, 0 to 7 on top.
+The **Palette** dock is on the right of the window and can't be closed. It shows the pen on the left and the 16 colours in two rows of eight beside it, 0 to 7 on top. Under the IRC target, mIRC's 16 to 98 follow under the pen in smaller swatches, in rows of 12, so the greys 88 to 98 make a row of their own; below them, **B**, **I** and **U** buttons turn bold, italic and underline on and off for the pen (the glyph brush writes them as `^B`, `^]` and `^_`).
 
 - **Left click** a colour to make it the pen's foreground, **right click** it to make it the background.
 - The colours in the pen are marked: an **F** at the top-left of the foreground's swatch and a **B** at the bottom-right of the background's, each swatch framed.
@@ -36,7 +42,7 @@ The **Palette** dock is on the right of the window and can't be closed. It shows
 - **The bent arrow** at the pen's top-right swaps the foreground and the background (**Colours > Swap Colours**).
 - **The small grey-over-black squares** at the pen's bottom-left set the pen back to grey on black (**Colours > Default Colours**, <kbd>Ctrl</kbd>+<kbd>D</kbd>).
 
-Hovering over the arrow or the small squares names the item and its key, if it has one. The swatches show each colour as it is, whatever the iCE setting.
+Hovering over the arrow or the small squares names the item and its key, if it has one; hovering over one of mIRC's swatches names it and its RGB, such as `mIRC 16 (#470000)`. The swatches show each colour as it is, whatever the iCE setting.
 
 The keys that step the pen through the colours, the eyedropper, and how keyboard mode types in the pen are on [Keyboard mode, F-key glyph sets and the pen](03-keyboard-mode.md#the-pen).
 
@@ -82,7 +88,7 @@ A file with bright backgrounds and no blinking glyph converts without a warning,
 
 ## 24-bit and 256 colours
 
-Blockwright draws, shows and saves only the 16 colours. It reads files that use more and fits each colour to the nearest of the 16:
+An `.ans`, XBIN or BIN file is saved in the 16 colours only. Blockwright reads files that use more and fits each colour to the nearest of the 16, under either target:
 
 | In the file | Read as |
 |---|---|

@@ -1,9 +1,9 @@
 Title: Lint panel and the checks it runs
-Checked: Blockwright 0.1.0 (f34d296)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # Lint panel and the checks it runs
 
-The lint reads a piece as it looks at 1× and lists the faults it can find by rule: shading that skips rungs or steps through colours that aren't neighbours, rungs too wide, specks, stray half blocks, pixel noise, lone glints, broken and dotted lines, glyphs in their own background, flat areas, the trailing black and blank rows that IRC drops, glyphs an `.ans` can't save, and glyphs that clients count or order differently. The editor shows the list in the **Lint** dock; `blockwright-cli lint` prints it.
+The lint reads a piece as it looks at 1× and lists the faults it can find by rule: shading that skips rungs or steps through colours that aren't neighbours, rungs too wide, specks, stray half blocks, pixel noise, lone glints, broken and dotted lines, glyphs in their own background, flat areas, the trailing black and blank rows that IRC drops, glyphs an `.ans` can't save, glyphs that clients count or order differently, and bold, italic or underline that draws nothing. The editor shows the list in the **Lint** dock; `blockwright-cli lint` prints it.
 
 The lint finds what a rule can find. It doesn't judge composition, light or legibility, and a clean result doesn't mean a piece is finished.
 
@@ -160,7 +160,7 @@ $ blockwright-cli lint --ramp fire craft-pair.ans
 
 ## The checks
 
-There are two families. The **ladder checks** read each ramp's ladder, and the ramp column names the ramp; noise is one of them but is judged once for the whole canvas under no ramp, so its ramp column is `-`. The **craft checks** use no ramp; the last five of them, from [`no-cp437`](#no-cp437) to [`ans-loss`](#ans-loss), are about the glyphs a piece holds rather than how it is drawn. Each section shows a canvas drawn to have that fault and the lint's output for it; the glyph checks show their messages instead.
+There are two families. The **ladder checks** read each ramp's ladder, and the ramp column names the ramp; noise is one of them but is judged once for the whole canvas under no ramp, so its ramp column is `-`. The **craft checks** use no ramp; the last six of them, from [`no-cp437`](#no-cp437) to [`wasted-format`](#wasted-format), are about the glyphs and formatting a piece's cells hold rather than how it is drawn. Each section shows a canvas drawn to have that fault and the lint's output for it; those six show their messages instead.
 
 ### non-neighbour-shade
 
@@ -483,8 +483,28 @@ Only under the IRC target, and a note, not a fault: what an `.ans` save would lo
 |---|---|
 | Glyphs: the cells [`no-cp437`](#no-cp437) would flag under the ANSI target | `5 cells hold glyphs a CP437 .ans saves as '?' (fine for IRC)` |
 | Colours: cells in a colour other than the 16 | `1 cell is in a colour an .ans can't hold, saved as the nearest of the 16 (fine for IRC)` |
+| Formatting: cells with bold, italic or underline | `5 cells have bold, italic or underline, which an .ans leaves out (fine for IRC)` |
 
 A note leaves the piece clean: with notes alone the summary starts `clean` and the exit status is 0. In the JSON a note's `severity` is `"note"`; in the Lint dock its row is in italics. Nothing needs fixing for IRC; if the piece is to be saved as an `.ans` as well, lint it under the ANSI target.
+
+### wasted-format
+
+Bold, italic or underline on a cell where it draws nothing, though IRC text still spends a byte on each toggle. An attribute is wasted when the cell draws the same pixels without it, at both glyph widths, 8 and 9 pixels: bold on a blank, a `▀` or a `█`, say, or underline on a `█`. Italic shears a block off its background, so italic on `█` draws and isn't flagged. Only a glyph the VGA font has is judged. It runs under both targets, one finding a cell, naming the attributes wasted. The formatting comes from the Palette dock's **B**, **I** and **U** toggles, which the glyph brush and typing write under the IRC target.
+
+For an IRC project whose first five cells are bold on a blank, underline on `█`, bold on `▀`, bold on `A` and italic on `█`:
+
+```
+$ blockwright-cli lint formatted.bwp
+0,0 ans-loss - note: 5 cells have bold, italic or underline, which an .ans leaves out (fine for IRC)
+0,0 wasted-format - bold on a blank draws nothing and costs bytes in IRC text
+1,0 wasted-format - underline on a full block draws nothing and costs bytes in IRC text
+2,0 wasted-format - bold on ▀ draws nothing and costs bytes in IRC text
+3 findings (3 wasted-format), 1 note (1 ans-loss), noise 0.0000, iCE on
+```
+
+In the JSON each is a `"severity":"warning"`, and the exit status is 4.
+
+**Fix:** turn the attribute off on those cells. Export writes the formatting a cell has, wasted or not.
 
 ## The IRC target
 
