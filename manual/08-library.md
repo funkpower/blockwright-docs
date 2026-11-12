@@ -1,9 +1,9 @@
 Title: The Library: stamps, Save to Library and text styles
-Checked: Blockwright 0.1.0 (6c9a81a)
+Checked: Blockwright 0.1.0 (d258a0e)
 
 # The Library: stamps, Save to Library and text styles
 
-The Library holds **stamps**: parts of a picture kept as files, ready to place on the canvas, and the **text styles** the Text tool and **Layer Style** use. Some come with Blockwright, in the bundled library; the ones you save go in your own, the user library. This page covers the **Library** dock, placing a stamp, frames and bands that resize, **Save to Library**, where the files are kept and the limits.
+The Library holds **stamps**: parts of a picture kept as files, ready to place on the canvas, and the **text styles** the Text tool and **Layer Style** use. Some come with Blockwright, in the bundled library; the ones you save go in your own, the user library. This page covers the **Library** dock, placing a stamp, frames and bands that resize, **Save to Library**, keeping your own stamps in categories of your own, where the files are kept and the limits.
 
 Tutorial 08, [Composing a scene](../tutorials/08-composing-a-scene.md), places parts with the Select tool and ends with the Library.
 
@@ -47,7 +47,7 @@ Tags: tree, pine, conifer, evergreen
 Bundled library: …/share/blockwright/library/trees/pine-tree.ans
 ```
 
-The dock reads the libraries when Blockwright starts, after **Save to Library**, **Save as Frame Style** and **Save as Preset**, and on **Refresh**. A file added, changed or removed some other way shows up on the next **Refresh**. The dock has no way to rename or delete a stamp: do that to its files ([Where stamps are kept](#where-stamps-are-kept)).
+The dock reads the libraries when Blockwright starts, after **Save to Library**, **Save as Frame Style** and **Save as Preset**, and on **Refresh**. A file added, changed or removed some other way shows up on the next **Refresh**. The dock has no way to rename or delete a stamp: save it again, or change its files ([Your own stamps and categories](#your-own-stamps-and-categories)).
 
 A fresh install has 63 stamps and 11 text styles:
 
@@ -133,6 +133,46 @@ If it can't be saved, a box says *Could not save the stamp:* and why, for exampl
 - drag one onto the canvas to start a new text layer in that style where you drop it;
 - a style that needs iCE colours is greyed out while iCE colours are off ([iCE colours](09-colour.md#ice-colours)).
 
+## Your own stamps and categories
+
+A category is how you keep a set of stamps together. It is a name in each stamp's sidecar, nothing more: the category list shows every category that at least one stamp or text style has, bundled or yours, and picking one shows them all. There is no separate list of categories to add to or remove from.
+
+**Make a category** by typing a new name in **Category** when you save a stamp. It joins the list once that stamp is saved. A category can't be made empty, ahead of its stamps.
+
+A category of yours with the same name as a bundled one, such as `trees`, is one entry in the list: picking it shows the bundled trees and yours together. Hover over a stamp to see which library it is in.
+
+### Adding a stamp to a category
+
+- **From the canvas.** Select the part, or have it floating, and choose **Selection > Save to Library...** with that category ([Save to Library](#save-to-library)).
+- **From a stamp already in the Library**, bundled or yours. Place it, and while it floats choose **Selection > Save to Library...**, give it a name and your category, and press <kbd>Esc</kbd> to drop the float afterwards: saving doesn't put it down. The copy goes in your user library; a bundled stamp stays as it is, so a copy saved under the bundled stamp's own name shows twice, once from each library.
+- **From an `.ans` file.** Open it with **File > Open...**, select the part you want (or **Selection > Select All**, <kbd>Ctrl</kbd>+<kbd>A</kbd>, for the whole picture), and save it to the Library. The blank cells around the part are kept and are see-through when it is placed, so select just the part to keep the stamp small.
+- **By hand.** Copy a stamp's `.ans` and `.json` into the user library and press **Refresh**. An `.ans` on its own isn't a stamp: the dock skips it, and the **Skipped files** tooltip says why. With a SAUCE title it says *no sidecar* and the file it looked for; without a SAUCE record, as downloaded art often is, it says *.ans has no SAUCE record (the title is the stamp's name)* first. A hand-written sidecar has to give the widest row's IRC bytes exactly, and the `.ans` needs a SAUCE title; `blockwright-cli library check <dir>` says what is wrong with each file, for example *.ans has no SAUCE record (the title is the stamp's name)* or *sidecar says the widest row is 0 IRC bytes; the art's is 52*. Saving the picture with **Save to Library** writes both files right.
+
+### Changing a stamp's name, category or tags
+
+**To change only the category or the tags**, edit the stamp's `.json` in a text editor ([Where stamps are kept](#where-stamps-are-kept)) and press **Refresh**. The art and everything else in the stamp stay as they are. `blockwright-cli library check <dir>` says whether the edited sidecar still reads.
+
+**To change the name**, place the stamp and save it again ([Adding a stamp to a category](#adding-a-stamp-to-a-category)). The name is the `.ans` file's SAUCE title, not in the sidecar, so saving again is the only way. Saving again writes both files afresh, which has two traps:
+
+- **The dialog starts empty.** Name, Category and Tags don't show the placed stamp's; whatever you leave in them is what is saved. Leave Tags empty and the stamp has no tags afterwards. Hover over the stamp in the dock first to see its category and tags, and type them again.
+- **The art is the float as it is now.** Resize a frame or band by its handles, or flip or turn the stamp, before you save, and the saved art is resized, flipped or turned. Save it straight after placing it.
+
+With the **same name**, character for character, Blockwright asks to replace the stamp, and the stamp keeps its file. With a **new name**, it is a new stamp, and the old one is still there: delete the old one's files.
+
+Saving again only replaces a stamp at the top of the user library, where **Save to Library** puts it. A stamp you have moved into a folder is saved again as a second stamp at the top.
+
+A bundled stamp can't be changed. Save a copy to your library and change that.
+
+### Removing a stamp, or a category
+
+To remove a stamp, delete its `.ans` and its `.json` from the user library and press **Refresh**. A category goes from the list once no stamp or text style is left in it, so to remove a category of yours, delete its stamps or change the category in their sidecars, and do the same with any preset of yours in it: delete its `.style.json`, or change the `category` in it. The bundled library is never written to, so its stamps and categories stay.
+
+### Folders and sharing
+
+The user library is read with every folder in it, so you can keep a set of stamps in a folder of its own: make the folder and move the files into it with your file manager. A symbolic link to a folder isn't followed: the dock lists it under **Skipped files** (*symbolic link to a folder, not followed*), so copy the folder in instead of linking it. The folder doesn't set the category; the sidecar does. **Save to Library** always writes to the top of the user library.
+
+To share a set of stamps, copy their files, or their folder, into someone else's user library and have them press **Refresh**. `blockwright-cli library check <dir>` checks a folder of stamps first ([CLI](14-cli.md#library)).
+
 ## Where stamps are kept
 
 A stamp is two files side by side, with the same name: an `.ans` and a `.json` sidecar. There is no index.
@@ -160,5 +200,5 @@ The user library folder is made the first time something is saved to it. Copy a 
 - **Category and tags.** A category can't be empty; a tag can't hold a comma. Neither can hold a control character.
 - **IRC.** **Save to Library** doesn't check a stamp's rows against the IRC budget; `blockwright-cli library check` does.
 - **Placing.** The float keeps at least one cell on the canvas; the cells off the canvas are lost when it lands. A layer that can't take the stamp refuses it, and the status bar says why.
-- **Managing.** The dock doesn't rename, move or delete stamps; do it to the files and **Refresh**.
+- **Managing.** The dock doesn't rename, move or delete stamps, and has no categories or folders of its own to make or remove: save a stamp again, or change its files and **Refresh** ([Your own stamps and categories](#your-own-stamps-and-categories)). There is no command to import or export a set of stamps; copy the files.
 - **Steps files.** A steps file has no step that places or saves a stamp, so `replay` and `--screenshot` can't show one being placed.

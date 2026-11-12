@@ -123,7 +123,7 @@ To keep a part of your own, select it and choose **Selection > Save to Library..
 
 The **Scene Starter**, a scene laid out from the Library in one go, isn't in the app yet.
 
-The manual's [Library](../manual/08-library.md) has the dock, frames and bands that resize, the **Save to Library** dialog and where stamps are kept.
+The category you type is your own set of stamps: a new name is a new entry in the category list. The manual's [Library](../manual/08-library.md) has the dock, frames and bands that resize, the **Save to Library** dialog, [your own stamps and categories](../manual/08-library.md#your-own-stamps-and-categories) and where stamps are kept.
 
 ## Check it
 
