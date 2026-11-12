@@ -1,5 +1,5 @@
 Title: Shortcuts
-Checked: Blockwright 0.1.0 (ae536de)
+Checked: Blockwright 0.1.0 (ebd3feb)
 
 # Shortcuts
 
@@ -9,7 +9,7 @@ Typing keys aren't actions, and nor are the keys a tool takes while you use it (
 
 ## Changing a shortcut
 
-Open **Edit > Preferences** and its **Shortcuts** tab. Pick an action in the list (the search box finds an action by its name or its key), then press the new key in **Key**. **No Key** takes the action's keys away. **Default** gives it its default keys back, but for any of them another action has now: it leaves that key off and names the action that has it under the list. **Reset All** gives every action its default keys back. Nothing changes until you press **OK**.
+Open **Edit > Preferences** and its **Shortcuts** tab ([Preferences](16-preferences.md#shortcuts)). Pick an action in the list (the search box finds an action by its name or its key), then press the new key in **Key**. **No Key** takes the action's keys away. **Default** gives it its default keys back, but for any of them another action has now: it leaves that key off and names the action that has it under the list. **Reset All** gives every action its default keys back. Nothing changes until you press **OK**.
 
 An action gets one key here: a single key, with any modifiers it needs, and not a modifier on its own. <kbd>Meta</kbd> is the Windows key. The editor refuses these, and says why under the list:
 

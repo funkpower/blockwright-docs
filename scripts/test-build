@@ -1063,7 +1063,10 @@ def shortcuts_no_app(s):
     cli = s.cli("")
     s.failed("--cli", cli, says="needs the Blockwright app", env=env)
     check("pass --app or set BLOCKWRIGHT_APP" in s.out, f"no hint: {s.out.strip()[-300:]}")
-    s.write("manual/15-shortcuts.md", "Title: Shortcuts\nChecked: Blockwright 0.1.0 (test)\n\n# Shortcuts\n")
+    # The page without its marker, so the sections other pages link to stay.
+    page = (s.repo / "manual/15-shortcuts.md").read_text()
+    check("<!-- generated: shortcuts -->" in page, "15-shortcuts.md has no shortcuts marker")
+    s.write("manual/15-shortcuts.md", page.replace("<!-- generated: shortcuts -->", ""))
     s.passed("--cli", cli, env=env)
 
 
