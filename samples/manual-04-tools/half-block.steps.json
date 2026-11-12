@@ -1,0 +1,39 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "four",
+   "action": "halfBlock",
+   "fg": 14,
+   "pencil": 4,
+   "points": [
+    [
+     1,
+     1
+    ],
+    [
+     10,
+     14
+    ]
+   ]
+  },
+  {
+   "name": "eight",
+   "action": "halfBlock",
+   "pencil": 8,
+   "points": [
+    [
+     13,
+     1
+    ],
+    [
+     22,
+     14
+    ]
+   ]
+  }
+ ]
+}

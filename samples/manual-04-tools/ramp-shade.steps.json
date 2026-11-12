@@ -1,0 +1,63 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "disc",
+   "action": "ellipse",
+   "fg": 8,
+   "filled": true,
+   "from": [
+    2,
+    1
+   ],
+   "to": [
+    21,
+    14
+   ]
+  },
+  {
+   "strength": 0.25,
+   "pressure": "size",
+   "ramp": "steel",
+   "name": "opts",
+   "action": "rampShade",
+   "tip": "round"
+  },
+  {
+   "name": "lit-1",
+   "action": "rampShade",
+   "size": 13,
+   "points": [
+    [
+     9,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "lit-2",
+   "action": "rampShade",
+   "size": 9,
+   "points": [
+    [
+     9,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "lit-3",
+   "action": "rampShade",
+   "size": 5,
+   "points": [
+    [
+     9,
+     2
+    ]
+   ]
+  }
+ ]
+}

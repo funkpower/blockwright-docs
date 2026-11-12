@@ -1,0 +1,32 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "disc",
+   "action": "ellipse",
+   "fg": 7,
+   "filled": false,
+   "from": [
+    2,
+    1
+   ],
+   "to": [
+    21,
+    14
+   ]
+  },
+  {
+   "name": "fill",
+   "action": "fill",
+   "fg": 4,
+   "at": [
+    11,
+    7
+   ],
+   "capture": "before-after"
+  }
+ ]
+}

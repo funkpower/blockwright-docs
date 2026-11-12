@@ -1,0 +1,363 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "keyboard",
+   "action": "keyboard",
+   "strength": 0.25,
+   "pressure": "size",
+   "ramp": "steel"
+  },
+  {
+   "name": "select",
+   "action": "select",
+   "rect": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      895,
+      256,
+      34
+     ]
+    }
+   }
+  },
+  {
+   "name": "move",
+   "action": "move",
+   "by": [
+    0,
+    0
+   ],
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      649,
+      256,
+      237
+     ]
+    }
+   }
+  },
+  {
+   "name": "halfblock",
+   "action": "halfBlock",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      631,
+      256,
+      151
+     ]
+    }
+   }
+  },
+  {
+   "name": "shade",
+   "action": "shade",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      541,
+      256,
+      185
+     ]
+    }
+   }
+  },
+  {
+   "name": "glyph",
+   "action": "glyph",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      445,
+      256,
+      207
+     ]
+    }
+   }
+  },
+  {
+   "name": "colorize",
+   "action": "colorize",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      385,
+      256,
+      185
+     ]
+    }
+   }
+  },
+  {
+   "name": "rampshade",
+   "action": "rampShade",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      541,
+      256,
+      248
+     ]
+    }
+   }
+  },
+  {
+   "name": "form",
+   "action": "form",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      649,
+      256,
+      305
+     ]
+    }
+   }
+  },
+  {
+   "name": "soft",
+   "action": "soft",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      541,
+      256,
+      279
+     ]
+    }
+   }
+  },
+  {
+   "name": "despeckle",
+   "action": "despeckle",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      481,
+      256,
+      215
+     ]
+    }
+   }
+  },
+  {
+   "name": "smudge",
+   "action": "smudge",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      517,
+      256,
+      248
+     ]
+    }
+   }
+  },
+  {
+   "name": "outline",
+   "action": "outline",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      757,
+      256,
+      215
+     ]
+    }
+   }
+  },
+  {
+   "name": "rimlight",
+   "action": "rimLight",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      523,
+      256,
+      272
+     ]
+    }
+   }
+  },
+  {
+   "name": "texture",
+   "action": "texture",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      661,
+      256,
+      306
+     ]
+    }
+   }
+  },
+  {
+   "name": "clone",
+   "action": "clone",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      499,
+      256,
+      212
+     ]
+    }
+   }
+  },
+  {
+   "name": "spray",
+   "action": "spray",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      697,
+      256,
+      276
+     ]
+    }
+   }
+  },
+  {
+   "name": "line",
+   "action": "line",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      367,
+      256,
+      124
+     ]
+    }
+   }
+  },
+  {
+   "name": "rectangle",
+   "action": "rectangle",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      427,
+      256,
+      151
+     ]
+    }
+   }
+  },
+  {
+   "name": "ellipse",
+   "action": "ellipse"
+  },
+  {
+   "name": "fill",
+   "action": "fill",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      499,
+      256,
+      124
+     ]
+    }
+   }
+  },
+  {
+   "name": "gradient",
+   "action": "gradient",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      817,
+      256,
+      151
+     ]
+    }
+   }
+  },
+  {
+   "name": "eyedropper",
+   "action": "eyedropper",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      295,
+      256,
+      28
+     ]
+    }
+   }
+  },
+  {
+   "name": "text",
+   "action": "text",
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      655,
+      256,
+      809
+     ]
+    }
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1700
+ ]
+}

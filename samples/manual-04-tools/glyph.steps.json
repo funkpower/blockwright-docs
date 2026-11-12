@@ -1,0 +1,42 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "hearts",
+   "action": "glyph",
+   "glyph": "♥",
+   "fg": 12,
+   "size": 5,
+   "tip": "round",
+   "points": [
+    [
+     4,
+     3
+    ],
+    [
+     19,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "erase",
+   "action": "glyph",
+   "button": "right",
+   "size": 1,
+   "points": [
+    [
+     0,
+     3
+    ],
+    [
+     23,
+     3
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,225 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "pen",
+   "action": "shade",
+   "fg": 9,
+   "bg": 1
+  },
+  {
+   "name": "row1-1",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     1
+    ],
+    [
+     21,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "row2-1",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     2
+    ],
+    [
+     21,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "row2-2",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     2
+    ],
+    [
+     21,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "row3-1",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     3
+    ],
+    [
+     21,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "row3-2",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     3
+    ],
+    [
+     21,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "row3-3",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     3
+    ],
+    [
+     21,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "row4-1",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     4
+    ],
+    [
+     21,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "row4-2",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     4
+    ],
+    [
+     21,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "row4-3",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     4
+    ],
+    [
+     21,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "row4-4",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     4
+    ],
+    [
+     21,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "back-1",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     6
+    ],
+    [
+     21,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "back-2",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     6
+    ],
+    [
+     21,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "back-3",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     6
+    ],
+    [
+     21,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "back-4",
+   "action": "shade",
+   "points": [
+    [
+     2,
+     6
+    ],
+    [
+     21,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "back",
+   "action": "shade",
+   "button": "right",
+   "points": [
+    [
+     2,
+     6
+    ],
+    [
+     21,
+     6
+    ]
+   ]
+  }
+ ]
+}

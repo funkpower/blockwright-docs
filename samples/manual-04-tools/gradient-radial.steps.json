@@ -1,0 +1,27 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "radial",
+   "action": "gradient",
+   "ramp": "steel",
+   "gradient": {
+    "shape": "radial",
+    "banding": "bayer",
+    "from": 12,
+    "to": 0
+   },
+   "from": [
+    11,
+    3
+   ],
+   "to": [
+    22,
+    3
+   ]
+  }
+ ]
+}

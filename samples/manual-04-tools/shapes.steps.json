@@ -1,0 +1,49 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "line",
+   "action": "line",
+   "fg": 10,
+   "from": [
+    0,
+    14
+   ],
+   "to": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "rect",
+   "action": "rectangle",
+   "fg": 14,
+   "filled": false,
+   "from": [
+    8,
+    2
+   ],
+   "to": [
+    14,
+    13
+   ]
+  },
+  {
+   "name": "oval",
+   "action": "ellipse",
+   "fg": 13,
+   "filled": true,
+   "from": [
+    16,
+    2
+   ],
+   "to": [
+    23,
+    13
+   ]
+  }
+ ]
+}

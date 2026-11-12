@@ -1,0 +1,75 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "ground",
+   "action": "rectangle",
+   "fg": 8,
+   "filled": true,
+   "from": [
+    0,
+    0
+   ],
+   "to": [
+    23,
+    15
+   ]
+  },
+  {
+   "name": "bar",
+   "action": "rectangle",
+   "fg": 7,
+   "filled": true,
+   "from": [
+    2,
+    2
+   ],
+   "to": [
+    7,
+    13
+   ]
+  },
+  {
+   "strength": 0.25,
+   "pressure": "size",
+   "ramp": "steel",
+   "name": "opts",
+   "action": "smudge"
+  },
+  {
+   "name": "full",
+   "action": "smudge",
+   "strength": 1,
+   "size": 2,
+   "points": [
+    [
+     4,
+     2
+    ],
+    [
+     21,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "half",
+   "action": "smudge",
+   "strength": 0.5,
+   "size": 2,
+   "points": [
+    [
+     4,
+     5
+    ],
+    [
+     21,
+     5
+    ]
+   ]
+  }
+ ]
+}

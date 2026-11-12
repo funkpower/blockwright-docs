@@ -1,0 +1,43 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "disc",
+   "action": "ellipse",
+   "fg": 8,
+   "filled": true,
+   "from": [
+    2,
+    1
+   ],
+   "to": [
+    21,
+    14
+   ]
+  },
+  {
+   "strength": 0.25,
+   "pressure": "size",
+   "ramp": "steel",
+   "name": "opts",
+   "action": "soft",
+   "hardness": 0,
+   "tip": "round"
+  },
+  {
+   "name": "soft",
+   "action": "soft",
+   "strength": 1,
+   "size": 12,
+   "points": [
+    [
+     11,
+     3
+    ]
+   ]
+  }
+ ]
+}

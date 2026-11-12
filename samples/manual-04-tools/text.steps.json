@@ -1,0 +1,21 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "word",
+   "action": "text",
+   "at": [
+    1,
+    1
+   ],
+   "text": "Hi",
+   "textOptions": {
+    "face": "block",
+    "colour": 14
+   }
+  }
+ ]
+}

@@ -1,0 +1,39 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank-24x8.ans"
+ },
+ "steps": [
+  {
+   "name": "disc",
+   "action": "ellipse",
+   "fg": 8,
+   "filled": true,
+   "from": [
+    2,
+    1
+   ],
+   "to": [
+    21,
+    14
+   ]
+  },
+  {
+   "name": "red",
+   "action": "colorize",
+   "fg": 4,
+   "size": 3,
+   "points": [
+    [
+     0,
+     3
+    ],
+    [
+     23,
+     3
+    ]
+   ],
+   "capture": "before-after"
+  }
+ ]
+}
