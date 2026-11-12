@@ -6,9 +6,18 @@ Every canvas is drawn the way Blockwright's half-block tools draw it
 tool plots for that drag. Pixel positions are (column, pixel row); a cell row
 holds pixel rows 2y and 2y + 1. The step files are the canvas each step of
 "Do it" leaves; final.ans is the last of them.
+
+The pictures of the editor's status bar and docks come from the same scene
+drawn as a steps file (scene.steps.json) and played in the window by
+`blockwright --screenshot` (the editor is $BLOCKWRIGHT, else blockwright).
 """
 
+import json
+import os
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -161,3 +170,63 @@ def try_scene():
 
 
 save(try_scene(), "try.ans", "Night house, three faults")
+
+
+# The status bar and the docks: the scene of "Do it" as steps, the window
+# pictured at four of them. Each step's pen and Tool Options hold for the
+# steps after it.
+GUI = os.environ.get("BLOCKWRIGHT") or "blockwright"
+
+
+def step(name, action, **options):
+    return dict({"name": name, "action": action}, **options)
+
+
+def drag(name, action, a, b, **options):
+    return step(name, action, **{"from": list(a), "to": list(b)}, **options)
+
+
+steps = [
+    step("sky", "fill", at=[20, 12], fg=BLUE),
+    drag("ground", "rectangle", (0, 20), (W - 1, 2 * H - 1), fg=GREEN, filled=True),
+    drag("moon", "ellipse", (29, 2), (36, 9), fg=YELLOW),
+    drag("walls", "rectangle", (6, 12), (17, 19), fg=WHITE),
+    drag("roof-left", "line", (5, 11), (11, 5), fg=RED),
+    drag("roof-right", "line", (12, 5), (18, 11)),
+    drag("eaves", "line", (5, 11), (18, 11)),
+    step("roof", "fill", at=[11, 8]),
+    step("pick-moon", "eyedropper", at=[32, 5]),
+    drag("window", "rectangle", (8, 13), (11, 16)),
+    drag("door", "rectangle", (13, 15), (15, 19), fg=BROWN),
+    drag("chimney", "rectangle", (15, 5), (16, 8), fg=DARK_GREY),
+]
+for i, (a, b) in enumerate(zip(SMOKE, SMOKE[1:])):
+    pen = {"fg": GREY, "pencil": 4} if i == 0 else {}
+    steps.append(step(f"smoke-{i}", "halfBlock", points=[list(a), list(b)], **pen))
+for i, star in enumerate(STARS):
+    steps.append(step(f"star-{i}", "halfBlock", points=[list(star)], **({"fg": WHITE} if i == 0 else {})))
+SHOTS = {
+    # Do it, before step 1: the right end of the status bar, the cursor's
+    # position after the F-key set, the target and the encoding. Taken after
+    # the sky's fill, which moves no cursor and changes none of them.
+    "sky": ("status-bar.png", {"crop": {"pixels": [780, 1276, 500, 24]}}),
+    # Step 3: Filled ticked; the crop ends under Symmetry.
+    "ground": ("rectangle-options.png", {"of": "toolOptions", "crop": {"pixels": [0, 0, 256, 514]}}),
+    # Step 8: the moon's yellow picked as the foreground.
+    "pick-moon": ("pen.png", {"of": "palette"}),
+    # Step 9: Pencil 4-connected ticked; the crop ends under Symmetry.
+    "smoke-0": ("brush-options.png", {"of": "toolOptions", "crop": {"pixels": [0, 0, 256, 718]}}),
+}
+number = {}
+for i, s in enumerate(steps):
+    number[s["name"]] = i + 1
+    if s["name"] in SHOTS:
+        s["screenshot"] = SHOTS[s["name"]][1]
+# The taller window shows the brush's options down to Symmetry.
+body = {"version": 1, "start": {"blank": [W, H]}, "steps": steps, "window": [1280, 1300]}
+path = HERE / "scene.steps.json"
+path.write_text(json.dumps(body, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+with tempfile.TemporaryDirectory() as tmp:
+    subprocess.run([GUI, "--screenshot", str(path), "-o", tmp], check=True, stdout=subprocess.DEVNULL)
+    for name, (dest, _) in SHOTS.items():
+        shutil.copyfile(Path(tmp) / f"{number[name]:02d}-{name}.png", HERE / dest)

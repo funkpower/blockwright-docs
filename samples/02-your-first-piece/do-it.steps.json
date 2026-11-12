@@ -1,0 +1,207 @@
+{
+ "version": 1,
+ "start": {
+  "blank": [
+   11,
+   11
+  ]
+ },
+ "steps": [
+  {
+   "name": "top",
+   "action": "keyboard",
+   "at": [
+    0,
+    0
+   ],
+   "text": "┌──────────┐",
+   "fg": 0,
+   "bg": 15,
+   "screenshot": {
+    "of": "palette"
+   }
+  },
+  {
+   "name": "side-1",
+   "action": "keyboard",
+   "at": [
+    0,
+    1
+   ],
+   "text": "│          │",
+   "screenshot": {
+    "of": "glyphBar",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      512,
+      85
+     ]
+    }
+   }
+  },
+  {
+   "name": "side-2",
+   "action": "keyboard",
+   "at": [
+    0,
+    2
+   ],
+   "text": "│          │"
+  },
+  {
+   "name": "side-3",
+   "action": "keyboard",
+   "at": [
+    0,
+    3
+   ],
+   "text": "│          │"
+  },
+  {
+   "name": "side-4",
+   "action": "keyboard",
+   "at": [
+    0,
+    4
+   ],
+   "text": "│          │"
+  },
+  {
+   "name": "side-5",
+   "action": "keyboard",
+   "at": [
+    0,
+    5
+   ],
+   "text": "│          │"
+  },
+  {
+   "name": "side-6",
+   "action": "keyboard",
+   "at": [
+    0,
+    6
+   ],
+   "text": "│          │"
+  },
+  {
+   "name": "side-7",
+   "action": "keyboard",
+   "at": [
+    0,
+    7
+   ],
+   "text": "│          │"
+  },
+  {
+   "name": "bottom",
+   "action": "keyboard",
+   "at": [
+    0,
+    8
+   ],
+   "text": "└──────────┘"
+  },
+  {
+   "name": "a-top",
+   "action": "keyboard",
+   "at": [
+    1,
+    1
+   ],
+   "text": "A",
+   "fg": 4
+  },
+  {
+   "name": "heart-top",
+   "action": "keyboard",
+   "at": [
+    1,
+    2
+   ],
+   "text": "♥"
+  },
+  {
+   "name": "heart-bottom",
+   "action": "keyboard",
+   "at": [
+    9,
+    6
+   ],
+   "text": "♥"
+  },
+  {
+   "name": "a-bottom",
+   "action": "keyboard",
+   "at": [
+    9,
+    7
+   ],
+   "text": "A"
+  },
+  {
+   "name": "humps",
+   "action": "keyboard",
+   "at": [
+    2,
+    3
+   ],
+   "text": "▄█▄ ▄█▄"
+  },
+  {
+   "name": "row-4",
+   "action": "keyboard",
+   "at": [
+    2,
+    4
+   ],
+   "text": "███████"
+  },
+  {
+   "name": "row-5",
+   "action": "keyboard",
+   "at": [
+    2,
+    5
+   ],
+   "text": "▀█████▀"
+  },
+  {
+   "name": "point",
+   "action": "keyboard",
+   "at": [
+    4,
+    6
+   ],
+   "text": "▀█▀"
+  },
+  {
+   "name": "sign",
+   "action": "keyboard",
+   "at": [
+    2,
+    10
+   ],
+   "text": "funkpower",
+   "fg": 7,
+   "bg": 0,
+   "screenshot": {
+    "of": "preview",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      307,
+      206
+     ]
+    }
+   }
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

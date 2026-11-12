@@ -1,0 +1,309 @@
+{
+ "version": 1,
+ "start": {
+  "blank": [
+   40,
+   12
+  ]
+ },
+ "steps": [
+  {
+   "name": "sky",
+   "action": "fill",
+   "at": [
+    20,
+    12
+   ],
+   "fg": 1,
+   "screenshot": {
+    "crop": {
+     "pixels": [
+      780,
+      1276,
+      500,
+      24
+     ]
+    }
+   }
+  },
+  {
+   "name": "ground",
+   "action": "rectangle",
+   "from": [
+    0,
+    20
+   ],
+   "to": [
+    39,
+    23
+   ],
+   "fg": 2,
+   "filled": true,
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      514
+     ]
+    }
+   }
+  },
+  {
+   "name": "moon",
+   "action": "ellipse",
+   "from": [
+    29,
+    2
+   ],
+   "to": [
+    36,
+    9
+   ],
+   "fg": 14
+  },
+  {
+   "name": "walls",
+   "action": "rectangle",
+   "from": [
+    6,
+    12
+   ],
+   "to": [
+    17,
+    19
+   ],
+   "fg": 15
+  },
+  {
+   "name": "roof-left",
+   "action": "line",
+   "from": [
+    5,
+    11
+   ],
+   "to": [
+    11,
+    5
+   ],
+   "fg": 4
+  },
+  {
+   "name": "roof-right",
+   "action": "line",
+   "from": [
+    12,
+    5
+   ],
+   "to": [
+    18,
+    11
+   ]
+  },
+  {
+   "name": "eaves",
+   "action": "line",
+   "from": [
+    5,
+    11
+   ],
+   "to": [
+    18,
+    11
+   ]
+  },
+  {
+   "name": "roof",
+   "action": "fill",
+   "at": [
+    11,
+    8
+   ]
+  },
+  {
+   "name": "pick-moon",
+   "action": "eyedropper",
+   "at": [
+    32,
+    5
+   ],
+   "screenshot": {
+    "of": "palette"
+   }
+  },
+  {
+   "name": "window",
+   "action": "rectangle",
+   "from": [
+    8,
+    13
+   ],
+   "to": [
+    11,
+    16
+   ]
+  },
+  {
+   "name": "door",
+   "action": "rectangle",
+   "from": [
+    13,
+    15
+   ],
+   "to": [
+    15,
+    19
+   ],
+   "fg": 6
+  },
+  {
+   "name": "chimney",
+   "action": "rectangle",
+   "from": [
+    15,
+    5
+   ],
+   "to": [
+    16,
+    8
+   ],
+   "fg": 8
+  },
+  {
+   "name": "smoke-0",
+   "action": "halfBlock",
+   "points": [
+    [
+     16,
+     4
+    ],
+    [
+     17,
+     2
+    ]
+   ],
+   "fg": 7,
+   "pencil": 4,
+   "screenshot": {
+    "of": "toolOptions",
+    "crop": {
+     "pixels": [
+      0,
+      0,
+      256,
+      718
+     ]
+    }
+   }
+  },
+  {
+   "name": "smoke-1",
+   "action": "halfBlock",
+   "points": [
+    [
+     17,
+     2
+    ],
+    [
+     19,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "smoke-2",
+   "action": "halfBlock",
+   "points": [
+    [
+     19,
+     1
+    ],
+    [
+     21,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "smoke-3",
+   "action": "halfBlock",
+   "points": [
+    [
+     21,
+     1
+    ],
+    [
+     23,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "star-0",
+   "action": "halfBlock",
+   "points": [
+    [
+     3,
+     1
+    ]
+   ],
+   "fg": 15
+  },
+  {
+   "name": "star-1",
+   "action": "halfBlock",
+   "points": [
+    [
+     11,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "star-2",
+   "action": "halfBlock",
+   "points": [
+    [
+     1,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "star-3",
+   "action": "halfBlock",
+   "points": [
+    [
+     24,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "star-4",
+   "action": "halfBlock",
+   "points": [
+    [
+     29,
+     15
+    ]
+   ]
+  },
+  {
+   "name": "star-5",
+   "action": "halfBlock",
+   "points": [
+    [
+     38,
+     14
+    ]
+   ]
+  }
+ ],
+ "window": [
+  1280,
+  1300
+ ]
+}

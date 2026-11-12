@@ -4,9 +4,19 @@
 The step files are the canvas each step of "Do it" leaves, typed in keyboard
 mode: a glyph goes in the pen's colours and the cursor moves one cell right,
 staying on the last column, where the next glyph overwrites the cell.
+
+The pictures of the editor's docks come from the same card typed as a steps
+file (do-it.steps.json), one keyboard step a row or a word, played in the
+window by `blockwright --screenshot` (the editor is $BLOCKWRIGHT, else
+blockwright).
 """
 
+import json
+import os
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -223,3 +233,55 @@ p.fg, p.bg = GREY, BLACK
 p.at(2, 10)
 p.type("funkpower")
 save(c, "try-answer.ans", "Ace of spades")
+
+
+# The docks: the card typed as keyboard steps, each string what the keys of
+# "Do it" type, and the window pictured at three of them. A row typed past
+# the last column overwrites it, as holding F5 to the edge and pressing F2
+# does. The Glyphs dock shows set 6 throughout: no step changes the set.
+GUI = os.environ.get("BLOCKWRIGHT") or "blockwright"
+
+
+def key(name, at, text, **pen):
+    return dict({"name": name, "action": "keyboard", "at": at, "text": text}, **pen)
+
+
+def row(left, fill, right):
+    return left + fill * 10 + right
+
+
+steps = [key("top", [0, 0], row("┌", "─", "┐"), fg=BLACK, bg=WHITE)]
+steps += [key(f"side-{y}", [0, y], row("│", " ", "│")) for y in range(1, 8)]
+steps += [
+    key("bottom", [0, 8], row("└", "─", "┘")),
+    key("a-top", [1, 1], "A", fg=RED),
+    key("heart-top", [1, 2], "♥"),
+    key("heart-bottom", [9, 6], "♥"),
+    key("a-bottom", [9, 7], "A"),
+    key("humps", [2, 3], "▄█▄ ▄█▄"),
+    key("row-4", [2, 4], "█" * 7),
+    key("row-5", [2, 5], "▀█████▀"),
+    key("point", [4, 6], "▀█▀"),
+    key("sign", [2, 10], "funkpower", fg=GREY, bg=BLACK),
+]
+SHOTS = {
+    # Step 2: the pen black on white.
+    "top": ("pen.png", {"of": "palette"}),
+    # The idea: the Glyphs dock's buttons and set list.
+    "side-1": ("glyphs.png", {"of": "glyphBar", "crop": {"pixels": [0, 0, 512, 85]}}),
+    # Check it: the finished card at 1x.
+    "sign": ("preview.png", {"of": "preview", "crop": {"pixels": [0, 0, 307, 206]}}),
+}
+number = {}
+for i, step in enumerate(steps):
+    number[step["name"]] = i + 1
+    if step["name"] in SHOTS:
+        step["screenshot"] = SHOTS[step["name"]][1]
+# The taller window gives the Preview dock room for the whole card.
+body = {"version": 1, "start": {"blank": [11, 11]}, "steps": steps, "window": [1280, 1300]}
+path = HERE / "do-it.steps.json"
+path.write_text(json.dumps(body, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+with tempfile.TemporaryDirectory() as tmp:
+    subprocess.run([GUI, "--screenshot", str(path), "-o", tmp], check=True, stdout=subprocess.DEVNULL)
+    for name, (dest, _) in SHOTS.items():
+        shutil.copyfile(Path(tmp) / f"{number[name]:02d}-{name}.png", HERE / dest)

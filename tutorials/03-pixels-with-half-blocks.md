@@ -1,5 +1,5 @@
 Title: Pixels with half blocks
-Checked: Blockwright 0.1.0 (c44974c)
+Checked: Blockwright 0.1.0 (ebd3feb)
 
 # Pixels with half blocks
 
@@ -36,7 +36,11 @@ A line of pixels is **4-connected** when each pixel touches the next along a sid
 
 You'll draw the scene in order, back to front. The positions are where the pictures put things; you don't have to hit them exactly. Zoom in (<kbd>Ctrl</kbd>+<kbd>=</kbd>) so you can count cells. Every drawing tool here draws in the pen's foreground with the left button and its background with the right. Pick colours in the **Palette** dock: left-click a swatch for the foreground.
 
-The status bar starts with the position of the cell cursor, column then cell row, but the drawing tools don't move it, and it doesn't follow the pointer. To read a position, take **Keyboard** (**Tools > Keyboard**, <kbd>Ctrl</kbd>+<kbd>K</kbd>) and click the cell, then go back to your tool. The pixel row is twice the cell row, plus 1 for the bottom half: the bottom half of cell row 4 is pixel row 9.
+The status bar's right end shows the position of the cell cursor, column then cell row, after the F-key set, the target (ANSI) and the encoding (CP437), and before the canvas's size, the cell's width in pixels and the zoom:
+
+![The right end of the status bar: the F-key set, ANSI, CP437, then 0, 0, the cursor's column and cell row, then the canvas's size, 40x12, the cell's width, 8 px, and the zoom, 2x](../samples/03-pixels-with-half-blocks/status-bar.png)
+
+The drawing tools don't move the cursor, and it doesn't follow the pointer. To read a position, take **Keyboard** (**Tools > Keyboard**, <kbd>Ctrl</kbd>+<kbd>K</kbd>) and click the cell, then go back to your tool. The pixel row is twice the cell row, plus 1 for the bottom half: the bottom half of cell row 4 is pixel row 9.
 
 1. **A new canvas.** On the start screen, as in tutorial 01, set **Width** to 40 and **Height** to 12, leave **iCE colours** ticked, and press **New**. The canvas is 40 × 24 pixels, all black.
 
@@ -44,7 +48,11 @@ The status bar starts with the position of the cell cursor, column then cell row
 
     ![The canvas all blue](../samples/03-pixels-with-half-blocks/step-01.ans "2x")
 
-3. **The ground.** Take the **Rectangle** (**Tools > Rectangle**, <kbd>Ctrl</kbd>+<kbd>U</kbd>) and tick **Filled** in the **Tool Options** dock (or **Tools > Filled Shapes**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>; without it, rectangles and ellipses are outlines). Left-click green, the third swatch. Drag from `0, 20` to the bottom-right corner, `39, 23`. A rectangle runs from the pixel you press on to the one you let go on, both included.
+3. **The ground.** Take the **Rectangle** (**Tools > Rectangle**, <kbd>Ctrl</kbd>+<kbd>U</kbd>) and tick **Filled** in the **Tool Options** dock (or **Tools > Filled Shapes**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>; without it, rectangles and ellipses are outlines):
+
+    ![The Tool Options dock for the Rectangle: its help text, then Filled ticked, Alpha lock unticked and Symmetry Off](../samples/03-pixels-with-half-blocks/rectangle-options.png)
+
+    Left-click green, the third swatch. Drag from `0, 20` to the bottom-right corner, `39, 23`. A rectangle runs from the pixel you press on to the one you let go on, both included.
 
     ![Green ground along the bottom two rows](../samples/03-pixels-with-half-blocks/step-02.ans "2x")
 
@@ -66,13 +74,21 @@ The status bar starts with the position of the cell cursor, column then cell row
 
     ![A solid red roof](../samples/03-pixels-with-half-blocks/step-06.ans "2x")
 
-8. **The window and the door.** Take the **Eyedropper** (**Tools > Eyedropper**, <kbd>Ctrl</kbd>+<kbd>I</kbd>) and left-click the moon: its yellow becomes the foreground. On a cell of pixels the eyedropper picks the colour of the half under the pointer. Take the **Rectangle** and drag from `8, 13` to `11, 16` for the window. Then left-click brown, the seventh swatch, and drag from `13, 15` to `15, 19` for the door.
+8. **The window and the door.** Take the **Eyedropper** (**Tools > Eyedropper**, <kbd>Ctrl</kbd>+<kbd>I</kbd>) and left-click the moon: its yellow becomes the foreground. On a cell of pixels the eyedropper picks the colour of the half under the pointer.
+
+    ![The Palette dock after the Eyedropper: the foreground square yellow, and F marking the yellow swatch](../samples/03-pixels-with-half-blocks/pen.png)
+
+    Take the **Rectangle** and drag from `8, 13` to `11, 16` for the window. Then left-click brown, the seventh swatch, and drag from `13, 15` to `15, 19` for the door.
 
     ![A yellow window and a brown door in the white wall](../samples/03-pixels-with-half-blocks/step-07.ans "2x")
 
     The window starts and ends halfway down a cell. Its top row of cells is white over yellow and its bottom row yellow over white: two bright colours in a cell, so those eight cells are only possible with iCE colours.
 
-9. **The chimney and its smoke.** With the **Rectangle**, left-click dark grey, the ninth swatch, and drag from `15, 5` to `16, 8`. Then take the **Half-Block Brush** (**Tools > Half-Block Brush**, <kbd>Ctrl</kbd>+<kbd>B</kbd>) and check that **Pencil 4-connected** is ticked in **Tool Options**. Left-click grey, the eighth swatch. The smoke goes up from just above the chimney, then drifts right, through `16, 4`, `17, 2`, `19, 1`, `21, 1` and `23, 0`. Draw it as four short drags, each from one of those points to the next: `16, 4` to `17, 2`, `17, 2` to `19, 1`, `19, 1` to `21, 1`, and `21, 1` to `23, 0`. The brush paints where the pointer goes and joins the points of a drag into one line, so a quick drag leaves no gaps, and a short straight one is easy to keep on its path.
+9. **The chimney and its smoke.** With the **Rectangle**, left-click dark grey, the ninth swatch, and drag from `15, 5` to `16, 8`. Then take the **Half-Block Brush** (**Tools > Half-Block Brush**, <kbd>Ctrl</kbd>+<kbd>B</kbd>) and check that **Pencil 4-connected** is ticked in **Tool Options**:
+
+    ![The Tool Options dock for the Half-Block Brush: its help text, then Pencil 4-connected ticked, Alpha lock unticked and Symmetry Off](../samples/03-pixels-with-half-blocks/brush-options.png)
+
+    Left-click grey, the eighth swatch. The smoke goes up from just above the chimney, then drifts right, through `16, 4`, `17, 2`, `19, 1`, `21, 1` and `23, 0`. Draw it as four short drags, each from one of those points to the next: `16, 4` to `17, 2`, `17, 2` to `19, 1`, `19, 1` to `21, 1`, and `21, 1` to `23, 0`. The brush paints where the pointer goes and joins the points of a drag into one line, so a quick drag leaves no gaps, and a short straight one is easy to keep on its path.
 
     ![Grey smoke rising from a dark grey chimney](../samples/03-pixels-with-half-blocks/step-08.ans "2x")
 

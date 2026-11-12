@@ -1,5 +1,5 @@
 Title: Your first piece
-Checked: Blockwright 0.1.0 (c44974c)
+Checked: Blockwright 0.1.0 (ebd3feb)
 
 # Your first piece
 
@@ -40,7 +40,11 @@ Most of the glyphs ANSI art is drawn with aren't on a keyboard, so the F-keys ty
 
 Sets 1 to 4 are the four kinds of box-drawing frame, single and double lines and the two mixes. Set 6, the shade and half blocks, is the default: Blockwright starts on it the first time, and after that on the set you last picked, or on set 6 again when that was one of sets 17 to 21 and the piece doesn't offer it; set 7 has the card suits and set 16 the ASCII brackets and slashes.
 
-The status bar shows the set you're on, such as *F-keys set 6: ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·*, and so does the **Glyphs** dock at the bottom of the window: ten buttons labelled F1 to F10, which type their glyph when clicked, and a list to pick the set from. The **Glyphs** menu changes the set from the keyboard:
+The status bar shows the set you're on, such as *F-keys set 6: ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·*, and so does the **Glyphs** dock at the bottom of the window: ten buttons labelled F1 to F10, which type their glyph when clicked, and a list to pick the set from:
+
+![The Glyphs dock on set 6: ten buttons, F1 to F10, each showing its glyph, ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·, and beside them the set list showing Set 6](../samples/02-your-first-piece/glyphs.png)
+
+The **Glyphs** menu changes the set from the keyboard:
 
 - <kbd>Ctrl</kbd>+<kbd>,</kbd> and <kbd>Ctrl</kbd>+<kbd>.</kbd>, the previous and the next set (**Previous Set**, **Next Set**);
 - <kbd>Ctrl</kbd>+<kbd>/</kbd>, back to set 6 (**Default Set**);
@@ -53,6 +57,8 @@ Every glyph you type goes in in the **pen**: a foreground and a background colou
 - <kbd>Ctrl</kbd>+<kbd>Up</kbd> and <kbd>Ctrl</kbd>+<kbd>Down</kbd>, the previous and the next foreground;
 - <kbd>Ctrl</kbd>+<kbd>Left</kbd> and <kbd>Ctrl</kbd>+<kbd>Right</kbd>, the previous and the next background;
 - <kbd>Ctrl</kbd>+<kbd>D</kbd>, back to grey on black (**Default Colours**).
+
+Blockwright keeps the pen between runs, as it keeps the F-key set: it starts grey on black the first time, and after that with the pen you had last.
 
 ### Undo
 
@@ -67,8 +73,13 @@ An `.ans` file can carry a short record after the art, called **SAUCE**: the pie
 1. **Make the canvas.** Start Blockwright. On the start screen, under **New**, set **Width** to 11 and **Height** to 11, leave **iCE colours** ticked, and press **New**. (If Blockwright is already open, **File > Start Screen...** brings the start screen back.) The card takes rows 0 to 8; the signature goes under it in row 10.
 
 2. **The top edge.** The card is white with a black frame, so the pen is black on white:
+    - press <kbd>Ctrl</kbd>+<kbd>D</kbd> for grey on black, since the pen may still be the one you had last;
     - press <kbd>Ctrl</kbd>+<kbd>Left</kbd> once: the background steps back from black, round to white, the last colour;
     - left-click black, the first swatch in the **Palette**, for the foreground.
+
+    The **Palette** shows the pen black over white:
+
+    ![The Palette dock with the pen black on white: the foreground square black over the white background square, beside the sixteen swatches, F marking black and B marking white](../samples/02-your-first-piece/pen.png)
 
     Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F1</kbd> for set 1, the single-line frame; the status bar now reads *F-keys set 1: ┌ ┐ └ ┘ ─ │ ├ ┤ ┴ ┬*. Click the top-left cell, `0, 0`. Press <kbd>F1</kbd> for `┌`, then hold <kbd>F5</kbd> (`─`) until the line reaches the right edge. The cursor stops on the last column, so finish with <kbd>F2</kbd>: `┐` replaces the last `─`.
 
@@ -117,6 +128,8 @@ An `.ans` file can carry a short record after the art, called **SAUCE**: the pie
 To mend a short corner, click the `┐` and, with the pen black on white and set 1, type `─` over it with <kbd>F5</kbd> (the cursor then moves to the last column), and press <kbd>F2</kbd>.
 
 **Judge it at 1×.** The **Preview (1x)** dock shows the card at its real size: the A and the hearts in the corners should still read as an A and hearts.
+
+![The Preview (1x) dock with the finished card at its real size: a red A over a heart top left, a heart over an A bottom right, the big heart between, and funkpower under the card](../samples/02-your-first-piece/preview.png)
 
 **The signature is there, legible, and off the frame.** Sign under or beside the art, not over its edge.
 
