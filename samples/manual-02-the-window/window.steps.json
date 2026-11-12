@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "start": {
+  "file": "../09-layers-and-projects/final.bwp"
+ },
+ "steps": [
+  {
+   "name": "window",
+   "action": "view",
+   "zoom": 2,
+   "screenshot": {
+    "of": "window"
+   }
+  },
+  {
+   "name": "status",
+   "action": "view",
+   "zoom": 2,
+   "screenshot": {
+    "crop": {
+     "pixels": [
+      1110,
+      976,
+      490,
+      24
+     ]
+    }
+   }
+  }
+ ],
+ "window": [
+  1600,
+  1000
+ ]
+}

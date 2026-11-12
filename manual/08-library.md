@@ -1,5 +1,5 @@
 Title: The Library: stamps, Save to Library and text styles
-Checked: Blockwright 0.1.0 (d258a0e)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # The Library: stamps, Save to Library and text styles
 

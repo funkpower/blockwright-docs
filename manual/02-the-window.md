@@ -1,13 +1,15 @@
 Title: The window: canvas, docks and views
-Checked: Blockwright 0.1.0 (c44974c)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # The window: canvas, docks and views
 
 Blockwright's window is the canvas in the middle with docks around it: the tools on the left, the 1× preview, the palette and the other panels on the right, and the F-key glyphs along the bottom. This page says what each part is, how to move them, and what the **View** menu changes.
 
+![The Blockwright window with a 60 × 20 piece open at 2×: the menu bar along the top; on the left the Toolbox over Tool Options, which shows the Keyboard tool; the canvas in the middle with a horizontal scroll bar under it and the row meter's byte counts down its right side; on the right the Preview (1x), Palette, Layers with four layers, a squeezed Library, and Lint in front of IRC View as two tabs; the Glyphs dock's ten F-key cells along the bottom; and the status bar under it](../samples/manual-02-the-window/window.png)
+
 ## Starting up
 
-Blockwright opens on the **start screen** when it starts with no file or project named on the command line. The main window comes up when the start screen closes, whichever way it closes; closing it without picking anything leaves a new 80 × 40 canvas.
+Blockwright opens on the **start screen** when it starts with no file or project named on the command line. The main window comes up when the start screen closes, whichever way it closes; closing it without picking anything leaves a new 80 × 40 canvas on the target set in [Preferences](16-preferences.md#documents).
 
 | Part | What it does |
 |---|---|
@@ -15,13 +17,14 @@ Blockwright opens on the **start screen** when it starts with no file or project
 | **Open...** | An `.ans`, XBIN or BIN file, or a `.bwp` project (<kbd>O</kbd> or <kbd>Ctrl</kbd>+<kbd>O</kbd>). |
 | **Open Project Directory...** | A project saved as a directory. |
 | **Recent** | The files opened or saved lately, each with its folder beside the name; a click opens one. A file that is no longer there is greyed out and marked `missing`, with a **Remove** button that takes it off the list. With no recent files the list reads `Nothing opened or saved yet`. |
+| **Samples** | The sample pieces that come with Blockwright, by title, when any are installed; hover over one for what it is. A click opens a copy: untitled, so **Save** asks where, and kept off the Recent list. **Help > Samples** lists the same pieces. |
 | **Show at startup** | Untick it to start straight in the main window. |
 
-Starting the size and colours of a canvas from the start screen is in [What ANSI art is](../tutorials/01-what-ansi-art-is.md). **File > Start Screen...** brings the screen back at any time, and closes the open piece to do it. If the piece has unsaved changes, Blockwright asks first whether to save them; **Cancel** keeps the piece open and shows no start screen. Closing the screen without picking anything leaves a new, blank 80 × 40 `untitled.ans`, not the piece that was open. **File > New** (<kbd>Ctrl</kbd>+<kbd>N</kbd>) makes an 80 × 40 canvas with iCE colours on without the start screen.
+Starting the size and colours of a canvas from the start screen is in [What ANSI art is](../tutorials/01-what-ansi-art-is.md). **File > Start Screen...** brings the screen back at any time, and closes the open piece to do it. If the piece has unsaved changes, Blockwright asks first whether to save them; **Cancel** keeps the piece open and shows no start screen. Closing the screen without picking anything leaves a new, blank 80 × 40 `untitled.ans`, not the piece that was open. **File > New** (<kbd>Ctrl</kbd>+<kbd>N</kbd>) makes an 80 × 40 canvas with iCE colours on without the start screen. Each of these new canvases, and the start screen's **New**, takes the target set in Preferences, ANSI unless it has been changed.
 
 ## The canvas
 
-The canvas is in the middle of the window, centred on a dark background when it is smaller than the space for it. The cell cursor, a frame that shows on any colour, marks where keyboard mode types ([Keyboard mode, F-key glyph sets and the pen](03-keyboard-mode.md)); a click on a cell puts the cursor there.
+The canvas is in the middle of the window, centred on a grey background when it is smaller than the space for it. The cell cursor, a frame that shows on any colour, marks where keyboard mode types ([Keyboard mode, F-key glyph sets and the pen](03-keyboard-mode.md)); a click on a cell puts the cursor there.
 
 - **Zoom** is a whole number from 1× to 8×. A new window starts at 2×.
 - **Pan** with the scroll bars or by dragging with the middle mouse button.
@@ -57,6 +60,8 @@ The whole change is one undo step, named `Canvas Size`, and **Edit > Undo** (<kb
 
 Blockwright refuses a size, and says why in a message box starting `The canvas can't be made that size:`, when the layers would then hold more than 16000000 cells between them (`the layers would hold over 16000000 cells`) or when it couldn't draw a canvas that big (`the canvas is too large to display`). A 400 × 5000 canvas can be drawn with 8-pixel cells but not with 9 px letter spacing. A refused size changes nothing.
 
+A floating selection is put down before the dialog opens. One that can't land stops it there: no dialog opens, and the status bar says `Canvas size not changed: the floating selection can't land:` and why ([A float that can't land](05-selections.md#a-float-that-cant-land)).
+
 An `.ans` saved after a resize has the new size, and so do its SAUCE width and height. The CLI has no command of its own to resize a canvas; a steps file's `canvasSize` step makes the same change ([Resizing the canvas](14-cli.md#resizing-the-canvas)).
 
 ### The status bar
@@ -65,9 +70,12 @@ The status bar along the bottom of the window shows, from the left:
 
 - **The tool**, such as `Glyph ░`: what the active tool is set to, for the tools that say; nothing for the others.
 - **The glyph set**, such as `F-keys set 6: ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·`: the set the F-keys type now. Its tooltip lists the keys.
+- **The target and the encoding**: `ANSI` or `IRC`, what the document is made for (**Format > Target**), and `CP437` or `UTF-8`, how its `.ans` is written. A new document takes the target set in [Preferences](16-preferences.md#documents).
 - **The position**, such as `12, 3  |  80x40  |  8 px  |  2x`: the cell cursor's column and row (0, 0 is the top-left cell), the canvas's width and height in cells, the cell width in pixels (8, or 9 with 9 px letter spacing), and the zoom.
 
-Short messages show at its left for a few seconds, such as a key whose character can't be typed ([Which keys type](03-keyboard-mode.md#which-keys-type)).
+![The right end of the status bar: F-keys set 6 and its ten glyphs, then ANSI, CP437, and 0, 0, the cursor's column and row, then the canvas's size, 60x20, the cell's width, 8 px, and the zoom, 2x](../samples/manual-02-the-window/status-bar.png)
+
+Short messages show at its left for a few seconds, such as a key whose character can't be typed ([Which keys type](03-keyboard-mode.md#which-keys-type)). While the pointer is on a menu item, the left of the status bar says what the item does; the files listed under **File > Open Recent** say nothing there.
 
 ## Docks
 
@@ -78,7 +86,7 @@ Each panel around the canvas is a dock: drag its title bar to move it to another
 | **Toolbox** | Left, top | A button for each tool or group of tools in the **Tools** menu, with the same shortcuts. | Yes |
 | **Tool Options** | Left, under the Toolbox | The settings of the active tool, under the tool's name. | Yes |
 | **Preview (1x)** | Right, top | The whole canvas at 1×, as it looks at its real size. | No |
-| **Palette** | Right | The 16 colours and the pen ([Palette, iCE colours and 24-bit colour](09-colour.md)). | No |
+| **Palette** | Right | The 16 colours and the pen ([Palette, iCE colours and 24-bit colour](09-colour.md)); under the IRC target, mIRC's 99 colours and the pen's **B**, **I** and **U** toggles ([The pen](03-keyboard-mode.md#the-pen)). | No |
 | **Layers** | Right | The layer stack of the canvas. | Yes |
 | **Library** | Right | The stamps and text styles of the library, as thumbnails with a category list and a search box. | No |
 | **Lint** | Right, bottom, in front | The lint's findings for the canvas, one a row; activating a row puts the cell cursor on its cell. | Yes |

@@ -1,5 +1,5 @@
 Title: Layers: the five kinds, the dock and the menu
-Checked: Blockwright 0.1.0 (6c9a81a)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # Layers: the five kinds, the dock and the menu
 

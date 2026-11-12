@@ -1,5 +1,5 @@
 Title: Keyboard mode, F-key glyph sets and the pen
-Checked: Blockwright 0.1.0 (c44974c)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # Keyboard mode, F-key glyph sets and the pen
 
@@ -11,7 +11,7 @@ Keyboard mode types on the canvas the way a text editor types on a page: a key p
 
 **Tools > Keyboard** (<kbd>Ctrl</kbd>+<kbd>K</kbd>) is the tool Blockwright starts with. Keys type in every other tool too, unless the tool uses the key itself: the select tool takes the arrows, <kbd>Enter</kbd>, <kbd>Esc</kbd> and <kbd>Delete</kbd> while there is a selection, the glyph brush takes the F-keys to pick its glyph, and the text tool types into its own text layer.
 
-Click a cell to put the cursor there. The cursor is a frame around one cell, drawn so it shows on any colour.
+Click a cell to put the cursor there. The cursor is a frame around one cell (both cells of a wide character), drawn so it shows on any colour.
 
 ### Keys
 
@@ -35,9 +35,11 @@ Each key is one step on the undo stack: **Edit > Undo** takes back one glyph at 
 
 A key types when it gives a printable character, unless <kbd>Ctrl</kbd> (or <kbd>Meta</kbd>) is held without <kbd>Alt</kbd>: those chords are shortcuts, such as <kbd>Ctrl</kbd>+<kbd>↑</kbd> for the pen below. So characters made with <kbd>AltGr</kbd>, or with <kbd>Option</kbd> on a Mac, type, and so does text from an input method.
 
-A cell can hold only a glyph CP437 has. Accented letters made of a letter and a combining accent are joined first, so `e` followed by a combining acute types `é`, which CP437 has. A character with no CP437 glyph, such as `€` or an emoji, is not typed, and the status bar says so for a few seconds: `€ has no CP437 glyph; not typed`. When an input method sends several characters at once and any of them can't be typed, none of them is.
+What a key can type depends on the document. In a CP437 document under the ANSI target, a cell can hold only a glyph CP437 has. Accented letters made of a letter and a combining accent are joined first, so `e` followed by a combining acute types `é`, which CP437 has. A character with no CP437 glyph, such as `€` or an emoji, is not typed, and the status bar says so for a few seconds, naming the target and the encoding: `€ has no CP437 code; not typed (target: ANSI, CP437)`. When an input method sends several characters at once and any of them can't be typed, none of them is.
 
-Five CP437 glyphs can't be typed either: `○ ◙ ♪ → ←`. Their bytes, 9, 10, 13, 26 and 27, are tab, line feed, carriage return, end of file and escape, which a reader of an `.ans` file acts on rather than draws, so the file can't hold them as glyphs. The status bar gives them the same message as a character CP437 lacks, `→ has no CP437 glyph; not typed`, though CP437 has them.
+Five CP437 glyphs can't be typed there either: `○ ◙ ♪ → ←`. Their bytes, 9, 10, 13, 26 and 27, are tab, line feed, carriage return, end of file and escape, which a reader of an `.ans` file acts on rather than draws, so the file can't hold them as glyphs. The status bar names the byte and what a reader takes it for: `→ is CP437 0x1A, which .ans reads as SUB; not typed (target: ANSI, CP437)`.
+
+Under the IRC target, and in a UTF-8 document under either target (the documents that offer [sets 17 to 21](#sets-17-to-21)), a key types any character but a control code: `€`, the five glyphs above and wide characters such as `中` all type. A wide character takes two cells and moves the cursor two; on the last column it isn't typed, and the status bar says `中 would start on the last column; dropped`. <kbd>Backspace</kbd> and <kbd>Delete</kbd> clear both of its cells. A combining accent typed on its own joins the character just left of the cursor.
 
 ### Where the glyphs go
 
@@ -116,12 +118,14 @@ The **pen** is the two colours everything is drawn in: a **foreground** for the 
 |---|---|
 | Left click on a colour in the **Palette** dock | Makes it the foreground. |
 | Right click on a colour in the **Palette** dock | Makes it the background. |
-| **Colours > Previous Foreground**, <kbd>Ctrl</kbd>+<kbd>↑</kbd> | The colour before the foreground (from 0, black, round to 15, white). |
-| **Colours > Next Foreground**, <kbd>Ctrl</kbd>+<kbd>↓</kbd> | The colour after the foreground (from 15 round to 0). |
+| **Colours > Previous Foreground**, <kbd>Ctrl</kbd>+<kbd>↑</kbd> | The colour before the foreground (from 0, black, round to 15, white; under the IRC target, round to 98). |
+| **Colours > Next Foreground**, <kbd>Ctrl</kbd>+<kbd>↓</kbd> | The colour after the foreground (from 15 round to 0; under the IRC target, from 15 on to 16 and from 98 round to 0). |
 | **Colours > Previous Background**, <kbd>Ctrl</kbd>+<kbd>←</kbd> | The colour before the background. |
 | **Colours > Next Background**, <kbd>Ctrl</kbd>+<kbd>→</kbd> | The colour after the background. |
-| **Colours > Default Colours**, <kbd>Ctrl</kbd>+<kbd>D</kbd> | Grey on black. |
+| **Colours > Default Colours**, <kbd>Ctrl</kbd>+<kbd>D</kbd> | Grey on black, with no bold, italic or underline. |
 | **Colours > Swap Colours** | Swaps the foreground and the background. It has no key; give it one in **Edit > Preferences... > Shortcuts**. |
 | **Tools > Eyedropper**, <kbd>Ctrl</kbd>+<kbd>I</kbd> | On a half-block pixel, a left click makes the pixel's colour the foreground and a right click makes it the background. On any other cell, a left click takes the cell's foreground and a right click its background. |
 
-The colours are numbered 0 to 15, in the order the Palette dock shows them. The Palette dock, its pen swatches and what the colours look like are on [Palette, iCE colours and 24-bit colour](09-colour.md).
+Under the IRC target the pen also has bold, italic and underline: the **B**, **I** and **U** toggles under the Palette dock's colours. Typing writes them with the colours, except on a Pixels layer, and **Swap Colours** leaves them as they are. Under the ANSI target the toggles are hidden and typing writes none.
+
+The colours are numbered 0 to 15, in the order the Palette dock shows them; under the IRC target the dock shows mIRC's 99, 0 to 98, and the <kbd>Ctrl</kbd>+arrow keys step through all of them. The Palette dock, its pen swatches and what the colours look like are on [Palette, iCE colours and 24-bit colour](09-colour.md).

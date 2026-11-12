@@ -1,5 +1,5 @@
 Title: Selections, clipboard and paste modes
-Checked: Blockwright 0.1.0 (6c9a81a)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # Selections, clipboard and paste modes
 
@@ -32,7 +32,7 @@ Tutorial 08, [Composing a scene](../tutorials/08-composing-a-scene.md), builds a
 
 ## Selecting
 
-Drag with the Select tool to select a rectangle of cells. The selection is shown by a dotted line round it, the marquee. A click outside the selection that doesn't drag deselects and moves the cell cursor to the clicked cell; a click inside it only moves the cell cursor. **Select All** selects the whole canvas; **Deselect** drops the selection.
+Drag with the Select tool to select a rectangle of cells. The selection is shown by a dotted line round it, the marquee. A click outside the selection that doesn't drag deselects and moves the cell cursor to the clicked cell; a click inside it only moves the cell cursor. **Select All** selects the whole canvas; **Deselect** drops the selection. Either puts a float down first ([The float](#the-float)).
 
 The selection belongs to the canvas view, not the tool: it stays when you take another tool. While there is one, the brushes, the shapes, **Fill** and **Gradient** paint only inside it. Typing, in keyboard mode or with the Text tool, doesn't keep to it.
 
@@ -46,6 +46,7 @@ Nothing is changed until the float is put down. The canvas shows it as it will l
 
 - <kbd>Enter</kbd>, or a click on the float that doesn't drag;
 - a click outside it, which puts it down and starts a new selection where you clicked;
+- **Select All** or **Deselect**, which then select the whole canvas or nothing;
 - taking another tool, typing, or saving.
 
 Once it is down, the selection is the rectangle where it landed. <kbd>Esc</kbd> puts a lifted float back where it came from, and drops a pasted one. With no float, <kbd>Esc</kbd> deselects. A new canvas drops the float too, and so does an **Edit > Undo** or **Redo** that changes which layer is active or the active layer's cells or offset (where an <kbd>Alt</kbd>+drag puts it), a Generator layer's parameter step only where the canvas shows the change, or that undoes or redoes a cell edit the canvas shows. One that leaves the active layer, its cells and its offset as they were leaves it up, even where the canvas changes: the undo or redo of a hide or a show, a lock or an unlock, a mode or a layer style, a raise or a lower of any layer, or another layer's text or move. The undo of a delete and the redo of an add make that layer active again, so they drop it. A **View > iCE Colours** switch that restyles no layer leaves it up too, and so does its undo or redo.

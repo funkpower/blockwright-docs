@@ -1,5 +1,5 @@
 Title: Mirror mode and symmetry
-Checked: Blockwright 0.1.0 (bb1c676)
+Checked: Blockwright 0.1.0 (6cb21c1)
 
 # Mirror mode and symmetry
 
