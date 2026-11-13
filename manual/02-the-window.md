@@ -1,5 +1,5 @@
 Title: The window: canvas, docks and views
-Checked: Blockwright 0.1.0 (6cb21c1)
+Checked: Blockwright 0.1.0 (12ee9ef)
 
 # The window: canvas, docks and views
 

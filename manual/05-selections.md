@@ -1,5 +1,5 @@
 Title: Selections, clipboard and paste modes
-Checked: Blockwright 0.1.0 (6cb21c1)
+Checked: Blockwright 0.1.0 (12ee9ef)
 
 # Selections, clipboard and paste modes
 
