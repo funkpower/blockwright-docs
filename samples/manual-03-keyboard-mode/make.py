@@ -2,7 +2,7 @@
 """Write the keyboard mode page's samples: python3 -I samples/manual-03-keyboard-mode/make.py
 
 glyph-sets.ans is the 16 F-key sets as Blockwright has them (core/src/glyph_sets.cpp
-at c44974c), set 6, the default, on blue. typed.ans is a sign typed in keyboard
+at 30c37b9), set 6, the default, on blue. typed.ans is a sign typed in keyboard
 mode: the frame with set 2's F-keys, the bar with set 6's, the word as letters.
 """
 

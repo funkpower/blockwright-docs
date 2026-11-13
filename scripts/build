@@ -105,7 +105,7 @@ MARKER_RE = re.compile(r"^<!-- (generated|list): ([a-z-]+) -->[ \t]*$")
 # The markers a page may use, exactly as written.
 MARKERS = ("<!-- generated: cli-help -->", "<!-- generated: shortcuts -->", "<!-- generated: checklist -->",
            "<!-- list: tutorials -->", "<!-- list: manual -->")
-# The commit in a version or a Checked: line: "Blockwright 0.1.0 (c44974c)".
+# The commit in a version or a Checked: line: "Blockwright 0.1.0 (30c37b9)".
 COMMIT_RE = re.compile(r"\(([^()\s]+)\)\s*$")
 # How long the app may take to answer --version or --list-actions before the
 # build gives up, in seconds; $BW_DOCS_APP_TIMEOUT sets another.
@@ -394,7 +394,7 @@ def shortcuts(app, cli_version, timeout):
         raise BuildError(f"{app} --version names no Qt on its second line; the shortcuts page needs a "
                          "Blockwright whose --version does (#463)")
     name = re.sub(r"^\S+", "Blockwright", version[0].strip(), count=1)
-    # "blockwright 0.1.0 (ae536de)" and "blockwright-cli 0.1.0 (ae536de)": the
+    # "blockwright 0.1.0 (ad55097)" and "blockwright-cli 0.1.0 (ad55097)": the
     # same once the program's name is dropped.
     if version[0].split()[1:] != cli_version.split()[1:]:
         raise BuildError(f"{app} is {version[0].strip()} but the CLI is {cli_version.strip()}; the shortcuts page "
@@ -482,7 +482,7 @@ def inline_code(text):
 
 def same_commit(a, b):
     """Whether a and b name one commit: the same hex, or one a prefix of the other
-    at 7 digits or more. A build from a changed tree ("ebd3feb-dirty") is no
+    at 7 digits or more. A build from a changed tree ("7e06a97-dirty") is no
     commit, so no page was checked against it."""
     if not (re.fullmatch(r"[0-9a-f]+", a) and re.fullmatch(r"[0-9a-f]+", b)):
         return False

@@ -1,5 +1,5 @@
 Title: Lint panel and the checks it runs
-Checked: Blockwright 0.1.0 (6cb21c1)
+Checked: Blockwright 0.1.0 (12ee9ef)
 
 # Lint panel and the checks it runs
 

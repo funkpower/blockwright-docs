@@ -1,5 +1,5 @@
 Title: Keyboard mode, F-key glyph sets and the pen
-Checked: Blockwright 0.1.0 (6cb21c1)
+Checked: Blockwright 0.1.0 (12ee9ef)
 
 # Keyboard mode, F-key glyph sets and the pen
 

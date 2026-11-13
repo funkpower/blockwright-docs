@@ -1241,7 +1241,7 @@ def checklist_behind(s):
     """A page checked against the CLI's commit is ready; checked against an older
     one it is behind, naming that commit, and the summary counts it."""
     commit = cli_commit(s)
-    older = "c44974c" if commit != "c44974c" else "06fbac5"
+    older = "30c37b9" if commit != "30c37b9" else "93be0b4"
     src = s.repo / "manual" / "06-symmetry.md"
     text = src.read_text(encoding="utf-8")
     s.write("manual/06-symmetry.md", re.sub(r"^Checked: .*$", f"Checked: Blockwright 0.1.0 ({commit})", text,

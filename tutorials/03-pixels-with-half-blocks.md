@@ -1,5 +1,5 @@
 Title: Pixels with half blocks
-Checked: Blockwright 0.1.0 (6cb21c1)
+Checked: Blockwright 0.1.0 (12ee9ef)
 
 # Pixels with half blocks
 
