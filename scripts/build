@@ -55,10 +55,12 @@ which always carry `noindex`.
 Pages link to the forge as `https://git.pumpin.online/...` (FORGE). `--forge-url
 URL` puts URL in its place in every link of the built site, so a copy of the
 site can send downloads to another address of the forge. `--mirror-url URL`
-adds a line to every page's footer naming the site's other address. A page
-may link out of the site only to the forge, the mirror and the licence
-(ALLOWED_EXTERNAL): any other http or https link fails the build, so the site
-works where only those addresses can be reached.
+adds a line to every page's footer naming the site's other address. A page,
+template included, may link out of the site only to the forge, the mirror and
+the licence (ALLOWED_EXTERNAL): any other http, https or // address in a tag's
+href, src, srcset, poster, data, action, formaction, cite, background or style
+url() fails the build, so the site works where only those addresses can be
+reached. Text in code, in <pre> and in comments is no link.
 
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
@@ -119,6 +121,12 @@ ALLOWED_EXTERNAL = ("https://creativecommons.org/licenses/by-sa/4.0/",)
 # optional port and path, nothing else.
 URL_RE = re.compile(r"^https?://[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::\d{1,5})?(?:/[A-Za-z0-9._~!$&'()*+,;=:@%/-]*)?$")
 ABSOLUTE_RE = re.compile(r"^(?:https?:)?//", re.I)
+# A comment, or an HTML tag with its attributes; an href or src attribute in one.
+TAG_RE = re.compile(r"<!--.*?-->|<[A-Za-z][^<>]*>", re.S)
+ATTR_RE = re.compile(r"""(?<![\w-])(href|src|srcset|poster|data|action|formaction|cite|background|style)\s*=\s*"""
+                     r"""(?:(["'])(.*?)\2|([^\s"'=<>`]+))""", re.I | re.S)
+# A url(...) in a style attribute.
+CSS_URL_RE = re.compile(r"""url\(\s*(["']?)(.*?)\1\s*\)""", re.I | re.S)
 EXTERNAL_RE = re.compile(r"^[a-z][a-z0-9+.-]*:|^//", re.I)
 MARKER_RE = re.compile(r"^<!-- (generated|list): ([a-z-]+) -->[ \t]*$")
 # The markers a page may use, exactly as written.
@@ -549,10 +557,18 @@ def checklist(pages, here, cli_version):
     return summary + "\n" + "\n".join(tables)
 
 
+def within(url, base):
+    """Whether url is base or under it: base itself, or base followed by a /, a
+    ? or a #, so https://git.pumpin.online.example.test isn't the forge."""
+    base = base.rstrip("/")
+    return url == base or url.startswith((base + "/", base + "?", base + "#"))
+
+
 def site_url(how, url):
     """url, which --forge-url or --mirror-url gave, if it is an http or https
     address with a host (and only a port and path after it)."""
-    if not URL_RE.match(url):
+    port = re.match(r"^https?://[^/:]+:(\d+)", url)
+    if not URL_RE.match(url) or (port and not 0 < int(port.group(1)) < 65536):
         raise BuildError(f"{how}: {url!r} isn't an http:// or https:// address with a host (and an optional port "
                          "and path, no query or fragment)")
     return url
@@ -669,24 +685,57 @@ class Builder:
 
         return re.sub(r'href="([^"]+)"', link, body)
 
-    def fix_external(self, page, body):
-        """Puts the forge's address (--forge-url) in place of FORGE in every link
-        and image, and fails a link or image out of the site that isn't the
-        forge, the mirror or the licence."""
-        def ext(m):
-            url = html.unescape(m.group(2))
-            moved = url == FORGE or url.startswith(FORGE + "/")
-            if moved:
-                url = self.forge + url[len(FORGE):]
+    def fix_external(self, page, doc):
+        """Puts the forge's address (--forge-url) in place of FORGE in every
+        address a tag of the page names (the template's included), and fails one
+        out of the site that isn't the forge, the mirror or the licence."""
+        def moved(url):
+            """url with the forge's address moved, and whether it was."""
+            url = url.strip()
+            if within(url, FORGE):
+                return self.forge + url[len(FORGE):], True
+            return url, False
+
+        def check(url):
             if ABSOLUTE_RE.match(url):
-                ok = (url == self.forge or url.startswith(self.forge + "/") or url in ALLOWED_EXTERNAL
-                      or (self.mirror and url.startswith(self.mirror)))
+                ok = within(url, self.forge) or url in ALLOWED_EXTERNAL or bool(self.mirror and within(url, self.mirror))
                 if not ok:
                     self.errors.append(f"{page.rel}: {url}: a link out of the site; pages link only to the forge "
                                        f"({self.forge}), the mirror and the licence")
-            return f'{m.group(1)}="{html.escape(url)}"' if moved else m.group(0)
 
-        return re.sub(r'\b(href|src)="([^"]*)"', ext, body)
+        def attr(m):
+            name, quote = m.group(1).lower(), m.group(2) or '"'
+            raw = m.group(3) if m.group(2) else m.group(4)
+            value = html.unescape(raw)
+            if name == "style":
+                def css(u):
+                    url, _ = moved(u.group(2))
+                    check(url)
+                    return f"url({u.group(1)}{url}{u.group(1)})"
+                new = CSS_URL_RE.sub(css, value)
+            elif name == "srcset":
+                parts = []
+                for candidate in filter(str.split, value.split(",")):
+                    url, *rest = candidate.split()
+                    url, _ = moved(url)
+                    check(url)
+                    parts.append(" ".join([url, *rest]))
+                new = ", ".join(parts)
+            else:
+                new, _ = moved(value)
+                check(new)
+            if new == value:
+                return m.group(0)
+            return f"{m.group(1)}={quote}{html.escape(new)}{quote}"
+
+        def tag(m):
+            if m.group(0).startswith("<!--"):
+                return m.group(0)  # a comment: nothing in it is a link
+            return ATTR_RE.sub(attr, m.group(0))
+
+        # Only attributes of real tags: code and <pre> text has its < escaped,
+        # and a comment links to nothing.
+        return TAG_RE.sub(tag, doc)
 
     def neighbours(self, page):
         if not page.section or page.is_index:
@@ -761,7 +810,6 @@ class Builder:
                              "item or blockquote), outside code")
         body = self.fix_images(page, body)
         body = self.fix_links(page, body)
-        body = self.fix_external(page, body)
         up = os.path.relpath(".", page.out.parent)
         root = "" if up == "." else up + "/"
         checked = ""
@@ -783,6 +831,7 @@ class Builder:
             nav=self.menu(page),
             mirror=mirror,
         )
+        doc = self.fix_external(page, doc)
         dest = self.out / page.out
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(doc, encoding="utf-8")

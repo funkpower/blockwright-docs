@@ -1,4 +1,5 @@
 Title: Blockwright
+Checked: Blockwright 0.1.1 (bd67fae)
 
 # Blockwright {.visually-hidden}
 
