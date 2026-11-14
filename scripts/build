@@ -573,7 +573,8 @@ def within(url, base):
 def srcset_candidates(value):
     """A srcset as (address, descriptors) pairs, split as HTML splits it: an
     address is a run of characters other than spaces (trailing commas end the
-    candidate), its descriptors run to the next comma outside brackets."""
+    candidate), its descriptors run to the next comma outside brackets, which
+    the first ) after a ( closes."""
     found, i, n = [], 0, len(value)
     while i < n:
         while i < n and (value[i].isspace() or value[i] == ","):
@@ -588,9 +589,14 @@ def srcset_candidates(value):
             found.append((url.rstrip(","), ""))
             i = j
             continue
-        k, depth = j, 0
-        while k < n and not (value[k] == "," and depth == 0):
-            depth = max(0, depth + {"(": 1, ")": -1}.get(value[k], 0))
+        # HTML's descriptor state: a ( enters brackets and the next ) leaves
+        # them, with no nesting; a comma outside them ends the candidate.
+        k, inside = j, False
+        while k < n and not (value[k] == "," and not inside):
+            if value[k] == "(":
+                inside = True
+            elif value[k] == ")":
+                inside = False
             k += 1
         found.append((url, value[j:k].strip()))
         i = k + 1
