@@ -5,7 +5,7 @@ Checked: Blockwright 0.1.1 (bd67fae)
 
 The sample projects that come with Blockwright, taken apart. Each one is built from layers, and each is shown here a layer at a time from the bottom up, with what every layer does, the variants it keeps, the finished piece and what it costs on IRC. Download a project and open it to turn its layers on and off yourself; the start screen and **Help > Samples** open the ones your Blockwright installed.
 
-Blockwright 0.1.0 installs five of them, Harbour at night, Still life, Ridges at dusk, Traveller and Blockwright logo, and Ember Kiln, a text-style logo DDOS KING has since replaced. DDOS KING, Battlestation, This Is Your Brain on IRC and wtc-0903 come with the next release; 0.1.0 opens their projects too.
+Blockwright 0.1.0 installs five of them, Harbour at night, Still life, Ridges at dusk, Traveller and Blockwright logo, and Ember Kiln, a text-style logo DDOS KING has since replaced. DDOS KING, Battlestation, This Is Your Brain on IRC and wtc-0903 come with 0.1.1; 0.1.0 opens their projects too.
 
 - [Harbour at night](#harbour-at-night)
 - [DDOS KING](#ddos-king)

@@ -204,8 +204,8 @@ def main():
             "layers on and off yourself; the start screen and **Help > Samples** open the ones your Blockwright installed.", "",
             "Blockwright 0.1.0 installs five of them, Harbour at night, Still life, Ridges at dusk, Traveller "
             "and Blockwright logo, and Ember Kiln, a text-style logo DDOS KING has since replaced. DDOS KING, "
-            "Battlestation, This Is Your Brain on IRC and wtc-0903 come with the next release; 0.1.0 opens "
-            "their projects too.", ""]
+            "Battlestation, This Is Your Brain on IRC and wtc-0903 come with 0.1.1; 0.1.0 opens their projects "
+            "too.", ""]
     page += [f"- [{title}](#{short})" for title, short, _ in sections]
     for _, _, md in sections:
         page += ["", md]
