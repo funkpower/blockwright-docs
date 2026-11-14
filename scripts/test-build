@@ -935,8 +935,8 @@ def menu_lists_every_page(s):
 @scenario
 def menu_marks_current(s):
     """On every page aria-current="page" is set exactly once, in the menu, on the
-    link to the page itself, and the page's section (none on the home page) is
-    the one marked "here"; on the standalone release checklist, which the menu
+    link to the page itself, and the page's section (none on the home page or
+    the Samples page) is the one marked "here"; on the standalone release checklist, which the menu
     doesn't list, nothing is marked."""
     pages = menu_site(s)
     check(CHECKLIST + ".html" in pages, "the release checklist wasn't built")
@@ -951,8 +951,236 @@ def menu_marks_current(s):
               f"{'in' if in_menu else 'outside'} the menu")
         check(resolve(name, href) == name, f"{name}: aria-current marks {href}, not this page")
         here = [i for i, c in enumerate(mp.parts) if "here" in c]
-        want = [] if "/" not in name else [["tutorials", "manual"].index(name.split("/")[0])]
+        section = name.split("/")[0] if "/" in name else None
+        want = [["tutorials", "manual"].index(section)] if section in ("tutorials", "manual") else []
         check(here == want, f"{name}: sections marked here: {here}, expected {want}")
+
+
+@scenario
+def menu_samples(s):
+    """The Samples page is built at samples/index.html and every page's menu
+    links it once, after the home link and before the sections; the home page
+    links it too."""
+    pages = menu_site(s)
+    check("samples/index.html" in pages, "the Samples page wasn't built")
+    for name, mp in pages.items():
+        menu = mp.menus[0]
+        at = [i for i, e in enumerate(menu) if e["href"] and resolve(name, e["href"]) == "samples/index.html"]
+        check(len(at) == 1, f"{name}: the menu links the Samples page {len(at)} times")
+        first = next(i for i, e in enumerate(menu) if e["kind"] == "section")
+        check(0 < at[0] < first and menu[at[0]]["text"] == "Samples",
+              f"{name}: Samples isn't between the home link and the sections")
+    home = s.page("index.html")
+    check('href="samples/index.html"' in home, "the home page doesn't link the Samples page")
+
+
+# 13. --forge-url, --mirror-url and links out of the site.
+
+FORGE = "https://git.pumpin.online"
+RELEASE = FORGE + "/funkpower/blockwright/releases/tag/v0.1.0"
+CC = "https://creativecommons.org/licenses/by-sa/4.0/"
+
+
+def absolute_links(site):
+    """{page: [every http or https href and src on it]} for every page in site."""
+    found = {}
+    for f in sorted(site.rglob("*.html")):
+        text = f.read_text(encoding="utf-8")
+        found[f.relative_to(site).as_posix()] = [html.unescape(u) for u in
+                                                  re.findall(r'(?:href|src)="((?:https?:)?//[^"]*)"', text)]
+    return found
+
+
+@scenario
+def forge_url_default(s):
+    """Without --forge-url the forge links stay as the pages write them: the
+    home page's downloads and the probe's link go to git.pumpin.online, and
+    every link out of the site is the forge's or the licence's."""
+    s.probe(f"[The release]({RELEASE}) and [the forge]({FORGE}).")
+    s.passed()
+    links = absolute_links(s.repo / "site")
+    check(RELEASE in links["manual/99-probe.html"] and FORGE in links["manual/99-probe.html"],
+          f"the probe's forge links changed: {links['manual/99-probe.html']}")
+    downloads = [u for u in links["index.html"] if "/releases/download/" in u]
+    check(len(downloads) >= 5 and all(u.startswith(FORGE + "/funkpower/blockwright/releases/download/")
+                                      for u in downloads), f"the home page's downloads: {downloads}")
+    for page, urls in links.items():
+        for u in urls:
+            check(u == FORGE or u.startswith(FORGE + "/") or u == CC, f"{page}: a link out of the site to {u}")
+
+
+@scenario
+def forge_url_moved(s):
+    """--forge-url puts its address in place of the forge's in every link on
+    every page, a trailing slash dropped, a query-free path and port kept; no
+    page names git.pumpin.online any more, and the licence link is left alone."""
+    other = "http://forge.example.test:8080/mirror"
+    s.probe(f"[The release]({RELEASE}), [the forge]({FORGE}) and [not the forge](https://git.pumpin.online.example.test/x).")
+    s.failed("--forge-url", other + "/", says="git.pumpin.online.example.test/x: a link out of the site")
+    s.probe(f"[The release]({RELEASE}) and [the forge]({FORGE}).")
+    s.passed("--forge-url", other + "/")
+    links = absolute_links(s.repo / "site")
+    check(other + "/funkpower/blockwright/releases/tag/v0.1.0" in links["manual/99-probe.html"]
+          and other in links["manual/99-probe.html"], f"the probe's links: {links['manual/99-probe.html']}")
+    downloads = [u for u in links["index.html"] if "/releases/download/" in u]
+    check(len(downloads) >= 5 and all(u.startswith(other + "/funkpower/blockwright/releases/download/")
+                                      for u in downloads), f"the home page's downloads: {downloads}")
+    for f in sorted((s.repo / "site").rglob("*.html")):
+        check("git.pumpin.online" not in f.read_text(encoding="utf-8"),
+              f"{f.relative_to(s.repo / 'site')} still names git.pumpin.online")
+    for page, urls in links.items():
+        check(CC in urls, f"{page}: no licence link")
+        for u in urls:
+            check(u.startswith(other) or u == CC, f"{page}: a link out of the site to {u}")
+
+
+@scenario
+def forge_url_refused(s):
+    """--forge-url and --mirror-url that aren't an http or https address with a
+    host are refused before anything is built."""
+    for bad in ["ftp://forge.example.test", "http://", "forge.example.test", "https://forge.example.test/?a=1",
+                "https://forge.example.test/#top", "https://forge example.test", "https://forge.example.test:99999",
+                "https://forge.example.test:0", "https://user@forge.example.test", "https://forge.example.test/a(b)",
+                "https://forge.example.test/a,b", "https://forge.example.test/a'b", "http://256.1.1.1", "http://1.2.3",
+                "http://example.0x1", ""]:
+        for flag in ["--forge-url", "--mirror-url"]:
+            s.failed(flag, bad, says=f"{flag}: {bad!r} isn't an http:// or https:// address")
+            check(not (s.repo / "site").exists(), f"{flag} {bad!r}: site/ was built")
+    for good in ["http://3com", "http://0xsite", "http://10.7.1.5:8080/x"]:
+        for flag in ["--forge-url", "--mirror-url"]:
+            s.build(flag, good, "--out", s.base / "good")
+            check("isn't an http:// or https:// address" not in s.out, f"{flag} {good!r} refused: {s.out.strip()[-200:]}")
+
+
+@scenario
+def mirror_url(s):
+    """Without --mirror-url no page names another address; with it every page's
+    footer carries exactly one line naming it, linked, and a page may link to
+    it."""
+    s.passed()
+    for f in sorted((s.repo / "site").rglob("*.html")):
+        check("Also at" not in f.read_text(encoding="utf-8"), f"{f.name}: an Also at line without --mirror-url")
+    mirror = "http://blockwright.test/"
+    s.probe(f"[The other address]({mirror}manual/14-cli.html).")
+    s.failed(says="blockwright.test/manual/14-cli.html: a link out of the site")
+    for other in ["http://blockwright.test.example.org/", "http://blockwright.test@example.org/x"]:
+        s.probe(f"[Not the mirror]({other}).")
+        s.failed("--mirror-url", "http://blockwright.test", says=f"{other}: a link out of the site")
+    s.probe(f"[The other address]({mirror}manual/14-cli.html).")
+    s.passed("--mirror-url", mirror)
+    line = f'Also at <a href="{mirror}">{mirror}</a>'
+    for f in sorted((s.repo / "site").rglob("*.html")):
+        text = f.read_text(encoding="utf-8")
+        footer = text[text.find("<footer>"):text.find("</footer>")]
+        check(text.count("Also at") == 1 and line in footer,
+              f"{f.relative_to(s.repo / 'site')}: not one Also at line in the footer")
+
+
+@scenario
+def template_links(s):
+    """The template's links go through the same pass as a page's: a forge link
+    in the footer moves with --forge-url, and a link out of the site there
+    fails the build."""
+    page = s.repo / "theme" / "page.html"
+    text = page.read_text(encoding="utf-8")
+    page.write_text(text.replace("</footer>", f' <a href="{FORGE}/funkpower/blockwright">Source</a></footer>'),
+                    encoding="utf-8")
+    s.passed("--forge-url", "http://forge.example.test")
+    home = s.page("index.html")
+    check('<a href="http://forge.example.test/funkpower/blockwright">Source</a></footer>' in home,
+          "the footer's forge link didn't move")
+    page.write_text(text.replace("</footer>", ' <a href="https://example.org/">Elsewhere</a></footer>'),
+                    encoding="utf-8")
+    s.failed(says="https://example.org/: a link out of the site")
+
+
+@scenario
+def external_link_refused(s):
+    """A link or an image out of the site to anything but the forge, the mirror
+    and the licence fails the build, naming the page and the address, with or
+    without the scheme, quoted either way or not at all, in any case; any other
+    address but a mailto: and a plain relative path fails too, and so do a tag
+    and an attribute the site doesn't use (anything that loads, embeds, runs or
+    redirects), a style but a column's alignment, an unreadable tag and a comment
+    closed early. mailto:, the licence and table alignment pass, and an address
+    in code, in <pre> text, in a comment or in another attribute's value is no
+    link: neither checked nor moved by --forge-url."""
+    cases = {
+        "a link out of the site": [
+            "[elsewhere](https://example.org/page)", "[elsewhere](http://example.org/)",
+            "[elsewhere](//example.org/)", "![a picture](https://example.org/x.png)",
+            '<a href="https://example.com/">raw</a>', "<a href='https://example.com/'>single quotes</a>",
+            '<a HREF = "https://example.com/">upper case</a>', "<a href=https://example.com/>unquoted</a>",
+            '<a title="1 > 0" href="https://example.com/">a quoted &gt;</a>',
+            "<a title='1 < 0' href=\"https://example.com/\">a quoted &lt;</a>"],
+        "an address the build can't read": [
+            '<a href="https:\\\\example.com/p.png">backslashes</a>', '<a href="/root.html">root</a>',
+            '<a href="javascript:void(0)">script</a>', '<img src="data:image/png;base64,AAAA" alt="">',
+            '<a href="irc://irc.example.org/blockwright">irc</a>'],
+        "an address with control characters": [
+            '<img src="\x0bhttps://example.com/b.png" alt="">', '<a href=" page.html">a space</a>'],
+        "a tag the site doesn't use": [
+            '<video poster="https://example.com/p.png"></video>', "<iframe srcdoc=\"&lt;img&gt;\"></iframe>",
+            '<svg><image href="https://example.com/a.png" /></svg>', '<style>@import "https://example.com/a.css";</style>',
+            '<script src="x.js"></script>', '<object data="https://example.com/x"></object>'],
+        "an attribute the site doesn't use": [
+            f'<img src="{FORGE}/a.png" srcset="https://example.com/a.png 2x" alt="">',
+            '<a href="#probe" ping="https://example.com/ping">ping</a>',
+            '<link rel="preload" as="image" imagesrcset="https://example.com/a.png 1x">',
+            '<meta http-equiv="refresh" content="0;url=https://example.com/">', '<a onclick="go()">js</a>',
+            '<div style="background: url(https://example.com/b.png)">styled</div>'],
+        "a style the site doesn't use": [
+            '<table><tr><td style="background: url(https://example.com/b.png)">styled</td></tr></table>',
+            '<table><tr><th style="background-image: image-set(&quot;https://example.com/a.png&quot; 1x)">set</th>'
+            '</tr></table>'],
+        "a stylesheet from outside the site": [f'<link rel="stylesheet" href="{FORGE}/probe.css">'],
+        "a link the site doesn't use": ['<link rel="prefetch" href="page.html">'],
+        "an end tag with attributes": ['<div>\n</b x="<i title=\'"><img src="https://example.com/b.png"><i title=\'>\n</div>'],
+        "a tag the build can't read": ['<div><a href="https://example.com/"title="no space">squeezed</a></div>'],
+    }
+    for says, bodies in cases.items():
+        for body in bodies:
+            s.probe(body)
+            s.failed(says="manual/99-probe.md: ")
+            check(says in s.out, f"{body}: expected {says!r} in {s.out.strip()[-300:]}")
+    s.probe('<!--><video poster="https://example.com/p.png"></video><!-- -->')
+    s.failed(says="<video>: a tag the site doesn't use")
+    s.probe('<div>a comment <!-- never closed</div>')
+    s.failed(says="a comment that isn't closed")
+    for body in ["<div>\n<!x <span title='><img src=\"https://example.com/a.png\">'>\n</div>",
+                 "<div>\n<?x <i title='><img src=\"https://example.com/c.png\">'>\n</div>",
+                 "<div>\n</ <i title='><img src=\"https://example.com/d.png\">'>\n</div>"]:
+        s.probe(body)
+        s.failed(says="a link out of the site")
+    for body in ['<div><img src=https://example.com/u.png alt=""></div>', '<div><img src=nothere.png alt=""></div>',
+                 "<div><img src='nothere.png' alt=\"\"></div>", '<div><img src=samples/home/logo-large.ans alt=""></div>']:
+        s.probe(body)
+        s.failed(says="an image whose src isn't in double quotes")
+    s.probe('<div><img\nsrc="../samples/home/logo-large.ans" alt="x"><IMG SRC="../samples/home/logo-large.ans" alt="y"></div>')
+    s.passed()
+    drawn = s.page()
+    check(drawn.count('logo-large.ans-1x.png"') == 2, "an <img> with a newline or in capitals wasn't drawn")
+    s.probe("<div><a href=missing.html>unquoted</a></div>")
+    s.failed(says="missing.html doesn't resolve")
+    s.probe(f"[Write](mailto:someone@example.org) and [the licence]({CC}).\n\n"
+            '<span title="href=\'https://example.org/\'">an address in another attribute</span>\n\n'
+            '<span title="<!--">a comment opener in a value</span>\n\n'
+            '`<a href="https://example.org/">` in code\n\n'
+            '    <img src="https://example.org/x.png">\n\n'
+            '<!-- <a href="https://example.org/">a comment</a> -->\n\n'
+            "| Left | Right |\n|:---|---:|\n| a | b |\n\n"
+            f'<pre>href="https://example.org/" and {FORGE}/x</pre>')
+    s.passed("--forge-url", "http://forge.example.test")
+    page = s.page()
+    check('style="text-align: right;"' in page, "the aligned table column wasn't built")
+    s.probe(f'<img src="{FORGE}/a.png" alt=""> [a query]({FORGE}?tab=repositories) [a fragment]({FORGE}#projects)')
+    s.passed("--forge-url", "http://forge.example.test")
+    moved = s.page()
+    check('src="http://forge.example.test/a.png"' in moved, "an image's forge address wasn't moved")
+    check('href="http://forge.example.test?tab=repositories"' in moved
+          and 'href="http://forge.example.test#projects"' in moved, "the forge with a query or fragment wasn't moved")
+    check(f"{FORGE}/x</pre>" in page, "the forge's address in <pre> text changed")
+    check("http://forge.example.test" not in page, "text that isn't a link was rewritten as one")
 
 
 # 10. scripts/deploy: local or remote, as rsync decides, and nowhere else.
@@ -1213,9 +1441,11 @@ def checklist_renders(s):
     check(len(rows) == want, f"{len(rows)} rows for {want} pages")
     check("Release checklist" not in rows, "the checklist lists itself")
     check(not list((s.repo / "site" / "manual").glob("*checklist*")), "a checklist page in manual/")
-    check(rows["Installing Blockwright"][0] == "Waits for packages", f"Install's status: {rows['Installing Blockwright']}")
+    check(rows["Installing Blockwright"][0] == "Not written", f"Install's status: {rows['Installing Blockwright']}")
     check(rows["What ANSI art is"][0] == "Written", f"tutorial 01's status: {rows['What ANSI art is']}")
-    check(f"<p>Blockwright 0.1.0 ({commit}): " in page, f"the summary doesn't name {commit}")
+    version = subprocess.run([s.real_cli(), "--version"], stdin=subprocess.DEVNULL, capture_output=True, text=True,
+                             timeout=REAL_APP_TIMEOUT).stdout.split()[1]
+    check(f"<p>Blockwright {version} ({commit}): " in page, f"the summary doesn't name {version} ({commit})")
     site = s.repo / "site"
     for f in sorted(site.rglob("*.html")):
         name = f.relative_to(site).as_posix()

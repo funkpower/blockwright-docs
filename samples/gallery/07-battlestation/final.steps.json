@@ -1,0 +1,12 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "07-battlestation"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "final"
+  }
+ ]
+}

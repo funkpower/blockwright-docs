@@ -1,0 +1,37 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "03-still-life"
+ },
+ "steps": [
+  {
+   "name": "layer",
+   "action": "setActiveLayer",
+   "layer": "sphere"
+  },
+  {
+   "name": "zoom",
+   "action": "view",
+   "zoom": 1
+  },
+  {
+   "action": "form",
+   "ramp": "sea",
+   "size": 6,
+   "light": "NW",
+   "form": {
+    "shape": "dome",
+    "rim": false,
+    "specular": true
+   },
+   "name": "still-life",
+   "screenshot": {
+    "of": "window"
+   }
+  }
+ ],
+ "window": [
+  1600,
+  1000
+ ]
+}

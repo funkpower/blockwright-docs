@@ -1,0 +1,32 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "07-battlestation"
+ },
+ "steps": [
+  {
+   "name": "layer",
+   "action": "setActiveLayer",
+   "layer": "glow"
+  },
+  {
+   "name": "zoom",
+   "action": "view",
+   "zoom": 1
+  },
+  {
+   "action": "colorize",
+   "fg": 9,
+   "size": 4,
+   "tip": "round",
+   "name": "battlestation",
+   "screenshot": {
+    "of": "window"
+   }
+  }
+ ],
+ "window": [
+  1600,
+  1000
+ ]
+}

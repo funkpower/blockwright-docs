@@ -1,0 +1,232 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "09-wtc-0903"
+ },
+ "steps": [
+  {
+   "name": "pick-1",
+   "action": "setActiveLayer",
+   "layer": "tag"
+  },
+  {
+   "name": "hide-2",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-3",
+   "action": "setActiveLayer",
+   "layer": "reflections"
+  },
+  {
+   "name": "hide-4",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-5",
+   "action": "setActiveLayer",
+   "layer": "water"
+  },
+  {
+   "name": "hide-6",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-7",
+   "action": "setActiveLayer",
+   "layer": "skyline"
+  },
+  {
+   "name": "hide-8",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-9",
+   "action": "setActiveLayer",
+   "layer": "plane"
+  },
+  {
+   "name": "hide-10",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-11",
+   "action": "setActiveLayer",
+   "layer": "fireball"
+  },
+  {
+   "name": "hide-12",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-13",
+   "action": "setActiveLayer",
+   "layer": "sunlight"
+  },
+  {
+   "name": "hide-14",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-15",
+   "action": "setActiveLayer",
+   "layer": "South Tower"
+  },
+  {
+   "name": "hide-16",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-17",
+   "action": "setActiveLayer",
+   "layer": "fire"
+  },
+  {
+   "name": "hide-18",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-19",
+   "action": "setActiveLayer",
+   "layer": "plume"
+  },
+  {
+   "name": "hide-20",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-21",
+   "action": "setActiveLayer",
+   "layer": "North Tower"
+  },
+  {
+   "name": "hide-22",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "action": "shade",
+   "name": "layer-01"
+  },
+  {
+   "name": "pick-24",
+   "action": "setActiveLayer",
+   "layer": "North Tower"
+  },
+  {
+   "name": "layer-02",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-26",
+   "action": "setActiveLayer",
+   "layer": "plume"
+  },
+  {
+   "name": "layer-03",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-28",
+   "action": "setActiveLayer",
+   "layer": "fire"
+  },
+  {
+   "name": "layer-04",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-30",
+   "action": "setActiveLayer",
+   "layer": "South Tower"
+  },
+  {
+   "name": "layer-05",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-32",
+   "action": "setActiveLayer",
+   "layer": "sunlight"
+  },
+  {
+   "name": "layer-06",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-34",
+   "action": "setActiveLayer",
+   "layer": "fireball"
+  },
+  {
+   "name": "layer-07",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-36",
+   "action": "setActiveLayer",
+   "layer": "plane"
+  },
+  {
+   "name": "layer-08",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-38",
+   "action": "setActiveLayer",
+   "layer": "skyline"
+  },
+  {
+   "name": "layer-09",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-40",
+   "action": "setActiveLayer",
+   "layer": "water"
+  },
+  {
+   "name": "layer-10",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-42",
+   "action": "setActiveLayer",
+   "layer": "reflections"
+  },
+  {
+   "name": "layer-11",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-44",
+   "action": "setActiveLayer",
+   "layer": "tag"
+  },
+  {
+   "name": "layer-12",
+   "action": "layerProperties",
+   "visible": true
+  }
+ ]
+}

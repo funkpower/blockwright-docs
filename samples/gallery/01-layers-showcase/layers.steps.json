@@ -1,0 +1,192 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "01-layers-showcase"
+ },
+ "steps": [
+  {
+   "name": "pick-1",
+   "action": "setActiveLayer",
+   "layer": "title"
+  },
+  {
+   "name": "hide-2",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-3",
+   "action": "setActiveLayer",
+   "layer": "fog"
+  },
+  {
+   "name": "hide-4",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-5",
+   "action": "setActiveLayer",
+   "layer": "reflection"
+  },
+  {
+   "name": "hide-6",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-7",
+   "action": "setActiveLayer",
+   "layer": "water"
+  },
+  {
+   "name": "hide-8",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-9",
+   "action": "setActiveLayer",
+   "layer": "quay"
+  },
+  {
+   "name": "hide-10",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-11",
+   "action": "setActiveLayer",
+   "layer": "skyline"
+  },
+  {
+   "name": "hide-12",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-13",
+   "action": "setActiveLayer",
+   "layer": "cloud"
+  },
+  {
+   "name": "hide-14",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-15",
+   "action": "setActiveLayer",
+   "layer": "moon"
+  },
+  {
+   "name": "hide-16",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-17",
+   "action": "setActiveLayer",
+   "layer": "stars"
+  },
+  {
+   "name": "hide-18",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "action": "shade",
+   "name": "layer-01"
+  },
+  {
+   "name": "pick-20",
+   "action": "setActiveLayer",
+   "layer": "stars"
+  },
+  {
+   "name": "layer-02",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-22",
+   "action": "setActiveLayer",
+   "layer": "moon"
+  },
+  {
+   "name": "layer-03",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-24",
+   "action": "setActiveLayer",
+   "layer": "cloud"
+  },
+  {
+   "name": "layer-04",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-26",
+   "action": "setActiveLayer",
+   "layer": "skyline"
+  },
+  {
+   "name": "layer-05",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-28",
+   "action": "setActiveLayer",
+   "layer": "quay"
+  },
+  {
+   "name": "layer-06",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-30",
+   "action": "setActiveLayer",
+   "layer": "water"
+  },
+  {
+   "name": "layer-07",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-32",
+   "action": "setActiveLayer",
+   "layer": "reflection"
+  },
+  {
+   "name": "layer-08",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-34",
+   "action": "setActiveLayer",
+   "layer": "fog"
+  },
+  {
+   "name": "layer-09",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-36",
+   "action": "setActiveLayer",
+   "layer": "title"
+  },
+  {
+   "name": "layer-10",
+   "action": "layerProperties",
+   "visible": true
+  }
+ ]
+}

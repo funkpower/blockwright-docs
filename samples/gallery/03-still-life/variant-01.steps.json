@@ -1,0 +1,13 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "03-still-life",
+  "variant": "No rim light"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "variant"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "01-layers-showcase"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "final"
+  }
+ ]
+}

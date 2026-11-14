@@ -1,0 +1,13 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "07-battlestation",
+  "variant": "No glow"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "variant"
+  }
+ ]
+}

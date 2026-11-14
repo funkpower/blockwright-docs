@@ -1,0 +1,13 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "09-wtc-0903",
+  "variant": "Before 8:46"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "variant"
+  }
+ ]
+}
