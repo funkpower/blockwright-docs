@@ -118,15 +118,21 @@ FORGE = "https://git.pumpin.online"
 # The only links out of the site besides the forge and the mirror.
 ALLOWED_EXTERNAL = ("https://creativecommons.org/licenses/by-sa/4.0/",)
 # An address --forge-url and --mirror-url take: http or https, a host, an
-# optional port and path, nothing else.
-URL_RE = re.compile(r"^https?://[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::\d{1,5})?(?:/[A-Za-z0-9._~!$&'()*+,;=:@%/-]*)?$")
+# optional port and a path of letters, digits, / . _ ~ % and -, nothing else
+# (no character that needs escaping in a URL list or in CSS).
+URL_RE = re.compile(r"^https?://[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::\d{1,5})?(?:/[A-Za-z0-9._~%/-]*)?$")
 ABSOLUTE_RE = re.compile(r"^(?:https?:)?//", re.I)
-# A comment, or an HTML tag with its attributes; an href or src attribute in one.
-TAG_RE = re.compile(r"<!--.*?-->|<[A-Za-z][^<>]*>", re.S)
-ATTR_RE = re.compile(r"""(?<![\w-])(href|src|srcset|poster|data|action|formaction|cite|background|style)\s*=\s*"""
-                     r"""(?:(["'])(.*?)\2|([^\s"'=<>`]+))""", re.I | re.S)
+# HTML as the link pass reads it: a comment, a tag, or the start of a tag it
+# can't read. A tag is its name and its attributes, each a name with an
+# optional value in double, single or no quotes, so a quoted value may hold
+# < > = and attribute names without being taken for more of the tag.
+ATTR = r"""(\s+)([^\s"'<>/=]+)(?:(\s*=\s*)(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?"""
+TAG_RE = re.compile(r"<!--.*?-->|<(?:[A-Za-z][^\s/>]*(?:" + ATTR + r""")*\s*/?>)?""", re.S)
+ATTR_RE = re.compile(ATTR, re.S)
+# The attributes that name an address.
+URL_ATTRS = {"href", "src", "srcset", "poster", "data", "action", "formaction", "cite", "background"}
 # A url(...) in a style attribute.
-CSS_URL_RE = re.compile(r"""url\(\s*(["']?)(.*?)\1\s*\)""", re.I | re.S)
+CSS_URL_RE = re.compile(r"""url\(\s*(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|([^\s"')]*))\s*\)""", re.I | re.S)
 EXTERNAL_RE = re.compile(r"^[a-z][a-z0-9+.-]*:|^//", re.I)
 MARKER_RE = re.compile(r"^<!-- (generated|list): ([a-z-]+) -->[ \t]*$")
 # The markers a page may use, exactly as written.
@@ -564,6 +570,33 @@ def within(url, base):
     return url == base or url.startswith((base + "/", base + "?", base + "#"))
 
 
+def srcset_candidates(value):
+    """A srcset as (address, descriptors) pairs, split as HTML splits it: an
+    address is a run of characters other than spaces (trailing commas end the
+    candidate), its descriptors run to the next comma outside brackets."""
+    found, i, n = [], 0, len(value)
+    while i < n:
+        while i < n and (value[i].isspace() or value[i] == ","):
+            i += 1
+        j = i
+        while j < n and not value[j].isspace():
+            j += 1
+        url = value[i:j]
+        if not url:
+            break
+        if url.endswith(","):
+            found.append((url.rstrip(","), ""))
+            i = j
+            continue
+        k, depth = j, 0
+        while k < n and not (value[k] == "," and depth == 0):
+            depth += {"(": 1, ")": -1}.get(value[k], 0)
+            k += 1
+        found.append((url, value[j:k].strip()))
+        i = k + 1
+    return found
+
+
 def site_url(how, url):
     """url, which --forge-url or --mirror-url gave, if it is an http or https
     address with a host (and only a port and path after it)."""
@@ -703,35 +736,51 @@ class Builder:
                     self.errors.append(f"{page.rel}: {url}: a link out of the site; pages link only to the forge "
                                        f"({self.forge}), the mirror and the licence")
 
-        def attr(m):
-            name, quote = m.group(1).lower(), m.group(2) or '"'
-            raw = m.group(3) if m.group(2) else m.group(4)
-            value = html.unescape(raw)
+        def address(value):
+            new, _ = moved(value)
+            check(new)
+            return new
+
+        def value_of(name, value):
+            """The attribute's value with the forge moved, every address checked."""
             if name == "style":
                 def css(u):
-                    url, _ = moved(u.group(2))
-                    check(url)
-                    return f"url({u.group(1)}{url}{u.group(1)})"
-                new = CSS_URL_RE.sub(css, value)
-            elif name == "srcset":
-                parts = []
-                for candidate in filter(str.split, value.split(",")):
-                    url, *rest = candidate.split()
-                    url, _ = moved(url)
-                    check(url)
-                    parts.append(" ".join([url, *rest]))
-                new = ", ".join(parts)
-            else:
-                new, _ = moved(value)
-                check(new)
+                    old = next(g for g in (u.group(1), u.group(2), u.group(3)) if g is not None)
+                    old = re.sub(r"\\(.)", r"\1", old)
+                    new = address(old)
+                    if new == old:
+                        return u.group(0)
+                    return 'url("' + new.replace("\\", "\\\\").replace('"', '\\"') + '")'
+                return CSS_URL_RE.sub(css, value)
+            if name == "srcset":
+                parts = [(address(url), d) for url, d in srcset_candidates(value)]
+                if [u for u, _ in parts] == [u for u, _ in srcset_candidates(value)]:
+                    return value
+                return ", ".join(u + (" " + d if d else "") for u, d in parts)
+            return address(value)
+
+        def attr(m):
+            name = m.group(2).lower()
+            if m.group(3) is None or (name not in URL_ATTRS and name != "style"):
+                return m.group(0)
+            raw = next(g for g in (m.group(4), m.group(5), m.group(6)) if g is not None)
+            value = html.unescape(raw)
+            new = value_of(name, value)
             if new == value:
                 return m.group(0)
-            return f"{m.group(1)}={quote}{html.escape(new)}{quote}"
+            return f'{m.group(1)}{m.group(2)}{m.group(3)}"{html.escape(new)}"'
 
         def tag(m):
-            if m.group(0).startswith("<!--"):
-                return m.group(0)  # a comment: nothing in it is a link
-            return ATTR_RE.sub(attr, m.group(0))
+            text = m.group(0)
+            if text.startswith("<!--"):
+                return text  # a comment: nothing in it is a link
+            if text == "<":
+                rest = doc[m.end():m.end() + 1]
+                if rest[:1].isalpha():
+                    self.errors.append(f"{page.rel}: a tag the build can't read: {doc[m.start():m.start() + 60]!r}")
+                return text  # a < that starts no tag
+            name = re.match(r"<[^\s/>]*", text).group(0)
+            return name + ATTR_RE.sub(attr, text[len(name):])
 
         # Only attributes of real tags: code and <pre> text has its < escaped,
         # and a comment links to nothing.

@@ -1040,7 +1040,8 @@ def forge_url_refused(s):
     host are refused before anything is built."""
     for bad in ["ftp://forge.example.test", "http://", "forge.example.test", "https://forge.example.test/?a=1",
                 "https://forge.example.test/#top", "https://forge example.test", "https://forge.example.test:99999",
-                "https://forge.example.test:0", "https://user@forge.example.test", ""]:
+                "https://forge.example.test:0", "https://user@forge.example.test", "https://forge.example.test/a(b)",
+                "https://forge.example.test/a,b", "https://forge.example.test/a'b", ""]:
         for flag in ["--forge-url", "--mirror-url"]:
             s.failed(flag, bad, says=f"{flag}: {bad!r} isn't an http:// or https:// address")
             check(not (s.repo / "site").exists(), f"{flag} {bad!r}: site/ was built")
@@ -1101,11 +1102,16 @@ def external_link_refused(s):
                  '<a HREF = "https://example.com/">upper case</a>', "<a href=https://example.com/>unquoted</a>",
                  f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png 1x, https://example.com/a.png 2x" alt="">',
                  '<video poster="https://example.com/p.png"></video>',
-                 '<div style="background: url(\'https://example.com/b.png\')">styled</div>']:
+                 '<div style="background: url(\'https://example.com/b.png\')">styled</div>',
+                 '<a title="1 > 0" href="https://example.com/">a quoted &gt;</a>',
+                 "<a title='1 < 0' href=\"https://example.com/\">a quoted &lt;</a>"]:
         s.probe(body)
         s.failed(says="manual/99-probe.md: ")
         check("a link out of the site" in s.out, f"{body}: {s.out.strip()[-300:]}")
+    s.probe('<div><a href="https://example.com/"title="no space">squeezed</a></div>')
+    s.failed(says="a tag the build can't read")
     s.probe(f"[Write](mailto:someone@example.org) and [the licence]({CC}).\n\n"
+            '<span title="href=\'https://example.org/\'">an address in another attribute</span>\n\n'
             '`<a href="https://example.org/">` in code\n\n'
             '    <img src="https://example.org/x.png">\n\n'
             '<!-- <a href="https://example.org/">a comment</a> -->\n\n'
@@ -1113,11 +1119,15 @@ def external_link_refused(s):
     s.passed("--forge-url", "http://forge.example.test")
     page = s.page()
     s.probe(f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png 1x, {FORGE}/b.png 2x" alt=""> '
+            f'<img src="{FORGE}/c.png" srcset="{FORGE}/img,a.png 1x" alt=""> '
+            f'<span style="background: url({FORGE}/d.png)">styled</span> '
             f'[a query]({FORGE}?tab=repositories) [a fragment]({FORGE}#projects)')
     s.passed("--forge-url", "http://forge.example.test")
     moved = s.page()
     check('srcset="http://forge.example.test/a.png 1x, http://forge.example.test/b.png 2x"' in moved,
           "a srcset's forge addresses weren't moved")
+    check('srcset="http://forge.example.test/img,a.png 1x"' in moved, "a comma in a srcset address split it")
+    check('url(&quot;http://forge.example.test/d.png&quot;)' in moved, "a style's url() wasn't moved and quoted")
     check('href="http://forge.example.test?tab=repositories"' in moved
           and 'href="http://forge.example.test#projects"' in moved, "the forge with a query or fragment wasn't moved")
     check(f"{FORGE}/x</pre>" in page, "the forge's address in <pre> text changed")
