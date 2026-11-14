@@ -1046,6 +1046,10 @@ def forge_url_refused(s):
         for flag in ["--forge-url", "--mirror-url"]:
             s.failed(flag, bad, says=f"{flag}: {bad!r} isn't an http:// or https:// address")
             check(not (s.repo / "site").exists(), f"{flag} {bad!r}: site/ was built")
+    for good in ["http://3com", "http://0xsite", "http://10.7.1.5:8080/x"]:
+        for flag in ["--forge-url", "--mirror-url"]:
+            s.build(flag, good, "--out", s.base / "good")
+            check("isn't an http:// or https:// address" not in s.out, f"{flag} {good!r} refused: {s.out.strip()[-200:]}")
 
 
 @scenario

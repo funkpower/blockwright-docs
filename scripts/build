@@ -596,9 +596,9 @@ def site_url(how, url):
     port = re.match(r"^https?://[^/:]+:(\d+)", url)
     host = re.match(r"^https?://([^/:]*)", url).group(1) if URL_RE.match(url) else ""
     last = host.rsplit(".", 1)[-1].lower()
-    # A host whose last label is a number is an IPv4 address to a URL parser:
-    # only four dotted numbers 0-255 are one.
-    numeric = last[:1].isdigit() or last.startswith("0x")
+    # A host whose last label is a number (all digits, or 0x and hex digits)
+    # is an IPv4 address to a URL parser: only four dotted numbers 0-255 are one.
+    numeric = bool(re.fullmatch(r"\d+|0x[0-9a-f]*", last))
     if numeric and not re.fullmatch(r"(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)",
                                     host):
         host = ""
