@@ -60,7 +60,9 @@ template included, may link out of the site only to the forge, the mirror and
 the licence (ALLOWED_EXTERNAL): any other http, https or // address in a tag's
 href, src, srcset, poster, data, action, formaction, cite, background or style
 url() fails the build, so the site works where only those addresses can be
-reached. Text in code, in <pre> and in comments is no link.
+reached. Any other address that isn't a mailto: or a relative path of
+letters, digits and / . _ ~ % - # fails too. Text in code, in <pre> and in
+comments is no link.
 
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
@@ -573,6 +575,11 @@ def within(url, base):
 
 # The whitespace HTML splits on: a no-break space is part of an address.
 ASCII_SPACE = " \t\n\f\r"
+# A relative address the build lets through: ASCII letters, digits and
+# / . _ ~ % - #, not starting with /, so it can name no scheme, host or
+# backslash form (empty is the page itself).
+SAFE_RELATIVE_RE = re.compile(r"^(?:[A-Za-z0-9._~%#-][A-Za-z0-9/._~%#-]*)?$")
+MAILTO_RE = re.compile(r"^mailto:[^\x00-\x20\x7f\\]+$", re.I)
 # What a URL parser trims from both ends of an address: C0 controls and space.
 C0_SPACE = "".join(map(chr, range(0x21)))
 
@@ -745,11 +752,18 @@ class Builder:
             return url, False
 
         def check(url):
+            """Default-deny: the forge, the mirror, the licence, a mailto: or a
+            plain relative path; anything else fails the build."""
+            if within(url, self.forge) or url in ALLOWED_EXTERNAL or bool(self.mirror and within(url, self.mirror)):
+                return
+            if SAFE_RELATIVE_RE.match(url) or MAILTO_RE.match(url):
+                return
             if ABSOLUTE_RE.match(url):
-                ok = within(url, self.forge) or url in ALLOWED_EXTERNAL or bool(self.mirror and within(url, self.mirror))
-                if not ok:
-                    self.errors.append(f"{page.rel}: {url}: a link out of the site; pages link only to the forge "
-                                       f"({self.forge}), the mirror and the licence")
+                self.errors.append(f"{page.rel}: {url}: a link out of the site; pages link only to the forge "
+                                   f"({self.forge}), the mirror and the licence")
+            else:
+                self.errors.append(f"{page.rel}: {url!r}: an address the build can't read; a page's own addresses "
+                                   "are relative paths of letters, digits and / . _ ~ % - #")
 
         def address(value):
             new, _ = moved(value)

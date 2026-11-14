@@ -1115,6 +1115,12 @@ def external_link_refused(s):
         check("a link out of the site" in s.out, f"{body}: {s.out.strip()[-300:]}")
     s.probe('<div><a href="https://example.com/"title="no space">squeezed</a></div>')
     s.failed(says="a tag the build can't read")
+    for body in [f'<img src="{FORGE}/a.png" srcset="\x0b,https://example.com/b.png 2x" alt="">',
+                 '<video poster="https:\\\\example.com/p.png"></video>', '<a href="/root.html">root</a>',
+                 '<a href="javascript:void(0)">script</a>', '<img src="data:image/png;base64,AAAA" alt="">',
+                 '<a href="irc://irc.example.org/blockwright">irc</a>']:
+        s.probe(body)
+        s.failed(says="an address the build can't read")
     for style in ["background: url(https://example.com/a\\ b.png)", f"background: url({FORGE}/a\\)b.png)"]:
         s.probe(f'<div style="{style}">escaped</div>')
         s.failed(says="a style the build can't read")
