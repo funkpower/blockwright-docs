@@ -126,8 +126,9 @@ ABSOLUTE_RE = re.compile(r"^(?:https?:)?//", re.I)
 # can't read. A tag is its name and its attributes, each a name with an
 # optional value in double, single or no quotes, so a quoted value may hold
 # < > = and attribute names without being taken for more of the tag.
-ATTR = r"""(\s+)([^\s"'<>/=]+)(?:(\s*=\s*)(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?"""
-TAG_RE = re.compile(r"<!--.*?-->|<(?:[A-Za-z][^\s/>]*(?:" + ATTR + r""")*\s*/?>)?""", re.S)
+# Whitespace is HTML's: ASCII only.
+ATTR = r"""([ \t\n\f\r]+)([^ \t\n\f\r"'<>/=]+)(?:([ \t\n\f\r]*=[ \t\n\f\r]*)(?:"([^"]*)"|'([^']*)'|([^ \t\n\f\r"'=<>`]+)))?"""
+TAG_RE = re.compile(r"<!--.*?-->|<(?:[A-Za-z][^ \t\n\f\r/>]*(?:" + ATTR + r""")*[ \t\n\f\r]*/?>)?""", re.S)
 ATTR_RE = re.compile(ATTR, re.S)
 # The attributes that name an address.
 URL_ATTRS = {"href", "src", "srcset", "poster", "data", "action", "formaction", "cite", "background"}
@@ -570,6 +571,10 @@ def within(url, base):
     return url == base or url.startswith((base + "/", base + "?", base + "#"))
 
 
+# The whitespace HTML splits on: a no-break space is part of an address.
+ASCII_SPACE = " \t\n\f\r"
+
+
 def srcset_candidates(value):
     """A srcset as (address, descriptors) pairs, split as HTML splits it: an
     address is a run of characters other than spaces (trailing commas end the
@@ -577,10 +582,10 @@ def srcset_candidates(value):
     the first ) after a ( closes."""
     found, i, n = [], 0, len(value)
     while i < n:
-        while i < n and (value[i].isspace() or value[i] == ","):
+        while i < n and (value[i] in ASCII_SPACE or value[i] == ","):
             i += 1
         j = i
-        while j < n and not value[j].isspace():
+        while j < n and value[j] not in ASCII_SPACE:
             j += 1
         url = value[i:j]
         if not url:
@@ -598,7 +603,7 @@ def srcset_candidates(value):
             elif value[k] == ")":
                 inside = False
             k += 1
-        found.append((url, value[j:k].strip()))
+        found.append((url, value[j:k].strip(ASCII_SPACE)))
         i = k + 1
     return found
 
@@ -730,7 +735,7 @@ class Builder:
         out of the site that isn't the forge, the mirror or the licence."""
         def moved(url):
             """url with the forge's address moved, and whether it was."""
-            url = url.strip()
+            url = url.strip(ASCII_SPACE)
             if within(url, FORGE):
                 return self.forge + url[len(FORGE):], True
             return url, False
@@ -791,7 +796,7 @@ class Builder:
                 if rest[:1].isalpha():
                     self.errors.append(f"{page.rel}: a tag the build can't read: {doc[m.start():m.start() + 60]!r}")
                 return text  # a < that starts no tag
-            name = re.match(r"<[^\s/>]*", text).group(0)
+            name = re.match(r"<[^ \t\n\f\r/>]*", text).group(0)
             return name + ATTR_RE.sub(attr, text[len(name):])
 
         # Only attributes of real tags: code and <pre> text has its < escaped,

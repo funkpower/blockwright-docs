@@ -1106,7 +1106,8 @@ def external_link_refused(s):
                  '<a title="1 > 0" href="https://example.com/">a quoted &gt;</a>',
                  "<a title='1 < 0' href=\"https://example.com/\">a quoted &lt;</a>",
                  f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png bad), https://example.com/b.png 2x" alt="">',
-                 f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png bad((), https://example.com/b.png 2x" alt="">']:
+                 f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png bad((), https://example.com/b.png 2x" alt="">',
+                 f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png&nbsp;(, https://example.com/b.png 2x" alt="">']:
         s.probe(body)
         s.failed(says="manual/99-probe.md: ")
         check("a link out of the site" in s.out, f"{body}: {s.out.strip()[-300:]}")
@@ -1125,6 +1126,7 @@ def external_link_refused(s):
     page = s.page()
     s.probe(f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png 1x, {FORGE}/b.png 2x" alt=""> '
             f'<img src="{FORGE}/c.png" srcset="{FORGE}/img,a.png 1x" alt=""> '
+            f'<img src="{FORGE}/e.png" srcset="{FORGE}/a&nbsp;b.png 1x" alt=""> '
             f'<span style="background: url({FORGE}/d.png)">styled</span> '
             f'[a query]({FORGE}?tab=repositories) [a fragment]({FORGE}#projects)')
     s.passed("--forge-url", "http://forge.example.test")
@@ -1132,6 +1134,7 @@ def external_link_refused(s):
     check('srcset="http://forge.example.test/a.png 1x, http://forge.example.test/b.png 2x"' in moved,
           "a srcset's forge addresses weren't moved")
     check('srcset="http://forge.example.test/img,a.png 1x"' in moved, "a comma in a srcset address split it")
+    check('srcset="http://forge.example.test/a\u00a0b.png 1x"' in moved, "a no-break space in a srcset address split it")
     check('url(&quot;http://forge.example.test/d.png&quot;)' in moved, "a style's url() wasn't moved and quoted")
     check('href="http://forge.example.test?tab=repositories"' in moved
           and 'href="http://forge.example.test#projects"' in moved, "the forge with a query or fragment wasn't moved")
