@@ -69,7 +69,7 @@ A [Library stamp](08-library.md#placing-a-stamp) says *Could not place* and its 
 While it can't land:
 
 - <kbd>Enter</kbd>, a click on or off the float, **Select All**, **Deselect**, a paste, a new stamp or text style, taking another tool, typing and the F-keys, and an <kbd>Alt</kbd>+drag that moves the layer are refused the same way.
-- **Save**, **Save As...**, a snapshot, **Canvas Size...**, **Export IRC Text...**, **Publish to Library...** and **Send to WeeChat...** are refused too: *Not saved: the floating selection can't land: …*, or the like.
+- **Save**, **Save As...**, a snapshot, **Canvas Size...**, **Export IRC Text...**, **Export Micron...**, **Publish to Library...** and **Send to WeeChat...** are refused too: *Not saved: the floating selection can't land: …*, or the like.
 - **New**, **Open** and closing the window ask first, even when nothing else has changed, and say the float can't land. **Save** can't keep it; **Discard** drops it with any other changes.
 - A change you make to the layers, not an **Undo** or **Redo** of one, drops it, with nothing written, and says *Dropped the floating selection, which can't land: …*: making another layer active, adding, deleting, moving, hiding, showing, locking or unlocking a layer, changing its other properties, a bake, or an iCE switch that restyles a layer. Renaming a layer or ticking its alpha lock leaves the float up.
 - <kbd>Esc</kbd> drops it, and so does an **Undo** or **Redo** that drops any float ([The float](#the-float)). **Delete** clears it as it clears any float.

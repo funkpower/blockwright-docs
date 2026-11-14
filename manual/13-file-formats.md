@@ -3,7 +3,7 @@ Checked: Blockwright 0.1.0 (12ee9ef)
 
 # File formats: .ans, SAUCE, IRC text, UTF-8, XBIN, project files
 
-Blockwright keeps a piece in one of four files: an ANSI file (`.ans`) with its SAUCE record, an XBIN (`.xb`), a BIN (`.bin`), or a Blockwright project (`.bwp`, or a project directory). It writes IRC text (`.txt`) and PNG pictures, and reads no other art format; the other files it reads are listed in [Other files Blockwright reads](#other-files-blockwright-reads). A project holds everything the editor has; each of the others holds less, and the editor says what before it writes one.
+Blockwright keeps a piece in one of four files: an ANSI file (`.ans`) with its SAUCE record, an XBIN (`.xb`), a BIN (`.bin`), or a Blockwright project (`.bwp`, or a project directory). It writes IRC text (`.txt`), Micron pages (`.mu`) and PNG pictures, and reads no other art format; the other files it reads are listed in [Other files Blockwright reads](#other-files-blockwright-reads). A project holds everything the editor has; each of the others holds less, and the editor says what before it writes one.
 
 | Format | Read | Write | Holds |
 |---|---|---|---|
@@ -12,6 +12,7 @@ Blockwright keeps a piece in one of four files: an ANSI file (`.ans`) with its S
 | XBIN, `.xb` | Yes | Yes | One flat canvas, its own palette and font, iCE, SAUCE without its flags |
 | BIN, `.bin` | Yes | Yes | One flat canvas an even number of columns wide, iCE, SAUCE |
 | IRC text, `.txt` | No | Yes | The rows as IRC lines, in mIRC colours |
+| Micron page, `.mu` | No | Yes | The rows as a NomadNet page, in the document's colours, bold, italic and underline |
 | PNG | No | Yes, with `blockwright-cli render` | A picture |
 
 ## Opening a file
@@ -333,6 +334,63 @@ Closing such a flat document asks first, saying that only a project saves its la
 ## IRC text (.txt)
 
 **File > Export IRC Text...** and `blockwright-cli export --irc` write the canvas as IRC text: UTF-8, one line per row, each ended by a line feed, colours as mIRC colour codes. It is written, never read. [IRC](10-irc.md) covers the encoding, the byte budget and the options.
+
+## Micron page (.mu)
+
+**File > Export Micron...** (no shortcut) and `blockwright-cli export --micron` write the canvas as a Micron page, the markup NomadNet shows its pages in. It is written, never read. The file is UTF-8, one line per row, each ended by a line feed.
+
+1. Any tool's edit in progress lands first. A floating selection that can't land stops the export, and the status bar says "Not exported: the floating selection can't land: …" for five seconds.
+2. If any cell would be written as something else (see [What a page doesn't keep](#what-a-page-doesnt-keep)), a warning starts "Before exporting a Micron page:", lists them, and asks "Export anyway?". **Save** goes on, **Cancel**, the default, stops.
+3. A dialog, **Export Micron**, offers **Centre the piece on the page** and **Write a page cache header, seconds:** and a number from 0 to 31536000, greyed out until that box is ticked. Both boxes start unticked each time, and the number at 0.
+4. A file dialog asks where, starting (for a document with a file) at its name with `.mu` in its folder, filtered to `Micron pages (*.mu)` or `All files (*)`.
+5. The file is written, and the status bar says "Exported a Micron page to …" for three seconds. If it can't be written, a message says "Could not write …" and why.
+
+### What a page holds
+
+- The cells as the editor shows them: the visible layers merged, under the document's iCE setting. A colour of the 16 is written in the document's palette: the standard one, or an XBIN's own where it has one, which the canvas doesn't draw with yet; any other colour, such as one of [mIRC's 99 colours](09-colour.md#mircs-99-colours), is written as its exact RGB.
+- A colour as `` `F `` (foreground) or `` `B `` (background) and three hex digits when each of its channels is one digit doubled, as each of the 16 is (`#aa5500` is `a50`), else as `T` and six digits (`` `FT001008 ``).
+- A colour only where it changes and only where the cell shows it: no foreground for a space unless it is underlined, and no background behind a `█` unless it is italic, which slants it off its cell.
+- Bold, italic and underline as `` `! ``, `` `* `` and `` `_ ``, each turned on and off where it changes.
+- `` ` `` and `\` with a `\` in front, and `!` after `#` too, as NomadNet reads `#!bg=` and `#!fg=` anywhere in a page as page headers.
+- Every row, blank rows included, and every column, trailing blanks included, so the lines are all the canvas's width. Each line starts with its colours and ends with ``` `` ```, which resets them.
+
+The sun piece starts:
+
+```
+$ blockwright-cli export --micron piece.ans piece.mu
+8 lines, 32 columns
+$ head -3 piece.mu
+`B00a                                ``
+`F55f`B00a░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░``
+`F55f`B00a▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒`Fff5▄▄▄▄▄`F55f▒▒▒▒▒``
+```
+
+`palette.xb` is written in its own palette, and the CLI says so: "2 lines, 8 columns, own palette". Its first line is ``` `F000█`FT001008█`FT002010█`FT003018█`FT004120█`FT005128█`FT006130█`FT007138█`` ```.
+
+No `#!bg=` or `#!fg=` header is written: each line sets its own colours.
+
+### Centre and the cache header
+
+**Centre the piece on the page** (`--centre`) starts each line with `` `c ``, NomadNet's centre alignment. A centred line ends by turning off any bold, italic or underline still on and then `` `f`b `` instead of ``` `` ```, since ``` `` ``` would reset the alignment too, and NomadNet aligns a line as it stands at its end. As every line is the canvas's width, the rows stay in line.
+
+**Write a page cache header** (`--cache S`) writes `#!c=S` as the page's first line, the seconds a peer may keep the page; `0` says never to cache it. NomadNet reads the header only on a page's first line.
+
+```
+$ blockwright-cli export --micron --centre --cache 3600 piece.ans piece.mu
+8 lines, 32 columns, centred
+$ head -3 piece.mu
+#!c=3600
+`c`B00a                                `f`b
+`c`F55f`B00a░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░`f`b
+```
+
+### What a page doesn't keep
+
+- Blink. It isn't written; a blink cell in a document without iCE colours is written on its dark background.
+- Some glyphs. They are written as IRC text writes them ([How a row is encoded](10-irc.md#how-a-row-is-encoded)): a control code as its CP437 glyph, NUL as a space, and a C1 control, U+2028, U+2029 or a code point that isn't a Unicode scalar value as `?`. A glyph holding a code point NomadNet drops from a page is written as `?` too, a wide one as `?` and a space, so the columns stay: combining marks, format characters such as zero-width spaces, joiners and bidi controls, variation selectors, the emoji skin-tone modifiers, and `☝`, which NomadNet draws as a space. So an accented letter made of a letter and a combining mark, `e` and U+0301, is written as `?`.
+- Layers, SAUCE, the target, the IRC budget, notes, snapshots and files.
+
+The glyphs written as `?` are the ones the warning lists. `blockwright-cli` prints them as warnings and writes the file anyway: `blockwright-cli: warning: t.ans: 3 cells hold code points NomadNet drops from a page and are written as '?' (first: U+0065 U+0301 'e U+0301' at column 2, row 1)`. See [export --micron](14-cli.md#export-micron) for the options.
 
 ## UTF-8 ANSI
 

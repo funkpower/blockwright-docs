@@ -13,7 +13,7 @@ blockwright-cli [options] command [args...]
 
 ## What it reads
 
-Every command that reads a piece takes an ANSI file (`.ans`), an XBIN (`.xb`) or a BIN (`.bin`). It also takes a project, a `.bwp` zip or a project directory, and reads it as its flattened composite: the visible layers merged as the editor shows them. Commands that write a piece (`convert`, `shade`) write XBIN to an output named `.xb`, BIN to one named `.bin`, and ANSI otherwise. `convert`, `shade`, `export --irc` and `render` refuse an output named `.bwp` (exit status 1): `pack` writes a project.
+Every command that reads a piece takes an ANSI file (`.ans`), an XBIN (`.xb`) or a BIN (`.bin`). It also takes a project, a `.bwp` zip or a project directory, and reads it as its flattened composite: the visible layers merged as the editor shows them. Commands that write a piece (`convert`, `shade`) write XBIN to an output named `.xb`, BIN to one named `.bin`, and ANSI otherwise. `convert`, `shade`, `export --irc`, `export --micron` and `render` refuse an output named `.bwp` (exit status 1): `pack` writes a project.
 
 What a command reads must be a regular file, or for a project a directory. A FIFO (`/dev/stdin` from a pipe, or `<(...)`), a device, a socket or any other directory is refused, naming what it is, with exit status 1: `blockwright-cli: in.ans: is a FIFO, not a regular file`.
 
@@ -93,6 +93,26 @@ Writes the piece as IRC text with mIRC colour codes, one line per row, and print
 | `--allow-over-budget` | Write the file even when lines are over the budget |
 
 A line over the budget, measured as WeeChat's ascii script sends it, is reported with how far over it is. Without `--allow-over-budget` the output isn't written and the exit status is 3. Cells IRC text can't hold, such as a control character, are written as `?`, with a warning that counts them and names the first. `export --irc` refuses to write over its input.
+
+### export --micron
+
+```
+blockwright-cli export --micron [--centre] [--cache S] <in> <out.mu>
+```
+
+Writes the piece as a Micron page for NomadNet, as **File > Export Micron...** does ([Micron page](13-file-formats.md#micron-page-mu)): the cells as the editor shows them, in the document's palette, one line per row. A flat file is read as the editor opens it, and a project as its visible layers merged, under its iCE setting. It prints the lines and columns written, and says when the page is centred or the piece has its own palette:
+
+```
+$ blockwright-cli export --micron --centre mixed.ans mixed.mu
+1 line, 11 columns, centred
+```
+
+| Option | What it does |
+|---|---|
+| `--centre` | Centre the piece on the page: each line starts with `` `c `` |
+| `--cache S` | Write the page header `#!c=S` as the first line, the seconds a peer may cache the page, 0 to 31536000; 0 says never cache it |
+
+`export` takes one format, `--irc` or `--micron`; neither or both is a usage error ("blockwright-cli: export needs one format: --irc or --micron"), and so is the other format's option: "blockwright-cli: --fit is an export --irc option". Cells the page writes as `?` are warned of, one warning for each kind, counting them and naming the first, and the file is still written, exit status 0. `export --micron` refuses to write over its input.
 
 ### shade
 

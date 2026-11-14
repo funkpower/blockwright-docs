@@ -28,7 +28,7 @@ This is the order the PC numbered its colours in, and the order the Palette dock
 
 ## mIRC's 99 colours
 
-A document under the IRC target (**Format > Target > IRC**, no shortcut) can also use mIRC's colours 16 to 98, after the 16. A cell holds each of them as its exact RGB, and IRC text writes it as its mIRC number ([IRC](10-irc.md#how-a-row-is-encoded)). Changing the target changes what the Palette dock offers, not the cells: a cell in one of these colours keeps it under the ANSI target.
+A document under the IRC target (**Format > Target > IRC**, no shortcut) can also use mIRC's colours 16 to 98, after the 16. A cell holds each of them as its exact RGB, and IRC text writes it as its mIRC number ([IRC](10-irc.md#how-a-row-is-encoded)). A Micron page for NomadNet writes it as that RGB ([Export for NomadNet](10-irc.md#export-for-nomadnet)). Changing the target changes what the Palette dock offers, not the cells: a cell in one of these colours keeps it under the ANSI target.
 
 An `.ans`, XBIN or BIN file holds only the 16. Saving a cell in any other colour to one, under either target, writes the nearest of the 16 and warns: `3 cells are in colours the file can't hold, saved as the nearest of the 16` (`1 cell is in a colour …` for one). A project keeps them.
 
