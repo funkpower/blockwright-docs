@@ -129,7 +129,7 @@ ABSOLUTE_RE = re.compile(r"^(?:https?:)?//", re.I)
 # single or no quotes, so a quoted value may hold < > = and attribute names
 # without being taken for more of the tag. Whitespace is HTML's: ASCII only.
 ATTR = r"""([ \t\n\f\r]+)([^ \t\n\f\r"'<>/=]+)(?:([ \t\n\f\r]*=[ \t\n\f\r]*)(?:"([^"]*)"|'([^']*)'|([^ \t\n\f\r"'=<>`]+)))?"""
-TAG_RE = re.compile(r"<!--(?:>|->|.*?--!?>)|<(?:[A-Za-z][^ \t\n\f\r/>]*(?:" + ATTR + r""")*[ \t\n\f\r]*/?>)?""", re.S)
+TAG_RE = re.compile(r"<!--(?:>|->|.*?--!?>)|<!--|<(?:[A-Za-z][^ \t\n\f\r/>]*(?:" + ATTR + r""")*[ \t\n\f\r]*/?>)?""", re.S)
 ATTR_RE = re.compile(ATTR, re.S)
 # The tags and attributes a built page may hold: what Python-Markdown's
 # extensions and the template write, and nothing that loads, embeds, runs or
@@ -594,7 +594,15 @@ def site_url(how, url):
     """url, which --forge-url or --mirror-url gave, if it is an http or https
     address with a host (and only a port and path after it)."""
     port = re.match(r"^https?://[^/:]+:(\d+)", url)
-    if not URL_RE.match(url) or (port and not 0 < int(port.group(1)) < 65536):
+    host = re.match(r"^https?://([^/:]*)", url).group(1) if URL_RE.match(url) else ""
+    last = host.rsplit(".", 1)[-1].lower()
+    # A host whose last label is a number is an IPv4 address to a URL parser:
+    # only four dotted numbers 0-255 are one.
+    numeric = last[:1].isdigit() or last.startswith("0x")
+    if numeric and not re.fullmatch(r"(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)",
+                                    host):
+        host = ""
+    if not URL_RE.match(url) or not host or (port and not 0 < int(port.group(1)) < 65536):
         raise BuildError(f"{how}: {url!r} isn't an http:// or https:// address with a host (and an optional port "
                          "and path, no query or fragment)")
     return url
@@ -743,6 +751,9 @@ class Builder:
 
         def tag(m):
             text = m.group(0)
+            if text == "<!--":
+                fail("a comment that isn't closed")
+                return text
             if text.startswith("<!--"):
                 return text  # a comment: nothing in it is a link
             if text == "<":
@@ -764,6 +775,10 @@ class Builder:
                     fail(f"<{tagname} {key}>: an attribute the site doesn't use")
                 elif key == "style" and not STYLE_RE.match(value or ""):
                     fail(f"<{tagname} style={value!r}>: a style the site doesn't use (a column's text-align only)")
+                elif tagname == "link" and key == "rel" and (value or "").lower() != "stylesheet":
+                    fail(f"<link rel={value!r}>: a link the site doesn't use (its own stylesheet only)")
+                elif tagname == "link" and key == "href" and not SAFE_RELATIVE_RE.match(value or ""):
+                    fail(f"<link href={value!r}>: a stylesheet from outside the site")
                 elif key in ADDRESS_ATTRS and value is not None:
                     new = address(value)
                     if new != value:
@@ -772,8 +787,6 @@ class Builder:
 
             return name + ATTR_RE.sub(attr, text[len(name):])
 
-        if doc.count("<!--") > len(re.findall(r"<!--(?:>|->|.*?--!?>)", doc, re.S)):
-            fail("a comment that isn't closed")
         # Only real tags: code and <pre> text has its < escaped, and a comment
         # links to nothing.
         return TAG_RE.sub(tag, doc)

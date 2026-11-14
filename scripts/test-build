@@ -1041,7 +1041,8 @@ def forge_url_refused(s):
     for bad in ["ftp://forge.example.test", "http://", "forge.example.test", "https://forge.example.test/?a=1",
                 "https://forge.example.test/#top", "https://forge example.test", "https://forge.example.test:99999",
                 "https://forge.example.test:0", "https://user@forge.example.test", "https://forge.example.test/a(b)",
-                "https://forge.example.test/a,b", "https://forge.example.test/a'b", ""]:
+                "https://forge.example.test/a,b", "https://forge.example.test/a'b", "http://256.1.1.1", "http://1.2.3",
+                "http://example.0x1", ""]:
         for flag in ["--forge-url", "--mirror-url"]:
             s.failed(flag, bad, says=f"{flag}: {bad!r} isn't an http:// or https:// address")
             check(not (s.repo / "site").exists(), f"{flag} {bad!r}: site/ was built")
@@ -1128,6 +1129,8 @@ def external_link_refused(s):
             '<table><tr><td style="background: url(https://example.com/b.png)">styled</td></tr></table>',
             '<table><tr><th style="background-image: image-set(&quot;https://example.com/a.png&quot; 1x)">set</th>'
             '</tr></table>'],
+        "a stylesheet from outside the site": [f'<link rel="stylesheet" href="{FORGE}/probe.css">'],
+        "a link the site doesn't use": ['<link rel="prefetch" href="page.html">'],
         "a tag the build can't read": ['<div><a href="https://example.com/"title="no space">squeezed</a></div>'],
     }
     for says, bodies in cases.items():
@@ -1137,8 +1140,11 @@ def external_link_refused(s):
             check(says in s.out, f"{body}: expected {says!r} in {s.out.strip()[-300:]}")
     s.probe('<!--><video poster="https://example.com/p.png"></video><!-- -->')
     s.failed(says="<video>: a tag the site doesn't use")
+    s.probe('<div>a comment <!-- never closed</div>')
+    s.failed(says="a comment that isn't closed")
     s.probe(f"[Write](mailto:someone@example.org) and [the licence]({CC}).\n\n"
             '<span title="href=\'https://example.org/\'">an address in another attribute</span>\n\n'
+            '<span title="<!--">a comment opener in a value</span>\n\n'
             '`<a href="https://example.org/">` in code\n\n'
             '    <img src="https://example.org/x.png">\n\n'
             '<!-- <a href="https://example.org/">a comment</a> -->\n\n'
