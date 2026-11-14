@@ -39,7 +39,7 @@ def blank(w, h):
 
 def write_steps(name, start, steps, window=None):
     path = HERE / f"{name}.steps.json"
-    body = {"version": 1, "start": {"file": start}, "steps": steps}
+    body = {"version": 1, "start": start if isinstance(start, dict) else {"file": start}, "steps": steps}
     if window:
         body["window"] = window
     text = json.dumps(body, indent=1, ensure_ascii=False)
@@ -249,17 +249,98 @@ steps = field("field", "wood", [0, 0, 35, 4], 6) + [
      "points": [[0, 2], [35, 2]]}]
 replay("despeckle", start, steps, {"black-2": "despeckle-before.ans", "despeckle": "despeckle-after.ans"})
 
-# The finished piece: a pillar and a ball in front of a wall, on a floor, on
-# three layers. The wall and the floor are ramp gradients, each filling a
-# selection: the wall radial on the violet ramp, from the top left corner;
-# the floor linear on the wood ramp, from left to right. The pillar is a
-# selection filled with steel's first rung and shaded as a cylinder; the
-# ball a disc of sea's first rung, locked, and shaded as a dome. Back on the
-# background, the soft brush's right button lays the shadows, the smudge
-# brush drags the pillar's along the floor, and the despeckle brush cleans
-# the specks left by a few size 1 clicks of wear. The window shows each
-# tool's options, the Layers dock once the ball is locked, and the Lint dock
-# before and after the despeckle.
+# The start: sample 08, "This Is Your Brain on IRC", with its shaded pan
+# and yolk, its highlight and its margins taken out, and the flat pan and
+# yolk under them made visible and given their names: the pan flat dark
+# grey, the yolk flat yellow, each locked. The project is unpacked and
+# packed again without the sample's notes and snapshots.
+SAMPLE = "08-brain-on-irc"
+START = []
+for name, layer in [("highlight", "highlight"), ("shaded-pan", "pan"), ("shaded-yolk", "yolk"),
+                    ("margins", "margins")]:
+    START += [{"name": name, "action": "setActiveLayer", "layer": layer},
+              {"name": f"{name}-delete", "action": "deleteLayer"}]
+for name in ["pan", "yolk"]:
+    START += [{"name": f"flat-{name}", "action": "setActiveLayer", "layer": f"{name} (flat)"},
+              {"name": name, "action": "layerProperties", "rename": name, "visible": True}]
+START.append({"name": "open", "action": "setActiveLayer", "layer": "background"})
+path = write_steps("start", {"sample": SAMPLE}, START)
+with tempfile.TemporaryDirectory() as tmp:
+    subprocess.run([CLI, "replay", str(path), "-o", tmp, "--project"], check=True, stdout=subprocess.DEVNULL)
+    project = Path(tmp) / "project"
+    subprocess.run([CLI, "unpack", str(Path(tmp) / f"{len(START):02d}-open.bwp"), str(project)], check=True,
+                   stdout=subprocess.DEVNULL)
+    (project / "notes.md").unlink(missing_ok=True)
+    shutil.rmtree(project / "snapshots", ignore_errors=True)
+    subprocess.run([CLI, "pack", str(project), str(HERE / "start.bwp")], check=True, stdout=subprocess.DEVNULL)
+
+# The finished piece: the egg in its pan. On a new layer over the
+# background, a radial gradient on the ice ramp, from rung 6 at the middle of
+# the pan out to black, fills a selection round the pan: the glow of the
+# hob. The pan is shaded as a cylinder and the yolk as a dome, one click
+# each at 100% on their locked layers. On the glow's layer the soft brush's
+# right button lays two shadows, the smudge brush drags one along, and the
+# despeckle brush cleans the specks left by three size 1 clicks of wear.
+# Last, four size 1 ramp shade clicks fix what the lint finds where the
+# forms meet the layers above them. The window shows each tool's options,
+# the Layers dock once the yolk is active, and the Lint dock before the
+# despeckle, after it and at the end.
+HEAT = [{"name": "heat-layer", "action": "newCellsLayer", "rename": "heat"},
+        {"name": "heat-select", "action": "select", "rect": [10, 14, 58, 26]},
+        {"name": "heat", "action": "gradient", "ramp": "ice",
+         "gradient": {"shape": "radial", "banding": "cells", "from": 6, "to": 0}, "from": [34, 20], "to": [62, 20]},
+        {"name": "heat-deselect", "action": "deselect"}]
+PAN = [{"name": "pan-layer", "action": "setActiveLayer", "layer": "pan"},
+       {"name": "pan", "action": "form", "ramp": "steel", "strength": 1, "size": 80, "tip": "square",
+        "form": {"shape": "cylinder"}, "points": [[41, 20]]}]
+YOLK = [{"name": "yolk-layer", "action": "setActiveLayer", "layer": "yolk"},
+        {"name": "yolk", "action": "form", "ramp": "fire", "size": 30, "form": {"shape": "dome"},
+         "points": [[32, 19]]}]
+SHADOWS = [{"name": "heat-layer-2", "action": "setActiveLayer", "layer": "heat"},
+           {"name": "shadow-1", "action": "soft", "ramp": "ice", "strength": 0.5, "size": 8, "tip": "round",
+            "hardness": 0, "button": "right", "points": [[38, 26], [44, 26]]},
+           {"name": "shadow-2", "action": "soft", "button": "right", "points": [[20, 15], [26, 15]]}]
+SMUDGE = [{"name": "smudge", "action": "smudge", "size": 2, "tip": "square", "points": [[26, 15], [32, 15]]}]
+WEAR = [{"name": "wear-1", "action": "rampShade", "strength": 0.25, "size": 1, "points": [[47, 16]]},
+        {"name": "wear-2", "action": "rampShade", "strength": 0.5, "button": "right", "points": [[34, 15]]},
+        {"name": "wear-3", "action": "rampShade", "button": "left", "points": [[37, 15]]}]
+CLEAN = [{"name": "despeckle", "action": "despeckle", "size": 12, "points": [[10, 15], [58, 15]]}]
+FIX = [{"name": "yolk-layer-2", "action": "setActiveLayer", "layer": "yolk"},
+       {"name": "fix-1", "action": "rampShade", "ramp": "fire", "strength": 0.25, "size": 1, "points": [[23, 23]]},
+       {"name": "fix-2", "action": "rampShade", "strength": 0.25, "points": [[33, 18]]},
+       {"name": "pan-layer-2", "action": "setActiveLayer", "layer": "pan"},
+       {"name": "fix-3", "action": "rampShade", "ramp": "steel", "strength": 0.25, "points": [[11, 21]]},
+       {"name": "fix-4", "action": "rampShade", "strength": 1, "points": [[56, 18]]},
+       {"name": "check", "action": "deselect"}]
+
+steps = HEAT + PAN + YOLK + SHADOWS + SMUDGE + WEAR + CLEAN + FIX
+at = {step["name"]: i for i, step in enumerate(steps)}
+for name, args in [("heat", ("toolOptions", [0, 0, 256, 967])), ("pan", ("toolOptions", [0, 0, 256, 890])),
+                   ("yolk-layer", ("layers",)), ("shadow-1", ("toolOptions", [0, 0, 256, 756])),
+                   ("smudge", ("toolOptions", [0, 0, 256, 701])), ("wear-3", ("lint",)),
+                   ("despeckle", ("toolOptions", [0, 0, 256, 632])), ("yolk-layer-2", ("lint",)),
+                   ("check", ("lint",))]:
+    steps[at[name]] = shot(steps[at[name]], *args)
+replay("final", "start.bwp", steps,
+       {"heat": "step-01.ans", "pan": "step-02.ans", "yolk": "step-03.ans", "shadow-2": "step-04.ans",
+        "smudge": "step-05.ans", "wear-3": "step-06.ans", "despeckle": "step-07.ans", "check": "final.bwp"},
+       {"heat": "gradient-options.png", "pan": "form-options.png", "yolk-layer": "layers.png",
+        "shadow-1": "soft-options.png", "smudge": "smudge-options.png", "wear-3": "lint-before.png",
+        "despeckle": "despeckle-options.png", "yolk-layer-2": "lint-forms.png", "check": "lint.png"},
+       window=[1280, 1300])
+
+# What goes wrong. The yolk's form on a new layer with no disc under it,
+# the flat yolk hidden: the form brush leaves a cell whose tone is black as it was, so the
+# empty cells on its shadow side stay empty and show the egg white.
+NO_BASE = [YOLK[0], {"name": "hide", "action": "layerProperties", "visible": False},
+           {"name": "empty", "action": "newCellsLayer", "rename": "yolk 2"},
+           dict(YOLK[1], strength=1, size=14, tip="round")]
+replay("no-base", "start.bwp", NO_BASE, {"yolk": "no-base.ans"})
+
+# A wall and a floor, for a gradient with no selection and for the
+# exercise. Each is a ramp gradient filling a selection: the wall radial on
+# the violet ramp, from the top left corner; the floor linear on the wood
+# ramp, from left to right.
 W, H = 52, 18
 WALL = [{"name": "wall-select", "action": "select", "rect": [0, 0, W - 1, 11]},
         {"name": "wall", "action": "gradient", "ramp": "violet",
@@ -268,53 +349,8 @@ FLOOR = [{"name": "floor-select", "action": "select", "rect": [0, 12, W - 1, H -
          {"name": "floor", "action": "gradient", "ramp": "wood",
           "gradient": {"shape": "linear", "banding": "cells", "from": 8, "to": 4}, "from": [16, 12], "to": [W - 1, 12]},
          {"name": "deselect", "action": "deselect"}]
-PILLAR = [{"name": "pillar-layer", "action": "newCellsLayer", "rename": "pillar"},
-          {"name": "pillar-select", "action": "select", "rect": [6, 1, 15, 14]},
-          {"name": "pillar-base", "action": "rampShade", "ramp": "steel", "strength": 0.25, "size": 30,
-           "tip": "square", "points": [[10, 7]]},
-          {"name": "pillar", "action": "form", "strength": 1, "form": {"shape": "cylinder"}, "points": [[10, 7]]},
-          {"name": "pillar-deselect", "action": "deselect"}]
-BALL = [{"name": "ball-layer", "action": "newCellsLayer", "rename": "ball"},
-        {"name": "ball-base", "action": "rampShade", "ramp": "sea", "strength": 0.25, "size": 22, "tip": "round",
-         "points": [[35, 10]]},
-        {"name": "lock", "action": "layerProperties", "alphaLocked": True},
-        {"name": "ball", "action": "form", "strength": 1, "size": 30, "form": {"shape": "dome"}, "points": [[35, 10]]}]
-SHADOWS = [{"name": "floor-layer", "action": "setActiveLayer", "layer": "Background"},
-           {"name": "shadow-1", "action": "soft", "ramp": "wood", "strength": 0.5, "size": 8, "tip": "round",
-            "hardness": 0, "button": "right", "points": [[17, 14], [21, 14]]},
-           {"name": "shadow-2", "action": "soft", "button": "right", "points": [[48, 15], [51, 15]]}]
-SMUDGE = [{"name": "smudge", "action": "smudge", "strength": 0.5, "size": 2, "tip": "square",
-           "points": [[21, 14], [27, 14]]}]
-WEAR = [{"name": "wear-1", "action": "rampShade", "strength": 0.25, "size": 1, "tip": "square", "points": [[3, 13]]},
-        {"name": "wear-2", "action": "rampShade", "button": "right", "points": [[11, 16]]},
-        {"name": "wear-3", "action": "rampShade", "points": [[36, 16], [37, 16]]}]
-CLEAN = [{"name": "despeckle", "action": "despeckle", "size": 12, "tip": "square", "points": [[0, 15], [W - 1, 15]]},
-         {"name": "check", "action": "deselect"}]
-
 start = blank(W, H)
-steps = WALL + FLOOR + PILLAR + BALL + SHADOWS + SMUDGE + WEAR + CLEAN
-at = {step["name"]: i for i, step in enumerate(steps)}
-for name, args in [("wall", ("toolOptions", [0, 0, 256, 967])), ("pillar", ("toolOptions", [0, 0, 256, 890])),
-                   ("lock", ("layers",)), ("shadow-1", ("toolOptions", [0, 0, 256, 756])),
-                   ("smudge", ("toolOptions", [0, 0, 256, 701])), ("wear-3", ("lint",)),
-                   ("despeckle", ("toolOptions", [0, 0, 256, 632])), ("check", ("lint",))]:
-    steps[at[name]] = shot(steps[at[name]], *args)
-replay("final", start, steps,
-       {"wall": "step-01.ans", "floor": "step-02.ans", "pillar-base": "step-03.ans", "pillar": "step-04.ans",
-        "ball-base": "step-05.ans", "ball": "step-06.ans", "shadow-2": "step-07.ans", "smudge": "step-08.ans",
-        "wear-3": "step-09.ans", "despeckle": "final.bwp"},
-       {"wall": "gradient-options.png", "pillar": "form-options.png", "lock": "layers.png",
-        "shadow-1": "soft-options.png", "smudge": "smudge-options.png", "wear-3": "lint-before.png",
-        "despeckle": "despeckle-options.png", "check": "lint.png"},
-       window=[1280, 1300])
-
-# What goes wrong. The wall's gradient with no selection fills the whole
-# layer. The ball's form on its layer with no disc under it: the form brush
-# leaves a cell whose tone is black as it was, so the empty cells on its
-# shadow side stay empty and show the wall and the floor.
 replay("no-selection", start, [dict(WALL[1])], {"wall": "no-selection.ans"})
-NO_BASE = [BALL[0], dict(BALL[3], ramp="sea", tip="round", size=22)]
-replay("no-base", start, WALL + FLOOR + NO_BASE, {"ball": "no-base.ans"})
 
 # Try it: the wall and the floor, with a log lying on the floor: a box of
 # steel's first rung on a layer of its own, locked. The answer shades it as

@@ -1,36 +1,41 @@
 {
  "version": 1,
  "start": {
-  "file": "blank-52x18.ans"
+  "file": "start.bwp"
  },
  "steps": [
   {
-   "name": "wall-select",
+   "name": "heat-layer",
+   "action": "newCellsLayer",
+   "rename": "heat"
+  },
+  {
+   "name": "heat-select",
    "action": "select",
    "rect": [
-    0,
-    0,
-    51,
-    11
+    10,
+    14,
+    58,
+    26
    ]
   },
   {
-   "name": "wall",
+   "name": "heat",
    "action": "gradient",
-   "ramp": "violet",
+   "ramp": "ice",
    "gradient": {
     "shape": "radial",
     "banding": "cells",
-    "from": 8,
-    "to": 1
+    "from": 6,
+    "to": 0
    },
    "from": [
-    0,
-    0
+    34,
+    20
    ],
    "to": [
-    40,
-    11
+    62,
+    20
    ],
    "screenshot": {
     "of": "toolOptions",
@@ -45,78 +50,28 @@
    }
   },
   {
-   "name": "floor-select",
-   "action": "select",
-   "rect": [
-    0,
-    12,
-    51,
-    17
-   ]
-  },
-  {
-   "name": "floor",
-   "action": "gradient",
-   "ramp": "wood",
-   "gradient": {
-    "shape": "linear",
-    "banding": "cells",
-    "from": 8,
-    "to": 4
-   },
-   "from": [
-    16,
-    12
-   ],
-   "to": [
-    51,
-    12
-   ]
-  },
-  {
-   "name": "deselect",
+   "name": "heat-deselect",
    "action": "deselect"
   },
   {
-   "name": "pillar-layer",
-   "action": "newCellsLayer",
-   "rename": "pillar"
+   "name": "pan-layer",
+   "action": "setActiveLayer",
+   "layer": "pan"
   },
   {
-   "name": "pillar-select",
-   "action": "select",
-   "rect": [
-    6,
-    1,
-    15,
-    14
-   ]
-  },
-  {
-   "name": "pillar-base",
-   "action": "rampShade",
-   "ramp": "steel",
-   "strength": 0.25,
-   "size": 30,
-   "tip": "square",
-   "points": [
-    [
-     10,
-     7
-    ]
-   ]
-  },
-  {
-   "name": "pillar",
+   "name": "pan",
    "action": "form",
+   "ramp": "steel",
    "strength": 1,
+   "size": 80,
+   "tip": "square",
    "form": {
     "shape": "cylinder"
    },
    "points": [
     [
-     10,
-     7
+     41,
+     20
     ]
    ],
    "screenshot": {
@@ -132,60 +87,37 @@
    }
   },
   {
-   "name": "pillar-deselect",
-   "action": "deselect"
-  },
-  {
-   "name": "ball-layer",
-   "action": "newCellsLayer",
-   "rename": "ball"
-  },
-  {
-   "name": "ball-base",
-   "action": "rampShade",
-   "ramp": "sea",
-   "strength": 0.25,
-   "size": 22,
-   "tip": "round",
-   "points": [
-    [
-     35,
-     10
-    ]
-   ]
-  },
-  {
-   "name": "lock",
-   "action": "layerProperties",
-   "alphaLocked": true,
+   "name": "yolk-layer",
+   "action": "setActiveLayer",
+   "layer": "yolk",
    "screenshot": {
     "of": "layers"
    }
   },
   {
-   "name": "ball",
+   "name": "yolk",
    "action": "form",
-   "strength": 1,
+   "ramp": "fire",
    "size": 30,
    "form": {
     "shape": "dome"
    },
    "points": [
     [
-     35,
-     10
+     32,
+     19
     ]
    ]
   },
   {
-   "name": "floor-layer",
+   "name": "heat-layer-2",
    "action": "setActiveLayer",
-   "layer": "Background"
+   "layer": "heat"
   },
   {
    "name": "shadow-1",
    "action": "soft",
-   "ramp": "wood",
+   "ramp": "ice",
    "strength": 0.5,
    "size": 8,
    "tip": "round",
@@ -193,12 +125,12 @@
    "button": "right",
    "points": [
     [
-     17,
-     14
+     38,
+     26
     ],
     [
-     21,
-     14
+     44,
+     26
     ]
    ],
    "screenshot": {
@@ -219,11 +151,11 @@
    "button": "right",
    "points": [
     [
-     48,
+     20,
      15
     ],
     [
-     51,
+     26,
      15
     ]
    ]
@@ -231,17 +163,16 @@
   {
    "name": "smudge",
    "action": "smudge",
-   "strength": 0.5,
    "size": 2,
    "tip": "square",
    "points": [
     [
-     21,
-     14
+     26,
+     15
     ],
     [
-     27,
-     14
+     32,
+     15
     ]
    ],
    "screenshot": {
@@ -261,36 +192,33 @@
    "action": "rampShade",
    "strength": 0.25,
    "size": 1,
-   "tip": "square",
    "points": [
     [
-     3,
-     13
+     47,
+     16
     ]
    ]
   },
   {
    "name": "wear-2",
    "action": "rampShade",
+   "strength": 0.5,
    "button": "right",
    "points": [
     [
-     11,
-     16
+     34,
+     15
     ]
    ]
   },
   {
    "name": "wear-3",
    "action": "rampShade",
+   "button": "left",
    "points": [
     [
-     36,
-     16
-    ],
-    [
      37,
-     16
+     15
     ]
    ],
    "screenshot": {
@@ -301,14 +229,13 @@
    "name": "despeckle",
    "action": "despeckle",
    "size": 12,
-   "tip": "square",
    "points": [
     [
-     0,
+     10,
      15
     ],
     [
-     51,
+     58,
      15
     ]
    ],
@@ -323,6 +250,66 @@
      ]
     }
    }
+  },
+  {
+   "name": "yolk-layer-2",
+   "action": "setActiveLayer",
+   "layer": "yolk",
+   "screenshot": {
+    "of": "lint"
+   }
+  },
+  {
+   "name": "fix-1",
+   "action": "rampShade",
+   "ramp": "fire",
+   "strength": 0.25,
+   "size": 1,
+   "points": [
+    [
+     23,
+     23
+    ]
+   ]
+  },
+  {
+   "name": "fix-2",
+   "action": "rampShade",
+   "strength": 0.25,
+   "points": [
+    [
+     33,
+     18
+    ]
+   ]
+  },
+  {
+   "name": "pan-layer-2",
+   "action": "setActiveLayer",
+   "layer": "pan"
+  },
+  {
+   "name": "fix-3",
+   "action": "rampShade",
+   "ramp": "steel",
+   "strength": 0.25,
+   "points": [
+    [
+     11,
+     21
+    ]
+   ]
+  },
+  {
+   "name": "fix-4",
+   "action": "rampShade",
+   "strength": 1,
+   "points": [
+    [
+     56,
+     18
+    ]
+   ]
   },
   {
    "name": "check",

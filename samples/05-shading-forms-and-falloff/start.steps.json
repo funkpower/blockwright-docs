@@ -1,0 +1,71 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "08-brain-on-irc"
+ },
+ "steps": [
+  {
+   "name": "highlight",
+   "action": "setActiveLayer",
+   "layer": "highlight"
+  },
+  {
+   "name": "highlight-delete",
+   "action": "deleteLayer"
+  },
+  {
+   "name": "shaded-pan",
+   "action": "setActiveLayer",
+   "layer": "pan"
+  },
+  {
+   "name": "shaded-pan-delete",
+   "action": "deleteLayer"
+  },
+  {
+   "name": "shaded-yolk",
+   "action": "setActiveLayer",
+   "layer": "yolk"
+  },
+  {
+   "name": "shaded-yolk-delete",
+   "action": "deleteLayer"
+  },
+  {
+   "name": "margins",
+   "action": "setActiveLayer",
+   "layer": "margins"
+  },
+  {
+   "name": "margins-delete",
+   "action": "deleteLayer"
+  },
+  {
+   "name": "flat-pan",
+   "action": "setActiveLayer",
+   "layer": "pan (flat)"
+  },
+  {
+   "name": "pan",
+   "action": "layerProperties",
+   "rename": "pan",
+   "visible": true
+  },
+  {
+   "name": "flat-yolk",
+   "action": "setActiveLayer",
+   "layer": "yolk (flat)"
+  },
+  {
+   "name": "yolk",
+   "action": "layerProperties",
+   "rename": "yolk",
+   "visible": true
+  },
+  {
+   "name": "open",
+   "action": "setActiveLayer",
+   "layer": "background"
+  }
+ ]
+}

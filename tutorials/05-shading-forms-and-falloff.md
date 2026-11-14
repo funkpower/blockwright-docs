@@ -1,13 +1,13 @@
 Title: Shading: forms and falloff
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.0 (30e0254)
 
 # Shading: forms and falloff
 
 ## Goal
 
-Shade whole forms in one click each, and let light fall off across a scene. You'll make this pillar and ball in front of a wall, 52 columns by 18 rows, on three layers, with Blockwright's ramp gradient, form brush, soft brush, smudge brush and despeckle brush. Shown at 2×:
+Shade whole forms in one click each, and let light fall off across a scene. You'll shade the pan and the yolk of *This Is Your Brain on IRC*, the egg from Blockwright's samples, 80 columns by 32 rows on eleven layers, with Blockwright's ramp gradient, form brush, soft brush, smudge brush and despeckle brush. Shown at 2×:
 
-![A white pillar at the left, white along its left side and stepping down through grey to a black right edge, and a ball at the right, light cyan at its upper left falling through cyan and blue to black at its lower right, in front of a magenta wall that is light magenta in the top left corner and darkens to magenta shade on black at the right, on a floor brown at the left and red at the right, with a shadow on the floor to the right of the pillar and another to the right of the ball](../samples/05-shading-forms-and-falloff/final.bwp "2x")
+![The title "THIS IS YOUR BRAIN ON IRC" in white and yellow over a frying pan on black. The pan is white along the top of its rim and its handle, falling through grey to black underneath. In it an egg: white egg white with a brown frilled edge, and a yolk white at its upper left, through yellow to light red and red at its right, with a brown hash sign on it. A strip of blue glow shows along the inside of the rim behind the egg and in front of it, and the caption "Any questions? /msg me." sits under the pan](../samples/05-shading-forms-and-falloff/final.bwp "2x")
 
 ## The idea
 
@@ -21,13 +21,13 @@ On the left, solid light red covers the upper left, and the rungs step down from
 
 Tutorial 04 gave the rule's fall as three to five cells. That is shorter than a whole ramp's ladder can go without skipping a rung: fire has seventeen rungs, numbered 0 (black) to 16 (white), so sixteen steps from black to white. The form brush keeps every rung in order, as tutorial 04 asked, and gives nearly every one a cell, so its fall is about as short as the ladder allows: four cells for each colour, or five where a rung takes two, where along row 3 the clicks gave most rungs two cells.
 
-The rest of the page is the tools that go round a form: the **ramp gradient** for the wall and floor behind it, with the light falling off across them; the **soft brush** for shadows; the **smudge brush** to drag a tone along; and the **despeckle brush** to clean up after.
+The rest of the page is the tools that go round a form: the **ramp gradient** for the light behind or under it, falling off as it goes; the **soft brush** for shadows; the **smudge brush** to drag a tone along; and the **despeckle brush** to clean up after.
 
 ### The form brush
 
-The **Form Brush** (**Tools > Form Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>) shades a whole shape along the ramp in one click: a solid lit side, the fall, and the shadow side down to black. The shape is the selection, or with nothing selected the cells the click covers; with alpha lock on, those are the layer's opaque cells under the brush. Make the brush big enough to cover the whole shape. Either button does the same. Its options add **Light** and **Form**, here set for the pillar in step 5 below:
+The **Form Brush** (**Tools > Form Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>) shades a whole shape along the ramp in one click: a solid lit side, the fall, and the shadow side down to black. The shape is the selection, or with nothing selected the cells the click covers; with alpha lock on, those are the layer's opaque cells under the brush. Make the brush big enough to cover the whole shape. Either button does the same. Its options add **Light** and **Form**, here set for the pan in step 3 below:
 
-![The Tool Options dock for the Form Brush: a help text, then Size 30 with Tip Square, Pressure None with Strength 100%, Ramp steel, Light NW with Form Cylinder, Form rim light unticked with Glint ticked, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/form-options.png)
+![The Tool Options dock for the Form Brush: a help text, then Size 80 with Tip Square, Pressure None with Strength 100%, Ramp steel, Light NW with Form Cylinder, Form rim light unticked with Glint ticked, Alpha lock ticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/form-options.png)
 
 **Light** is the compass point the light comes from, **NW** (the upper left) to start with. **Strength** is how far each cell moves toward the tone the form gives it: shade a form at 100%, so every cell gets there. **Form rim light** and **Glint** are about light more than form; leave them as they are until tutorial 06.
 
@@ -47,9 +47,9 @@ The cylinder is nine cells across, too few for the ladder to come down from whit
 
 ### The ramp gradient
 
-The **Ramp Gradient** (**Tools > Ramp Gradient**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>) fills with a gradient along the ramp: drag from where it starts to where it ends. It fills the selection, or the whole layer with nothing selected, and alpha lock keeps it to the opaque cells, as for the brushes. The left button runs from the **From** rung to the **To** rung; the right runs the other way. Its options, set for the wall in step 2 below:
+The **Ramp Gradient** (**Tools > Ramp Gradient**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>) fills with a gradient along the ramp: drag from where it starts to where it ends. It fills the selection, or the whole layer with nothing selected, and alpha lock keeps it to the opaque cells, as for the brushes. The left button runs from the **From** rung to the **To** rung; the right runs the other way. Its options, set for the glow in step 2 below:
 
-![The Tool Options dock for the Ramp Gradient: a help text, then Ramp violet, Gradient Radial with Banding Cell-banded, From rung 8 with To rung 1, and Alpha lock unticked](../samples/05-shading-forms-and-falloff/gradient-options.png)
+![The Tool Options dock for the Ramp Gradient: a help text, then Ramp ice, Gradient Radial with Banding Cell-banded, From rung 6 with To rung 0, and Alpha lock unticked](../samples/05-shading-forms-and-falloff/gradient-options.png)
 
 A bar of magenta, selected, before, and after a drag on the violet ramp from its left end to its right, from rung 0 to rung 12:
 
@@ -67,9 +67,9 @@ The radial row is a drag from the middle of its box to the right end, from rung 
 
 ### The soft brush
 
-The **Soft Brush** (**Tools > Soft Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>) is the ramp shade brush with a soft edge: it moves the middle of the tip the most and its edge a rung, in rings that step down a rung at a time. That fade from the middle to the edge is its **falloff**. The left button lightens and the right darkens. Its options add **Hardness**, here set for the shadows in step 9 below:
+The **Soft Brush** (**Tools > Soft Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>) is the ramp shade brush with a soft edge: it moves the middle of the tip the most and its edge a rung, in rings that step down a rung at a time. That fade from the middle to the edge is its **falloff**. The left button lightens and the right darkens. Its options add **Hardness**, here set for the shadows in step 5 below:
 
-![The Tool Options dock for the Soft Brush: a help text, then Size 8 with Tip Round, Pressure None with Strength 50%, Ramp wood, Hardness 0%, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/soft-options.png)
+![The Tool Options dock for the Soft Brush: a help text, then Size 8 with Tip Round, Pressure None with Strength 50%, Ramp ice, Hardness 0%, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/soft-options.png)
 
 A field of brown, before, after one click on the wood ramp at 50% with **Size** 11, **Tip** **Round** and **Hardness** 0%, and after the same click with the right button:
 
@@ -91,9 +91,9 @@ At 0% the middle climbed three rungs, to `▓`, and the rungs step down a ring a
 
 ### The smudge brush
 
-The **Smudge Brush** (**Tools > Smudge Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>) picks up the ramp colours under the tip and drags them along the stroke, like a finger through paint, and snaps what it lays back to the ramp's rungs. Each cell of the tip carries its own value, so a wide tip drags a patch. Either button does the same. Its options, set for the pillar's shadow in step 10 below:
+The **Smudge Brush** (**Tools > Smudge Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>) picks up the ramp colours under the tip and drags them along the stroke, like a finger through paint, and snaps what it lays back to the ramp's rungs. Each cell of the tip carries its own value, so a wide tip drags a patch. Either button does the same. Its options, set for the rim's shadow in step 6 below:
 
-![The Tool Options dock for the Smudge Brush: a help text, then Size 2 with Tip Square, Pressure None with Strength 50%, Ramp wood, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/smudge-options.png)
+![The Tool Options dock for the Smudge Brush: a help text, then Size 2 with Tip Square, Pressure None with Strength 50%, Ramp ice, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/smudge-options.png)
 
 A row of brown meeting a row of brown medium shade on red, before, and after one drag on the wood ramp at 50% with **Size** 1, from four cells left of where they meet to ten cells right of it:
 
@@ -107,9 +107,9 @@ A row of brown meeting a row of brown medium shade on red, before, and after one
 
 ### The despeckle brush
 
-The **Despeckle Brush** (**Tools > Despeckle Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>) cleans up specks: a lone cell lighter or darker than every neighbour on the ramp takes the rung most of its neighbours share. Cells off the ramp, black, the ramp's top rung (a glint) and the cells of a Bayer gradient's dither are left alone, and so is any fix that would add a new lint finding. Either button does the same. Its options have no **Strength**; here they are set for the clean-up in step 12 below:
+The **Despeckle Brush** (**Tools > Despeckle Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>) cleans up specks: a lone cell lighter or darker than every neighbour on the ramp takes the rung most of its neighbours share. Cells off the ramp, black, the ramp's top rung (a glint) and the cells of a Bayer gradient's dither are left alone, and so is any fix that would add a new lint finding. Either button does the same. Its options have no **Strength**; here they are set for the clean-up in step 8 below:
 
-![The Tool Options dock for the Despeckle Brush: a help text, then Size 12 with Tip Square, Pressure None, Ramp wood, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/despeckle-options.png)
+![The Tool Options dock for the Despeckle Brush: a help text, then Size 12 with Tip Square, Pressure None, Ramp ice, Alpha lock unticked, and Symmetry Off](../samples/05-shading-forms-and-falloff/despeckle-options.png)
 
 A field of brown medium shade on red with six specks along its middle row, before, and after one drag of a size 5 brush along that row on the wood ramp. The specks, left to right: a cell a rung up, a cell a rung down, a cell two rungs up, a pair of cells a rung up, a cell of yellow (the top rung) and a cell of black:
 
@@ -121,71 +121,74 @@ The three lone specks went back to the field. The pair stayed, since each of the
 
 ## Do it
 
-You'll build the piece back to front: the wall and floor, the pillar, the ball, their shadows, and a clean-up. The positions are column then row from `0, 0` at the top left, as in tutorial 04; zoom in (<kbd>Ctrl</kbd>+<kbd>=</kbd>) so you can count cells. Set **Size**, **Tip**, **Strength**, **Ramp** and the other options in the **Tool Options** dock; they carry over from tool to tool, so each step gives only the ones it changes. To select a box, take the **Select** tool (<kbd>Ctrl</kbd>+<kbd>E</kbd>) and drag from its top left cell to its bottom right cell; **Selection > Deselect** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd>) drops the selection. Tutorial 08 covers selections in full.
+You'll start from the egg with its pan and yolk still flat, and shade it back to front: a glow under the pan, the pan, the yolk, the shadows on the glow, and a clean-up. The positions are column then row from `0, 0` at the top left, as in tutorial 04; zoom in (<kbd>Ctrl</kbd>+<kbd>=</kbd>) so you can count cells. Set **Size**, **Tip**, **Strength**, **Ramp** and the other options in the **Tool Options** dock; they carry over from tool to tool, so each step gives only the ones it changes. To select a box, take the **Select** tool (<kbd>Ctrl</kbd>+<kbd>E</kbd>) and drag from its top left cell to its bottom right cell; **Selection > Deselect** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd>) drops the selection. Tutorial 08 covers selections in full, and tutorial 09 layers.
 
-1. **A new canvas.** On the start screen, set **Width** to 52 and **Height** to 18, leave **iCE colours** ticked, and press **New**.
+1. **Open the egg.** Download [start.bwp](../samples/05-shading-forms-and-falloff/start.bwp) and open it (**File > Open**, <kbd>Ctrl</kbd>+<kbd>O</kbd>):
 
-2. **The wall.** The light comes from the upper left, so the wall is lightest in the top left corner and falls off away from it. Select from `0, 0` to `51, 11`. Take the **Ramp Gradient** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>) and set **Ramp** to **violet**, **Gradient** to **Radial**, **Banding** to **Cell-banded**, **From rung** to 8 and **To rung** to 1. Drag from `0, 0` to `40, 11`:
+    ![The title "THIS IS YOUR BRAIN ON IRC" over a flat dark grey frying pan on black, with an egg in it: white egg white with a brown frilled edge and a flat yellow yolk with a brown hash sign on it, smoke rising above it, and the caption "Any questions? /msg me." under the pan](../samples/05-shading-forms-and-falloff/start.bwp "2x")
 
-    ![The top twelve rows filled: light magenta in the top left corner, rings stepping down through shade to magenta across the middle, then to magenta light shade on black down the right side, widening toward the bottom; the bottom six rows still black](../samples/05-shading-forms-and-falloff/step-01.ans "2x")
+    It is the egg from the samples, with its pan and its yolk flat: the pan all dark grey, the yolk all yellow, each on a layer of its own, `pan` and `yolk`, with alpha lock on. The rest is on the layers round them: `egg white` between the pan and the yolk, `#`, `sizzle` and `smoke` above the yolk, the words on `caption`, `tagline` and `signature` below the pan, and `background`, locked, at the bottom.
 
-3. **The floor.** Select from `0, 12` to `51, 17`. The **Select** tool stays active after the drag, so take the **Ramp Gradient** again (**Tools > Ramp Gradient**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>). Set **Ramp** to **wood**, **Gradient** to **Linear**, **From rung** to 8 and **To rung** to 4, and drag from `16, 12` to `51, 12`. Then **Selection > Deselect**. The floor is brown out to column 30, then steps down through three shade blocks to red from column 37:
+2. **The glow.** The hob is on. Click **background** in the **Layers** dock, then **Layer > New Cells Layer**, double-click the new layer's name and type `heat`. Select from `10, 14` to `58, 26`, round the pan. Take the **Ramp Gradient** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>) and set **Ramp** to **ice**, **Gradient** to **Radial**, **Banding** to **Cell-banded**, **From rung** to 6 and **To rung** to 0. Drag from `34, 20`, under the yolk, to `62, 20`. Then **Selection > Deselect**:
 
-    ![The wall over a floor, brown over its left part and red over its right, three shade blocks between them](../samples/05-shading-forms-and-falloff/step-02.ans "2x")
+    ![The egg in its flat pan with blue light showing between the rim and the egg: a strip along the back of the pan, solid blue in the middle and blue shade at its ends, and a shorter strip at the front](../samples/05-shading-forms-and-falloff/step-01.ans "2x")
 
-4. **The pillar's shape.** **Layer > New Cells Layer**. In the **Layers** dock, double-click the new layer's name and type `pillar`. Select from `6, 1` to `15, 14`. Take the **Ramp Shade Brush** (<kbd>Ctrl</kbd>+<kbd>T</kbd>), set **Ramp** to **steel**, **Strength** to 25%, **Tip** to **Square** and **Size** to 30, and click once at `10, 7`. The brush paints only inside the selection, and lifts its empty cells one rung, to dark grey `░` on black:
+    Most of the glow is under the pan and the egg, which is where a glow belongs. What shows is the ring where it falls off: along row 15, behind the egg, blue `▒` at column 24, three cells of blue `▓`, solid blue to column 40 where the egg's edge doesn't cover it, three more of `▓` and a `▒` at 44, and pieces of the same at the front, on row 25. Past the ring, out to the selection's edge, it is black.
 
-    ![A box of dark grey light shade on black standing on the left of the wall, its foot on the floor](../samples/05-shading-forms-and-falloff/step-03.ans "2x")
+3. **The pan's form.** Click **pan** in the **Layers** dock; its **Alpha Lock** is already ticked, so the shape is the pan. Take the **Form Brush** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>), set **Ramp** to **steel**, **Strength** to 100%, **Size** to 80, **Tip** to **Square** and **Form** to **Cylinder**, leave **Light** at **NW**, and click once at `41, 20`. Size 80 covers the whole pan, handle and all:
 
-    As in tutorial 04, the shape starts on the first rung above black, so the form can take its shadow side down to black through the ladder.
+    ![The pan shaded: white along the top of the rim and the handle, stepping down through white shade on grey to a black lower edge, behind the egg and in front of it alike](../samples/05-shading-forms-and-falloff/step-02.ans "2x")
 
-5. **The pillar's form.** Leave the selection. Take the **Form Brush** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>), set **Strength** to 100% and **Form** to **Cylinder**, leave **Light** at **NW**, and click once at `10, 7`. The selection is the shape, so the brush shades the box as an upright cylinder lit from the left. Then **Selection > Deselect**:
+    The pan is wider than it is tall, so the cylinder lies on its side and is round from top to bottom. Down the left end of the rim, column 8, it is white, then white `▓`, `▒`, `▒` and `░` on grey, then black.
 
-    ![The pillar shaded: two columns of white at its left, then white shade on grey stepping down to grey and dark grey light shade on grey, and a black right column](../samples/05-shading-forms-and-falloff/step-04.ans "2x")
+4. **The yolk's form.** Click **yolk** in the **Layers** dock. Its alpha lock is on too:
 
-    The pillar is ten cells across: two of white, two of `▓`, one `▒`, two `░`, grey, dark grey `░` on grey, and the black shadow edge.
+    ![The Layers dock: yolk, active, with Alpha Lock ticked, then egg white, unticked, pan, ticked, and signature, tagline and caption, unticked](../samples/05-shading-forms-and-falloff/layers.png)
 
-6. **The ball's shape.** **Layer > New Cells Layer**, and name it `ball` the same way. Take the **Ramp Shade Brush**, set **Ramp** to **sea**, **Strength** to 25%, **Tip** to **Round** and **Size** to 22, and click once at `35, 10`:
+    Take the **Form Brush** again, set **Ramp** to **fire**, **Size** to 30 and **Form** to **Dome**, and click once at `32, 19`:
 
-    ![A disc of blue light shade on black in front of the wall at the right, its lower part over the floor](../samples/05-shading-forms-and-falloff/step-05.ans "2x")
+    ![The yolk shaded: white at its upper left, falling through yellow and light red to red at its lower right, the brown hash sign unchanged on top of it](../samples/05-shading-forms-and-falloff/step-03.ans "2x")
 
-    The **Lint** dock lists three rung skips here, where the disc's blue `░` meets the wall's magenta at its upper left. The form takes them away.
+    Across row 17 the yolk is four cells of white, then a cell for each rung down: white `▓`, `▒` and `░` on yellow, yellow, yellow `▓`, `▒` and `░` on light red, light red, two cells of light red `▓` on red and one of `▒`, where the egg white cuts it off. The broad lit side, and the fall crowded after it.
 
-7. **Lock the ball.** Tick **Alpha lock** in **Tool Options**, or its box in the ball's row of the **Layers** dock:
+    The `#` is on its own layer above the yolk, so the click left it alone. That is the way to keep it: the form brush's output stays on the form's layer, and anything drawn over the form goes on a layer above, the yolk's highlight included (tutorial 06). Click the form again later and it shades the yolk, not the `#`; after step 9, though, it also paints over that step's one-cell fixes, which then need making again. The sample's own yolk is gentler, skin at 65%; the rule here still holds, since a form you mean to soften is easier to soften from 100% than to find from 25%.
 
-    ![The Layers dock: ball, active, with Alpha Lock ticked, above pillar and Background, neither locked](../samples/05-shading-forms-and-falloff/layers.png)
+5. **The shadows.** Click **heat** in the **Layers** dock. Take the **Soft Brush** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>) and set **Ramp** to **ice**, **Strength** to 50%, **Size** to 8, **Tip** to **Round** and **Hardness** to 0%. With the right button, drag from `38, 26` to `44, 26`, under the front of the egg, and from `20, 15` to `26, 15`, where the rim at the back left stands between the light and the glow:
 
-8. **The ball's form.** Take the **Form Brush**, set **Strength** to 100%, **Form** to **Dome** and **Size** to 30, and click once at `35, 10`. With alpha lock on, the shape is the disc:
+    ![The glow darker in two places: at the front, under the egg, the blue shade a rung darker and its end gone to black; at the back left, the end of the strip gone to black and the shade a rung darker up to the solid blue](../samples/05-shading-forms-and-falloff/step-04.ans "2x")
 
-    ![The ball shaded: solid light cyan at its upper left, the rows below that a rung lower each down its left side to row 14, and from there through cyan and blue, mostly a rung a cell, to black at its lower right](../samples/05-shading-forms-and-falloff/step-06.ans "2x")
+    At the front, columns 41 to 43 of row 25 go from `▓` to `▒` and 44 to black. At the back, 24 goes to black, 25 to 27 from `▓` to `▒`, and 28 from solid blue to `▓`.
 
-    Across row 8 the ball is five cells of light cyan, two of light cyan `▓` on cyan, then a cell for each rung down to black: the broad lit side and the fall crowded after it. The lint finds nothing now.
+6. **Drag the rim's shadow.** The light comes from the left, so the shadow can run further right along the back. Take the **Smudge Brush** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>), set **Size** to 2 and **Tip** to **Square**, leave **Strength** at 50%, and drag from `26, 15` to `32, 15`. Column 28 drops another rung, to `▒`, and 30 and 31 from solid blue to `▓`:
 
-9. **The shadows.** Click **Background** in the **Layers** dock to make it the active layer. Take the **Soft Brush** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>) and set **Ramp** to **wood**, **Strength** to 50%, **Size** to 8, **Tip** to **Round** and **Hardness** to 0%. With the right button, drag from `17, 14` to `21, 14`, beside the pillar, and from `48, 15` to `51, 15`, beside the ball. Each takes the floor two rungs down in the middle and one at the edge:
+    ![The back strip of the glow with its shade carried three cells further right](../samples/05-shading-forms-and-falloff/step-05.ans "2x")
 
-    ![The floor darker in a patch to the right of the pillar's foot, brown medium shade on red ringed by dark shade, and in a patch to the right of the ball, red dark and medium shade on black](../samples/05-shading-forms-and-falloff/step-07.ans "2x")
+7. **Specks.** Slips of a one-cell brush leave specks, and the glow is easy to slip on. Make three on purpose: take the **Ramp Shade Brush** (<kbd>Ctrl</kbd>+<kbd>T</kbd>), set **Strength** to 25% and **Size** to 1, and click `47, 16`; set **Strength** to 50%, right-click `34, 15` and click `37, 15`. The **Lint** dock lists six findings (if it is hidden, **Window > Lint**):
 
-10. **Drag the pillar's shadow.** The light comes from the left, so the pillar's shadow can run further to the right. Take the **Smudge Brush** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>), set **Strength** to 50%, **Size** to 2 and **Tip** to **Square**, and drag from `21, 14` to `27, 14`. On rows 13 and 14 the shadow's `▒` now reaches two cells further, and the `▓` after it now runs up to the ball:
+    ![The glow with a cell a rung lighter at the right end of the back strip, a cell two rungs darker and a cell of light blue in the solid blue](../samples/05-shading-forms-and-falloff/step-06.ans "2x")
 
-    ![The pillar's shadow with its medium shade two cells longer on its two middle rows, running up to the ball](../samples/05-shading-forms-and-falloff/step-08.ans "2x")
+    ![The Lint dock: six findings. speckle at 47,16 and fallback-speck at 47,17 on the sunset ramp, rung-skip at 33,18 on the skin ramp, speckle at 56,19 and 23,23 on the fire ramp and at 11,22 on the steel ramp](../samples/05-shading-forms-and-falloff/lint-before.png)
 
-11. **Specks.** Slips of a one-cell brush leave specks. Make three on purpose: take the **Ramp Shade Brush**, **Strength** 25%, **Size** 1, **Tip** **Square**, and click `3, 13`, right-click `11, 16`, and click `36, 16` and `37, 16`. The **Lint** dock lists three specks (if it is hidden, **Window > Lint**):
+    `47, 16` is listed as a speck, and `47, 17` under it, a half block of the egg's brown edge, as a [fallback speck](../manual/11-lint.md#fallback-speck); the lint names the ramp it reads them on, sunset, and both go when `47, 16` does. `34, 15` and `37, 15` aren't listed: the lint judges a cell only when three of its four neighbours are on the ladder, and each of these has the rim above and the egg below. The other four were there before the specks. With the dock open from step 1, the count runs 1, 4, 5, 4: `start.bwp` arrives with a speck at `31, 18`, a cell of the `#` against the flat yolk, which goes with the yolk's form; the pan's form brings `56, 19`, `11, 22` and `44, 25`, a speck in the glow at the front, which goes with the shadow under the egg in step 5; and the yolk's form brings `33, 18` and `23, 23`. Step 9 comes to the four left.
 
-    ![The floor with a speck of yellow light shade on brown at the left, a speck of brown dark shade on red below the pillar's foot, and two cells a rung lighter where the floor turns from brown to red](../samples/05-shading-forms-and-falloff/step-09.ans "2x")
+8. **Clean up.** Take the **Despeckle Brush** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>), **Ramp** still **ice**, set **Size** to 12 and **Tip** to **Square**, and drag from `10, 15` to `58, 15`. All three go back: the brush reads the active layer alone, where every neighbour is glow, so it fixes the two the lint can't see as well as the one it can:
 
-    ![The Lint dock: three findings, speckle at 3,13 on the wood ramp and at 11,16 and 36,16 on the skin ramp](../samples/05-shading-forms-and-falloff/lint-before.png)
+    ![The glow as it was before the specks](../samples/05-shading-forms-and-falloff/step-07.ans "2x")
 
-    `37, 16` isn't listed: it is now a rung between its neighbours, not a speck.
+    ![The Lint dock: four findings, rung-skip at 33,18 on the skin ramp, speckle at 56,19 on the fire ramp, at 11,22 on the steel ramp and at 23,23 on the fire ramp](../samples/05-shading-forms-and-falloff/lint-forms.png)
 
-12. **Clean up.** Take the **Despeckle Brush** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>), **Ramp** still **wood**, set **Size** to 12 and **Tip** to **Square**, and drag from `0, 15` to `51, 15`. `3, 13` and `11, 16` go back to brown, and `36, 16` back down a rung; `37, 16` stays where it is:
+9. **Where the forms meet the layers.** The four left are where a form meets a layer above it, and the despeckle brush on `heat` doesn't reach them. Each is one cell; fix them with a one-cell **Ramp Shade Brush**, **Tip** **Square**, on the form's own layer:
 
-    ![The finished piece: the pillar and the ball in front of the wall, with their shadows on the floor and no specks](../samples/05-shading-forms-and-falloff/final.bwp "2x")
+    - Click **yolk** in the **Layers** dock and set **Ramp** to **fire**. `23, 23`, the tip of the yolk's tail, is a cell of light red between egg white and yellow `░` on light red: at **Strength** 25%, click it once, and it matches `24, 23` beside it. `33, 18` is yellow `▒` on light red against the `#`'s brown, which the lint reads on the skin ramp as more than a rung away: click it once, still at 25%, to yellow `▓` on light red, like `32, 18` beside it and `33, 17` above it. That clears the finding because the lint counts a jump as a skip only when it carries on a fall: at `▒` the row fell from `32, 18` to `33, 18` and on to the brown, and at `▓` the two cells are one level with the `#`'s brown on either side, which is an edge.
+    - Click **pan** and set **Ramp** to **steel**. `11, 22`, at the left of the pan's inner rim, is a `▓` among `▒`: at 25%, click `11, 21` above it, and the two make a pair. `56, 19` is a spark of the sizzle in the black at the rim's inner edge: at 100%, click `56, 18`, the black cell above it, back to dark grey.
+
+    ![The finished piece: the shaded pan and yolk, the glow with its shadows, and no specks](../samples/05-shading-forms-and-falloff/final.bwp "2x")
 
     The **Lint** dock is clean:
 
-    ![The Lint dock with no findings: clean, noise 0.0000, iCE on](../samples/05-shading-forms-and-falloff/lint.png)
+    ![The Lint dock with no findings: clean, noise 0.0140, iCE on](../samples/05-shading-forms-and-falloff/lint.png)
 
-13. **Save it.** **File > Save As** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>), with a name ending `.bwp`, so the three layers are kept.
+10. **Save it.** **File > Save As** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>), with a name ending `.bwp`, so the eleven layers are kept.
 
 ## Check it
 
@@ -195,21 +198,21 @@ You'll build the piece back to front: the wall and floor, the pillar, the ball, 
 
 The lit side stops at dark grey `░` on grey and the shadow side at dark grey `░` on black, so the form is dim and flat. Undo (<kbd>Ctrl</kbd>+<kbd>Z</kbd>), set **Strength** to 100%, and click again.
 
-**Lay the shape before the form.** An empty cell counts as black, so where the form's tone is black the brush has nothing to change, and the cell stays empty. The ball's form clicked with a round tip of size 22 on an empty layer, with no disc laid first:
+**Lay the shape before the form.** An empty cell counts as black, so where the form's tone is black the brush has nothing to change, and the cell stays empty. The yolk's click on a new, empty layer, with a round tip of size 14 and the flat yolk hidden:
 
-![The ball cut off: its lit side and fall are there, but where it should go black at its lower right the wall and floor show through](../samples/05-shading-forms-and-falloff/no-base.ans "2x")
+![The yolk cut off: its lit side and fall are there, white, yellow and light red, but where it should go on down to red at its right the egg white shows through](../samples/05-shading-forms-and-falloff/no-base.ans "2x")
 
-Undo, lay the disc at the first rung above black with the **Ramp Shade Brush**, lock the layer, and click again.
+Undo, and shade the layer that holds the flat shape, locked, as in step 4.
 
-**Select before a gradient.** With nothing selected the gradient fills the whole layer. The wall's drag with no selection:
+**Select before a gradient.** With nothing selected the gradient fills the whole layer. A radial drag on a new canvas, from the top left corner, with no selection:
 
-![The wall's radial gradient over the whole canvas, floor rows too](../samples/05-shading-forms-and-falloff/no-selection.ans "2x")
+![A radial gradient over the whole canvas, light magenta in the top left corner falling off in rings through magenta to magenta shade on black in the bottom right corner](../samples/05-shading-forms-and-falloff/no-selection.ans "2x")
 
 Undo, select the box, and drag again.
 
-**Smudge below 100%.** At 100% the smudge carries a value unchanged to where the drag ends, as in the 100% row under *The smudge brush*, and the shadow ends in a hard edge. Drag at 50% or less, so it fades into the floor.
+**Smudge below 100%.** At 100% the smudge carries a value unchanged to where the drag ends, as in the 100% row under *The smudge brush*, and the shadow ends in a hard edge. Drag at 50% or less, so it fades into the glow. Keep the drag on the shading, too: dragged off its end into empty cells, it lays nothing there.
 
-**Despeckle doesn't fix everything.** It leaves pairs, black and the ramp's top rung, as in the picture under *The despeckle brush*. Fix those by hand: a one-cell **Ramp Shade Brush** at 25%, left button to lift a cell a rung and right to drop it.
+**Despeckle doesn't fix everything.** It leaves pairs, black and the ramp's top rung, as in the picture under *The despeckle brush*, and it reads only the active layer, so a cell that is a speck only against another layer's cells, like the four in step 9, stays. Fix those with a one-cell **Ramp Shade Brush**: at 25%, left button to lift a cell a rung and right to drop it; a black cell, like `56, 18`, takes 100% to come back.
 
 ## Try it
 
@@ -217,7 +220,7 @@ Download [try.bwp](../samples/05-shading-forms-and-falloff/try.bwp) and open it 
 
 ![The wall and the floor with a long box of dark grey light shade on black lying across the floor](../samples/05-shading-forms-and-falloff/try.bwp "2x")
 
-It is the wall and the floor again, with a log lying on the floor: a box of steel's first rung on a layer of its own, `log`, with alpha lock on. Click **log** in the **Layers** dock to make it the active layer.
+It is a wall and a floor, with a log lying on the floor: a box of steel's first rung on a layer of its own, `log`, with alpha lock on. Click **log** in the **Layers** dock to make it the active layer.
 
 1. Shade the log as a cylinder lying on its side, lit from the upper left, and lay its shadow on the floor under it. Check the Lint dock until it is clean.
 2. The log's top four rows climb down from white only as far as white `░` on grey, but its bottom row is black. Why is that no skipped rung?
