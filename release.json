@@ -1,0 +1,17 @@
+{
+  "version": "0.1.1",
+  "repo": "funkpower/blockwright",
+  "assets": {
+    "appimage": "blockwright-{version}-x86_64.AppImage",
+    "deb-debian13": "blockwright_{version}-1_debian13_amd64.deb",
+    "deb-debian-testing": "blockwright_{version}-1_debian-testing_amd64.deb",
+    "deb-ubuntu2604": "blockwright_{version}-1_ubuntu26.04_amd64.deb",
+    "deb-ubuntu2610": "blockwright_{version}-1_ubuntu26.10_amd64.deb",
+    "rpm-fedora45": "blockwright-{version}-1.fc45.x86_64.rpm",
+    "pkgbuild": "PKGBUILD",
+    "freebsd-port": "blockwright-{version}-freebsd-port.tar.gz",
+    "dmg": "Blockwright-{version}.dmg",
+    "msi": "blockwright-{version}-x86_64.msi",
+    "source": "blockwright-{version}.tar.gz"
+  }
+}

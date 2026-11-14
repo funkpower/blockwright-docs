@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Build the docs site from the Markdown pages and the samples.
 
-    scripts/build [--out DIR] [--cli PATH] [--app PATH]
+    scripts/build [--out DIR] [--cli PATH] [--app PATH] [--forge-url URL] [--mirror-url URL]
 
-Pages are `index.md`, `tutorials/*.md` and `manual/*.md`, each section with
-an `index.md` of its own. A page other than an index is published
+Pages are `index.md` (the home page), `docs/index.md` (the documentation's
+contents), `tutorials/*.md` and `manual/*.md`, each section with an `index.md`
+of its own. A page other than an index is published
 when its metadata block carries `Checked:` (the Blockwright build its steps
 were checked against); the others are stubs, listed as not written yet and
 never linked. The maintainer's pages in `STANDALONE` (`release-checklist.md`)
@@ -17,6 +18,11 @@ project as its composite) at the scale its title names (1x when it names
 none), as `y.ans-2x.png` beside it, and links to the sample, which is copied
 beside the picture. Any other image must be a `.png`, copied as it is; an
 image of any other kind fails the build.
+
+A link to a page not written yet fails, unless it is marked `{.pending}`
+(`[the install guide](../manual/01-install.md){.pending}`): then, until the
+page is written, its text is shown marked not written yet, unlinked, and once
+it is, it is a plain link. A pending link to no page fails.
 
 Any other relative link names a file in the repo (a `.bwp` or an `.ans` no
 page draws), which is copied into the site at the same path.
@@ -43,14 +49,35 @@ or `<!-- list:` comment, in any case, that isn't one of the five) with a
 message naming the five.
 
 Every page carries the site menu (`theme/page.html`'s `$nav`): the home link,
-then each section's index and its pages in the order the index lists them,
+the Home and Docs links, then each section's index and its pages in the order
+the index lists them,
 stubs dimmed and unlinked; the page itself is marked `aria-current="page"` and
 its section `here`. A standalone page carries the menu too, with nothing in it
-marked.
+marked. The home page's <body> carries class="landing" (`$bodyclass`), the others
+none.
+
+`release.json` names the Blockwright release the pages offer: its version, the
+forge repo it is on and its assets, each asset name with `{version}` standing
+for the version. A page names them as `{{version}}`, `{{forge}}` (the forge's
+address, --forge-url's), `{{repo}}` (the repo on the forge), `{{release}}` (the
+release's page), `{{download}}` (the address its assets download from) and
+`{{<asset>}}` (an asset's file name, by its key in `assets`). They are filled in
+before Markdown reads the page, so they work in code as well as in links; any
+other `{{...}}` fails the build.
 
 The site also gets `robots.txt`, which lets crawlers fetch everything, and,
 when `ROBOTS` is set, a robots meta tag on every page but the standalone ones,
 which always carry `noindex`.
+
+Pages link to the forge as `https://git.pumpin.online/...` (FORGE). `--forge-url
+URL` puts URL in its place in every link of the built site, so a copy of the
+site can send downloads to another address of the forge. `--mirror-url URL`
+adds a line to every page's footer naming the site's other address. A page,
+template included, may link out of the site only to the forge, the mirror and
+the licences (ALLOWED_EXTERNAL): any other http, https or // address in a tag's
+href, src, srcset, poster, data, action, formaction, cite, background or style
+url() fails the build, so the site works where only those addresses can be
+reached. Text in code, in <pre> and in comments is no link.
 
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
@@ -85,6 +112,9 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parent.parent
 SECTIONS = {"tutorials": "Tutorials", "manual": "Manual"}
+# Pages of their own, each a folder's index.md: listed in the menu after the
+# home link, before the sections.
+TOP_PAGES = {"docs": "Docs"}
 # The maintainer's pages at the site root: built always, linked from no list,
 # menu or pager, and kept out of search engines (PLAN.md §6).
 STANDALONE = ("release-checklist.md",)
@@ -98,8 +128,32 @@ IMAGE_TYPES = (".png",)
 ROBOTS = ""
 # Written into the site as robots.txt: crawlers may fetch everything.
 ROBOTS_TXT = "User-agent: *\nAllow: /\n"
+# The release the pages offer (see the docstring); {{name}} in a page.
+RELEASE = ROOT / "release.json"
+PLACEHOLDER_RE = re.compile(r"\{\{(.*?)\}\}")
+VERSION_RE = re.compile(r"^\d+(?:\.\d+){1,3}$")
+REPO_RE = re.compile(r"^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$")
+ASSET_KEY_RE = re.compile(r"^[a-z][a-z0-9-]*$")
+ASSET_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+-]*$")
 # Written into the site; names every file the build wrote.
 MANIFEST = ".blockwright-docs-manifest"
+# The forge as pages write it; --forge-url puts another address in its place.
+FORGE = "https://git.pumpin.online"
+# The only links out of the site besides the forge and the mirror: the
+# licences, the site's and Blockwright's.
+ALLOWED_EXTERNAL = ("https://creativecommons.org/licenses/by-sa/4.0/", "https://www.gnu.org/licenses/gpl-3.0.html")
+# An address --forge-url and --mirror-url take: http or https, a host, an
+# optional port and path, nothing else.
+URL_RE = re.compile(r"^https?://[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::\d{1,5})?(?:/[A-Za-z0-9._~!$&'()*+,;=:@%/-]*)?$")
+ABSOLUTE_RE = re.compile(r"^(?:https?:)?//", re.I)
+# A comment, or an HTML tag with its attributes; an href or src attribute in one.
+TAG_RE = re.compile(r"<!--.*?-->|<[A-Za-z][^<>]*>", re.S)
+ATTR_RE = re.compile(r"""(?<![\w-])(href|src|srcset|poster|data|action|formaction|cite|background|style)\s*=\s*"""
+                     r"""(?:(["'])(.*?)\2|([^\s"'=<>`]+))""", re.I | re.S)
+# A url(...) in a style attribute.
+CSS_URL_RE = re.compile(r"""url\(\s*(["']?)(.*?)\1\s*\)""", re.I | re.S)
+# A link marked {.pending} (attr_list): to a page that may not be written yet.
+PENDING_RE = re.compile(r'<a ([^<>]*\bclass="pending"[^<>]*)>(.*?)</a>', re.S)
 EXTERNAL_RE = re.compile(r"^[a-z][a-z0-9+.-]*:|^//", re.I)
 MARKER_RE = re.compile(r"^<!-- (generated|list): ([a-z-]+) -->[ \t]*$")
 # The markers a page may use, exactly as written.
@@ -282,6 +336,8 @@ class Page:
 
 def collect_pages():
     pages = [Page(ROOT / "index.md")]
+    for folder in TOP_PAGES:
+        pages.append(Page(ROOT / folder / "index.md"))
     for section in SECTIONS:
         pages.append(Page(ROOT / section / "index.md"))
         for src in sorted((ROOT / section).glob("*.md")):
@@ -528,16 +584,78 @@ def checklist(pages, here, cli_version):
     return summary + "\n" + "\n".join(tables)
 
 
+def release_values(forge):
+    """{placeholder: text} from release.json, with the forge at forge."""
+    try:
+        data = json.loads(RELEASE.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        raise BuildError(f"{RELEASE.name}: {e}")
+    if not isinstance(data, dict):
+        raise BuildError(f"{RELEASE.name}: not a JSON object")
+    version, repo, assets = data.get("version"), data.get("repo"), data.get("assets")
+    if not isinstance(version, str) or not VERSION_RE.match(version):
+        raise BuildError(f"{RELEASE.name}: version {version!r} isn't a version such as 0.1.1")
+    if not isinstance(repo, str) or not REPO_RE.match(repo):
+        raise BuildError(f"{RELEASE.name}: repo {repo!r} isn't owner/name")
+    if not isinstance(assets, dict) or not assets:
+        raise BuildError(f"{RELEASE.name}: assets isn't an object naming at least one asset")
+    repo_url = f"{forge}/{repo}"
+    values = {"version": version, "forge": forge, "repo": repo_url,
+              "release": f"{repo_url}/releases/tag/v{version}",
+              "download": f"{repo_url}/releases/download/v{version}"}
+    for key, name in assets.items():
+        if not ASSET_KEY_RE.match(key) or key in values:
+            raise BuildError(f"{RELEASE.name}: asset key {key!r} isn't lowercase letters, digits and dashes, or "
+                             f"is one of {', '.join(values)}")
+        name = name.replace("{version}", version) if isinstance(name, str) else name
+        if not isinstance(name, str) or not ASSET_NAME_RE.match(name):
+            raise BuildError(f"{RELEASE.name}: asset {key}: {name!r} isn't a file name")
+        values[key] = name
+    return values
+
+
+def fill(page, text, values):
+    """text with each {{name}} replaced by its value; an unknown name fails."""
+    def one(m):
+        name = m.group(1)
+        if name not in values:
+            raise BuildError(f"{page.rel}: {m.group(0)} isn't a release placeholder; they are "
+                             + ", ".join("{{" + k + "}}" for k in values))
+        return values[name]
+    return PLACEHOLDER_RE.sub(one, text)
+
+
+def within(url, base):
+    """Whether url is base or under it: base itself, or base followed by a /, a
+    ? or a #, so https://git.pumpin.online.example.test isn't the forge."""
+    base = base.rstrip("/")
+    return url == base or url.startswith((base + "/", base + "?", base + "#"))
+
+
+def site_url(how, url):
+    """url, which --forge-url or --mirror-url gave, if it is an http or https
+    address with a host (and only a port and path after it)."""
+    port = re.match(r"^https?://[^/:]+:(\d+)", url)
+    if not URL_RE.match(url) or (port and not 0 < int(port.group(1)) < 65536):
+        raise BuildError(f"{how}: {url!r} isn't an http:// or https:// address with a host (and an optional port "
+                         "and path, no query or fragment)")
+    return url
+
+
 class Builder:
-    def __init__(self, out, cli, app=None):
+    def __init__(self, out, cli, app=None, forge=FORGE, mirror=None):
         self.out = out
         self.cli = cli
         self.app = app
+        self.forge = forge.rstrip("/")
+        self.mirror = mirror
+        self.release = release_values(self.forge)
         self.app_used = None
         self.rendered = {}
         self.errors = []
         self.pages = collect_pages()
         self.by_out = {p.out: p for p in self.pages}
+        self.home = next(p for p in self.pages if not p.section and p.is_index)
         self.template = Template((ROOT / "theme" / "page.html").read_text(encoding="utf-8"))
         self.version = run([cli, "--version"]).splitlines()[0].replace("blockwright-cli-dev", "blockwright-cli")
         self.app_timeout = app_timeout()
@@ -617,6 +735,22 @@ class Builder:
             shutil.copyfile(ROOT / target, self.out / target)
 
     def fix_links(self, page, body):
+        def pending(m):
+            """A link marked {.pending}: a plain link once its page is
+            written, its text marked not written yet until then."""
+            attrs, text = m.group(1), m.group(2)
+            href = re.search(r'href="([^"]+)"', attrs)
+            href = html.unescape(href.group(1)) if href else ""
+            path = href.partition("#")[0]
+            target = in_repo(page.rel.parent / unquote(path)) if path.endswith((".md", ".html")) else None
+            tp = self.by_out.get(target.with_suffix(".html")) if target else None
+            if tp is None:
+                self.errors.append(f"{page.rel}: pending link to {href or '(no href)'}: no such page")
+                return m.group(0)
+            if tp.published:
+                return f'<a href="{html.escape(href)}">{text}</a>'
+            return f'<span class="soon">{text} <span>(not written yet)</span></span>'
+
         def link(m):
             href = html.unescape(m.group(1))
             if EXTERNAL_RE.match(href) or href.startswith("#"):
@@ -635,7 +769,60 @@ class Builder:
                 self.copy_asset(page, href)
             return 'href="' + html.escape(path + ("#" + frag if frag else "")) + '"'
 
+        body = PENDING_RE.sub(pending, body)
         return re.sub(r'href="([^"]+)"', link, body)
+
+    def fix_external(self, page, doc):
+        """Puts the forge's address (--forge-url) in place of FORGE in every
+        address a tag of the page names (the template's included), and fails one
+        out of the site that isn't the forge, the mirror or the licence."""
+        def moved(url):
+            """url with the forge's address moved, and whether it was."""
+            url = url.strip()
+            if within(url, FORGE):
+                return self.forge + url[len(FORGE):], True
+            return url, False
+
+        def check(url):
+            if ABSOLUTE_RE.match(url):
+                ok = within(url, self.forge) or url in ALLOWED_EXTERNAL or bool(self.mirror and within(url, self.mirror))
+                if not ok:
+                    self.errors.append(f"{page.rel}: {url}: a link out of the site; pages link only to the forge "
+                                       f"({self.forge}), the mirror and the licences")
+
+        def attr(m):
+            name, quote = m.group(1).lower(), m.group(2) or '"'
+            raw = m.group(3) if m.group(2) else m.group(4)
+            value = html.unescape(raw)
+            if name == "style":
+                def css(u):
+                    url, _ = moved(u.group(2))
+                    check(url)
+                    return f"url({u.group(1)}{url}{u.group(1)})"
+                new = CSS_URL_RE.sub(css, value)
+            elif name == "srcset":
+                parts = []
+                for candidate in filter(str.split, value.split(",")):
+                    url, *rest = candidate.split()
+                    url, _ = moved(url)
+                    check(url)
+                    parts.append(" ".join([url, *rest]))
+                new = ", ".join(parts)
+            else:
+                new, _ = moved(value)
+                check(new)
+            if new == value:
+                return m.group(0)
+            return f"{m.group(1)}={quote}{html.escape(new)}{quote}"
+
+        def tag(m):
+            if m.group(0).startswith("<!--"):
+                return m.group(0)  # a comment: nothing in it is a link
+            return ATTR_RE.sub(attr, m.group(0))
+
+        # Only attributes of real tags: code and <pre> text has its < escaped,
+        # and a comment links to nothing.
+        return TAG_RE.sub(tag, doc)
 
     def neighbours(self, page):
         if not page.section or page.is_index:
@@ -650,17 +837,21 @@ class Builder:
         return '<nav class="pager">' + " ".join(parts) + "</nav>" if parts else ""
 
     def menu(self, page):
-        """The site menu every page carries: the home link, then each section's
-        index and its pages in order, stubs dimmed and unlinked as in the index
+        """The site menu every page carries: the home link, the Home and Docs
+        links, then each section's index and its pages in order, stubs dimmed and unlinked as in the index
         lists. The page itself is marked aria-current, its section "here"."""
-        def link(p, text, cls=""):
+        def link(p, text, cls="", current=True):
             href = os.path.relpath(p.out, page.out.parent)
             attrs = f' class="{cls}"' if cls else ""
-            if p is page:
+            if p is page and current:
                 attrs += ' aria-current="page"'
             return f'<a{attrs} href="{html.escape(href)}">{html.escape(text)}</a>'
 
         home = next(p for p in self.pages if not p.section and p.is_index)
+        tops = [f"<li>{link(home, 'Home')}</li>"]
+        for folder, name in TOP_PAGES.items():
+            top = next(p for p in self.pages if p.section == folder and p.is_index)
+            tops.append(f"<li>{link(top, name)}</li>")
         parts = []
         for section, name in SECTIONS.items():
             index = next(p for p in self.pages if p.section == section and p.is_index)
@@ -673,12 +864,13 @@ class Builder:
             here = " here" if page.section == section else ""
             parts.append(f'<div class="part{here}">\n{link(index, name, "part-name")}\n<ol>\n'
                          + "\n".join(items) + "\n</ol>\n</div>")
-        return ('<nav class="side" aria-label="Site">\n' + link(home, SITE_NAME.upper(), "home") + "\n"
+        return ('<nav class="side" aria-label="Site">\n' + link(home, SITE_NAME.upper(), "home", False) + "\n"
+                '<ul class="top">\n' + "\n".join(tops) + "\n</ul>\n"
                 '<details class="menu">\n<summary>Menu</summary>\n<div class="parts">\n'
                 + "\n".join(parts) + "\n</div>\n</details>\n</nav>")
 
     def build_page(self, page):
-        text = page.src.read_text(encoding="utf-8")
+        text = fill(page, page.src.read_text(encoding="utf-8"), self.release)
 
         def replace(kind, name):
             if kind == "generated":
@@ -715,6 +907,9 @@ class Builder:
         title = SITE_NAME if not page.section and page.is_index else f"{page.title} · {SITE_NAME}"
         robots = "noindex" if page.standalone else ROBOTS
         robots = f'<meta name="robots" content="{html.escape(robots)}">\n' if robots else ""
+        mirror = ""
+        if self.mirror:
+            mirror = f'<br>\nAlso at <a href="{html.escape(self.mirror)}">{html.escape(self.mirror)}</a>'
         doc = self.template.substitute(
             title=html.escape(title),
             robots=robots,
@@ -723,7 +918,10 @@ class Builder:
             checked=checked,
             pager=self.neighbours(page),
             nav=self.menu(page),
+            mirror=mirror,
+            bodyclass=' class="landing"' if page is self.home else "",
         )
+        doc = self.fix_external(page, doc)
         dest = self.out / page.out
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(doc, encoding="utf-8")
@@ -778,10 +976,16 @@ def main():
                     "blockwright-cli-dev, blockwright-cli)")
     ap.add_argument("--app", help="the Blockwright app whose --list-actions makes the shortcuts page (default: "
                     "$BLOCKWRIGHT_APP, the app beside the CLI, blockwright-dev, blockwright)")
+    ap.add_argument("--forge-url", default=FORGE, help=f"the forge's address in every forge and download link "
+                    f"(default: {FORGE})")
+    ap.add_argument("--mirror-url", help="the site's other address, named in a line of every page's footer "
+                    "(default: none, and no line)")
     args = ap.parse_args()
     try:
+        forge = site_url("--forge-url", args.forge_url)
+        mirror = site_url("--mirror-url", args.mirror_url) if args.mirror_url is not None else None
         cli = find_cli(args.cli)
-        Builder(args.out.resolve(), cli, find_app(args.app, cli)).build()
+        Builder(args.out.resolve(), cli, find_app(args.app, cli), forge, mirror).build()
     except BuildError as e:
         sys.exit(f"build: {e}")
 

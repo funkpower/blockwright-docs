@@ -2,7 +2,7 @@
 
 Documentation for [Blockwright](https://git.pumpin.online/funkpower/blockwright), the ANSI and IRC art editor: tutorials that start from nothing (what a cell is, how half blocks become pixels, how a shade ladder works, how to light a shape, how to get a piece onto IRC inside the byte budget) and a manual that covers every tool, menu, file format and command.
 
-Published at <https://blockwright-docs.pumpin.online/>. Every commit to `main` is live there within a few minutes.
+Published at <https://blockwright.pumpin.online/>. Every commit to `main` is live there within a few minutes.
 
 ## Layout
 
@@ -11,7 +11,9 @@ Published at <https://blockwright-docs.pumpin.online/>. Every commit to `main` i
 | `tutorials/` | One Markdown file per tutorial, in reading order |
 | `manual/` | One Markdown file per area of the app |
 | `samples/<tutorial>/` | The `.ans` files a tutorial shows, step by step, and what makes them |
-| `index.md` | The home page |
+| `index.md` | The home page: what Blockwright is, the downloads and links into the docs |
+| `docs/index.md` | The Docs page: every tutorial and manual page, at `/docs/` |
+| `release.json` | The current release: its version and file names, for the home page's downloads. A new release changes `version` here |
 | `release-checklist.md` | The maintainer's release checklist: which pages are behind the dev build, at `/release-checklist.html`, linked from no other page |
 | `theme/` | The page template and stylesheet |
 | `scripts/build` | Builds the site into `site/` (not tracked) |
