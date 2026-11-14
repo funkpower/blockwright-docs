@@ -573,6 +573,8 @@ def within(url, base):
 
 # The whitespace HTML splits on: a no-break space is part of an address.
 ASCII_SPACE = " \t\n\f\r"
+# What a URL parser trims from both ends of an address: C0 controls and space.
+C0_SPACE = "".join(map(chr, range(0x21)))
 
 
 def srcset_candidates(value):
@@ -735,7 +737,9 @@ class Builder:
         out of the site that isn't the forge, the mirror or the licence."""
         def moved(url):
             """url with the forge's address moved, and whether it was."""
-            url = url.strip(ASCII_SPACE)
+            # As a browser's URL parser reads it: tabs and newlines dropped
+            # anywhere, C0 controls and spaces trimmed from both ends.
+            url = re.sub(r"[\t\n\r]", "", url).strip(C0_SPACE)
             if within(url, FORGE):
                 return self.forge + url[len(FORGE):], True
             return url, False
