@@ -1093,57 +1093,64 @@ def template_links(s):
 def external_link_refused(s):
     """A link or an image out of the site to anything but the forge, the mirror
     and the licence fails the build, naming the page and the address, with or
-    without the scheme, quoted either way or not at all, in any case; mailto:
-    and the licence link pass, and an address in code, in <pre> text or in a
-    comment is no link: neither checked nor moved by --forge-url."""
-    for body in ["[elsewhere](https://example.org/page)", "[elsewhere](http://example.org/)",
-                 "[elsewhere](//example.org/)", "![a picture](https://example.org/x.png)",
-                 '<a href="https://example.com/">raw</a>', "<a href='https://example.com/'>single quotes</a>",
-                 '<a HREF = "https://example.com/">upper case</a>', "<a href=https://example.com/>unquoted</a>",
-                 f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png 1x, https://example.com/a.png 2x" alt="">',
-                 '<video poster="https://example.com/p.png"></video>',
-                 '<div style="background: url(\'https://example.com/b.png\')">styled</div>',
-                 '<a title="1 > 0" href="https://example.com/">a quoted &gt;</a>',
-                 "<a title='1 < 0' href=\"https://example.com/\">a quoted &lt;</a>",
-                 f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png bad), https://example.com/b.png 2x" alt="">',
-                 f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png bad((), https://example.com/b.png 2x" alt="">',
-                 f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png&nbsp;(, https://example.com/b.png 2x" alt="">',
-                 f'<img src="{FORGE}/a.png" srcset="\x0bhttps://example.com/b.png 2x" alt="">',
-                 '<video poster="\x0bhttps://example.com/p.png"></video>']:
-        s.probe(body)
-        s.failed(says="manual/99-probe.md: ")
-        check("a link out of the site" in s.out, f"{body}: {s.out.strip()[-300:]}")
-    s.probe('<div><a href="https://example.com/"title="no space">squeezed</a></div>')
-    s.failed(says="a tag the build can't read")
-    for body in [f'<img src="{FORGE}/a.png" srcset="\x0b,https://example.com/b.png 2x" alt="">',
-                 '<video poster="https:\\\\example.com/p.png"></video>', '<a href="/root.html">root</a>',
-                 '<a href="javascript:void(0)">script</a>', '<img src="data:image/png;base64,AAAA" alt="">',
-                 '<a href="irc://irc.example.org/blockwright">irc</a>']:
-        s.probe(body)
-        s.failed(says="an address the build can't read")
-    for style in ["background: url(https://example.com/a\\ b.png)", f"background: url({FORGE}/a\\)b.png)"]:
-        s.probe(f'<div style="{style}">escaped</div>')
-        s.failed(says="a style the build can't read")
+    without the scheme, quoted either way or not at all, in any case; any other
+    address but a mailto: and a plain relative path fails too, and so do a tag
+    and an attribute the site doesn't use (anything that loads, embeds, runs or
+    redirects), a style but a column's alignment, an unreadable tag and a comment
+    closed early. mailto:, the licence and table alignment pass, and an address
+    in code, in <pre> text, in a comment or in another attribute's value is no
+    link: neither checked nor moved by --forge-url."""
+    cases = {
+        "a link out of the site": [
+            "[elsewhere](https://example.org/page)", "[elsewhere](http://example.org/)",
+            "[elsewhere](//example.org/)", "![a picture](https://example.org/x.png)",
+            '<a href="https://example.com/">raw</a>', "<a href='https://example.com/'>single quotes</a>",
+            '<a HREF = "https://example.com/">upper case</a>', "<a href=https://example.com/>unquoted</a>",
+            '<a title="1 > 0" href="https://example.com/">a quoted &gt;</a>',
+            "<a title='1 < 0' href=\"https://example.com/\">a quoted &lt;</a>"],
+        "an address the build can't read": [
+            '<a href="https:\\\\example.com/p.png">backslashes</a>', '<a href="/root.html">root</a>',
+            '<a href="javascript:void(0)">script</a>', '<img src="data:image/png;base64,AAAA" alt="">',
+            '<a href="irc://irc.example.org/blockwright">irc</a>'],
+        "an address with control characters": [
+            '<img src="\x0bhttps://example.com/b.png" alt="">', '<a href=" page.html">a space</a>'],
+        "a tag the site doesn't use": [
+            '<video poster="https://example.com/p.png"></video>', "<iframe srcdoc=\"&lt;img&gt;\"></iframe>",
+            '<svg><image href="https://example.com/a.png" /></svg>', '<style>@import "https://example.com/a.css";</style>',
+            '<script src="x.js"></script>', '<object data="https://example.com/x"></object>'],
+        "an attribute the site doesn't use": [
+            f'<img src="{FORGE}/a.png" srcset="https://example.com/a.png 2x" alt="">',
+            '<a href="#probe" ping="https://example.com/ping">ping</a>',
+            '<link rel="preload" as="image" imagesrcset="https://example.com/a.png 1x">',
+            '<meta http-equiv="refresh" content="0;url=https://example.com/">', '<a onclick="go()">js</a>',
+            '<div style="background: url(https://example.com/b.png)">styled</div>'],
+        "a style the site doesn't use": [
+            '<table><tr><td style="background: url(https://example.com/b.png)">styled</td></tr></table>',
+            '<table><tr><th style="background-image: image-set(&quot;https://example.com/a.png&quot; 1x)">set</th>'
+            '</tr></table>'],
+        "a tag the build can't read": ['<div><a href="https://example.com/"title="no space">squeezed</a></div>'],
+    }
+    for says, bodies in cases.items():
+        for body in bodies:
+            s.probe(body)
+            s.failed(says="manual/99-probe.md: ")
+            check(says in s.out, f"{body}: expected {says!r} in {s.out.strip()[-300:]}")
+    s.probe('<!--><video poster="https://example.com/p.png"></video><!-- -->')
+    s.failed(says="<video>: a tag the site doesn't use")
     s.probe(f"[Write](mailto:someone@example.org) and [the licence]({CC}).\n\n"
             '<span title="href=\'https://example.org/\'">an address in another attribute</span>\n\n'
             '`<a href="https://example.org/">` in code\n\n'
             '    <img src="https://example.org/x.png">\n\n'
             '<!-- <a href="https://example.org/">a comment</a> -->\n\n'
+            "| Left | Right |\n|:---|---:|\n| a | b |\n\n"
             f'<pre>href="https://example.org/" and {FORGE}/x</pre>')
     s.passed("--forge-url", "http://forge.example.test")
     page = s.page()
-    s.probe(f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png 1x, {FORGE}/b.png 2x" alt=""> '
-            f'<img src="{FORGE}/c.png" srcset="{FORGE}/img,a.png 1x" alt=""> '
-            f'<img src="{FORGE}/e.png" srcset="{FORGE}/a&nbsp;b.png 1x" alt=""> '
-            f'<span style="background: url({FORGE}/d.png)">styled</span> '
-            f'[a query]({FORGE}?tab=repositories) [a fragment]({FORGE}#projects)')
+    check('style="text-align: right;"' in page, "the aligned table column wasn't built")
+    s.probe(f'<img src="{FORGE}/a.png" alt=""> [a query]({FORGE}?tab=repositories) [a fragment]({FORGE}#projects)')
     s.passed("--forge-url", "http://forge.example.test")
     moved = s.page()
-    check('srcset="http://forge.example.test/a.png 1x, http://forge.example.test/b.png 2x"' in moved,
-          "a srcset's forge addresses weren't moved")
-    check('srcset="http://forge.example.test/img,a.png 1x"' in moved, "a comma in a srcset address split it")
-    check('srcset="http://forge.example.test/a\u00a0b.png 1x"' in moved, "a no-break space in a srcset address split it")
-    check('url(&quot;http://forge.example.test/d.png&quot;)' in moved, "a style's url() wasn't moved and quoted")
+    check('src="http://forge.example.test/a.png"' in moved, "an image's forge address wasn't moved")
     check('href="http://forge.example.test?tab=repositories"' in moved
           and 'href="http://forge.example.test#projects"' in moved, "the forge with a query or fragment wasn't moved")
     check(f"{FORGE}/x</pre>" in page, "the forge's address in <pre> text changed")

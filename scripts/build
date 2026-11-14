@@ -53,16 +53,15 @@ when `ROBOTS` is set, a robots meta tag on every page but the standalone ones,
 which always carry `noindex`.
 
 Pages link to the forge as `https://git.pumpin.online/...` (FORGE). `--forge-url
-URL` puts URL in its place in every link of the built site, so a copy of the
-site can send downloads to another address of the forge. `--mirror-url URL`
-adds a line to every page's footer naming the site's other address. A page,
-template included, may link out of the site only to the forge, the mirror and
-the licence (ALLOWED_EXTERNAL): any other http, https or // address in a tag's
-href, src, srcset, poster, data, action, formaction, cite, background or style
-url() fails the build, so the site works where only those addresses can be
-reached. Any other address that isn't a mailto: or a relative path of
-letters, digits and / . _ ~ % - # fails too. Text in code, in <pre> and in
-comments is no link.
+URL` puts URL in its place in every href and src of the built site, so a copy
+of the site can send downloads to another address of the forge. `--mirror-url
+URL` adds a line to every page's footer naming the site's other address. Every
+tag of every built page, the template's included, must be one the site uses
+(TAGS, ATTRS: nothing that loads, embeds, runs or redirects), and every href
+and src the forge, the mirror, the licence (ALLOWED_EXTERNAL), a mailto: or a
+plain relative path; anything else fails the build, so the site works where
+only those addresses can be reached. Text in code, in <pre> and in comments is
+no link.
 
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
@@ -124,18 +123,27 @@ ALLOWED_EXTERNAL = ("https://creativecommons.org/licenses/by-sa/4.0/",)
 # (no character that needs escaping in a URL list or in CSS).
 URL_RE = re.compile(r"^https?://[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::\d{1,5})?(?:/[A-Za-z0-9._~%/-]*)?$")
 ABSOLUTE_RE = re.compile(r"^(?:https?:)?//", re.I)
-# HTML as the link pass reads it: a comment, a tag, or the start of a tag it
-# can't read. A tag is its name and its attributes, each a name with an
-# optional value in double, single or no quotes, so a quoted value may hold
-# < > = and attribute names without being taken for more of the tag.
-# Whitespace is HTML's: ASCII only.
+# HTML as the link pass reads it: a comment (closed as HTML closes one, at
+# <!--> and <!---> too), a tag, or the start of a tag it can't read. A tag is
+# its name and its attributes, each a name with an optional value in double,
+# single or no quotes, so a quoted value may hold < > = and attribute names
+# without being taken for more of the tag. Whitespace is HTML's: ASCII only.
 ATTR = r"""([ \t\n\f\r]+)([^ \t\n\f\r"'<>/=]+)(?:([ \t\n\f\r]*=[ \t\n\f\r]*)(?:"([^"]*)"|'([^']*)'|([^ \t\n\f\r"'=<>`]+)))?"""
-TAG_RE = re.compile(r"<!--.*?-->|<(?:[A-Za-z][^ \t\n\f\r/>]*(?:" + ATTR + r""")*[ \t\n\f\r]*/?>)?""", re.S)
+TAG_RE = re.compile(r"<!--(?:>|->|.*?--!?>)|<(?:[A-Za-z][^ \t\n\f\r/>]*(?:" + ATTR + r""")*[ \t\n\f\r]*/?>)?""", re.S)
 ATTR_RE = re.compile(ATTR, re.S)
-# The attributes that name an address.
-URL_ATTRS = {"href", "src", "srcset", "poster", "data", "action", "formaction", "cite", "background"}
-# A url(...) in a style attribute.
-CSS_URL_RE = re.compile(r"""url\(\s*(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|([^\s"')]*))\s*\)""", re.I | re.S)
+# The tags and attributes a built page may hold: what Python-Markdown's
+# extensions and the template write, and nothing that loads, embeds, runs or
+# redirects. Only href and src name an address.
+TAGS = set("""a abbr b blockquote body br caption code col colgroup dd del details div dl dt em figcaption figure
+    footer h1 h2 h3 h4 h5 h6 head header hr html i img ins kbd li link main mark meta nav ol p pre q s section
+    small span strong sub summary sup table tbody td tfoot th thead title tr u ul""".split())
+ATTRS = {"*": {"class", "id", "title", "lang", "dir"},
+         "a": {"href", "rel", "aria-current"}, "img": {"src", "alt", "width", "height"}, "link": {"href", "rel"},
+         "meta": {"charset", "name", "content"}, "nav": {"aria-label"}, "ol": {"start"}, "details": {"open"},
+         "td": {"style", "colspan", "rowspan"}, "th": {"style", "colspan", "rowspan"}}
+ADDRESS_ATTRS = {"href", "src"}
+# The one style a page may carry: a table column's alignment.
+STYLE_RE = re.compile(r"^text-align: ?(?:left|right|center);?$")
 EXTERNAL_RE = re.compile(r"^[a-z][a-z0-9+.-]*:|^//", re.I)
 MARKER_RE = re.compile(r"^<!-- (generated|list): ([a-z-]+) -->[ \t]*$")
 # The markers a page may use, exactly as written.
@@ -573,48 +581,13 @@ def within(url, base):
     return url == base or url.startswith((base + "/", base + "?", base + "#"))
 
 
-# The whitespace HTML splits on: a no-break space is part of an address.
-ASCII_SPACE = " \t\n\f\r"
 # A relative address the build lets through: ASCII letters, digits and
 # / . _ ~ % - #, not starting with /, so it can name no scheme, host or
 # backslash form (empty is the page itself).
-SAFE_RELATIVE_RE = re.compile(r"^(?:[A-Za-z0-9._~%#-][A-Za-z0-9/._~%#-]*)?$")
+SAFE_RELATIVE_RE = re.compile(r"^(?:[A-Za-z0-9._~%-][A-Za-z0-9/._~%-]*)?(?:#[A-Za-z0-9._~%:-]*)?$")
 MAILTO_RE = re.compile(r"^mailto:[^\x00-\x20\x7f\\]+$", re.I)
 # What a URL parser trims from both ends of an address: C0 controls and space.
 C0_SPACE = "".join(map(chr, range(0x21)))
-
-
-def srcset_candidates(value):
-    """A srcset as (address, descriptors) pairs, split as HTML splits it: an
-    address is a run of characters other than spaces (trailing commas end the
-    candidate), its descriptors run to the next comma outside brackets, which
-    the first ) after a ( closes."""
-    found, i, n = [], 0, len(value)
-    while i < n:
-        while i < n and (value[i] in ASCII_SPACE or value[i] == ","):
-            i += 1
-        j = i
-        while j < n and value[j] not in ASCII_SPACE:
-            j += 1
-        url = value[i:j]
-        if not url:
-            break
-        if url.endswith(","):
-            found.append((url.rstrip(","), ""))
-            i = j
-            continue
-        # HTML's descriptor state: a ( enters brackets and the next ) leaves
-        # them, with no nesting; a comma outside them ends the candidate.
-        k, inside = j, False
-        while k < n and not (value[k] == "," and not inside):
-            if value[k] == "(":
-                inside = True
-            elif value[k] == ")":
-                inside = False
-            k += 1
-        found.append((url, value[j:k].strip(ASCII_SPACE)))
-        i = k + 1
-    return found
 
 
 def site_url(how, url):
@@ -740,85 +713,69 @@ class Builder:
 
     def fix_external(self, page, doc):
         """Puts the forge's address (--forge-url) in place of FORGE in every
-        address a tag of the page names (the template's included), and fails one
-        out of the site that isn't the forge, the mirror or the licence."""
-        def moved(url):
-            """url with the forge's address moved, and whether it was."""
+        href and src of the page (the template's included), fails an address
+        that isn't the forge, the mirror, the licence, a mailto: or a plain
+        relative path, and fails a tag or attribute the site doesn't use."""
+        def fail(why):
+            self.errors.append(f"{page.rel}: {why}")
+
+        def address(raw):
             # As a browser's URL parser reads it: tabs and newlines dropped
-            # anywhere, C0 controls and spaces trimmed from both ends.
-            url = re.sub(r"[\t\n\r]", "", url).strip(C0_SPACE)
+            # anywhere, C0 controls and spaces trimmed from both ends. One that
+            # needs either is refused rather than read.
+            url = re.sub(r"[\t\n\r]", "", raw).strip(C0_SPACE)
+            if url != raw:
+                fail(f"{raw!r}: an address with control characters or spaces at its ends")
+                return raw
             if within(url, FORGE):
-                return self.forge + url[len(FORGE):], True
-            return url, False
-
-        def check(url):
-            """Default-deny: the forge, the mirror, the licence, a mailto: or a
-            plain relative path; anything else fails the build."""
+                url = self.forge + url[len(FORGE):]
             if within(url, self.forge) or url in ALLOWED_EXTERNAL or bool(self.mirror and within(url, self.mirror)):
-                return
+                return url
             if SAFE_RELATIVE_RE.match(url) or MAILTO_RE.match(url):
-                return
+                return url
             if ABSOLUTE_RE.match(url):
-                self.errors.append(f"{page.rel}: {url}: a link out of the site; pages link only to the forge "
-                                   f"({self.forge}), the mirror and the licence")
+                fail(f"{url}: a link out of the site; pages link only to the forge ({self.forge}), the mirror and "
+                     "the licence")
             else:
-                self.errors.append(f"{page.rel}: {url!r}: an address the build can't read; a page's own addresses "
-                                   "are relative paths of letters, digits and / . _ ~ % - #")
-
-        def address(value):
-            new, _ = moved(value)
-            check(new)
-            return new
-
-        def value_of(name, value):
-            """The attribute's value with the forge moved, every address checked."""
-            if name == "style":
-                # A url() is read plain: quoted or not, without CSS escapes. One
-                # the build can't read that way could hide an address.
-                if "\\" in value or len(re.findall(r"url\(", value, re.I)) != len(CSS_URL_RE.findall(value)):
-                    self.errors.append(f"{page.rel}: a style the build can't read (a url() with an escape or "
-                                       f"one it can't parse): {value[:80]!r}")
-                    return value
-
-                def css(u):
-                    old = next(g for g in (u.group(1), u.group(2), u.group(3)) if g is not None)
-                    new = address(old)
-                    if new == old:
-                        return u.group(0)
-                    return 'url("' + new.replace("\\", "\\\\").replace('"', '\\"') + '")'
-                return CSS_URL_RE.sub(css, value)
-            if name == "srcset":
-                parts = [(address(url), d) for url, d in srcset_candidates(value)]
-                if [u for u, _ in parts] == [u for u, _ in srcset_candidates(value)]:
-                    return value
-                return ", ".join(u + (" " + d if d else "") for u, d in parts)
-            return address(value)
-
-        def attr(m):
-            name = m.group(2).lower()
-            if m.group(3) is None or (name not in URL_ATTRS and name != "style"):
-                return m.group(0)
-            raw = next(g for g in (m.group(4), m.group(5), m.group(6)) if g is not None)
-            value = html.unescape(raw)
-            new = value_of(name, value)
-            if new == value:
-                return m.group(0)
-            return f'{m.group(1)}{m.group(2)}{m.group(3)}"{html.escape(new)}"'
+                fail(f"{url!r}: an address the build can't read; a page's own addresses are relative paths of "
+                     "letters, digits and / . _ ~ % - with an optional #fragment")
+            return url
 
         def tag(m):
             text = m.group(0)
             if text.startswith("<!--"):
                 return text  # a comment: nothing in it is a link
             if text == "<":
-                rest = doc[m.end():m.end() + 1]
-                if rest[:1].isalpha():
-                    self.errors.append(f"{page.rel}: a tag the build can't read: {doc[m.start():m.start() + 60]!r}")
+                if doc[m.end():m.end() + 1].isalpha():
+                    fail(f"a tag the build can't read: {doc[m.start():m.start() + 60]!r}")
                 return text  # a < that starts no tag
             name = re.match(r"<[^ \t\n\f\r/>]*", text).group(0)
+            tagname = name[1:].lower()
+            if tagname not in TAGS:
+                fail(f"<{tagname}>: a tag the site doesn't use")
+                return text
+            allowed = ATTRS["*"] | ATTRS.get(tagname, set())
+
+            def attr(a):
+                key = a.group(2).lower()
+                value = None if a.group(3) is None else html.unescape(
+                    next(g for g in (a.group(4), a.group(5), a.group(6)) if g is not None))
+                if not (key in allowed or key.startswith("aria-")):
+                    fail(f"<{tagname} {key}>: an attribute the site doesn't use")
+                elif key == "style" and not STYLE_RE.match(value or ""):
+                    fail(f"<{tagname} style={value!r}>: a style the site doesn't use (a column's text-align only)")
+                elif key in ADDRESS_ATTRS and value is not None:
+                    new = address(value)
+                    if new != value:
+                        return f'{a.group(1)}{a.group(2)}{a.group(3)}"{html.escape(new)}"'
+                return a.group(0)
+
             return name + ATTR_RE.sub(attr, text[len(name):])
 
-        # Only attributes of real tags: code and <pre> text has its < escaped,
-        # and a comment links to nothing.
+        if doc.count("<!--") > len(re.findall(r"<!--(?:>|->|.*?--!?>)", doc, re.S)):
+            fail("a comment that isn't closed")
+        # Only real tags: code and <pre> text has its < escaped, and a comment
+        # links to nothing.
         return TAG_RE.sub(tag, doc)
 
     def neighbours(self, page):
