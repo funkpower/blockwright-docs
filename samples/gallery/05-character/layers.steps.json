@@ -1,0 +1,152 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "05-character"
+ },
+ "steps": [
+  {
+   "name": "pick-1",
+   "action": "setActiveLayer",
+   "layer": "highlights"
+  },
+  {
+   "name": "hide-2",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-3",
+   "action": "setActiveLayer",
+   "layer": "face detail"
+  },
+  {
+   "name": "hide-4",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-5",
+   "action": "setActiveLayer",
+   "layer": "body"
+  },
+  {
+   "name": "hide-6",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-7",
+   "action": "setActiveLayer",
+   "layer": "outline"
+  },
+  {
+   "name": "hide-8",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-9",
+   "action": "setActiveLayer",
+   "layer": "shadow"
+  },
+  {
+   "name": "hide-10",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-11",
+   "action": "setActiveLayer",
+   "layer": "meadow"
+  },
+  {
+   "name": "hide-12",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-13",
+   "action": "setActiveLayer",
+   "layer": "hills"
+  },
+  {
+   "name": "hide-14",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "action": "shade",
+   "name": "layer-01"
+  },
+  {
+   "name": "pick-16",
+   "action": "setActiveLayer",
+   "layer": "hills"
+  },
+  {
+   "name": "layer-02",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-18",
+   "action": "setActiveLayer",
+   "layer": "meadow"
+  },
+  {
+   "name": "layer-03",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-20",
+   "action": "setActiveLayer",
+   "layer": "shadow"
+  },
+  {
+   "name": "layer-04",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-22",
+   "action": "setActiveLayer",
+   "layer": "outline"
+  },
+  {
+   "name": "layer-05",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-24",
+   "action": "setActiveLayer",
+   "layer": "body"
+  },
+  {
+   "name": "layer-06",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-26",
+   "action": "setActiveLayer",
+   "layer": "face detail"
+  },
+  {
+   "name": "layer-07",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-28",
+   "action": "setActiveLayer",
+   "layer": "highlights"
+  },
+  {
+   "name": "layer-08",
+   "action": "layerProperties",
+   "visible": true
+  }
+ ]
+}

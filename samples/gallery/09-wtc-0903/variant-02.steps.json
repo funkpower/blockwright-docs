@@ -1,0 +1,13 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "09-wtc-0903",
+  "variant": "Sunlight off"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "variant"
+  }
+ ]
+}

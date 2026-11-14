@@ -1,0 +1,12 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "04-generator-ridges"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "final"
+  }
+ ]
+}

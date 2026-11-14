@@ -1,0 +1,13 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "01-layers-showcase",
+  "variant": "Day"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "variant"
+  }
+ ]
+}

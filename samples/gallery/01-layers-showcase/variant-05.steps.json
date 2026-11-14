@@ -1,0 +1,13 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "01-layers-showcase",
+  "variant": "Baked title"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "variant"
+  }
+ ]
+}

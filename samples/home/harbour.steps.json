@@ -1,0 +1,31 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "01-layers-showcase"
+ },
+ "steps": [
+  {
+   "name": "layer",
+   "action": "setActiveLayer",
+   "layer": "moon"
+  },
+  {
+   "name": "zoom",
+   "action": "view",
+   "zoom": 1
+  },
+  {
+   "action": "halfBlock",
+   "fg": 14,
+   "size": 2,
+   "name": "harbour",
+   "screenshot": {
+    "of": "window"
+   }
+  }
+ ],
+ "window": [
+  1600,
+  1000
+ ]
+}

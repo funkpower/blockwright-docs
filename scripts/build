@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Build the docs site from the Markdown pages and the samples.
 
-    scripts/build [--out DIR] [--cli PATH] [--app PATH]
+    scripts/build [--out DIR] [--cli PATH] [--app PATH] [--forge-url URL] [--mirror-url URL]
 
-Pages are `index.md`, `tutorials/*.md` and `manual/*.md`, each section with
-an `index.md` of its own. A page other than an index is published
+Pages are `index.md`, `samples/index.md` (the Samples page), `tutorials/*.md`
+and `manual/*.md`, each section with an `index.md` of its own. A page other than an index is published
 when its metadata block carries `Checked:` (the Blockwright build its steps
 were checked against); the others are stubs, listed as not written yet and
 never linked. The maintainer's pages in `STANDALONE` (`release-checklist.md`)
@@ -52,6 +52,14 @@ The site also gets `robots.txt`, which lets crawlers fetch everything, and,
 when `ROBOTS` is set, a robots meta tag on every page but the standalone ones,
 which always carry `noindex`.
 
+Pages link to the forge as `https://git.pumpin.online/...` (FORGE). `--forge-url
+URL` puts URL in its place in every link of the built site, so a copy of the
+site can send downloads to another address of the forge. `--mirror-url URL`
+adds a line to every page's footer naming the site's other address. A page
+may link out of the site only to the forge, the mirror and the licence
+(ALLOWED_EXTERNAL): any other http or https link fails the build, so the site
+works where only those addresses can be reached.
+
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
 resolves into `.git/` or `site/`, a missing sample, a sample the CLI can't
@@ -85,6 +93,9 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parent.parent
 SECTIONS = {"tutorials": "Tutorials", "manual": "Manual"}
+# Pages of their own, each a folder's index.md: listed in the menu after the
+# home link, before the sections.
+TOP_PAGES = {"samples": "Samples"}
 # The maintainer's pages at the site root: built always, linked from no list,
 # menu or pager, and kept out of search engines (PLAN.md §6).
 STANDALONE = ("release-checklist.md",)
@@ -100,6 +111,14 @@ ROBOTS = ""
 ROBOTS_TXT = "User-agent: *\nAllow: /\n"
 # Written into the site; names every file the build wrote.
 MANIFEST = ".blockwright-docs-manifest"
+# The forge as pages write it; --forge-url puts another address in its place.
+FORGE = "https://git.pumpin.online"
+# The only links out of the site besides the forge and the mirror.
+ALLOWED_EXTERNAL = ("https://creativecommons.org/licenses/by-sa/4.0/",)
+# An address --forge-url and --mirror-url take: http or https, a host, an
+# optional port and path, nothing else.
+URL_RE = re.compile(r"^https?://[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::\d{1,5})?(?:/[A-Za-z0-9._~!$&'()*+,;=:@%/-]*)?$")
+ABSOLUTE_RE = re.compile(r"^(?:https?:)?//", re.I)
 EXTERNAL_RE = re.compile(r"^[a-z][a-z0-9+.-]*:|^//", re.I)
 MARKER_RE = re.compile(r"^<!-- (generated|list): ([a-z-]+) -->[ \t]*$")
 # The markers a page may use, exactly as written.
@@ -282,6 +301,8 @@ class Page:
 
 def collect_pages():
     pages = [Page(ROOT / "index.md")]
+    for folder in TOP_PAGES:
+        pages.append(Page(ROOT / folder / "index.md"))
     for section in SECTIONS:
         pages.append(Page(ROOT / section / "index.md"))
         for src in sorted((ROOT / section).glob("*.md")):
@@ -528,11 +549,22 @@ def checklist(pages, here, cli_version):
     return summary + "\n" + "\n".join(tables)
 
 
+def site_url(how, url):
+    """url, which --forge-url or --mirror-url gave, if it is an http or https
+    address with a host (and only a port and path after it)."""
+    if not URL_RE.match(url):
+        raise BuildError(f"{how}: {url!r} isn't an http:// or https:// address with a host (and an optional port "
+                         "and path, no query or fragment)")
+    return url
+
+
 class Builder:
-    def __init__(self, out, cli, app=None):
+    def __init__(self, out, cli, app=None, forge=FORGE, mirror=None):
         self.out = out
         self.cli = cli
         self.app = app
+        self.forge = forge.rstrip("/")
+        self.mirror = mirror
         self.app_used = None
         self.rendered = {}
         self.errors = []
@@ -637,6 +669,25 @@ class Builder:
 
         return re.sub(r'href="([^"]+)"', link, body)
 
+    def fix_external(self, page, body):
+        """Puts the forge's address (--forge-url) in place of FORGE in every link
+        and image, and fails a link or image out of the site that isn't the
+        forge, the mirror or the licence."""
+        def ext(m):
+            url = html.unescape(m.group(2))
+            moved = url == FORGE or url.startswith(FORGE + "/")
+            if moved:
+                url = self.forge + url[len(FORGE):]
+            if ABSOLUTE_RE.match(url):
+                ok = (url == self.forge or url.startswith(self.forge + "/") or url in ALLOWED_EXTERNAL
+                      or (self.mirror and url.startswith(self.mirror)))
+                if not ok:
+                    self.errors.append(f"{page.rel}: {url}: a link out of the site; pages link only to the forge "
+                                       f"({self.forge}), the mirror and the licence")
+            return f'{m.group(1)}="{html.escape(url)}"' if moved else m.group(0)
+
+        return re.sub(r'\b(href|src)="([^"]*)"', ext, body)
+
     def neighbours(self, page):
         if not page.section or page.is_index:
             return ""
@@ -662,6 +713,9 @@ class Builder:
 
         home = next(p for p in self.pages if not p.section and p.is_index)
         parts = []
+        for folder, name in TOP_PAGES.items():
+            top = next(p for p in self.pages if p.section == folder and p.is_index)
+            parts.append(f'<div class="top">{link(top, name)}</div>')
         for section, name in SECTIONS.items():
             index = next(p for p in self.pages if p.section == section and p.is_index)
             items = []
@@ -707,6 +761,7 @@ class Builder:
                              "item or blockquote), outside code")
         body = self.fix_images(page, body)
         body = self.fix_links(page, body)
+        body = self.fix_external(page, body)
         up = os.path.relpath(".", page.out.parent)
         root = "" if up == "." else up + "/"
         checked = ""
@@ -715,6 +770,9 @@ class Builder:
         title = SITE_NAME if not page.section and page.is_index else f"{page.title} · {SITE_NAME}"
         robots = "noindex" if page.standalone else ROBOTS
         robots = f'<meta name="robots" content="{html.escape(robots)}">\n' if robots else ""
+        mirror = ""
+        if self.mirror:
+            mirror = f'<br>\nAlso at <a href="{html.escape(self.mirror)}">{html.escape(self.mirror)}</a>'
         doc = self.template.substitute(
             title=html.escape(title),
             robots=robots,
@@ -723,6 +781,7 @@ class Builder:
             checked=checked,
             pager=self.neighbours(page),
             nav=self.menu(page),
+            mirror=mirror,
         )
         dest = self.out / page.out
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -778,10 +837,16 @@ def main():
                     "blockwright-cli-dev, blockwright-cli)")
     ap.add_argument("--app", help="the Blockwright app whose --list-actions makes the shortcuts page (default: "
                     "$BLOCKWRIGHT_APP, the app beside the CLI, blockwright-dev, blockwright)")
+    ap.add_argument("--forge-url", default=FORGE, help=f"the forge's address in every forge and download link "
+                    f"(default: {FORGE})")
+    ap.add_argument("--mirror-url", help="the site's other address, named in a line of every page's footer "
+                    "(default: none, and no line)")
     args = ap.parse_args()
     try:
+        forge = site_url("--forge-url", args.forge_url)
+        mirror = site_url("--mirror-url", args.mirror_url) if args.mirror_url is not None else None
         cli = find_cli(args.cli)
-        Builder(args.out.resolve(), cli, find_app(args.app, cli)).build()
+        Builder(args.out.resolve(), cli, find_app(args.app, cli), forge, mirror).build()
     except BuildError as e:
         sys.exit(f"build: {e}")
 

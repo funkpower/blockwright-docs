@@ -1,0 +1,12 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "06-blockwright-logo"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "final"
+  }
+ ]
+}

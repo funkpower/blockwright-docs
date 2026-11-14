@@ -1,0 +1,132 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "03-still-life"
+ },
+ "steps": [
+  {
+   "name": "pick-1",
+   "action": "setActiveLayer",
+   "layer": "rim light"
+  },
+  {
+   "name": "hide-2",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-3",
+   "action": "setActiveLayer",
+   "layer": "sphere"
+  },
+  {
+   "name": "hide-4",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-5",
+   "action": "setActiveLayer",
+   "layer": "box"
+  },
+  {
+   "name": "hide-6",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-7",
+   "action": "setActiveLayer",
+   "layer": "cylinder"
+  },
+  {
+   "name": "hide-8",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-9",
+   "action": "setActiveLayer",
+   "layer": "shadows"
+  },
+  {
+   "name": "hide-10",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-11",
+   "action": "setActiveLayer",
+   "layer": "table"
+  },
+  {
+   "name": "hide-12",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "action": "shade",
+   "name": "layer-01"
+  },
+  {
+   "name": "pick-14",
+   "action": "setActiveLayer",
+   "layer": "table"
+  },
+  {
+   "name": "layer-02",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-16",
+   "action": "setActiveLayer",
+   "layer": "shadows"
+  },
+  {
+   "name": "layer-03",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-18",
+   "action": "setActiveLayer",
+   "layer": "cylinder"
+  },
+  {
+   "name": "layer-04",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-20",
+   "action": "setActiveLayer",
+   "layer": "box"
+  },
+  {
+   "name": "layer-05",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-22",
+   "action": "setActiveLayer",
+   "layer": "sphere"
+  },
+  {
+   "name": "layer-06",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-24",
+   "action": "setActiveLayer",
+   "layer": "rim light"
+  },
+  {
+   "name": "layer-07",
+   "action": "layerProperties",
+   "visible": true
+  }
+ ]
+}

@@ -1,0 +1,13 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "06-blockwright-logo",
+  "variant": "No drop"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "variant"
+  }
+ ]
+}

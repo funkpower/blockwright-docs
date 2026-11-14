@@ -1,0 +1,192 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "07-battlestation"
+ },
+ "steps": [
+  {
+   "name": "pick-1",
+   "action": "setActiveLayer",
+   "layer": "signature"
+  },
+  {
+   "name": "hide-2",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-3",
+   "action": "setActiveLayer",
+   "layer": "chair"
+  },
+  {
+   "name": "hide-4",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-5",
+   "action": "setActiveLayer",
+   "layer": "glow"
+  },
+  {
+   "name": "hide-6",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-7",
+   "action": "setActiveLayer",
+   "layer": "rack"
+  },
+  {
+   "name": "hide-8",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-9",
+   "action": "setActiveLayer",
+   "layer": "mug and mouse"
+  },
+  {
+   "name": "hide-10",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-11",
+   "action": "setActiveLayer",
+   "layer": "keyboard"
+  },
+  {
+   "name": "hide-12",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-13",
+   "action": "setActiveLayer",
+   "layer": "screen"
+  },
+  {
+   "name": "hide-14",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-15",
+   "action": "setActiveLayer",
+   "layer": "monitor frame"
+  },
+  {
+   "name": "hide-16",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "name": "pick-17",
+   "action": "setActiveLayer",
+   "layer": "desk"
+  },
+  {
+   "name": "hide-18",
+   "action": "layerProperties",
+   "visible": false
+  },
+  {
+   "action": "shade",
+   "name": "layer-01"
+  },
+  {
+   "name": "pick-20",
+   "action": "setActiveLayer",
+   "layer": "desk"
+  },
+  {
+   "name": "layer-02",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-22",
+   "action": "setActiveLayer",
+   "layer": "monitor frame"
+  },
+  {
+   "name": "layer-03",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-24",
+   "action": "setActiveLayer",
+   "layer": "screen"
+  },
+  {
+   "name": "layer-04",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-26",
+   "action": "setActiveLayer",
+   "layer": "keyboard"
+  },
+  {
+   "name": "layer-05",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-28",
+   "action": "setActiveLayer",
+   "layer": "mug and mouse"
+  },
+  {
+   "name": "layer-06",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-30",
+   "action": "setActiveLayer",
+   "layer": "rack"
+  },
+  {
+   "name": "layer-07",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-32",
+   "action": "setActiveLayer",
+   "layer": "glow"
+  },
+  {
+   "name": "layer-08",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-34",
+   "action": "setActiveLayer",
+   "layer": "chair"
+  },
+  {
+   "name": "layer-09",
+   "action": "layerProperties",
+   "visible": true
+  },
+  {
+   "name": "pick-36",
+   "action": "setActiveLayer",
+   "layer": "signature"
+  },
+  {
+   "name": "layer-10",
+   "action": "layerProperties",
+   "visible": true
+  }
+ ]
+}

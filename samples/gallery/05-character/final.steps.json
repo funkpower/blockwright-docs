@@ -1,0 +1,12 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "05-character"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "final"
+  }
+ ]
+}

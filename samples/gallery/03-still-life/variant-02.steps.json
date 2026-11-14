@@ -1,0 +1,13 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "03-still-life",
+  "variant": "No shadows"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "variant"
+  }
+ ]
+}

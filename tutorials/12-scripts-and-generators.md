@@ -9,7 +9,7 @@ Let programs draw part of a piece. You'll take the ridges generator from a sampl
 
 ![An 80 by 25 piece. The top eight rows are black, with five meteors falling down to the left, their heads in rows 6 and 7 at columns 0, 2, 19, 32 and 68: each a white * head and a tail of light cyan / up to the right, ending in dark grey dots. A white crescent moon stands in rows 1 to 5 at columns 50 to 55. Below row 7 the sky climbs a rung a row from black through blue, magenta and light magenta to light red, and four ranges of sharp mountains stand in front of it, peaking at row 13: light blue at the back, then dark grey shaded over blue and over black, darkest at the front](../samples/12-scripts-and-generators/final.bwp "2x")
 
-Two of its five layers are generators: the ridges, drawn by a shell script that ships with the sample **Ridges at dusk**, and the meteors, drawn by a Python script of 50 lines you'll write here. The ridges script, in this piece and in every other project on this page that carries it, is Blockwright's own and is under the [GNU General Public License, version 3 or later](https://www.gnu.org/licenses/gpl-3.0.html), as Blockwright is; the meteors script and the rest of these docs are under CC BY-SA 4.0.
+Two of its five layers are generators: the ridges, drawn by a shell script that ships with the sample **Ridges at dusk**, and the meteors, drawn by a Python script of 50 lines you'll write here. The ridges script, in this piece and in every other project on this page that carries it, is Blockwright's own and is under the [GNU General Public License, version 3 or later](https://git.pumpin.online/funkpower/blockwright/src/branch/main/LICENSE), as Blockwright is; the meteors script and the rest of these docs are under CC BY-SA 4.0.
 
 ## The idea
 

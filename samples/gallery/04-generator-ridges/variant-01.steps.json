@@ -1,0 +1,13 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "04-generator-ridges",
+  "variant": "Another seed"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "variant"
+  }
+ ]
+}

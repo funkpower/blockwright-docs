@@ -2,7 +2,7 @@
 
 Documentation for [Blockwright](https://git.pumpin.online/funkpower/blockwright), the ANSI and IRC art editor: tutorials that start from nothing (what a cell is, how half blocks become pixels, how a shade ladder works, how to light a shape, how to get a piece onto IRC inside the byte budget) and a manual that covers every tool, menu, file format and command.
 
-Published at <https://blockwright-docs.pumpin.online/>. Every commit to `main` is live there within a few minutes.
+Published at <https://blockwright.pumpin.online/>. Every commit to `main` is live there within a few minutes.
 
 ## Layout
 
@@ -11,6 +11,8 @@ Published at <https://blockwright-docs.pumpin.online/>. Every commit to `main` i
 | `tutorials/` | One Markdown file per tutorial, in reading order |
 | `manual/` | One Markdown file per area of the app |
 | `samples/<tutorial>/` | The `.ans` files a tutorial shows, step by step, and what makes them |
+| `samples/index.md` | The Samples page, written with its files in `samples/gallery/` by `samples/gallery/make.py` |
+| `samples/home/` | The home page's logo and window pictures |
 | `index.md` | The home page |
 | `release-checklist.md` | The maintainer's release checklist: which pages are behind the dev build, at `/release-checklist.html`, linked from no other page |
 | `theme/` | The page template and stylesheet |
@@ -28,6 +30,9 @@ Needs Python 3, Python-Markdown (`python-markdown` on Arch, `python3-markdown` o
 scripts/build                      # into site/
 scripts/build --out /some/dir      # elsewhere, outside the repo
 scripts/build --cli path/to/blockwright-cli
+scripts/build --forge-url http://forge.example.test --mirror-url http://docs.example.test/
+                                   # forge and download links to another address of the forge,
+                                   # and a footer line naming the site's other address
 scripts/build --app path/to/blockwright  # the app the shortcuts page runs (from the CLI's commit)
 scripts/test-build                 # the build's own checks
 ```

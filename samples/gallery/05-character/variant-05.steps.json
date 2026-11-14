@@ -1,0 +1,13 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "05-character",
+  "variant": "Scene only"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "variant"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "08-brain-on-irc"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "final"
+  }
+ ]
+}

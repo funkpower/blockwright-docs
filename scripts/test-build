@@ -935,8 +935,8 @@ def menu_lists_every_page(s):
 @scenario
 def menu_marks_current(s):
     """On every page aria-current="page" is set exactly once, in the menu, on the
-    link to the page itself, and the page's section (none on the home page) is
-    the one marked "here"; on the standalone release checklist, which the menu
+    link to the page itself, and the page's section (none on the home page or
+    the Samples page) is the one marked "here"; on the standalone release checklist, which the menu
     doesn't list, nothing is marked."""
     pages = menu_site(s)
     check(CHECKLIST + ".html" in pages, "the release checklist wasn't built")
@@ -951,8 +951,133 @@ def menu_marks_current(s):
               f"{'in' if in_menu else 'outside'} the menu")
         check(resolve(name, href) == name, f"{name}: aria-current marks {href}, not this page")
         here = [i for i, c in enumerate(mp.parts) if "here" in c]
-        want = [] if "/" not in name else [["tutorials", "manual"].index(name.split("/")[0])]
+        section = name.split("/")[0] if "/" in name else None
+        want = [["tutorials", "manual"].index(section)] if section in ("tutorials", "manual") else []
         check(here == want, f"{name}: sections marked here: {here}, expected {want}")
+
+
+@scenario
+def menu_samples(s):
+    """The Samples page is built at samples/index.html and every page's menu
+    links it once, after the home link and before the sections; the home page
+    links it too."""
+    pages = menu_site(s)
+    check("samples/index.html" in pages, "the Samples page wasn't built")
+    for name, mp in pages.items():
+        menu = mp.menus[0]
+        at = [i for i, e in enumerate(menu) if e["href"] and resolve(name, e["href"]) == "samples/index.html"]
+        check(len(at) == 1, f"{name}: the menu links the Samples page {len(at)} times")
+        first = next(i for i, e in enumerate(menu) if e["kind"] == "section")
+        check(0 < at[0] < first and menu[at[0]]["text"] == "Samples",
+              f"{name}: Samples isn't between the home link and the sections")
+    home = s.page("index.html")
+    check('href="samples/index.html"' in home, "the home page doesn't link the Samples page")
+
+
+# 13. --forge-url, --mirror-url and links out of the site.
+
+FORGE = "https://git.pumpin.online"
+RELEASE = FORGE + "/funkpower/blockwright/releases/tag/v0.1.0"
+CC = "https://creativecommons.org/licenses/by-sa/4.0/"
+
+
+def absolute_links(site):
+    """{page: [every http or https href and src on it]} for every page in site."""
+    found = {}
+    for f in sorted(site.rglob("*.html")):
+        text = f.read_text(encoding="utf-8")
+        found[f.relative_to(site).as_posix()] = [html.unescape(u) for u in
+                                                  re.findall(r'(?:href|src)="((?:https?:)?//[^"]*)"', text)]
+    return found
+
+
+@scenario
+def forge_url_default(s):
+    """Without --forge-url the forge links stay as the pages write them: the
+    home page's downloads and the probe's link go to git.pumpin.online, and
+    every link out of the site is the forge's or the licence's."""
+    s.probe(f"[The release]({RELEASE}) and [the forge]({FORGE}).")
+    s.passed()
+    links = absolute_links(s.repo / "site")
+    check(RELEASE in links["manual/99-probe.html"] and FORGE in links["manual/99-probe.html"],
+          f"the probe's forge links changed: {links['manual/99-probe.html']}")
+    downloads = [u for u in links["index.html"] if "/releases/download/" in u]
+    check(len(downloads) >= 5 and all(u.startswith(FORGE + "/funkpower/blockwright/releases/download/")
+                                      for u in downloads), f"the home page's downloads: {downloads}")
+    for page, urls in links.items():
+        for u in urls:
+            check(u == FORGE or u.startswith(FORGE + "/") or u == CC, f"{page}: a link out of the site to {u}")
+
+
+@scenario
+def forge_url_moved(s):
+    """--forge-url puts its address in place of the forge's in every link on
+    every page, a trailing slash dropped, a query-free path and port kept; no
+    page names git.pumpin.online any more, and the licence link is left alone."""
+    other = "http://forge.example.test:8080/mirror"
+    s.probe(f"[The release]({RELEASE}), [the forge]({FORGE}) and [not the forge](https://git.pumpin.online.example.test/x).")
+    s.failed("--forge-url", other + "/", says="git.pumpin.online.example.test/x: a link out of the site")
+    s.probe(f"[The release]({RELEASE}) and [the forge]({FORGE}).")
+    s.passed("--forge-url", other + "/")
+    links = absolute_links(s.repo / "site")
+    check(other + "/funkpower/blockwright/releases/tag/v0.1.0" in links["manual/99-probe.html"]
+          and other in links["manual/99-probe.html"], f"the probe's links: {links['manual/99-probe.html']}")
+    downloads = [u for u in links["index.html"] if "/releases/download/" in u]
+    check(len(downloads) >= 5 and all(u.startswith(other + "/funkpower/blockwright/releases/download/")
+                                      for u in downloads), f"the home page's downloads: {downloads}")
+    for f in sorted((s.repo / "site").rglob("*.html")):
+        check("git.pumpin.online" not in f.read_text(encoding="utf-8"),
+              f"{f.relative_to(s.repo / 'site')} still names git.pumpin.online")
+    for page, urls in links.items():
+        check(CC in urls, f"{page}: no licence link")
+        for u in urls:
+            check(u.startswith(other) or u == CC, f"{page}: a link out of the site to {u}")
+
+
+@scenario
+def forge_url_refused(s):
+    """--forge-url and --mirror-url that aren't an http or https address with a
+    host are refused before anything is built."""
+    for bad in ["ftp://forge.example.test", "http://", "forge.example.test", "https://forge.example.test/?a=1",
+                "https://forge.example.test/#top", "https://forge example.test", ""]:
+        for flag in ["--forge-url", "--mirror-url"]:
+            s.failed(flag, bad, says=f"{flag}: {bad!r} isn't an http:// or https:// address")
+            check(not (s.repo / "site").exists(), f"{flag} {bad!r}: site/ was built")
+
+
+@scenario
+def mirror_url(s):
+    """Without --mirror-url no page names another address; with it every page's
+    footer carries exactly one line naming it, linked, and a page may link to
+    it."""
+    s.passed()
+    for f in sorted((s.repo / "site").rglob("*.html")):
+        check("Also at" not in f.read_text(encoding="utf-8"), f"{f.name}: an Also at line without --mirror-url")
+    mirror = "http://blockwright.test/"
+    s.probe(f"[The other address]({mirror}manual/14-cli.html).")
+    s.failed(says="blockwright.test/manual/14-cli.html: a link out of the site")
+    s.passed("--mirror-url", mirror)
+    line = f'Also at <a href="{mirror}">{mirror}</a>'
+    for f in sorted((s.repo / "site").rglob("*.html")):
+        text = f.read_text(encoding="utf-8")
+        footer = text[text.find("<footer>"):text.find("</footer>")]
+        check(text.count("Also at") == 1 and line in footer,
+              f"{f.relative_to(s.repo / 'site')}: not one Also at line in the footer")
+
+
+@scenario
+def external_link_refused(s):
+    """A link or an image out of the site to anything but the forge, the mirror
+    and the licence fails the build, naming the page and the address, with or
+    without the scheme; mailto: and the licence link pass."""
+    for body in ["[elsewhere](https://example.org/page)", "[elsewhere](http://example.org/)",
+                 "[elsewhere](//example.org/)", "![a picture](https://example.org/x.png)",
+                 '<a href="https://example.com/">raw</a>']:
+        s.probe(body)
+        s.failed(says="manual/99-probe.md: ")
+        check("a link out of the site" in s.out, f"{body}: {s.out.strip()[-300:]}")
+    s.probe(f"[Write](mailto:someone@example.org) and [the licence]({CC}).")
+    s.passed()
 
 
 # 10. scripts/deploy: local or remote, as rsync decides, and nowhere else.

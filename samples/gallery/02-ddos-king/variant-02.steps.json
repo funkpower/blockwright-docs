@@ -1,0 +1,13 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "02-ddos-king",
+  "variant": "No border"
+ },
+ "steps": [
+  {
+   "action": "shade",
+   "name": "variant"
+  }
+ ]
+}
