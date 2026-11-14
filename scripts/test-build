@@ -1095,7 +1095,8 @@ def external_link_refused(s):
     and the licence fails the build, naming the page and the address, with or
     without the scheme, quoted either way or not at all, in any case; mailto:
     and the licence link pass, and an address in code, in <pre> text or in a
-    comment is no link: neither checked nor moved by --forge-url."""
+    comment is no link and isn't checked; --forge-url moves the forge's address
+    in code and <pre> text, not in a comment or a longer host name."""
     for body in ["[elsewhere](https://example.org/page)", "[elsewhere](http://example.org/)",
                  "[elsewhere](//example.org/)", "![a picture](https://example.org/x.png)",
                  '<a href="https://example.com/">raw</a>', "<a href='https://example.com/'>single quotes</a>",
@@ -1122,10 +1123,15 @@ def external_link_refused(s):
             '<span title="href=\'https://example.org/\'">an address in another attribute</span>\n\n'
             '`<a href="https://example.org/">` in code\n\n'
             '    <img src="https://example.org/x.png">\n\n'
-            '<!-- <a href="https://example.org/">a comment</a> -->\n\n'
+            f'<!-- <a href="https://example.org/">a comment</a> {FORGE}/y -->\n\n'
+            f'`curl -LO {FORGE}/z` and `{FORGE}.example.test/z`\n\n'
             f'<pre>href="https://example.org/" and {FORGE}/x</pre>')
     s.passed("--forge-url", "http://forge.example.test")
     page = s.page()
+    check('and http://forge.example.test/x</pre>' in page, "the forge in <pre> text wasn't moved")
+    check('<code>curl -LO http://forge.example.test/z</code>' in page, "the forge in code wasn't moved")
+    check(f'<code>{FORGE}.example.test/z</code>' in page, "a longer host name in code was moved")
+    check(f'a comment</a> {FORGE}/y -->' in page, "the forge in a comment was moved")
     s.probe(f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png 1x, {FORGE}/b.png 2x" alt=""> '
             f'<img src="{FORGE}/c.png" srcset="{FORGE}/img,a.png 1x" alt=""> '
             f'<img src="{FORGE}/e.png" srcset="{FORGE}/a&nbsp;b.png 1x" alt=""> '
@@ -1140,8 +1146,7 @@ def external_link_refused(s):
     check('url(&quot;http://forge.example.test/d.png&quot;)' in moved, "a style's url() wasn't moved and quoted")
     check('href="http://forge.example.test?tab=repositories"' in moved
           and 'href="http://forge.example.test#projects"' in moved, "the forge with a query or fragment wasn't moved")
-    check(f"{FORGE}/x</pre>" in page, "the forge's address in <pre> text changed")
-    check("http://forge.example.test" not in page, "text that isn't a link was rewritten as one")
+    check('="http://forge.example.test' not in page, "text that isn't a link was rewritten as one")
 
 
 # 10. scripts/deploy: local or remote, as rsync decides, and nowhere else.
@@ -1402,7 +1407,7 @@ def checklist_renders(s):
     check(len(rows) == want, f"{len(rows)} rows for {want} pages")
     check("Release checklist" not in rows, "the checklist lists itself")
     check(not list((s.repo / "site" / "manual").glob("*checklist*")), "a checklist page in manual/")
-    check(rows["Installing Blockwright"][0] == "Not written", f"Install's status: {rows['Installing Blockwright']}")
+    check(rows["Installing Blockwright"][0] == "Written", f"Install's status: {rows['Installing Blockwright']}")
     check(rows["What ANSI art is"][0] == "Written", f"tutorial 01's status: {rows['What ANSI art is']}")
     version = subprocess.run([s.real_cli(), "--version"], stdin=subprocess.DEVNULL, capture_output=True, text=True,
                              timeout=REAL_APP_TIMEOUT).stdout.split()[1]

@@ -60,7 +60,9 @@ template included, may link out of the site only to the forge, the mirror and
 the licence (ALLOWED_EXTERNAL): any other http, https or // address in a tag's
 href, src, srcset, poster, data, action, formaction, cite, background or style
 url() fails the build, so the site works where only those addresses can be
-reached. Text in code, in <pre> and in comments is no link.
+reached. Text in code, in <pre> and in comments is no link; the forge's
+address in text outside comments is moved too, so a command on a page names
+the same forge as the page's links.
 
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
@@ -122,6 +124,8 @@ ALLOWED_EXTERNAL = ("https://creativecommons.org/licenses/by-sa/4.0/",)
 # (no character that needs escaping in a URL list or in CSS).
 URL_RE = re.compile(r"^https?://[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::\d{1,5})?(?:/[A-Za-z0-9._~%/-]*)?$")
 ABSOLUTE_RE = re.compile(r"^(?:https?:)?//", re.I)
+# The forge's address in text: not when a longer host name goes on from it.
+FORGE_TEXT_RE = re.compile(re.escape(FORGE) + r"(?![\w-]|\.[\w-])")
 # HTML as the link pass reads it: a comment, a tag, or the start of a tag it
 # can't read. A tag is its name and its attributes, each a name with an
 # optional value in double, single or no quotes, so a quoted value may hold
@@ -803,9 +807,19 @@ class Builder:
             name = re.match(r"<[^ \t\n\f\r/>]*", text).group(0)
             return name + ATTR_RE.sub(attr, text[len(name):])
 
+        def text(gap):
+            """Text between tags, code and <pre> text included: the forge's
+            address moved, so a command copied from a page names the same
+            forge as its links. Nothing in text is checked as a link."""
+            return FORGE_TEXT_RE.sub(lambda _: self.forge, gap)
+
         # Only attributes of real tags: code and <pre> text has its < escaped,
-        # and a comment links to nothing.
-        return TAG_RE.sub(tag, doc)
+        # and a comment links to nothing and is left as it is.
+        out, at = [], 0
+        for m in TAG_RE.finditer(doc):
+            out += [text(doc[at:m.start()]), tag(m)]
+            at = m.end()
+        return "".join(out + [text(doc[at:])])
 
     def neighbours(self, page):
         if not page.section or page.is_index:
