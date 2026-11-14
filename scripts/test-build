@@ -1104,12 +1104,16 @@ def external_link_refused(s):
                  '<video poster="https://example.com/p.png"></video>',
                  '<div style="background: url(\'https://example.com/b.png\')">styled</div>',
                  '<a title="1 > 0" href="https://example.com/">a quoted &gt;</a>',
-                 "<a title='1 < 0' href=\"https://example.com/\">a quoted &lt;</a>"]:
+                 "<a title='1 < 0' href=\"https://example.com/\">a quoted &lt;</a>",
+                 f'<img src="{FORGE}/a.png" srcset="{FORGE}/a.png bad), https://example.com/b.png 2x" alt="">']:
         s.probe(body)
         s.failed(says="manual/99-probe.md: ")
         check("a link out of the site" in s.out, f"{body}: {s.out.strip()[-300:]}")
     s.probe('<div><a href="https://example.com/"title="no space">squeezed</a></div>')
     s.failed(says="a tag the build can't read")
+    for style in ["background: url(https://example.com/a\\ b.png)", f"background: url({FORGE}/a\\)b.png)"]:
+        s.probe(f'<div style="{style}">escaped</div>')
+        s.failed(says="a style the build can't read")
     s.probe(f"[Write](mailto:someone@example.org) and [the licence]({CC}).\n\n"
             '<span title="href=\'https://example.org/\'">an address in another attribute</span>\n\n'
             '`<a href="https://example.org/">` in code\n\n'

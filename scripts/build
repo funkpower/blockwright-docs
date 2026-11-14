@@ -590,7 +590,7 @@ def srcset_candidates(value):
             continue
         k, depth = j, 0
         while k < n and not (value[k] == "," and depth == 0):
-            depth += {"(": 1, ")": -1}.get(value[k], 0)
+            depth = max(0, depth + {"(": 1, ")": -1}.get(value[k], 0))
             k += 1
         found.append((url, value[j:k].strip()))
         i = k + 1
@@ -744,9 +744,15 @@ class Builder:
         def value_of(name, value):
             """The attribute's value with the forge moved, every address checked."""
             if name == "style":
+                # A url() is read plain: quoted or not, without CSS escapes. One
+                # the build can't read that way could hide an address.
+                if "\\" in value or len(re.findall(r"url\(", value, re.I)) != len(CSS_URL_RE.findall(value)):
+                    self.errors.append(f"{page.rel}: a style the build can't read (a url() with an escape or "
+                                       f"one it can't parse): {value[:80]!r}")
+                    return value
+
                 def css(u):
                     old = next(g for g in (u.group(1), u.group(2), u.group(3)) if g is not None)
-                    old = re.sub(r"\\(.)", r"\1", old)
                     new = address(old)
                     if new == old:
                         return u.group(0)
