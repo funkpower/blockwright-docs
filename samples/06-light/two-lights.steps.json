@@ -1,192 +1,295 @@
 {
  "version": 1,
  "start": {
-  "file": "blank-60x20.ans"
+  "file": "start.bwp"
  },
  "steps": [
   {
-   "name": "sky-select",
-   "action": "select",
-   "rect": [
-    0,
-    0,
-    59,
-    19
-   ]
+   "name": "tower",
+   "action": "setActiveLayer",
+   "layer": "North Tower"
   },
   {
-   "name": "sky",
-   "action": "gradient",
-   "ramp": "sea",
-   "gradient": {
-    "shape": "radial",
-    "banding": "cells",
-    "from": 10,
-    "to": 2
-   },
-   "from": [
-    59,
-    0
-   ],
-   "to": [
-    0,
-    19
-   ]
-  },
-  {
-   "name": "sky-deselect",
-   "action": "deselect"
-  },
-  {
-   "name": "hills-layer",
+   "name": "smoke-layer",
    "action": "newCellsLayer",
-   "rename": "hills"
+   "rename": "smoke"
   },
   {
-   "name": "hill-1",
+   "name": "lobe-1",
    "action": "rampShade",
-   "ramp": "grass",
-   "strength": 1,
-   "size": 36,
-   "tip": "round",
    "points": [
     [
-     14,
-     19
+     2,
+     17
     ]
-   ]
-  },
-  {
-   "name": "hill-2",
-   "action": "rampShade",
-   "size": 44,
-   "points": [
-    [
-     48,
-     19
-    ]
-   ]
-  },
-  {
-   "name": "hills-lock",
-   "action": "layerProperties",
-   "alphaLocked": true
-  },
-  {
-   "name": "hills",
-   "action": "gradient",
-   "gradient": {
-    "shape": "linear",
-    "banding": "cells",
-    "from": 3,
-    "to": 6
-   },
-   "from": [
-    0,
-    19
    ],
-   "to": [
-    0,
-    10
-   ]
-  },
-  {
-   "name": "hills-rim",
-   "action": "rimLight",
-   "light": "NE",
-   "size": 64,
-   "tip": "square",
-   "keepLint": true,
-   "points": [
-    [
-     30,
-     12
-    ]
-   ]
-  },
-  {
-   "name": "boulder-layer",
-   "action": "newCellsLayer",
-   "rename": "boulder"
-  },
-  {
-   "name": "boulder-base",
-   "action": "rampShade",
+   "size": 12,
    "ramp": "steel",
    "strength": 0.25,
-   "size": 28,
-   "tip": "round",
-   "points": [
-    [
-     42,
-     12
-    ]
-   ]
+   "tip": "round"
   },
   {
-   "name": "boulder-lock",
-   "action": "layerProperties",
-   "alphaLocked": true
-  },
-  {
-   "name": "boulder",
-   "action": "form",
-   "light": "NE",
-   "strength": 1,
-   "size": 38,
-   "tip": "square",
-   "form": {
-    "shape": "dome",
-    "rim": false,
-    "specular": true
-   },
-   "points": [
-    [
-     42,
-     12
-    ]
-   ]
-  },
-  {
-   "name": "stone-layer",
-   "action": "newCellsLayer",
-   "rename": "stone"
-  },
-  {
-   "name": "stone-base",
+   "name": "lobe-2",
    "action": "rampShade",
-   "ramp": "steel",
-   "strength": 0.25,
-   "size": 16,
-   "tip": "round",
    "points": [
     [
-     14,
+     11,
      14
     ]
-   ]
+   ],
+   "size": 14
   },
   {
-   "name": "stone-lock",
+   "name": "lobe-3",
+   "action": "rampShade",
+   "points": [
+    [
+     21,
+     12
+    ]
+   ],
+   "size": 14
+  },
+  {
+   "name": "lobe-4",
+   "action": "rampShade",
+   "points": [
+    [
+     31,
+     11
+    ]
+   ],
+   "size": 14
+  },
+  {
+   "name": "lobe-5",
+   "action": "rampShade",
+   "points": [
+    [
+     41,
+     10
+    ]
+   ],
+   "size": 12
+  },
+  {
+   "name": "lobe-6",
+   "action": "rampShade",
+   "points": [
+    [
+     50,
+     10
+    ]
+   ],
+   "size": 10
+  },
+  {
+   "name": "lobe-7",
+   "action": "rampShade",
+   "points": [
+    [
+     57,
+     11
+    ]
+   ],
+   "size": 6
+  },
+  {
+   "name": "smoke-lock",
    "action": "layerProperties",
    "alphaLocked": true
   },
   {
-   "name": "stone",
+   "name": "form-1",
    "action": "form",
-   "light": "NW",
-   "strength": 1,
-   "size": 26,
+   "size": 16,
+   "points": [
+    [
+     2,
+     17
+    ]
+   ],
+   "strength": 0.25,
    "tip": "square",
+   "light": "E",
    "form": {
     "shape": "dome",
     "rim": true,
     "specular": false
-   },
+   }
+  },
+  {
+   "name": "form-2",
+   "action": "form",
+   "size": 18,
    "points": [
     [
-     14,
+     11,
      14
+    ]
+   ]
+  },
+  {
+   "name": "form-3",
+   "action": "form",
+   "size": 18,
+   "points": [
+    [
+     21,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "form-4",
+   "action": "form",
+   "size": 18,
+   "points": [
+    [
+     31,
+     11
+    ]
+   ]
+  },
+  {
+   "name": "form-5",
+   "action": "form",
+   "size": 16,
+   "points": [
+    [
+     41,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "form-6",
+   "action": "form",
+   "size": 14,
+   "points": [
+    [
+     50,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "form-7",
+   "action": "form",
+   "size": 10,
+   "points": [
+    [
+     57,
+     11
+    ]
+   ]
+  },
+  {
+   "name": "skyline",
+   "action": "setActiveLayer",
+   "layer": "skyline"
+  },
+  {
+   "name": "skyline-rim",
+   "action": "rimLight",
+   "light": "E",
+   "size": 128,
+   "tip": "square",
+   "keepLint": true,
+   "points": [
+    [
+     50,
+     34
+    ]
+   ]
+  },
+  {
+   "name": "smoke-active",
+   "action": "setActiveLayer",
+   "layer": "smoke"
+  },
+  {
+   "name": "west-1",
+   "action": "form",
+   "size": 16,
+   "points": [
+    [
+     2,
+     17
+    ]
+   ],
+   "strength": 0.25,
+   "tip": "square",
+   "light": "W",
+   "form": {
+    "shape": "dome",
+    "rim": true,
+    "specular": false
+   }
+  },
+  {
+   "name": "west-2",
+   "action": "form",
+   "size": 18,
+   "points": [
+    [
+     11,
+     14
+    ]
+   ]
+  },
+  {
+   "name": "west-3",
+   "action": "form",
+   "size": 18,
+   "points": [
+    [
+     21,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "west-4",
+   "action": "form",
+   "size": 18,
+   "points": [
+    [
+     31,
+     11
+    ]
+   ]
+  },
+  {
+   "name": "west-5",
+   "action": "form",
+   "size": 16,
+   "points": [
+    [
+     41,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "west-6",
+   "action": "form",
+   "size": 14,
+   "points": [
+    [
+     50,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "west-7",
+   "action": "form",
+   "size": 10,
+   "points": [
+    [
+     57,
+     11
     ]
    ]
   }

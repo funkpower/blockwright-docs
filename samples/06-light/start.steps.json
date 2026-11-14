@@ -1,0 +1,22 @@
+{
+ "version": 1,
+ "start": {
+  "sample": "09-wtc-0903"
+ },
+ "steps": [
+  {
+   "name": "plume",
+   "action": "setActiveLayer",
+   "layer": "plume"
+  },
+  {
+   "name": "plume-delete",
+   "action": "deleteLayer"
+  },
+  {
+   "name": "open",
+   "action": "setActiveLayer",
+   "layer": "sky"
+  }
+ ]
+}

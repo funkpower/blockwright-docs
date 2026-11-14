@@ -1,13 +1,15 @@
 Title: Light
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.0 (30e0254)
 
 # Light
 
 ## Goal
 
-Light a whole scene from one direction. You'll make this boulder and standing stone on two hills under a sky, 60 columns by 20 rows, on four layers, with the form brush's **Light**, **Glint** and **Form rim light** and with the **Rim Light Brush**. Shown at 2×:
+Light a whole scene from one direction. You'll put the smoke back into sample 09, *WTC 09:03*, 100 columns by 48 rows, as a layer of formed lobes lit from the same side as the towers, and rim the skyline under them, with the form brush's **Light**, **Glint** and **Form rim light** and with the **Rim Light Brush**:
 
-![A grey boulder on the right and a smaller stone on the left, standing on two green hills under a sky that is light cyan in the top right corner, cyan over the right, and blue over the left. The boulder is grey over its upper right with a small white spot near its right side, and falls through dark grey to dark grey shades at its lower left. The stone is white at its upper right and falls through grey and dark grey to dark grey shades at its lower left. The hills are a rung lighter along their edges that face the upper right](../samples/06-light/final.bwp "2x")
+![The World Trade Center's two towers over a grey skyline and blue water, under a sky that is dark blue at the top and light cyan at the horizon. The towers are grey, white down the faces on their right. A band of fire near the top of the right tower; a fireball of red, yellow and white between them, with a grey plane to the left of it. A bank of dark grey smoke runs from the towers' tops to the canvas's left edge](../samples/06-light/final.bwp "1x")
+
+The picture is New York on the morning of 11 September 2001, at 9:03, when the second plane struck the South Tower; the North Tower had been burning since 8:46. It already has its light. The sun is low in the east, so the towers' faces on the right are lit and the faces on their left are in shade. The fire is a second light, warm and near the tops, drawn on layers of its own. What you add takes the sun. The fire is east of the smoke too, so the one light from the east serves both.
 
 ## The idea
 
@@ -23,11 +25,11 @@ Which side to light from is up to you. The upper left is the usual choice and Bl
 
 ### The form brush's light
 
-The **Form Brush**'s options, set for the stone's form in step 7 below:
+The **Form Brush**'s options, set for the last lobe of smoke in step 4 below:
 
-![The Tool Options dock for the Form Brush: a help text, then Size 26 with Tip Square, Pressure None with Strength 100%, Ramp steel, Light NE with Form Dome, Form rim light ticked with Glint unticked, Alpha lock ticked, and Symmetry Off](../samples/06-light/form-options.png)
+![The Tool Options dock for the Form Brush: a help text, then Size 10 with Tip Square, Pressure None with Strength 25%, Ramp steel, Light E with Form Dome, Form rim light ticked with Glint unticked, Alpha lock ticked, and Symmetry Off](../samples/06-light/form-options.png)
 
-Tutorial 05 left **Light** at **NW**; the stone is lit from **NE**. **Light** is a point of the compass: **N**, **NE**, **E**, **SE**, **S**, **SW**, **W** or **NW**, the side the light comes from, with north at the top of the canvas. Eight domes, each lit from the point it stands at round the rose:
+Tutorial 05 left **Light** at **NW**; the smoke is lit from **E**. **Light** is a point of the compass: **N**, **NE**, **E**, **SE**, **S**, **SW**, **W** or **NW**, the side the light comes from, with north at the top of the canvas. Eight domes, each lit from the point it stands at round the rose:
 
 ![Eight grey domes in a ring on black round the words "light from", each labelled with a point of the compass: NW, N and NE across the top, W and E at the sides, SW, S and SE across the bottom. Each dome is white on the side of the point it stands at and falls to dark grey on the side away from it](../samples/06-light/light-rose.ans "2x")
 
@@ -35,9 +37,9 @@ The N dome's white is at its top and the S dome's at its bottom, the E dome's at
 
 ### The rim light brush
 
-The **Rim Light Brush** (**Tools > Rim Light Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>) lights a shape's edge. Under the brush, the cells on the shape's edge that face the light go one rung lighter. The shape is the active layer's cells on the ramp, other than black. One stroke lights only one cell deep, however often it passes over a cell. Either button does the same. Its options add **Light** and **Keep the lint clean**, here set for the hills' rim in step 4 below:
+The **Rim Light Brush** (**Tools > Rim Light Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>) lights a shape's edge. Under the brush, the cells on the shape's edge that face the light go one rung lighter. The shape is the active layer's cells on the ramp, other than black. One stroke lights only one cell deep, however often it passes over a cell. Either button does the same. Its options add **Light** and **Keep the lint clean**, here set for the skyline in step 5 below:
 
-![The Tool Options dock for the Rim Light Brush: a help text, then Size 64 with Tip Square, Pressure None, Ramp grass, Light NE, Keep the lint clean ticked, Alpha lock ticked, and Symmetry Off](../samples/06-light/rim-options.png)
+![The Tool Options dock for the Rim Light Brush: a help text, then Size 128 with Tip Square, Pressure None, Ramp steel, Light E, Keep the lint clean ticked, Alpha lock unticked, and Symmetry Off](../samples/06-light/rim-options.png)
 
 A disc of grey, steel's rung 8, on a layer of its own, before, and after one click from the north-west with **Size** 64 and **Tip** **Square**, big enough to cover it:
 
@@ -55,7 +57,7 @@ The rim light brush doesn't shade the form: the disc is as flat after it as befo
 
 ### Keep the lint clean
 
-On a form that is already shaded, a rung more on its lit edge can skip the ladder. **Keep the lint clean**, unticked at first, leaves a cell unlit where lighting it would add a lint finding. Two domes laid at **Size** 20 and lit from the north-west, then each rimmed from the north-west, the left with the option unticked and the right with it ticked:
+On a form that is already shaded, a rung more on its lit edge can skip the ladder. **Keep the lint clean**, unticked at first, leaves a cell unlit where lighting it would add a ladder-lint finding (a rung skip, a speck). Two domes laid at **Size** 20 and lit from the north-west, then each rimmed from the north-west, the left with the option unticked and the right with it ticked:
 
 ![Two grey domes on black, white at the upper left falling to dark grey shades at the lower right, labelled "lint not kept" and "lint kept clean"](../samples/06-light/rim-lint-before.ans "2x")
 
@@ -91,7 +93,7 @@ The rim light reads each cell's edge from the shape round it, and some shapes gi
 
 ![The same shapes after the rim light: only the top cell of the thin stem lit, most of the left column and the top cell of the wide stem, the first three cells of the thin bar, and most of the top row of the wide bar](../samples/06-light/thin.ans "2x")
 
-A shape a cell thin has no inside for an edge to face out from. On the stem a column wide, only its top cell, `5, 1`, went to white `░` on grey. On the bar a row tall, only `18, 2` to `20, 2`, at its left end. At two cells thick the rim reads: the two-column stem lit its left column from row 1 to row 7, and `12, 1` at its top; the two-row bar lit its top row from column 18 to 29, not `30, 6` and `31, 6` at its right end. Light a one-cell stem or bar by hand, with the **Ramp Shade Brush**.
+A shape a cell thin has no inside for an edge to face out from. On the stem a column wide, only its top cell, `5, 1`, went to white `░` on grey. On the bar a row tall, only `18, 2` to `20, 2`, at its left end. At two cells thick the rim reads: the two-column stem lit its left column from row 1 to row 7, and `12, 1` at its top; the two-row bar lit its top row from column 18 to 29, not `30, 6` and `31, 6` at its right end. Light a one-cell stem or bar yourself, with the **Ramp Shade Brush**.
 
 **Counters.** A counter is the hole in a shape, like the middle of an O. The rim light takes the hole as outside, so the walls round it that face the light through the hole light up. A grey box with a one-cell hole at `9, 4`, before, and after the rim light from the north-west:
 
@@ -109,61 +111,67 @@ The box further in lit its right column, rows 2 to 7, and `18, 2` and `18, 7`, t
 
 ## Do it
 
-You'll build the piece back to front: the sky, the hills, the boulder and the stone, all lit from the north-east, the upper right. The positions are column then row from `0, 0` at the top left; zoom in (<kbd>Ctrl</kbd>+<kbd>=</kbd>) so you can count cells. Set the options in the **Tool Options** dock; they carry over from tool to tool, so each step gives only the ones it changes. **Selection > Deselect** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd>) drops a selection.
+You'll start from the piece without its smoke and light what you add from the east, the side the sun is on. The positions are column then row from `0, 0` at the top left; zoom in (<kbd>Ctrl</kbd>+<kbd>=</kbd>) so you can count cells. Set the options in the **Tool Options** dock; they carry over from tool to tool, so each step gives only the ones it changes.
 
-1. **A new canvas.** On the start screen, set **Width** to 60 and **Height** to 20, leave **iCE colours** ticked, and press **New**.
+1. **Open the piece.** Download [start.bwp](../samples/06-light/start.bwp) and open it (**File > Open**, <kbd>Ctrl</kbd>+<kbd>O</kbd>):
 
-2. **The sky.** The light comes from the upper right, so the sky is brightest in the top right corner. **Selection > Select All** (<kbd>Ctrl</kbd>+<kbd>A</kbd>). Take the **Ramp Gradient** (**Tools > Ramp Gradient**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>) and set **Ramp** to **sea**, **Gradient** to **Radial**, **Banding** to **Cell-banded**, **From rung** to 10 and **To rung** to 2. Drag from `59, 0` to `0, 19`. Then **Selection > Deselect**:
+    ![The towers, the fire, the fireball, the plane, the skyline and the water as in the finished piece, with no smoke: the sky to the left of the towers is empty](../samples/06-light/start.bwp "1x")
 
-    ![The canvas filled with sky: light cyan shade on cyan in the top right corner, cyan over the right part, three shade blocks running from the top edge down to the bottom right, blue over the left, and blue shade on black in the bottom left corner](../samples/06-light/step-01.ans "2x")
+    It is the sample with its plume taken out: eleven layers, from **sky** at the bottom to **tag** at the top, and the Lint dock clean. The towers are lit already, and drawn in pinstripes of half blocks, which are on no ramp, so this chapter's brushes have nothing to light on them. The sky to the left of the towers is empty, and that is where the smoke goes.
 
-    Light cyan `░` and `▒` on cyan, rungs 9 and 10, take the four cells in each of rows 0 and 1 at the right end. Cyan, rung 8, covers the upper right. Cyan `▓`, `▒` and `░` on blue, rungs 7 to 5, run down from columns 22 to 27 on row 0 to the right end of rows 16 to 18. Blue, rung 4, covers the rest, but for the bottom left corner, which goes down to blue `▓` and `▒` on black.
+2. **A layer for the smoke.** Click **North Tower** in the **Layers** dock, then **Layer > New Cells Layer**. The new layer goes in above the active one, so it sits over the North Tower and under the fire and the South Tower, which stand in front of it. Double-click its name and type `smoke`.
 
-3. **The hills.** **Layer > New Cells Layer**. In the **Layers** dock, double-click the new layer's name and type `hills`. Take the **Ramp Shade Brush** (**Tools > Ramp Shade Brush**, <kbd>Ctrl</kbd>+<kbd>T</kbd>) and set **Ramp** to **grass**, **Strength** to 100%, **Tip** to **Round** and **Size** to 36. Click once at `14, 19`; set **Size** to 44 and click once at `48, 19`. Each click lays a whole colour, green, on the empty cells. Tick **Alpha lock**. Take the **Ramp Gradient**, set **Gradient** to **Linear**, **From rung** to 3 and **To rung** to 6, and drag from `0, 19` to `0, 10`. With nothing selected the gradient fills the whole layer, and alpha lock keeps it to the hills:
+3. **Lay the smoke.** Take the **Ramp Shade Brush** (**Tools > Ramp Shade Brush**, <kbd>Ctrl</kbd>+<kbd>T</kbd>) and set **Ramp** to **steel**, **Strength** to 25% and **Tip** to **Round**. Click once at each of these, setting **Size** before each click; each is a lobe of the smoke, from the canvas's left edge to the towers:
 
-    ![Two green hills over the bottom of the sky, the left lower than the right, a notch of sky between them; light green shade on green along their tops, green below, and a row of green dark shade on black along the bottom](../samples/06-light/step-02.ans "2x")
+    | Click at | Size |
+    |---|---|
+    | `2, 17` | 12 |
+    | `11, 14` | 14 |
+    | `21, 12` | 14 |
+    | `31, 11` | 14 |
+    | `41, 10` | 12 |
+    | `50, 10` | 10 |
+    | `57, 11` | 6 |
 
-    Rows 8 to 11 are light green `▒` on green, rung 6, row 12 light green `░` on green, rows 13 to 18 green, and row 19 green `▓` on black, rung 3.
+    Each click lays dark grey `░` on black, steel's first rung, on the empty cells under it, and lifts the cells it shares with an earlier lobe a rung, to dark grey `▒` on black. Then tick **Alpha lock**, so the lobes are the shape the form brush shades:
 
-4. **The hills' rim.** Take the **Rim Light Brush** (**Tools > Rim Light Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>). **Ramp** is still **grass**. Set **Light** to **NE**, tick **Keep the lint clean**, and set **Size** to 64 and **Tip** to **Square**. Click once at `30, 12`; the brush covers the whole canvas:
+    ![The piece with a bank of flat dark grey light shade on black running from the canvas's left edge to the towers' tops, a few patches of medium shade where the lobes overlap](../samples/06-light/step-01.ans "1x")
 
-    ![The hills a rung lighter along the edges that face the upper right](../samples/06-light/step-03.ans "2x")
+    ![The Layers dock: sunlight, South Tower, fire, smoke, active, North Tower and sky; South Tower, smoke and North Tower have Alpha Lock ticked](../samples/06-light/layers.png)
 
-    Thirty-nine cells go a rung lighter. Light green `▒` on green goes to light green `▓` on green along the hilltops: row 8 from column 42 to 54 and row 9 from 54 to 58 on the right hill, row 10 from 9 to 19 on the left, and `58, 10` and `59, 10`. Green goes to light green `░` on green down the left hill's right slope, `25, 13` to `27, 13` and `27, 14` to `29, 14`, and at `0, 13` and `1, 13`, on the canvas's first columns. The Lint dock is clean.
+    301 cells show the smoke: 260 of `░` and 41 of `▒`. The Lint dock lists a gap at `46, 8`, a one-cell break in a line across row 8 at the top of the smoke. The next step fills it.
 
-5. **The boulder.** **Layer > New Cells Layer**, and name it `boulder`. Take the **Ramp Shade Brush**, set **Ramp** to **steel**, **Strength** to 25%, **Tip** to **Round** and **Size** to 28, and click once at `42, 12`: a disc of dark grey `░` on black, steel's first rung. Tick **Alpha lock**. Take the **Form Brush** (**Tools > Form Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>) and set **Strength** to 100%, **Form** to **Dome**, **Size** to 38 and **Tip** to **Square**. **Light** is already **NE**: the two brushes share it. Leave **Glint** ticked and **Form rim light** unticked, and click once at `42, 12`:
+4. **Shade the smoke.** Take the **Form Brush** (**Tools > Form Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>) and set **Strength** to 25%, **Tip** to **Square**, **Light** to **E** and **Form** to **Dome**. Untick **Glint**: smoke is neither hard nor wet. Tick **Form rim light**. Then click each lobe again, at the same point, from left to right, with **Size** four more than you laid it at: 16, 18, 18, 18, 16, 14 and 10. Each click shades the whole square under it, so a lobe shaded later reshapes where it overlaps the one before.
 
-    ![The boulder shaded on the right hill: grey over its upper right with a small white spot ringed by white shade on grey, falling through dark grey to dark grey shades on black at its lower left](../samples/06-light/step-04.ans "2x")
+    ![The bank of smoke shaded: solid dark grey over much of it, dark grey shades on black between, and a few cells of dark grey shade on grey toward the towers](../samples/06-light/step-02.ans "1x")
 
-    The lit side is grey, the glint white at `49, 10` and `50, 10`, with white `▓`, `▒` and `░` on grey each side of it along row 10. The fall runs down to dark grey at the lower left, then to dark grey `▓`, `▒` and `░` on black at the edge.
+    138 cells change. 84 go from dark grey `░` on black to solid dark grey, steel's rung 4, and the rest from a rung down to three up. The lightest cells are `27, 11` and `27, 12`, dark grey `▓` on grey, rung 5. Four go down to black, `23, 9`, `13, 11`, `13, 14` and `3, 16`. The gap at `46, 8` is gone and the Lint dock is clean. Strength 25% keeps the smoke darker than the towers: at 100% each lobe takes the whole fall from white to black that a dome of stone gets, and the smoke reads as stone. That is the exception to tutorial 05's rule: shade a solid form at 100%, and a soft one like smoke, which should never reach white, at less.
 
-6. **The stone.** **Layer > New Cells Layer**, and name it `stone`. Take the **Ramp Shade Brush**, set **Strength** to 25%, **Tip** to **Round** and **Size** to 16, and click once at `14, 14`. Tick **Alpha lock**:
+5. **The skyline.** Click **skyline** in the **Layers** dock. Take the **Rim Light Brush** (**Tools > Rim Light Brush**, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>). **Ramp** is still **steel** and **Light** still **E**: the two brushes share it. Tick **Keep the lint clean**, set **Size** to 128 and **Tip** to **Square**, and click once at `50, 34`; the brush covers the whole canvas:
 
-    ![The Layers dock: stone, active, above boulder, hills and Background; stone, boulder and hills have Alpha Lock ticked, Background doesn't](../samples/06-light/layers.png)
+    ![The finished piece: the smoke lit from the right, the towers and the skyline under it](../samples/06-light/final.bwp "1x")
 
-7. **The stone's form.** Take the **Form Brush**, set **Strength** to 100%, **Tip** to **Square** and **Size** to 26, untick **Glint** and tick **Form rim light**, and click once at `14, 14`. With **Glint** unticked the stone's lit side is white: `15, 10` to `17, 10`, `15, 11` to `19, 11`, `16, 12` to `20, 12`, and `19, 13` and `20, 13`. Its shadow side ends in dark grey shades on black, with no black. **Form rim light** lifts its lower left edge a rung, so `6, 14`, `7, 15`, `8, 16` and `10, 17` are dark grey `▒` on black, not `░`:
-
-    ![The finished piece: the boulder and the stone on the hills under the sky, all lit from the upper right](../samples/06-light/final.bwp "2x")
+    Five cells go a rung lighter. `73, 32` and `73, 34`, grey, go to white `░` on grey, rung 9. `95, 38`, `0, 40` and `0, 41`, solid dark grey, go to dark grey `▓` on grey, rung 5; the last two are on the canvas's first column. Most of the skyline is solid grey and dark grey, on the ramp, and the brush would light 56 of its cells; with **Keep the lint clean** unticked it does, and the Lint dock lists 27 findings, 23 rung skips and 4 specks. Ticked, it lights the five that add none.
 
     The **Lint** dock is clean:
 
-    ![The Lint dock with no findings: clean, noise 0.0000, iCE on](../samples/06-light/lint.png)
+    ![The Lint dock with no findings: clean, noise 0.0022, iCE on](../samples/06-light/lint.png)
 
-8. **Save it.** **File > Save As** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>), with a name ending `.bwp`, so the four layers are kept.
+6. **Save it.** **File > Save As** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>), with a name ending `.bwp`, so the layers are kept.
 
 ## Check it
 
-**One light for every form.** **Light** is shared, but nothing stops you changing it between forms. The stone shaded from the north-west, in the scene lit from the north-east:
+**One light for every form.** **Light** is shared, but nothing stops you changing it between forms. On the finished piece, click **smoke** in the **Layers** dock, take the **Form Brush**, set **Light** to **W**, and click the seven lobes again as in step 4, at the same points and sizes. The smoke is then shaded from the west, under the sun that lights the towers from the east:
 
-![The scene with the stone white at its upper left and dark grey at its lower right, while the boulder's glint and the hills' lit edges face the upper right](../samples/06-light/two-lights.ans "2x")
+![The piece with the middle lobes of the smoke shaded from the other side, against the towers' lit right-hand faces. The lobe at the canvas's left edge changes in a few cells, and the two furthest right are as they were](../samples/06-light/two-lights.ans "1x")
 
-The stone's white is now on its upper left, `10, 10` to `12, 10` and `8, 11` to `12, 11`, and its dark grey on its right, while the boulder's glint and the hills' rim face the upper right. Undo (<kbd>Ctrl</kbd>+<kbd>Z</kbd>), set **Light** back to **NE**, and click again.
+93 cells of the smoke differ from the finished piece, and the Lint dock lists a gap at `12, 17`. The first and the last click change nothing, and the sixth changes nine cells, all of them behind the South Tower. The form brush takes back the cells of a click that would add a ladder-lint finding (a rung skip, a speck), and on the first and last lobes that is all of them. A gap isn't one of those, so the second click's gap at `12, 17` stays. Undo (<kbd>Ctrl</kbd>+<kbd>Z</kbd>) five times, once for each click from the second to the sixth: a click that changes nothing leaves no step to undo, and a sixth Undo would take back the skyline's rim light. Then set **Light** back to **E**.
 
-**Rim flat shapes, not formed ones.** The form brush has already lit a form's side that faces the light. The rim light brush over the boulder and the stone as well, from the north-east, with **Keep the lint clean** unticked:
+**Rim flat shapes, not formed ones.** The form brush has already lit a form's side that faces the light. The rim light brush over the smoke as well, from the east, with **Keep the lint clean** unticked and **Size** 128, clicked once at `30, 12` on the **smoke** layer:
 
-![The scene with a line of white light shade on grey round the top and right edge of the boulder, and the stone's top and right edge a rung lighter](../samples/06-light/stickers.ans "2x")
+![The piece with the smoke's edges a rung lighter in a ragged line round each lobe](../samples/06-light/stickers.ans "1x")
 
-The boulder gets a line of white `░` on grey along its top, row 5 from column 38 to 46, and on down its right side to `55, 13`, and the stone's edge goes a rung lighter at `11, 10` to `14, 10`, `21, 13`, `21, 14` and `20, 15`. An outline lighter than the form inside it reads as a cut-out, not a lit edge. The Lint dock lists a speck at `34, 6` and a rung skip at `10, 10`. Undo, and leave the light on a shaded form to the form brush: **Glint** for the lit side, **Form rim light** for the shadow side.
+49 cells of the smoke go a rung lighter: 25 from dark grey `░` to `▒` on black, 14 from solid dark grey to dark grey `▓` on grey, and 10 more. The Lint dock lists 13 findings, 8 rung skips and 5 specks. An outline lighter than the form inside it reads as a cut-out, not a lit edge. Undo, and leave the light on a shaded form to the form brush: **Glint** for the lit side, **Form rim light** for the shadow side.
 
 ## Try it
 
@@ -171,7 +179,7 @@ Download [try.bwp](../samples/06-light/try.bwp) and open it (**File > Open**, <k
 
 ![The sky light cyan in the top left corner and blue on the right, the two hills shaded but not rimmed, and the boulder and the stone as flat discs of dark grey light shade on black](../samples/06-light/try.bwp "2x")
 
-It is the scene again under a sky brightest at the top left. The hills are shaded but not rimmed, and the boulder and the stone are laid and locked, each on its own layer, but not shaded.
+It is a smaller scene: a boulder and a standing stone on two hills, 60 columns by 20 rows, under a sky brightest at the top left. The hills are shaded but not rimmed, and the boulder and the stone are laid and locked, each on its own layer, but not shaded.
 
 1. Light the scene from the upper left: the boulder with a glint, the stone with a rim of reflected light, and the hills' lit edges, with the lint kept clean.
 2. Which is the light's side on this sky, and why?

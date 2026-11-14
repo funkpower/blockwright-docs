@@ -39,7 +39,7 @@ def blank(w, h):
 
 def write_steps(name, start, steps, window=None):
     path = HERE / f"{name}.steps.json"
-    body = {"version": 1, "start": {"file": start}, "steps": steps}
+    body = {"version": 1, "start": start if isinstance(start, dict) else {"file": start}, "steps": steps}
     if window:
         body["window"] = window
     text = json.dumps(body, indent=1, ensure_ascii=False)
@@ -227,15 +227,80 @@ for name, rect in EDGE.items():
     steps += rim(f"rim-{name}", rect, "E")
 replay("edge", start, steps, {"rim-inside": "edge.ans"})
 
-# The finished piece: a boulder and a standing stone on two hills under a
-# sky, lit from the north-east, on four layers. The sky is a radial ramp
-# gradient on the sea ramp, brightest at the top right corner; the hills two
-# grass discs on a layer of their own, locked, shaded by a linear gradient
-# and rimmed from the north-east with the lint kept clean. The boulder and
-# the stone are discs of steel's first rung, each on its own layer, locked
-# and shaded as domes lit from the north-east: the boulder with Glint, the
-# stone with Form rim light. The window shows the rim light's and the form
-# brush's options, the Layers dock and the Lint dock at the end.
+# The start: sample 09, "WTC 09:03", with its plume of smoke taken out and
+# the sky's layer active. The project is unpacked and packed again without
+# the sample's notes and snapshots.
+SAMPLE = "09-wtc-0903"
+START = [{"name": "plume", "action": "setActiveLayer", "layer": "plume"},
+         {"name": "plume-delete", "action": "deleteLayer"},
+         {"name": "open", "action": "setActiveLayer", "layer": "sky"}]
+path = write_steps("start", {"sample": SAMPLE}, START)
+with tempfile.TemporaryDirectory() as tmp:
+    subprocess.run([CLI, "replay", str(path), "-o", tmp, "--project"], check=True, stdout=subprocess.DEVNULL)
+    project = Path(tmp) / "project"
+    subprocess.run([CLI, "unpack", str(Path(tmp) / f"{len(START):02d}-open.bwp"), str(project)], check=True,
+                   stdout=subprocess.DEVNULL)
+    (project / "notes.md").unlink(missing_ok=True)
+    shutil.rmtree(project / "snapshots", ignore_errors=True)
+    subprocess.run([CLI, "pack", str(project), str(HERE / "start.bwp")], check=True, stdout=subprocess.DEVNULL)
+
+# The finished piece: the smoke put back, lit from the east like the
+# towers. On a new layer over the North Tower, seven discs of steel's first
+# rung, one ramp shade click each at 25%, are the smoke's lobes; the layer
+# is locked and each lobe shaded as a dome lit from the east, at 25%, with
+# Glint off and Form rim light on. Then the rim light brush, from the east
+# with the lint kept clean, over the skyline. The window shows the form
+# brush's and the rim light's options, the Layers dock and the Lint dock.
+LOBES = [(2, 17, 12), (11, 14, 14), (21, 12, 14), (31, 11, 14), (41, 10, 12), (50, 10, 10), (57, 11, 6)]
+SMOKE = [{"name": "tower", "action": "setActiveLayer", "layer": "North Tower"},
+         {"name": "smoke-layer", "action": "newCellsLayer", "rename": "smoke"}]
+for i, (x, y, size) in enumerate(LOBES):
+    SMOKE.append({"name": f"lobe-{i + 1}", "action": "rampShade", "points": [[x, y]], "size": size,
+                  **({"ramp": "steel", "strength": 0.25, "tip": "round"} if i == 0 else {})})
+SMOKE.append({"name": "smoke-lock", "action": "layerProperties", "alphaLocked": True})
+
+
+def smoke_form(light, prefix="form"):
+    steps = []
+    for i, (x, y, size) in enumerate(LOBES):
+        step = {"name": f"{prefix}-{i + 1}", "action": "form", "size": size + 4, "points": [[x, y]]}
+        if i == 0:
+            step.update(strength=0.25, tip="square", light=light,
+                        form={"shape": "dome", "rim": True, "specular": False})
+        steps.append(step)
+    return steps
+
+
+FORM = smoke_form("E")
+SKYLINE = [{"name": "skyline", "action": "setActiveLayer", "layer": "skyline"},
+           {"name": "skyline-rim", "action": "rimLight", "light": "E", "size": 128, "tip": "square",
+            "keepLint": True, "points": [[50, 34]]},
+           {"name": "check", "action": "deselect"}]
+
+steps = SMOKE + FORM + SKYLINE
+at = {step["name"]: i for i, step in enumerate(steps)}
+for name, args in [("form-7", ("toolOptions", [0, 0, 256, 890])), ("skyline-rim", ("toolOptions", [0, 0, 256, 731])),
+                   ("smoke-lock", ("layers",)), ("check", ("lint",))]:
+    steps[at[name]] = shot(steps[at[name]], *args)
+replay("final", "start.bwp", steps,
+       {"smoke-lock": "step-01.ans", "form-7": "step-02.ans", "check": "final.bwp"},
+       {"form-7": "form-options.png", "skyline-rim": "rim-options.png", "smoke-lock": "layers.png",
+        "check": "lint.png"},
+       window=[1280, 1300])
+
+# What goes wrong, from the end of the steps. The smoke's seven lobes
+# clicked again from the west, under a sun in the east (the first and the
+# last change nothing: the form brush's lint guard takes them back); and
+# the rim light brush, from the east with Keep the lint clean unticked, run
+# over the formed smoke.
+SMOKE_ACTIVE = {"name": "smoke-active", "action": "setActiveLayer", "layer": "smoke"}
+replay("two-lights", "start.bwp", SMOKE + FORM + SKYLINE[:2] + [SMOKE_ACTIVE] + smoke_form("W", "west"),
+       {"west-7": "two-lights.ans"})
+STICKERS = [SMOKE_ACTIVE, dict(SKYLINE[1], name="smoke-rim", keepLint=False, points=[[30, 12]])]
+replay("stickers", "start.bwp", SMOKE + FORM + SKYLINE[:2] + STICKERS, {"smoke-rim": "stickers.ans"})
+
+# The boulder scene, for the exercise: a boulder and a standing stone on two
+# hills under a sky, 60 by 20, on four layers.
 W, H = 60, 20
 SKY = [{"name": "sky-select", "action": "select", "rect": [0, 0, W - 1, H - 1]},
        {"name": "sky", "action": "gradient", "ramp": "sea",
@@ -252,31 +317,7 @@ HILLS_RIM = [{"name": "hills-rim", "action": "rimLight", "light": "NE", "size": 
               "keepLint": True, "points": [[30, 12]]}]
 BOULDER = dome("boulder", 42, 12, 28, "NE", rim=False, glint=True)
 STONE = dome("stone", 14, 14, 16, "NE", rim=True, glint=False)
-CHECK = [{"name": "check", "action": "deselect"}]
-
 start = blank(W, H)
-steps = SKY + HILLS + HILLS_RIM + BOULDER + STONE + CHECK
-at = {step["name"]: i for i, step in enumerate(steps)}
-for name, args in [("hills-rim", ("toolOptions", [0, 0, 256, 731])), ("stone", ("toolOptions", [0, 0, 256, 890])),
-                   ("stone-lock", ("layers",)), ("check", ("lint",))]:
-    steps[at[name]] = shot(steps[at[name]], *args)
-replay("final", start, steps,
-       {"sky": "step-01.ans", "hills": "step-02.ans", "hills-rim": "step-03.ans", "boulder": "step-04.ans",
-        "stone": "final.bwp"},
-       {"hills-rim": "rim-options.png", "stone": "form-options.png", "stone-lock": "layers.png",
-        "check": "lint.png"},
-       window=[1280, 1300])
-
-# What goes wrong. The stone lit from the north-west in a scene lit from
-# the north-east; and the rim light brush, from the north-east, run over the
-# boulder and the stone as well as the hills.
-replay("two-lights", start, SKY + HILLS + HILLS_RIM + BOULDER + dome("stone", 14, 14, 16, "NW", rim=True, glint=False),
-       {"stone": "two-lights.ans"})
-STICKERS = [{"name": "boulder-rim", "action": "setActiveLayer", "layer": "boulder"},
-            dict(HILLS_RIM[0], name="boulder-rimmed", keepLint=False),
-            {"name": "stone-rim", "action": "setActiveLayer", "layer": "stone"},
-            dict(HILLS_RIM[0], name="stone-rimmed", keepLint=False)]
-replay("stickers", start, SKY + HILLS + HILLS_RIM + BOULDER + STONE + STICKERS, {"stone-rimmed": "stickers.ans"})
 
 # Try it: the same hills and shapes under a sky brightest at the top left,
 # the hills shaded but not rimmed, the boulder and the stone laid and locked
