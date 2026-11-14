@@ -227,6 +227,8 @@ Two dark grey blocks, each selected and stroked at 100% with the light from **NW
 
 ![Two shaded grey shapes on black: on the left a block shaded as a dome, white at the top left falling through grey to dark grey at the bottom right; on the right a block shaded in upright bands, light on the left and dark on the right](../samples/manual-04-tools/form.ans "2x")
 
+The brush leaves a cell as the stroke had left it where painting it would add a ladder-lint finding along its ramp that the canvas didn't have when the stroke began (a [non-neighbour shade](11-lint.md#non-neighbour-shade), a [wide rung](11-lint.md#wide-rung), a [rung skip](11-lint.md#rung-skip), a [speck](11-lint.md#speckle), [one glyph](11-lint.md#one-glyph) or [noise](11-lint.md#noise)); a finding with no painted cell next to it takes back the whole dab (one glyph and noise are placed at the corner of the area they cover, so they usually do). This is always on: the Form Brush has no option for it.
+
 It can't paint a Pixels layer. Tutorial 05's [The form brush](../tutorials/05-shading-forms-and-falloff.md#the-form-brush) and [Form](../tutorials/05-shading-forms-and-falloff.md#form) teach it; tutorial 06's [The form brush's light](../tutorials/06-light.md#the-form-brushs-light), [Glint](../tutorials/06-light.md#glint) and [Form rim light](../tutorials/06-light.md#form-rim-light) teach its light.
 
 ## Soft Brush
