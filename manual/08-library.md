@@ -21,8 +21,6 @@ Prefabs, parts made of several layers, and the **Scene Starter**, which lays out
 
 The Library dock can be moved and floated but not closed, so its **Window** menu item is always ticked and greyed out ([The Window menu](02-the-window.md#the-window-menu)). **Window > Reset Layout** puts it back.
 
-**File > Publish to Library...** is something else: it publishes the piece to an IRC art library folder, not to this Library.
-
 ## The Library dock
 
 ![The Library dock: a search box reading "Search names and tags", a category list with All highlighted over buildings, classic and elements, a grid of stamp thumbnails with their names (Barn, Castle keep, Fence, House, Lighthouse, Log cabin, Stone bridge, Windmill, Wall of fire, the four frames, Snowy boulder, Cliff edge, Far mountain range), each name whole, wrapped onto a second line when it is long, and a Refresh button at the bottom](../samples/manual-08-library/dock.png)

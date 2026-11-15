@@ -25,8 +25,6 @@ Set the budget with **View > IRC > Budget...** (no shortcut). The IRC Budget dia
 | Budget | The bytes a line may take, 1 to 512. A number other than the preset's makes it Custom |
 | Mask, Channel | Your `nick!user@host` and the channel. With both filled in the budget is worked out as 498 less their lengths, and the preset becomes Custom. While either is empty, holds a space, or leaves no room for text, the budget isn't worked out and stays as it was, with no message |
 
-Under the fields a note says: "Publish to Library and Send to WeeChat hold lines to this budget or to 407 bytes, the ascii script's EFnet limit, whichever is less. A Send with the ANSI target in CP437 sends no .txt and checks no budget." (see [Export IRC Text](#export-irc-text)).
-
 The budget belongs to the document. Changing it is a step on the undo stack, and a project saves it (its profile, `efnet-weechat` or `custom`, and the bytes). An `.ans` has nowhere to keep it: a document whose budget has been changed is one an `.ans` doesn't hold whole (see [File formats](13-file-formats.md#saving-a-project-as-a-flat-file)).
 
 ## The row meter
@@ -54,7 +52,7 @@ The meter measures each row as Export IRC Text writes it, with the window's Fit,
 
 ## Making rows fit
 
-Three settings in **View > IRC** change how rows are encoded. No **View > IRC** action, these three included, has a shortcut by default; give one a key on the **Shortcuts** tab of **Edit > Preferences...** (which has no shortcut by default; on macOS it is in the application menu), where they are listed under **View > IRC**. They are the window's, start off each time Blockwright starts, and aren't saved with a document. The meter, the IRC View dock and Export IRC Text use them; **File > Publish to Library...** and **File > Send to WeeChat...** don't.
+Three settings in **View > IRC** change how rows are encoded. No **View > IRC** action, these three included, has a shortcut by default; give one a key on the **Shortcuts** tab of **Edit > Preferences...** (which has no shortcut by default; on macOS it is in the application menu), where they are listed under **View > IRC**. They are the window's, start off each time Blockwright starts, and aren't saved with a document. The meter, the IRC View dock and Export IRC Text use them.
 
 | Setting | What it does |
 |---|---|
@@ -115,7 +113,7 @@ The dock scrolls with the canvas on both axes, with no setting to turn that off:
 
 ## Export IRC Text
 
-**File > Export IRC Text...** (no shortcut) writes the lines the row meter measures to a text file: the canvas as IRC lines, one message each. **File > Export Micron...** comes next, and then **File > Publish to Library...** and **File > Send to WeeChat...** (no shortcut either), which write their own lines, without Fit, Pad or Swap Shades. Those two hold the lines to the document's budget or to 407 bytes, whichever is less, measured as the script sends them: a budget under 407 holds them to it, and one over 407 still stops at 407, the ascii script's EFnet limit. Send to WeeChat holds only the IRC text it sends, which it sends under the IRC target or for a UTF-8 document; a CP437 document under the ANSI target goes as its `.ans` alone, and no budget is checked. A piece with a line over is refused, and nothing is written. With a budget of 350, say, the refusal reads "over the document's own 350-byte IRC budget as WeeChat's ascii script sends it: line 1 is 400 bytes"; with a budget of 407 or more it reads "over the 407-byte IRC budget as WeeChat's ascii script sends it, so it would be cut on IRC: line 1 is 450 bytes". Each line over is named. A floating selection that can't land is refused too: "the floating selection can't land: …". Publish shows a refusal under "Could not publish:", Send on its own.
+**File > Export IRC Text...** (no shortcut) writes the lines the row meter measures to a text file: the canvas as IRC lines, one message each. **File > Export Micron...** comes next.
 
 1. Any tool's edit in progress lands first. A floating selection that can't land ([A float that can't land](05-selections.md#a-float-that-cant-land)) stops the export, and the status bar says "Not exported: the floating selection can't land: …" for five seconds.
 2. If any line is over the budget as sent, a warning says how many and how long the longest is: "2 lines are over the 407-byte budget, the longest 602 bytes as WeeChat's ascii script sends them: the script cuts them short. Export anyway?" (for one line, "1 line is over the 407-byte budget, at … bytes as WeeChat's ascii script sends it: the script cuts it short."). **Save** goes on, **Cancel**, the default, stops.

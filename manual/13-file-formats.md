@@ -398,7 +398,7 @@ A UTF-8 `.ans` is an `.ans` with its glyphs as UTF-8 rather than CP437 bytes, as
 
 An `.ans` is read as UTF-8 when it starts with a byte order mark, or when it is all well-formed UTF-8 with at least one sequence of three bytes or more (each block, shade and box glyph is three bytes); anything else is read as CP437. So a UTF-8 `█` (0xE2 0x96 0x88) reads as `█`, and a CP437 file whose bytes happen to make two-byte UTF-8 still reads as CP437. The status bar shows the encoding, `CP437` or `UTF-8`. To read a file the other way, open it with the `ANSI art, CP437 (*.ans)` or `ANSI art, UTF-8 (*.ans)` filter, or use **File > Reopen with Encoding** (**Auto (as its bytes say)**, **CP437** or **UTF-8**, no shortcuts), which asks to save unsaved edits first and is greyed out unless the document is an `.ans` file.
 
-**File > Save** writes an `.ans` in the encoding the document was opened or last saved in. A new document is CP437 under the ANSI target and UTF-8 under the IRC target. **Save As...** with `ANSI art (*.ans)` writes CP437, and with `ANSI art, UTF-8 (*.ans)` UTF-8. A UTF-8 `.ans` gets a byte order mark only when it has no sequence of three bytes or more, so that it reads back as UTF-8. **File > Publish to Library...** and **File > Send to WeeChat...** write their `.ans` in CP437, as WeeChat's ascii script reads only CP437.
+**File > Save** writes an `.ans` in the encoding the document was opened or last saved in. A new document is CP437 under the ANSI target and UTF-8 under the IRC target. **Save As...** with `ANSI art (*.ans)` writes CP437, and with `ANSI art, UTF-8 (*.ans)` UTF-8. A UTF-8 `.ans` gets a byte order mark only when it has no sequence of three bytes or more, so that it reads back as UTF-8.
 
 `blockwright-cli` reads an `.ans` the same way, or as `--encoding cp437` or `--encoding utf-8` says. `convert` writes CP437 unless given `--output-encoding utf-8`; the sun piece is 883 bytes that way. An XBIN or BIN is CP437 only, so `--output-encoding utf-8` with an `<out>` named `.xb` or `.bin` is refused, exit status 2: `blockwright-cli: --output-encoding utf-8 writes an .ans; piece.xb is XBIN or BIN, which are CP437`.
 
@@ -413,7 +413,6 @@ Besides the art formats above, these are read:
 | A generator's directory (`generator.json`, and `params.json` and scripts) | `blockwright-cli add-generator` |
 | TheDraw fonts (`.tdf`) | The fonts folder set in Preferences, for text layers, and a `text` step in a `blockwright-cli replay` steps file ([A TheDraw font](14-cli.md#a-thedraw-font)); a project keeps the fonts its text layers use under `fonts/` |
 | Library stamps (an `.ans` and its `.json` sidecar) and text styles (`.style.json`) | The Library, from the bundled library and the user's; `blockwright-cli library list` and `library check` |
-| The ascii library's `.tags.json` and `.dates.json` | **File > Publish to Library...**, which reads and rewrites them |
 
 ## What each format keeps
 

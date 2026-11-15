@@ -35,7 +35,7 @@ Each of the 16 colours goes out as one mIRC colour: light red as mIRC 4, yellow 
 
 ### Written and sent
 
-The bytes that count are the ones that arrive. Blockwright keeps each line short: a colour number under 10 in one digit where that can't be misread, and in two where a digit follows it, so a `1` in light red on black is written `^C4,011`, the background `01` kept apart from the glyph. WeeChat's ascii script, which sends the line, encodes it again its own way, with two-digit colour numbers, so the sign's lines grow on the way: the 422-byte bulb row is 483 bytes as sent, and the 332-byte one 363. When a line as the script encodes it is over the budget, the script tries a shorter encoding of its own, unless, for example, a cell is bold, italic or underlined, and sends whichever is shorter (`core/include/blockwright/irc_view.h`, `txtSentBytes`; [the manual](../manual/10-irc.md#the-irc-view-dock) has the conditions), and that can be shorter than the line as written: with Pad on, a row of a `1` grey on black and a space on black is 12 bytes written; it is 13 bytes sent under a budget of 13 or more, and 9 under any smaller one. A line with a bold, italic or underlined cell is sent as the script first encoded it, over the budget or not: make that `1` bold and the row is 13 bytes written and 15 sent under any budget. The row meter, Fit, the IRC View, **Export IRC Text**, `export --irc`, **Publish to Library** and **Send to WeeChat** all measure a line as the script sends it.
+The bytes that count are the ones that arrive. Blockwright keeps each line short: a colour number under 10 in one digit where that can't be misread, and in two where a digit follows it, so a `1` in light red on black is written `^C4,011`, the background `01` kept apart from the glyph. WeeChat's ascii script, which sends the line, encodes it again its own way, with two-digit colour numbers, so the sign's lines grow on the way: the 422-byte bulb row is 483 bytes as sent, and the 332-byte one 363. When a line as the script encodes it is over the budget, the script tries a shorter encoding of its own, unless, for example, a cell is bold, italic or underlined, and sends whichever is shorter (`core/include/blockwright/irc_view.h`, `txtSentBytes`; [the manual](../manual/10-irc.md#the-irc-view-dock) has the conditions), and that can be shorter than the line as written: with Pad on, a row of a `1` grey on black and a space on black is 12 bytes written; it is 13 bytes sent under a budget of 13 or more, and 9 under any smaller one. A line with a bold, italic or underlined cell is sent as the script first encoded it, over the budget or not: make that `1` bold and the row is 13 bytes written and 15 sent under any budget. The row meter, Fit, the IRC View, **Export IRC Text** and `export --irc` all measure a line as the script sends it.
 
 ### What IRC drops
 
@@ -54,7 +54,7 @@ A CP437 `.ans` holds 256 glyphs. IRC text is UTF-8, which carries `★` and most
 - the **Keyboard** tool types Unicode, not only CP437, and the **Glyphs** menu offers five more F-key sets, 17 to 21, of glyphs CP437 doesn't have (set 20 is `◢◣◤◥◆◇○●★☆`, set 21 `✦✧✶✷✸✹⋆✱✺❖`), as it does for a UTF-8 document under either target;
 - Lint's [`ans-loss`](../manual/11-lint.md#ans-loss) note counts the cells a CP437 `.ans` save would write as `?`, where under the ANSI target [`no-cp437`](../manual/11-lint.md#no-cp437) flags them.
 
-A note isn't a fault: the piece is fine for IRC. It matters when the piece is also saved as a CP437 `.ans`, which writes `?` in those cells, or published: **Publish to Library** writes its `.ans` as CP437 whatever the document is saved as. A UTF-8 `.ans` keeps them.
+A note isn't a fault: the piece is fine for IRC. It matters when the piece is also saved as a CP437 `.ans`, which writes `?` in those cells. A UTF-8 `.ans` keeps them.
 
 ### The three views of a row
 
@@ -66,11 +66,11 @@ A note isn't a fault: the piece is fine for IRC. It matters when the piece is al
 
 ### Fit and Pad
 
-**View > IRC** has three switches for the encoder: **Fit Lines to the Budget**, **Pad Lines** and **Swap Shades**. They start off, last until Blockwright quits, and aren't saved with a document. The row meter, the IRC View and **Export IRC Text** use them; **Publish to Library** doesn't.
+**View > IRC** has three switches for the encoder: **Fit Lines to the Budget**, **Pad Lines** and **Swap Shades**. They start off, last until Blockwright quits, and aren't saved with a document. The row meter, the IRC View and **Export IRC Text** use them.
 
 **Fit** merges the least visible colours of a row that is over the budget into their neighbours', until the row fits or there is nothing left it may merge. The cells it may change are ones such as a space or a no-break space, a `█`, an `A` red on red, and the half blocks and shades `▀▄▌▐░▒▓`, none of them bold, italic or underlined; [Fit](../manual/10-irc.md#making-rows-fit) in the manual gives the full rule. It never changes a letter or a `★` in two colours, a letter on black, say, nor a cell with bold, italic or underline, nor a letter with a combining mark (`q` + U+0301), even one red on red, nor either cell of a wide glyph followed by its continuation and written whole, such as `日`. When merging what it may still leaves the row over, Fit gives the row back as it was, and the row stays over: a row of 80 `★` on black, light red and red by turns (mIRC 4 and 5), is 402 bytes written and 483 sent, and Fit can change none of its cells. It changes what the client shows, and the canvas keeps the colours it had: it is for a row a cell or two over, not a fix for a row that changes colour at every cell (**Check it** below). The fix is in the drawing: fewer colour changes a row.
 
-None of these actions has a shortcut by default: **Format > Target > ANSI (.ans)** and **IRC**; **View > IRC > Row Meter**, **IRC View**, **Budget...**, **Fit Lines to the Budget**, **Pad Lines** and **Swap Shades**; **Window > IRC View** and **Window > Lint**; **Glyphs > Set 11** to **Set 21** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F1</kbd> to <kbd>F10</kbd> pick sets 1 to 10 only); and **File > Export IRC Text...**, **File > Publish to Library...** and **File > Send to WeeChat...**.
+None of these actions has a shortcut by default: **Format > Target > ANSI (.ans)** and **IRC**; **View > IRC > Row Meter**, **IRC View**, **Budget...**, **Fit Lines to the Budget**, **Pad Lines** and **Swap Shades**; **Window > IRC View** and **Window > Lint**; **Glyphs > Set 11** to **Set 21** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F1</kbd> to <kbd>F10</kbd> pick sets 1 to 10 only); and **File > Export IRC Text...**.
 
 To give one of the **View > IRC** actions a key, open **Edit > Preferences...** (it has no shortcut by default; on macOS it is in the application menu) and pick the **Shortcuts** tab. Find the action under **View > IRC**, or type part of its name in the search field; the list leaves off the dots, so search for `Budget`, not `Budget...`. Click the action, press the key in **Key**, then **OK**. Keyboard mode types or edits with a letter, digit, arrow or other such key, alone or with <kbd>Shift</kbd>, so the editor takes one only with <kbd>Ctrl</kbd> or <kbd>Meta</kbd> held, <kbd>Shift</kbd> too if you like. Qt names these two by their role: on Windows and Linux <kbd>Meta</kbd> is the Windows or Super key, and on macOS <kbd>Ctrl</kbd> is the Command key and <kbd>Meta</kbd> the Control key. The F-keys and <kbd>Alt</kbd> have rules of their own. A key the editor can't use, or that another action has, is refused, and the reason shows under the list.
 
@@ -170,9 +170,7 @@ You'll draw the sign as it first comes to mind, see what IRC makes of it, and fi
 
     `bytes` is the line as written, `sent` as the script sends it; the budget is checked against `sent`. The table counts lines from 1, the meter rows from 0. The file is [final.txt](../samples/11-made-for-irc/final.txt).
 
-12. **Publish.** **File > Publish to Library...** (no shortcut) puts the piece in an ascii library, a folder with a `funkpower` folder in it. Give the **Library folder**, a **Piece name** (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and **Tags**, comma or space separated, to which `funkpower` is always added. It writes `funkpower/<name>.ans` and `funkpower/<name>.txt` and updates the library's `.tags.json` and `.dates.json`, after a dialog that lists the four files. The `.ans` is CP437, so the stars are written as `?` there, and the dialog warns of it before you say yes. The `.txt` is the IRC text, plain: without Fit, Pad or Swap Shades, whatever **View > IRC** says, and held to the document's budget or to 407 bytes, whichever is less, as the script sends it (this document's 407, unless you changed it), and a piece with a line over is refused. The status bar says *Published funkpower/&lt;name&gt;*.
-
-**File > Send to WeeChat...** (no shortcut) copies the piece to a host over ssh and reloads WeeChat's ascii script there. It too refuses an IRC line over the document's budget or 407 bytes as sent, whichever is less; it is not covered further here.
+12. **Save.** **File > Save As...** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>), pick **Blockwright project (\*.bwp)** and save the piece as `final.bwp`. A project keeps the IRC target, the budget and the two stars. A CP437 `.ans` would write the stars as `?`, and **Save As...** would list them under "Before saving as .ans:" before writing anything. The file is [final.bwp](../samples/11-made-for-irc/final.bwp).
 
 ## Check it
 
@@ -202,7 +200,7 @@ The rows fit, by 4 bytes. What it cost, as `blockwright-cli render --irc --fit -
 
 ![The IRC view of the first sign with Fit: rows 0 and 8 run to column 79 with no cut, but the light green bulbs at columns 18, 22, 26 and on every fourth column to 78 are gone, black gaps in the row. Rows 1 and 7 are still dark grey, and rows 2 to 6 still go dark grey after the art](../samples/11-made-for-irc/irc-fit.png)
 
-Fit took out 16 light green bulbs a row, from column 18 on, and left the trailing black and the empty rows as they were. Turn Fit off again: it isn't saved, and **Publish to Library** never uses it.
+Fit took out 16 light green bulbs a row, from column 18 on, and left the trailing black and the empty rows as they were. Turn Fit off again: it isn't saved.
 
 **Over the budget, `export --irc` writes nothing.** Without `--fit` or `--allow-over-budget`, it refuses the first sign:
 
@@ -271,7 +269,7 @@ It is the finished sign with a blank row above it and one below, meant as a marg
     11 lines, longest 332 bytes, 363 sent, budget 407: 0 over
     ```
 
-    The answer is [try-answer.bwp](../samples/11-made-for-irc/try-answer.bwp). **View > IRC > Pad Lines** (or `export --irc --pad`) also keeps the two rows, 86 bytes each, but only in that export: it isn't saved, and **Publish to Library** writes without it. The `█` is in the cells, so **Export IRC Text**, `export --irc` and **Publish to Library** keep the rows without Pad.
+    The answer is [try-answer.bwp](../samples/11-made-for-irc/try-answer.bwp). **View > IRC > Pad Lines** (or `export --irc --pad`) also keeps the two rows, 86 bytes each, but only in that export: it isn't saved. The `█` is in the cells, so **Export IRC Text** and `export --irc` keep the rows without Pad.
 
 </details>
 
