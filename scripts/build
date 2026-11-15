@@ -46,7 +46,8 @@ Every page carries the site menu (`theme/page.html`'s `$nav`): the home link,
 then each section's index and its pages in the order the index lists them,
 stubs dimmed and unlinked; the page itself is marked `aria-current="page"` and
 its section `here`. A standalone page carries the menu too, with nothing in it
-marked.
+marked. The home page's `<body>` has the class `home-page`, which the
+stylesheet's home layout hangs on (not `:has()`, which older browsers drop).
 
 The site also gets `robots.txt`, which lets crawlers fetch everything, and,
 when `ROBOTS` is set, a robots meta tag on every page but the standalone ones,
@@ -57,12 +58,17 @@ URL` puts URL in its place in every href and src of the built site, so a copy
 of the site can send downloads to another address of the forge. `--mirror-url
 URL` adds a line to every page's footer naming the site's other address. Every
 tag of every built page, the template's included, must be one the site uses
-(TAGS, ATTRS: nothing that loads, embeds, runs or redirects), and every href
-and src the forge, the mirror, the licence (ALLOWED_EXTERNAL), a mailto: or a
-plain relative path; anything else fails the build, so the site works where
-only those addresses can be reached. Text in code, in <pre> and in comments is
+(TAGS, ATTRS: nothing that loads, embeds, runs or redirects), its one
+stylesheet link the template's own `site.css`, and every href and src the
+forge, the mirror, the licence (ALLOWED_EXTERNAL), a mailto: or a plain
+relative path; anything else fails the build, so the site works where only
+those addresses can be reached. Text in code, in <pre> and in comments is
 no link; --forge-url moves the forge's address in text outside comments too, so
-a command on a page names the same forge as the page's links.
+a command on a page names the same forge as the page's links. The stylesheet,
+`theme/site.css`, loads nothing either: it may use only the at-rules and
+functions in CSS_AT_RULES and CSS_FUNCTIONS (no @import, @font-face, url() or
+image-set()) and no backslash, which could spell one as a CSS escape, so it
+names no address for --forge-url to move.
 
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
@@ -158,6 +164,14 @@ ATTRS = {"*": {"class", "id", "title", "lang", "dir"},
 ADDRESS_ATTRS = {"href", "src"}
 # The one style a page may carry: a table column's alignment.
 STYLE_RE = re.compile(r"^text-align: ?(?:left|right|center);?$")
+# What theme/site.css may use: nothing that loads, so no @import, @font-face
+# or @namespace, and no url(), image(), image-set() or any other function that
+# takes an address. A backslash is refused too: a CSS escape can spell url(.
+CSS_AT_RULES = {"media", "supports", "keyframes"}
+CSS_FUNCTIONS = {"var", "calc", "min", "max", "clamp", "minmax", "repeat", "inset", "steps",
+                 "not", "is", "where", "has", "selector"}
+CSS_AT_RE = re.compile(r"@(-?-?[A-Za-z_][A-Za-z0-9_-]*)")
+CSS_FUNCTION_RE = re.compile(r"(?<![A-Za-z0-9_@-])(-?-?[A-Za-z_][A-Za-z0-9_-]*)\(")
 EXTERNAL_RE = re.compile(r"^[a-z][a-z0-9+.-]*:|^//", re.I)
 MARKER_RE = re.compile(r"^<!-- (generated|list): ([a-z-]+) -->[ \t]*$")
 # The markers a page may use, exactly as written.
@@ -644,6 +658,32 @@ def site_url(how, url):
     return url
 
 
+def stylesheet_errors(css, rel="theme/site.css"):
+    """Why the stylesheet css could load something, one line per reason; none
+    when it uses only CSS_AT_RULES and CSS_FUNCTIONS and no backslash. The text
+    is read whole, strings and comments included, so a name in either counts."""
+    errors = []
+    if "\\" in css:
+        errors.append(f"{rel}: a backslash, which can spell url( as a CSS escape; the stylesheet uses none")
+    for name in sorted({m.group(1).lower() for m in CSS_AT_RE.finditer(css)} - CSS_AT_RULES):
+        errors.append(f"{rel}: @{name}: an at-rule the site doesn't use (the stylesheet loads nothing; it may use "
+                      f"{', '.join('@' + a for a in sorted(CSS_AT_RULES))})")
+    for name in sorted({m.group(1).lower() for m in CSS_FUNCTION_RE.finditer(css)} - CSS_FUNCTIONS):
+        errors.append(f"{rel}: {name}(): a CSS function the site doesn't use (the stylesheet loads nothing; it "
+                      f"may use {', '.join(f + '()' for f in sorted(CSS_FUNCTIONS))})")
+    return errors
+
+
+def page_root(page):
+    """The way from page up to the site's root: "" or "../" and so on."""
+    up = os.path.relpath(".", page.out.parent)
+    return "" if up == "." else up + "/"
+
+
+def is_home(page):
+    return not page.section and page.is_index
+
+
 class Builder:
     def __init__(self, out, cli, app=None, forge=FORGE, mirror=None):
         self.out = out
@@ -769,6 +809,9 @@ class Builder:
         def fail(why):
             self.errors.append(f"{page.rel}: {why}")
 
+        # The template's <link>: the one stylesheet a page may name.
+        own_css = page_root(page) + "site.css"
+
         def address(raw):
             # As a browser's URL parser reads it: tabs and newlines dropped
             # anywhere, C0 controls and spaces trimmed from both ends. One that
@@ -825,6 +868,9 @@ class Builder:
                     fail(f"<link rel={value!r}>: a link the site doesn't use (its own stylesheet only)")
                 elif tagname == "link" and key == "href" and not SAFE_RELATIVE_RE.match(value or ""):
                     fail(f"<link href={value!r}>: a stylesheet from outside the site")
+                elif tagname == "link" and key == "href" and value != own_css:
+                    fail(f"<link href={value!r}>: a stylesheet other than the site's own ({own_css}); only "
+                         "theme/site.css is checked for what it loads")
                 elif tagname == "img" and key == "src" and (value or "").lower().partition("#")[0].endswith(SAMPLE_TYPES):
                     fail(f"<img src={value!r}>: a sample the image pass didn't draw")
                 elif key in ADDRESS_ATTRS and value is not None:
@@ -923,12 +969,11 @@ class Builder:
                              "item or blockquote), outside code")
         body = self.fix_images(page, body)
         body = self.fix_links(page, body)
-        up = os.path.relpath(".", page.out.parent)
-        root = "" if up == "." else up + "/"
+        root = page_root(page)
         checked = ""
         if page.checked:
             checked = f'<p class="checked">Describes {html.escape(page.checked)}.</p>'
-        title = SITE_NAME if not page.section and page.is_index else f"{page.title} · {SITE_NAME}"
+        title = SITE_NAME if is_home(page) else f"{page.title} · {SITE_NAME}"
         robots = "noindex" if page.standalone else ROBOTS
         robots = f'<meta name="robots" content="{html.escape(robots)}">\n' if robots else ""
         mirror = ""
@@ -936,6 +981,7 @@ class Builder:
             mirror = f'<br>\nAlso at <a href="{html.escape(self.mirror)}">{html.escape(self.mirror)}</a>'
         doc = self.template.substitute(
             title=html.escape(title),
+            body_class=' class="home-page"' if is_home(page) else "",
             robots=robots,
             root=root,
             body=body,
@@ -978,6 +1024,7 @@ class Builder:
         prepare_out(self.out)
         try:
             shutil.copyfile(ROOT / "theme" / "site.css", self.out / "site.css")
+            self.errors += stylesheet_errors((ROOT / "theme" / "site.css").read_text(encoding="utf-8"))
             (self.out / "robots.txt").write_text(ROBOTS_TXT, encoding="utf-8")
             for page in self.pages:
                 if page.published:

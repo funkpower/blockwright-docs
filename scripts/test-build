@@ -1231,6 +1231,114 @@ def external_link_refused(s):
     check('="http://forge.example.test' not in page, "text that isn't a link was rewritten as one")
 
 
+
+@scenario
+def stylesheet_loads_nothing(s):
+    """theme/site.css loads nothing: an @import (url() or a string), an
+    @font-face, an @namespace, a url() (the forge's too, which --forge-url
+    wouldn't move), one in capitals, an image-set() and -webkit-image-set(), an
+    image() and a CSS escape spelling url( each fail the build, naming
+    theme/site.css and the rule or function; the repo's own stylesheet passes,
+    with and without --forge-url, and is copied unchanged."""
+    css = (s.repo / "theme" / "site.css").read_text(encoding="utf-8")
+    cases = {
+        "@import: an at-rule": ['@import url("https://fonts.example.com/x.css");',
+                                '@import "https://example.com/a.css";'],
+        "@font-face: an at-rule": ["@font-face { font-family: x; src: url(https://fonts.example.com/x.woff2); }"],
+        "@namespace: an at-rule": ["@namespace svg url(http://www.w3.org/2000/svg);"],
+        "url(): a CSS function": [f".x {{ background: url({FORGE}/x.png); }}", ".x { cursor: URL(x.png), auto; }",
+                                  '.x::before { content: url("https://example.com/a.png"); }'],
+        "image-set(): a CSS function": ['.x { background: image-set("https://example.com/a.png" 1x); }'],
+        "-webkit-image-set(): a CSS function": ['.x { background: -webkit-image-set("https://example.com/a.png" 1x); }'],
+        "image(): a CSS function": ['.x { background: image("https://example.com/a.png"); }'],
+        "a backslash": [".x { background: u\\72 l(https://example.com/a.png); }"],
+    }
+    for says, rules in cases.items():
+        for rule in rules:
+            s.write("theme/site.css", rule + "\n" + css)
+            s.failed(says=f"theme/site.css: {says}")
+    s.write("theme/site.css", "@media(max-width: 10rem) { .x { color: var(--fg); } }\n" + css)
+    s.passed()
+    s.write("theme/site.css", css)
+    s.passed("--forge-url", "http://forge.example.test")
+    check((s.repo / "site" / "site.css").read_text(encoding="utf-8") == css, "site.css wasn't copied unchanged")
+
+
+@scenario
+def stylesheet_only_the_sites_own(s):
+    """A page may link no stylesheet but the template's site.css, the only one
+    the build checks for what it loads: the home page linking
+    samples/home/extra.css (an @import and an @font-face from another host)
+    fails naming it, and so does a manual page linking it or linking site.css
+    by a path that isn't the site's root; without them the page builds, with
+    the template's own link."""
+    s.write("samples/home/extra.css", '@import url("https://fonts.example.com/x.css");\n'
+            "@font-face { font-family: x; src: url(https://fonts.example.com/x.woff2); }\n"
+            "body { font-family: x; }\n")
+    index = (s.repo / "index.md").read_text(encoding="utf-8")
+    s.write("index.md", index + '\n<link rel="stylesheet" href="samples/home/extra.css">\n')
+    s.failed(says="index.md: <link href='samples/home/extra.css'>: a stylesheet other than the site's own (site.css)")
+    s.write("index.md", index)
+    s.probe('<link rel="stylesheet" href="../samples/home/extra.css">')
+    s.failed(says="manual/99-probe.md: <link href='../samples/home/extra.css'>: a stylesheet other than the "
+             "site's own (../site.css)")
+    s.write("manual/site.css", "body { color: red; }\n")
+    s.probe('<link rel="stylesheet" href="site.css">')
+    s.failed(says="manual/99-probe.md: <link href='site.css'>: a stylesheet other than the site's own")
+    s.probe("No stylesheet of its own.")
+    s.passed()
+    check('<link rel="stylesheet" href="../site.css">' in s.page(), "the template's stylesheet link is gone")
+
+
+@scenario
+def home_page_body_class(s):
+    """The home page's <body> carries class="home-page" and no other page's
+    does; the stylesheet lays the home page out by that class, with no :has(),
+    so a browser without :has() gets the same home page."""
+    s.passed()
+    site = s.repo / "site"
+    for f in sorted(site.rglob("*.html")):
+        rel = f.relative_to(site).as_posix()
+        tag = re.search(r"<body[^>]*>", f.read_text(encoding="utf-8")).group(0)
+        want = '<body class="home-page">' if rel == "index.html" else "<body>"
+        check(tag == want, f"{rel}: {tag}, expected {want}")
+    css = (s.repo / "theme" / "site.css").read_text(encoding="utf-8")
+    check("body.home-page .page" in css, "the stylesheet has no body.home-page layout")
+    check(":has(" not in css, "the stylesheet still uses :has()")
+
+
+# The section of manual/01-install.md each download card on the home page links to.
+HOME_INSTALL_LINKS = {"dl-macos": {"macos", "homebrew"}, "dl-windows": {"windows"},
+                      "dl-appimage": {"linux-appimage"}, "dl-deb": {"debian-and-ubuntu"},
+                      "dl-fedora": {"fedora"}, "dl-arch": {"arch-linux"}, "dl-freebsd": {"freebsd"},
+                      "dl-source": {"building-from-source"}}
+
+
+@scenario
+def home_install_links(s):
+    """Every download card on the home page links to its system's section of
+    the install page, and every link from the home page to the install page
+    names an id that page has; a card linking to a missing section fails the
+    build naming it."""
+    s.passed()
+    home = s.page("index.html")
+    install = s.page("manual/01-install.html")
+    ids = set(re.findall(r'\sid="([^"]+)"', install))
+    links = re.findall(r'href="manual/01-install\.html(?:#([^"]*))?"', home)
+    check(links, "the home page has no link to the install page")
+    for frag in links:
+        check(not frag or frag in ids, f"index.html links to manual/01-install.html#{frag}, which has no such id")
+    for card, want in HOME_INSTALL_LINKS.items():
+        m = re.search(rf'<section class="dl" id="{card}">(.*?)</section>', home, re.S)
+        check(m, f"index.html has no card {card}")
+        got = set(re.findall(r'href="manual/01-install\.html#([^"]+)"', m.group(1)))
+        check(got == want, f"card {card} links to install sections {sorted(got)}, expected {sorted(want)}")
+    index = s.repo / "index.md"
+    text = index.read_text(encoding="utf-8")
+    check(text.count("01-install.md#linux-appimage") == 1, "index.md has no one link to #linux-appimage")
+    index.write_text(text.replace("01-install.md#linux-appimage", "01-install.md#appimage"), encoding="utf-8")
+    s.failed(says="no #appimage on that page")
+
 # 10. scripts/deploy: local or remote, as rsync decides, and nowhere else.
 
 @scenario
@@ -1577,6 +1685,8 @@ def checklist_stand_in(s, commit):
             if src.name != "index.md":
                 src.unlink()
     s.write("PLAN.md", CHECKLIST_PLAN)
+    # The real home page links into manual pages the stand-in doesn't have.
+    s.write("index.md", "# Blockwright\n")
     s.write("tutorials/01-alpha-one.md", "Title: Alpha & one\nChecked: Blockwright 0.1.0 (aaaaaaa)\n\n# Alpha\n")
     s.write("tutorials/02-beta.md", "# Beta\n\nNot written yet.\n")
     s.write("manual/01-gamma.md", "Title: Gamma\nChecked: Blockwright 0.1.0 (1234abcdef0)\n\n# Gamma\n")
