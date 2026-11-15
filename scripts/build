@@ -42,6 +42,25 @@ with a message naming the column-0 rule, a misspelled one (any `<!-- generated:`
 or `<!-- list:` comment, in any case, that isn't one of the five) with a
 message naming the five.
 
+Python-Markdown finds a fenced block only at the left margin. A fence inside a
+list item, indented to the item's content (four spaces a level), is set aside
+before it looks: the block, less that indent, goes through fenced_code's own
+code, so it comes out as a top-level fence does (`<pre><code
+class="language-python">`, the text as written), and a marker in it is code.
+An item's first paragraph may wrap onto unindented lines. An item line indented
+four spaces or more counts only inside another item, and a raw HTML block (as
+Python-Markdown's own parser finds one) or a fenced block at the left margin
+hides what it holds, so a fence in an indented code block or in raw HTML is
+left as written. A fence that still isn't
+code fails the build, naming the page and the line: a line of a page's text
+outside <pre> and <code> that fenced_code would take for an opening or closing
+fence (three or more backticks or tildes, then at most a language or
+{attributes}), where a line of the page's Markdown, less its indent, quote
+marks and list marker, reads the same. Backticks from escapes or a table cell
+aren't a fence. A code span opened by such a fence at the start of a line and
+running over lines, which is what Markdown makes of one whose backticks pair
+up, is left as text so the check finds it.
+
 Every page carries the site menu (`theme/page.html`'s `$nav`): the home link,
 then each section's index and its pages in the order the index lists them,
 stubs dimmed and unlinked; the page itself is marked `aria-current="page"` and
@@ -98,7 +117,10 @@ from urllib.parse import unquote
 
 try:
     import markdown
+    from markdown.extensions.md_in_html import HTMLExtractorExtra
+    from markdown.inlinepatterns import InlineProcessor
     from markdown.preprocessors import Preprocessor
+    from markdown.util import AtomicString
 except ImportError:
     sys.exit("build: needs Python-Markdown (python-markdown on Arch, python3-markdown on Debian)")
 
@@ -188,6 +210,37 @@ LEFT_MARKER_RE = re.compile(r"<!--\s*(?:generated|list)\s*:(?:[^>]*-->)?", re.I)
 # Python-Markdown's fenced_code_block preprocessor runs at 25 and html_block at
 # 20; markers are replaced between the two.
 MARKER_PRIORITY = 22
+# A fence inside a list item is set aside before fenced_code_block (25) looks
+# for fences, which it finds only at the left margin; after normalize_whitespace
+# (30), so tabs are spaces and blank lines empty, as fenced_code sees them.
+# Before html_block (20), since md_in_html gives a block marked markdown="1"
+# straight to the block parser.
+NESTED_FENCE_PRIORITY = 27
+# Where Python-Markdown registers its backtick (code span) pattern; FenceSpans
+# takes its place there.
+BACKTICK_PRIORITY = 190
+# A line that opens or closes a fence: its indent, the fence and the rest.
+FENCE_LINE_RE = re.compile(r"^( *)(`{3,}|~{3,})(.*)$")
+# A list item's first line, as Python-Markdown reads one: its indent, then a
+# bullet or a number and a full stop, and a space.
+LIST_ITEM_RE = re.compile(r"^( *)(?:[*+-]|\d+\.)[ ]+\S")
+# Lines that end a block of Markdown wherever they are in it, so the next line
+# starts one: a hash heading and a rule (Python-Markdown's HashHeaderProcessor
+# and HRProcessor), and a setext heading's underline when it is the block's
+# second line (SetextHeaderProcessor). Each is matched less the block's indent.
+HASH_HEADING_RE = re.compile(r"#")
+RULE_RE = re.compile(r"[ ]{0,3}(?=(?P<run>(-+[ ]{0,2}){3,}|(_+[ ]{0,2}){3,}|(\*+[ ]{0,2}){3,}))(?P=run)[ ]*$")
+SETEXT_RE = re.compile(r"(?:=+|-+)[ ]*$")
+# What the fence check reads past in a page's HTML: a comment, and a <pre> or
+# <code> with all it holds.
+CODE_RE = re.compile(r"<!--.*?-->|<pre(?=[ \t\n\f\r>]).*?</pre>|<code(?=[ \t\n\f\r>]).*?</code>", re.S | re.I)
+# A line of a page's text that reads as an opening or closing fence: three or
+# more backticks or tildes, then any info string without the fence's own
+# character, whether or not fenced_code_block takes it (it refuses an info
+# string such as "shell session", and the fence is then shown as text).
+STRAY_FENCE_RE = re.compile(r"`{3,}[^`]*|~{3,}[^~]*")
+# What comes before a line's text in Markdown: its indent, quote marks and list markers.
+SOURCE_PREFIX_RE = re.compile(r"^(?:[ \t]*(?:>|[*+-][ \t]|\d+\.[ \t]))*[ \t]*")
 
 
 class BuildError(Exception):
@@ -290,6 +343,371 @@ class Markers(Preprocessor):
             else:
                 out.append(line)
         return out
+
+
+class NestedFences(Preprocessor):
+    """Sets aside each fenced block in a list item, at the item's content indent
+    (four spaces a level), the way fenced_code sets aside one at the left margin:
+    the block less that indent goes through fenced_code's own run(), and its
+    placeholder goes back at the indent, between blank lines, so it stays in the
+    item. A fence at the left margin is left to fenced_code, and a raw HTML
+    block to html_block, with all they hold; a fence at any other indent, one
+    not in a list item (an indented code block's text among them), and one that
+    isn't closed at its own indent are left as they are, for the stray fence
+    check. So is one inside an element md_in_html parses as span Markdown or
+    leaves raw, which holds no list, and one in a raw HTML block, as md_in_html
+    finds them (markdown_edges). A fence in a list item whose list is the child
+    of an element md_in_html parses block Markdown in and the block parser
+    takes for a list item or a list (<li markdown="block">, <ol markdown="1">)
+    is left as it is too, and noted in refused: Python-Markdown puts the block
+    beside the item, outside every <li>."""
+
+    def run(self, lines):
+        fenced = self.md.preprocessors["fenced_code_block"]
+        # The lines a closed fence at the left margin or a raw HTML block holds
+        # are None in seen: they aren't looked at, and in_item doesn't read past one.
+        seen = list(lines)
+        i = 0
+        while i < len(lines):
+            m = FENCE_LINE_RE.match(lines[i])
+            end = self.closing(lines, i, 0, m.group(2)) if m and not m.group(1) else None
+            if end is None:
+                i += 1
+            else:
+                seen[i:end + 1] = [None] * (end + 1 - i)
+                i = end + 1
+        text = ["" if line is None else line for line in seen]
+        edges, inline, raw, items = markdown_edges(text, self.md)
+        self.edges = {n - 1 for n in edges}
+        self.inline = {n - 1 for n in inline}
+        self.items = {n - 1 for n in items}
+        for n in raw:
+            seen[n - 1] = None
+        self.refused = []
+        out = []
+        i = 0
+        while i < len(lines):
+            m = FENCE_LINE_RE.match(lines[i]) if seen[i] is not None and i not in self.inline else None
+            end = self.closing(lines, i, len(m.group(1)), m.group(2)) if m else None
+            if end is None:
+                out.append(lines[i])
+                i += 1
+                continue
+            indent = len(m.group(1))
+            if indent and not indent % 4 and self.in_item(seen, i, indent):
+                if i in self.items:
+                    self.refused.append(lines[i].strip())
+                    out.append(lines[i])
+                    i += 1
+                    continue
+                got = fenced.run([line[indent:] for line in lines[i:end + 1]])
+                if len(got) == 3 and not got[0] and not got[2]:
+                    out += ["", " " * indent + got[1], ""]
+                    i = end + 1
+                    continue
+            out.append(lines[i])
+            i += 1
+        return out
+
+    @staticmethod
+    def closing(lines, start, indent, fence):
+        """The index of the line closing the fence opened at start (the same
+        fence at the same indent), or None when it isn't closed or a line before
+        the close is indented less than the fence."""
+        close = re.compile(" " * indent + re.escape(fence) + "[ ]*$")
+        for j in range(start + 1, len(lines)):
+            if close.match(lines[j]):
+                return j
+            if lines[j] and not lines[j].startswith(" " * indent):
+                return None
+        return None
+
+    def in_item(self, lines, start, indent):
+        """Whether the line at start, indented indent (four spaces a level), is
+        in a list item's content: the last line before it indented less is in a
+        block (lines with no blank one between) whose nearest list item's first
+        line above it is one level out, or whose first line is at the same
+        indent and in an item's content. The lines between are the item's lazy
+        continuation, which Python-Markdown puts in the item. An item line
+        indented four spaces or more must itself be in an item's content, or it
+        is an indented code block's text. A line that is None (code or raw HTML)
+        ends the search, and so does a hash heading or a rule between the item
+        line and the last line indented less than start, at the item's level or
+        less: the list ends there (HashHeaderProcessor and HRProcessor split the
+        block where it is), so what follows is in no item."""
+        j = start - 1
+        while j >= 0 and lines[j] is not None and (not lines[j] or lines[j].startswith(" " * indent)):
+            j -= 1
+        if j < 0 or lines[j] is None:
+            return False
+        last = j
+        while j >= 0 and lines[j]:
+            m = LIST_ITEM_RE.match(lines[j])
+            if m and len(m.group(1)) < indent and self.starts_item(lines, j):
+                level = len(m.group(1))
+                if any(self.ends_block(lines[n], level - level % 4) for n in range(j + 1, last + 1)):
+                    return False
+                return indent - 4 <= level and (level < 4 or self.in_item(lines, j, level - level % 4))
+            j -= 1
+        top = len(lines[j + 1]) - len(lines[j + 1].lstrip(" "))
+        return lines[j:j + 1] != [None] and top - top % 4 == indent and self.in_item(lines, j + 1, indent)
+
+    @staticmethod
+    def ends_block(line, base):
+        """Whether line, less up to base spaces of indent, is a hash heading or a
+        rule, which end a block of Markdown where they are."""
+        text = line[min(base, len(line) - len(line.lstrip(" "))):]
+        return bool(HASH_HEADING_RE.match(text) or RULE_RE.match(text))
+
+    def starts_item(self, lines, k):
+        """Whether the list item line at k is a list item to Python-Markdown,
+        which starts a list only at the start of a block (lines with no blank
+        one between): the block's first line, or the first line after a hash
+        heading, a rule, a setext heading's underline or an md_in_html edge
+        (markdown_edges), which end a block where they are, must itself be a
+        list item, indented less than four spaces more than the block, and not
+        a rule or a setext heading. Otherwise the line at k is a paragraph's
+        text, as is one after "Text:" with no blank line between. No line inside
+        an element md_in_html parses as span Markdown or leaves raw starts a
+        block, whatever comes before it: its text is inline content."""
+        s = k
+        while s > 0 and lines[s - 1]:
+            s -= 1
+        top = len(lines[s]) - len(lines[s].lstrip(" "))
+        base = top - top % 4
+
+        def text(n):
+            line = lines[n]
+            return line[min(base, len(line) - len(line.lstrip(" "))):]
+
+        first = s
+        for n in range(s, k + 1):
+            if (n == first + 1 and SETEXT_RE.match(text(n)) or HASH_HEADING_RE.match(text(n))
+                    or RULE_RE.match(text(n)) or n in self.edges):
+                first = n + 1
+        if first > k or first in self.inline or not LIST_ITEM_RE.match(lines[first]):
+            return False
+        lead = len(text(first)) - len(text(first).lstrip(" "))
+        under = first + 1 < len(lines) and lines[first + 1] and SETEXT_RE.match(text(first + 1))
+        return lead < 4 and not under
+
+
+class MarkdownEdges(HTMLExtractorExtra):
+    """md_in_html's own parser, noting where it splits the text into raw HTML
+    and Markdown, every line counted from 1, all from its own state as it goes:
+
+    - edges, the lines after which it starts a block of Markdown: a start tag
+      it parses block Markdown in (a block tag marked markdown="1", or a block
+      or span tag marked "block", inside no element it parses as span Markdown
+      or not at all), and the end tag closing the outermost element it parses
+      Markdown in, which it stashes between blank lines. Each only when the tag
+      is its line's text, at the left margin. The </p> md_in_html implies when a
+      block tag opens inside an open <p> isn't an end tag in the source, and the
+      tag opening works out its state with the <p> still open, so it ends no
+      block.
+    - inline, the lines of each element it parses as span Markdown or leaves
+      raw inside an element it parses Markdown in, from the start tag's line to
+      the end tag's: everything such an element holds is span or raw too, so no
+      line there starts a block, after a blank line or not.
+    - raw, the lines of each raw HTML block it sets aside outside every element
+      it parses Markdown in: one its fallback (html_block's parser) opens,
+      wherever a start tag opens it, at the start of a line or after an end tag
+      on the same line (the tail of a raw block or of a Markdown element), from
+      the start tag's line to the end tag's, and a comment, declaration or
+      empty block tag stashed as a block of its own (inside an element it
+      parses block Markdown in too, where it is a block between blank lines).
+      So is an outermost element marked as Markdown that doesn't start a block
+      of the text it hands on (after a space or text following an end tag on
+      its line, or indented, or left open at the end of the text after an
+      empty tag, comment or the like held back from a tail, which
+      md_in_html's close() writes out straight before it):
+      MarkdownInHtmlProcessor takes an element
+      only at the start of a block, so the element is written out as it is,
+      its content unparsed. Whether it starts one is read from the text where
+      md_in_html stashes the element, at its end tag or at the end of the text,
+      not where it opens.
+    - items, the lines whose innermost element it parses Markdown in is one it
+      parses block Markdown in whose tag the block parser's ListIndentProcessor
+      takes for a list item or a list (item_types, its ITEM_TYPES and
+      LIST_TYPES: <li markdown="block">, <ol markdown="1">, <ul markdown="1">).
+      A list in an item element is that item's child, and ListIndentProcessor
+      puts a block indented under one of the list's items beside the item, in
+      the list; a list in a list element adds its items to that element, and a
+      block indented under one is an indented code block beside the item. Either
+      way it is in no <li>."""
+
+    def reset(self):
+        super().reset()
+        self.edges = set()
+        self.inline = set()
+        self.raw = set()
+        self.span = None  # (line, depth) of the open outermost span or raw element
+        self.opened = None  # line of the open raw block
+        self.outer = None  # line of the open outermost element marked as Markdown
+        self.ending = False
+        self.starting = False
+        self.tops = []  # (line, whether the innermost Markdown element is an item) after each change
+
+    def whole_line(self, text):
+        line, offset = self.getpos()
+        return offset == 0 and self.lines[line - 1].rstrip(" ") == text
+
+    def note_top(self):
+        item = bool(self.mdstack) and self.mdstate[-1] == "block" and self.mdstack[-1] in self.item_types
+        if not self.tops or self.tops[-1][1] != item:
+            self.tops.append((self.getpos()[0], item))
+
+    def stashed_in_block(self):
+        """Whether the element md_in_html has just stashed (its placeholder and a
+        blank line end cleandoc) starts a block of the text it hands on: its
+        handle_endtag adds a blank line before the element only when the text
+        before it ends in a newline, so it does when that text is empty or
+        ends in one."""
+        before = next((part for part in reversed(self.cleandoc[:-2]) if part), "")
+        return not before or before.endswith("\n")
+
+    def handle_starttag(self, tag, attrs):
+        block = (not self.inraw and tag in self.block_level_tags and tag not in self.empty_tags
+                 and self.get_state(tag, {k: k if v is None else v for k, v in attrs}) == "block")
+        was = self.inraw
+        self.starting = True
+        try:
+            super().handle_starttag(tag, attrs)
+        finally:
+            self.starting = False
+        if self.inraw and not was:
+            self.opened = self.getpos()[0]
+        if self.mdstack and self.outer is None:
+            self.outer = self.getpos()[0]
+        if block and self.whole_line(self.get_starttag_text()):
+            self.edges.add(self.getpos()[0])
+        if self.span is None and self.mdstate and self.mdstate[-1] != "block":
+            self.span = (self.getpos()[0], len(self.mdstack))
+        self.note_top()
+
+    def handle_endtag(self, tag):
+        outer = (not self.starting and not self.inraw and tag in self.block_level_tags
+                 and tag in self.mdstack)
+        super().handle_endtag(tag)
+        if self.outer is not None and not self.mdstack:
+            if not self.stashed_in_block():
+                end = len(self.lines) if self.ending else self.getpos()[0]
+                self.raw.update(range(self.outer, end + 1))
+            self.outer = None
+        if outer and not self.mdstack and self.whole_line(self.get_endtag_text(tag)):
+            self.edges.add(self.getpos()[0])
+        if self.span is not None and len(self.mdstack) < self.span[1]:
+            self.inline.update(range(self.span[0], self.getpos()[0] + 1))
+            self.span = None
+        if self.opened is not None and not self.inraw and not self.mdstack:
+            self.raw.update(range(self.opened, self.getpos()[0] + 1))
+            self.opened = None
+        self.note_top()
+
+    def handle_empty_tag(self, data, is_block):
+        alone = (is_block and not self.inraw and (self.mdstack or not self.intail)
+                 and self.at_line_start())
+        super().handle_empty_tag(data, is_block)
+        if alone:
+            line = self.getpos()[0]
+            self.raw.update(range(line, line + data.count("\n") + 1))
+
+    def close(self):
+        self.ending = True
+        super().close()
+        if self.opened is not None:
+            self.raw.update(range(self.opened, len(self.lines) + 1))
+            self.opened = None
+
+    def item_lines(self):
+        """The lines in items (see the class), from tops: a line takes the state
+        left by the last tag before it."""
+        found, item, k = set(), False, 0
+        for n in range(1, len(self.lines) + 1):
+            while k < len(self.tops) and self.tops[k][0] < n:
+                item = self.tops[k][1]
+                k += 1
+            if item:
+                found.add(n)
+        return found
+
+
+def markdown_edges(lines, md):
+    """Where md_in_html splits lines into raw HTML and Markdown (MarkdownEdges):
+    (edges, inline, raw, items), found on a scratch Markdown instance with md's
+    block-level tags and list item tags, in one pass of md_in_html's parser."""
+    scratch = markdown.Markdown()
+    scratch.block_level_elements = list(md.block_level_elements)
+    parser = MarkdownEdges(scratch)
+    parser.lines = lines
+    indent = md.parser.blockprocessors["indent"]
+    parser.item_types = set(indent.ITEM_TYPES) | set(indent.LIST_TYPES)
+    parser.feed("\n".join(lines))
+    parser.close()
+    return parser.edges, parser.inline, parser.raw, parser.item_lines()
+
+
+class FenceSpans(InlineProcessor):
+    """Python-Markdown's backtick pattern, except that a code span starting a
+    line with three or more backticks and running over lines, with no other
+    backtick on its first line, stays as text: it is a fence Markdown didn't
+    take for one (a fence's info string holds no backtick), and the stray fence
+    check finds it there. Wraps the pattern it replaces, whatever its version
+    does."""
+
+    def __init__(self, backtick):
+        super().__init__(backtick.pattern, backtick.md)
+        self.backtick = backtick
+        self.compiled_re = backtick.getCompiledRegExp()
+
+    def handleMatch(self, m, data):
+        el, start, end = self.backtick.handleMatch(m, data)
+        if el is not None and start is not None:
+            span = data[start:end]
+            info = span.split("\n", 1)[0].lstrip("`")
+            if (span.startswith("```") and "\n" in span and "`" not in info
+                    and not data[data.rfind("\n", 0, start) + 1:start].strip()):
+                return AtomicString(span), start, end
+        return el, start, end
+
+
+def stray_fences(doc, source):
+    """Where a page's HTML (doc) shows a fence as text: each line whose text
+    outside comments, <pre> and <code> is a fence (STRAY_FENCE_RE) and reads
+    the same as a line of the page's Markdown (source) less its indent, quote
+    marks and list marker. Returns (line in doc, the line's text, those lines
+    of the Markdown)."""
+    src = [SOURCE_PREFIX_RE.sub("", line).strip() for line in source.splitlines()]
+    # Each comment, <pre> and <code> becomes a letter and its newlines, so the
+    # lines keep their numbers and text after it doesn't start a line.
+    text = CODE_RE.sub(lambda m: "x" + "\n" * m.group(0).count("\n"), doc)
+    text = re.sub(r"<[^>]*>", lambda m: "\n" * m.group(0).count("\n"), text)
+    found = []
+    for n, line in enumerate(html.unescape(text).split("\n"), 1):
+        said = line.strip()
+        lines = [k for k, s in enumerate(src, 1) if s == said] if STRAY_FENCE_RE.fullmatch(said) else []
+        if lines:
+            found.append((n, said, lines))
+    return found
+
+
+def nested_pre(doc):
+    """The lines of a page's HTML (doc) where a <pre> starts inside another
+    <pre>, its tags read as the per-tag check reads them (TAG_RE), so a comment
+    or a quoted attribute value holds none. No page the build means to write
+    has one: it is a code block set inside another."""
+    depth, found = 0, []
+    for t in TAG_RE.finditer(doc):
+        m = re.match(r"<(/?)pre(?=[ \t\n\f\r/>])", t.group(0), re.I)
+        if not m:
+            continue
+        if m.group(1):
+            depth = max(depth - 1, 0)
+        else:
+            if depth:
+                found.append(doc.count("\n", 0, t.start()) + 1)
+            depth += 1
+    return found
 
 
 def site_files(out):
@@ -959,6 +1377,8 @@ class Builder:
         md = markdown.Markdown(extensions=["meta", "extra", "toc", "sane_lists"],
                                extension_configs={"toc": {"permalink": False}})
         md.preprocessors.register(Markers(md, replace), "blockwright_markers", MARKER_PRIORITY)
+        md.preprocessors.register(NestedFences(md), "blockwright_nested_fences", NESTED_FENCE_PRIORITY)
+        md.inlinePatterns.register(FenceSpans(md.inlinePatterns["backtick"]), "backtick", BACKTICK_PRIORITY)
         body = md.convert(text)
         left = LEFT_MARKER_RE.search(body)
         if left and left.group(0) not in MARKERS:
@@ -991,6 +1411,20 @@ class Builder:
             mirror=mirror,
         )
         doc = self.fix_external(page, doc)
+        src = [line.strip() for line in text.splitlines()]
+        for said in md.preprocessors["blockwright_nested_fences"].refused:
+            lines = [k for k, s in enumerate(src, 1) if s == said]
+            where = f" ({'line' if len(lines) == 1 else 'lines'} {', '.join(map(str, lines))} of {page.rel})" \
+                if 0 < len(lines) <= 3 else ""
+            self.errors.append(f"{page.rel}: a code fence in a list straight inside an <li>, <ol> or <ul> marked "
+                               f"as Markdown{where}: {said!r}; Python-Markdown puts it beside the list's item, "
+                               "outside every <li>; write the list in Markdown outside that element")
+        for n, said, lines in stray_fences(doc, text):
+            where = f" ({'line' if len(lines) == 1 else 'lines'} {', '.join(map(str, lines))} of {page.rel})" \
+                if 0 < len(lines) <= 3 else ""
+            self.errors.append(f"{page.rel}: a code fence shown as text at line {n} of {page.out}{where}: {said!r}; "
+                               "a fence goes at the left margin, or in a list item at the item's content indent "
+                               "(four spaces a level), and closes with the same fence at the same indent")
         dest = self.out / page.out
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(doc, encoding="utf-8")
@@ -1020,6 +1454,16 @@ class Builder:
                 elif frag and target.suffix == ".html" and unquote(frag) not in ids_of(target):
                     self.errors.append(f"{f.relative_to(out)}: {ref}: no #{frag} on that page")
 
+    def check_pre(self):
+        """No built page holds a <pre> inside another <pre>."""
+        out = self.out.resolve()
+        for f in sorted(out.rglob("*.html")):
+            lines = nested_pre(f.read_text(encoding="utf-8"))
+            if lines:
+                self.errors.append(f"{f.relative_to(out)}: a <pre> inside another <pre> at "
+                                   f"{'line' if len(lines) == 1 else 'lines'} {', '.join(map(str, lines))}: "
+                                   "a code block was put inside another")
+
     def build(self):
         prepare_out(self.out)
         try:
@@ -1030,6 +1474,7 @@ class Builder:
                 if page.published:
                     self.build_page(page)
             self.check_refs()
+            self.check_pre()
         finally:
             write_manifest(self.out)
         if self.errors:

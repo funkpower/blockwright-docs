@@ -678,6 +678,9 @@ def ans_outside(s):
 
 # 7. Markers in fenced code stay as written.
 
+FENCE_SHOWN = "a code fence shown as text"
+
+
 @scenario
 def marker_in_fence(s):
     """A generated or list marker inside a fenced block is shown, not replaced."""
@@ -700,9 +703,10 @@ def marker_outside_fence(s):
 
 def markers_replaced(s, body):
     """Both markers in body, which Markdown doesn't treat as code, are replaced,
-    and neither is left in the page as an invisible comment."""
+    and neither is left in the page as an invisible comment. Each body's fence is
+    shown as text, so the build fails on it, and still writes the page."""
     s.probe(body)
-    s.passed()
+    s.failed(says=FENCE_SHOWN)
     page = s.page()
     check("<!-- generated" not in page and "<!-- list" not in page, "a marker was left as an HTML comment")
     check("Usage: blockwright-cli" in page, "the cli-help marker wasn't replaced")
@@ -711,19 +715,20 @@ def markers_replaced(s, body):
 
 @scenario
 def marker_unclosed_fence(s):
-    """Markers after a fence that is never closed (so not code) are replaced."""
+    """Markers after a fence that is never closed (so not code) are replaced, and the fence fails the build."""
     markers_replaced(s, "```\ncode\n\n<!-- generated: cli-help -->\n\n<!-- list: manual -->")
 
 
 @scenario
 def marker_indented_fence(s):
-    """Markers between fences indented two spaces (so not code) are replaced."""
+    """Markers between fences indented two spaces (so not code) are replaced, and the fences fail the build."""
     markers_replaced(s, "  ```\n<!-- generated: cli-help -->\n  ```\n\n  ~~~\n<!-- list: manual -->\n  ~~~")
 
 
 @scenario
 def marker_longer_close(s):
-    """Markers after a closing fence longer than its opening (so not closed) are replaced."""
+    """Markers after a closing fence longer than its opening (so not closed) are replaced, and the fences fail
+    the build."""
     markers_replaced(s, "````\n<!-- generated: cli-help -->\n`````\n\n<!-- list: manual -->")
 
 
@@ -1718,6 +1723,610 @@ def checklist_dirty(s):
     check(rows["Gamma"] == ("Written for stamps", "1234abc", "behind"), f"Gamma: {rows['Gamma']}")
     check("Blockwright 0.1.0 (1234abc-dirty): 0 of 4 pages ready, 3 behind, 1 not written." in page,
           f"the summary: {page[page.find('<p>Blockwright'):][:120]}")
+
+
+# 14. A fence in a list item is code, and a fence the page shows as text fails the build.
+
+def fenced(code, lang=None):
+    """code as a fenced block comes out of Python-Markdown."""
+    esc = code.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+    return f'<pre><code{f" class=\"language-{lang}\"" if lang else ""}>{esc}</code></pre>'
+
+
+NESTED_CODE = ("# ===========================================\n"
+               "# Probe: blank lines, escapes, deeper indents\n"
+               "# ===========================================\n"
+               "\n"
+               "ESC = \"\\x1b[\"\n"
+               "\n"
+               "\n"
+               "def cell(x):\n"
+               "    if x:\n"
+               "        return ESC + \"1;31m\" + \"a\\\\b <c> & d\"\n"
+               "    return \"\\\\\"\n")
+DEEPER_CODE = "deeper\n  and deeper still\n\nback\n"
+
+
+@scenario
+def fence_in_list_item(s):
+    """A fence in a numbered list item, and one in a list two levels down, are
+    each one code block holding their lines exactly, inside their items."""
+    indent = lambda text, n: "".join(" " * n + line if line else "" for line in text.splitlines(True))
+    s.probe("1. Save this:\n\n    ```python\n" + indent(NESTED_CODE, 4) + "    ```\n\n"
+            "2. Then:\n\n    - one level down:\n\n        ~~~\n" + indent(DEEPER_CODE, 8) + "        ~~~\n\n"
+            "```` ``` ```` opens a fence.")
+    s.passed()
+    page = s.page()
+    check(page.count("<pre>") == 2, f"{page.count('<pre>')} code blocks, not 2")
+    check(fenced(NESTED_CODE, "python") in page, "the python block isn't its source, line for line")
+    check(fenced(DEEPER_CODE) in page, "the block two levels down isn't its source, line for line")
+    body = page[page.find("<h1"):]
+    item = body[body.find("<li>"):body.find("</li>")]
+    check(fenced(NESTED_CODE, "python") in item, "the python block isn't inside the first item")
+    check("```" not in page.replace("<code>```</code>", ""), "a fence is shown as text")
+    check(page.count("<h1") == 1 and page.count("<h2") == 1, "a comment line became a heading")
+
+
+@scenario
+def marker_in_list_fence(s):
+    """Markers in a fence inside a list item are shown as code, not replaced."""
+    s.probe("1. step\n\n    ```\n    <!-- generated: cli-help -->\n\n    <!-- list: manual -->\n    ```")
+    s.passed()
+    page = s.page()
+    check(fenced("<!-- generated: cli-help -->\n\n<!-- list: manual -->\n") in page, "the markers aren't the code block")
+    check("Usage:" not in page and page.count("Probe</a></li>") == 1, "a marker was replaced")
+
+
+UNPARSED = {
+    "a fence never closed": ("Text.\n\n```\ncode\n", 10),
+    "a fence in a list item at six spaces": ("1. step\n\n      ```python\n      print(1)\n      ```\n", 10),
+    "a one-line fence in a bullet at two spaces": ("- item\n\n  ```\n  x\n  ```\n", 10),
+    "a tilde fence at three spaces": ("1. step\n\n   ~~~\n   x\n   ~~~\n", 10),
+}
+
+
+def fences_refused(s, cases):
+    """Each case's page fails the build on a fence shown as text, and the
+    message names the page, the line of its HTML and the line of its Markdown."""
+    for what, (body, line) in cases.items():
+        s.probe(body)
+        try:
+            s.failed(says=FENCE_SHOWN)
+            check(re.search(r"manual/99-probe\.md: a code fence shown as text at line \d+ of manual/99-probe\.html "
+                            rf"\(lines? (?:\d+, )*{line}(?:, \d+)* of manual/99-probe\.md\)", s.out),
+                  f"the page and line not named: {s.out.strip()[-300:]}")
+        except Fail as e:
+            raise Fail(f"{what}: {e}")
+
+
+@scenario
+def fence_unparsed(s):
+    """A fence Markdown doesn't take for one fails the build, and the message
+    names the page, the line of its HTML and the line of its Markdown."""
+    fences_refused(s, UNPARSED)
+
+
+UNCLOSED_INFO = {
+    "an info string of two words": ("Intro.\n\n```shell session\n$ ls\n", 10),
+    "an info string with an attribute": ("Intro.\n\n```python title=\"a.py\"\n$ ls\n", 10),
+    "an info string with a command": ("Intro.\n\n```python3.12 -m x\n$ ls\n", 10),
+}
+
+
+@scenario
+def fence_unclosed_info(s):
+    """A fence never closed whose info string fenced_code doesn't take (it is
+    shown as text with no closing line to catch) fails the build on its opener."""
+    fences_refused(s, UNCLOSED_INFO)
+
+
+STEP_SOURCE = "1. Step\n\n    ```python\n    x = 1\n    ```\n"
+
+
+@scenario
+def fence_in_indented_code(s):
+    """A list item and its fence inside an indented code block are the code
+    block's text, as written: one code block, the fence lines in it."""
+    s.probe("Markdown for a step:\n\n" + "".join("    " + line if line else "" for line in STEP_SOURCE.splitlines(True))
+            + "\nAfter.")
+    s.passed()
+    page = s.page()
+    check(page.count("<pre>") == 1, f"{page.count('<pre>')} code blocks, not 1")
+    check(fenced(STEP_SOURCE) in page, "the code block isn't its source, line for line")
+    check("language-python" not in page, "the fence in the code block was made a code block")
+
+
+@scenario
+def fence_in_raw_pre(s):
+    """A list item and its fence inside a raw <pre> are left as written."""
+    s.probe("<pre>\n" + STEP_SOURCE + "</pre>\n\nAfter.")
+    s.passed()
+    page = s.page()
+    check(page.count("<pre>") == 1, f"{page.count('<pre>')} code blocks, not 1")
+    check("<pre>\n" + STEP_SOURCE + "</pre>" in page, "the raw <pre> isn't as written")
+    check("language-python" not in page, "the fence in the raw <pre> was made a code block")
+
+
+@scenario
+def fence_after_wrapped_item(s):
+    """A fence at the content indent of an item whose first paragraph wraps onto
+    an unindented line is code, inside the item."""
+    s.probe("1. Step one, a sentence that wraps\nonto a second line.\n\n    ```python\n    x = 1\n    ```\n")
+    s.passed()
+    page = s.page()
+    body = page[page.find("<h1"):]
+    item = body[body.find("<li>"):body.find("</li>")]
+    check("onto a second line." in item, "the wrapped line isn't in the item")
+    check(fenced("x = 1\n", "python") in item, "the python block isn't inside the item")
+
+
+STEP_CODE = "```python\nx = 1\n```\n"
+NOT_ITEMS = {
+    "a numbered line after a paragraph line": "Run these:\n1. Step\n",
+    "a bullet line after a paragraph line": "Run these:\n- Step\n",
+    "a wrapped line starting with a year": "It was in the autumn of\n2026. Then:\n",
+    "a numbered line after a line ending in a start tag": "Some text <kbd>\n1. Step\n",
+    "a numbered line after a line ending in <!--": "Before <!--\n1. Step\n",
+    "a numbered line made a heading by its underline": "1. Step\n---\n",
+    "a bullet line in an item's later paragraph": "1. a\n\n    Para\n    - b\n",
+}
+
+
+@scenario
+def fence_under_paragraph_item(s):
+    """A line that looks like a list item but is a paragraph's text (Python-Markdown
+    starts a list only at the start of a block) holds no fence: a fence indented
+    under it is an indented code block showing the fence, as on main, and no
+    code block lands inside another."""
+    failed = []
+    for what, lead in NOT_ITEMS.items():
+        level = 8 if lead.startswith("1. a") else 4
+        s.probe(lead + "\n" + "".join(" " * level + line for line in STEP_CODE.splitlines(True)))
+        try:
+            s.passed()
+            page = s.page()
+            check(page.count("<pre><code") == 1, f"{page.count('<pre><code')} code blocks, not 1")
+            check(fenced(STEP_CODE) in page, "the code block isn't the fence lines as written")
+            check("language-python" not in page, "the fence was made a code block")
+        except Fail as e:
+            failed.append(f"{what}: {e}")
+    check(not failed, "; ".join(failed))
+
+
+FENCE_LIKE = {
+    "a table cell of escaped backticks": ("| Type | Gives |\n|---|---|\n| \\`\\`\\` | a fence |\n", "<td>```</td>"),
+    "a line starting with escaped backticks": ("\\`\\`\\` to open a fence.\n", "<p>``` to open a fence.</p>"),
+    "a line of two tilde runs": ("~~~ ~~~\n", "<p>~~~ ~~~</p>"),
+}
+
+
+@scenario
+def fence_like_text(s):
+    """Text that starts with backticks or tildes but isn't a fence builds, shown as written."""
+    failed = []
+    for what, (body, shown) in FENCE_LIKE.items():
+        s.probe(body)
+        try:
+            s.passed()
+            check(shown in s.page(), f"{shown!r} isn't on the page")
+        except Fail as e:
+            failed.append(f"{what}: {e}")
+    check(not failed, "; ".join(failed))
+
+
+ENDED_ITEMS = {
+    "a numbered item ended by a rule": "1. Step\n***\n",
+    "a numbered item ended by a hash heading": "1. Step\n# Head\n",
+    "a bullet item ended by a spaced rule": "- Step\n* * *\n",
+    "two items ended by a rule": "- a\n- b\n---\n",
+    "a wrapped item ended by a rule": "1. Step\nwraps here\n___\n",
+    "a rule at two spaces": "1. Step\n  ***\n",
+    "a nested item ended by a rule": "1. a\n\n    - b\n    ***\n",
+}
+
+
+@scenario
+def fence_after_ended_list(s):
+    """A rule or a hash heading at an item's level ends the list where it is, so
+    a fence indented under what follows is in no item: an indented code block
+    showing the fence, as on main (in the outer item for a nested list), and no
+    code block lands inside another."""
+    failed = []
+    for what, lead in ENDED_ITEMS.items():
+        level = 8 if lead.startswith("1. a") else 4
+        s.probe(lead + "\n" + "".join(" " * level + line for line in STEP_CODE.splitlines(True)))
+        try:
+            s.passed()
+            page = s.page()
+            check(page.count("<pre><code") == 1, f"{page.count('<pre><code')} code blocks, not 1")
+            check(fenced(STEP_CODE) in page, "the code block isn't the fence lines as written")
+            check("language-python" not in page, "the fence was made a code block")
+        except Fail as e:
+            failed.append(f"{what}: {e}")
+    check(not failed, "; ".join(failed))
+
+
+MD_BLOCKS = {
+    "a numbered item": '<div markdown="1">\n1. Step\n',
+    "a bullet item": '<div markdown="1">\n- Step\n',
+    'markdown="block"': '<div markdown="block">\n1. Step\n',
+}
+
+
+@scenario
+def fence_in_markdown_block(s):
+    """A list on the line straight after a start tag marked markdown="1" starts
+    the block's own Markdown, so a fence at its item's content indent is code
+    inside the item."""
+    failed = []
+    for what, lead in MD_BLOCKS.items():
+        s.probe(lead + "\n" + "".join("    " + line for line in STEP_CODE.splitlines(True)) + "\n</div>\n")
+        try:
+            s.passed()
+            page = s.page()
+            body = page[page.find("<h1"):]
+            item = body[body.find("<li>"):body.find("</li>")]
+            check(fenced("x = 1\n", "python") in item, "the python block isn't inside the item")
+        except Fail as e:
+            failed.append(f"{what}: {e}")
+    check(not failed, "; ".join(failed))
+
+
+STEP_FENCE = "".join("    " + line for line in STEP_CODE.splitlines(True))
+ENDED_MD_BLOCKS = {
+    "a numbered item after a <div> block": '<div markdown="1">\n</div>\n1. Step\n',
+    "a bullet item after a <div> block": '<div markdown="1">\n</div>\n- Step\n',
+    'a numbered item after a markdown="block" <section>': '<section markdown="block">\n</section>\n1. Step\n',
+    "a numbered item after a <p> block": '<p markdown="1">\n</p>\n1. Step\n',
+}
+
+
+@scenario
+def fence_after_markdown_block(s):
+    """A list on the line straight after the end tag closing an element md_in_html
+    parses as Markdown starts a block (md_in_html stashes the element between
+    blank lines), so a fence at its item's content indent is code inside the item."""
+    failed = []
+    for what, lead in ENDED_MD_BLOCKS.items():
+        s.probe(lead + "\n" + STEP_FENCE)
+        try:
+            s.passed()
+            page = s.page()
+            body = page[page.find("<h1"):]
+            item = body[body.find("<li>"):body.find("</li>")]
+            check(fenced("x = 1\n", "python") in item, "the python block isn't inside the item")
+        except Fail as e:
+            failed.append(f"{what}: {e}")
+    check(not failed, "; ".join(failed))
+
+
+NOT_MD_BLOCKS = {
+    'a heading marked markdown="1"': ('<h2 markdown="1">\n1. Step\n\n' + STEP_FENCE + "\n</h2>\n", 11),
+    'a paragraph marked markdown="1"': ('<p markdown="1">\n1. Step\n\n' + STEP_FENCE + "\n</p>\n", 11),
+    'a <div> marked markdown="span"': ('<div markdown="span">\n1. Step\n\n' + STEP_FENCE + "\n</div>\n", 11),
+    'a <div> marked markdown="1" at three spaces': ('   <div markdown="1">\n1. Step\n\n' + STEP_FENCE
+                                                    + "\n</div>\n", 11),
+    'a <div> marked markdown="1" in a heading marked markdown="1"': (
+        '<h2 markdown="1">\n<div markdown="1">\n1. Step\n\n' + STEP_FENCE + "\n</div>\n</h2>\n", 12),
+}
+
+
+@scenario
+def fence_in_span_markdown(s):
+    """A start tag md_in_html parses as span Markdown (markdown="1" on a heading
+    or a paragraph, markdown="span", a block tag inside such an element) or
+    leaves as raw HTML (one indented) starts no block, so the list item line
+    after it is text and the fence indented under it is left as main leaves it:
+    shown as text, which fails the build, and no code block lands in the
+    heading or paragraph."""
+    fences_refused(s, NOT_MD_BLOCKS)
+
+
+TILDE_STEP_FENCE = "".join("    " + line for line in STEP_CODE.replace("```", "~~~").splitlines(True))
+IN_OPEN_P = {
+    'a <div> marked markdown="1"': ('<p markdown="1">\n<div markdown="1">\n1. Step\n\n' + STEP_FENCE
+                                    + "\n</div>\n", 12),
+    'a heading marked markdown="1" after text': ('<p markdown="1">\nSome text.\n\n<h2 markdown="1">\n1. Step\n\n'
+                                                 + STEP_FENCE + "\n</h2>\n", 14),
+    'a <section> marked markdown="1"': ('<p markdown="1">\n<section markdown="1">\n1. Step\n\n' + STEP_FENCE
+                                        + "\n</section>\n", 12),
+    'a <div> marked markdown="block"': ('<p markdown="1">\n<div markdown="block">\n1. Step\n\n' + STEP_FENCE
+                                        + "\n</div>\n", 12),
+    'a <div> marked markdown="1" before a bullet': ('<p markdown="1">\n<div markdown="1">\n- Step\n\n'
+                                                    + STEP_FENCE + "\n</div>\n", 12),
+    'a <div> marked markdown="1" before a tilde fence': ('<p markdown="1">\n<div markdown="1">\n1. Step\n\n'
+                                                         + TILDE_STEP_FENCE + "\n</div>\n", 12),
+}
+
+
+@scenario
+def fence_in_open_paragraph(s):
+    """A block tag marked as Markdown on the line after an open <p> marked
+    markdown="1" is parsed as span Markdown (md_in_html works out its state with
+    the <p> still open, then closes the <p> without an end tag in the source),
+    so it starts no block: the list item line after it is text, and the fence
+    indented under it fails the build rather than becoming a code block in the
+    span-mode element."""
+    fences_refused(s, IN_OPEN_P)
+
+
+AFTER_BLANK_IN_SPAN = {
+    'a paragraph marked markdown="1", text, a blank line and two items': (
+        '<p markdown="1">\nIntro to the steps.\n\n1. Open the file.\n\n' + STEP_FENCE + "\n2. Save it.\n</p>\n", 13),
+    'a heading marked markdown="1", text and a blank line': ('<h2 markdown="1">\nText\n\n1. Step\n\n' + STEP_FENCE
+                                                            + "\n</h2>\n", 13),
+    'a heading marked markdown="1" and a blank line': ('<h2 markdown="1">\n\n1. Step\n\n' + STEP_FENCE
+                                                      + "\n</h2>\n", 12),
+    'a <div> marked markdown="span" and a bullet with a tilde fence': (
+        '<div markdown="span">\n\n- Step\n\n' + TILDE_STEP_FENCE + "\n</div>\n", 12),
+    'a nested item in a paragraph marked markdown="1"': (
+        '<p markdown="1">\nText\n\n1. a\n\n    - b\n\n' + "".join("    " + line for line in STEP_FENCE.splitlines(True))
+        + "\n</p>\n", 15),
+    'a <details> marked markdown="1" in an open <p> marked markdown="1"': (
+        '<p markdown="1">\n<details markdown="1">\n<summary>S</summary>\n\n1. Step\n\n' + STEP_FENCE
+        + "\n</details>\n", 14),
+    'a <div> marked markdown="1", text and a blank line in an open <p> marked markdown="1"': (
+        '<p markdown="1">\n<div markdown="1">\nText\n\n1. Step\n\n' + STEP_FENCE + "\n</div>\n", 14),
+}
+
+
+@scenario
+def fence_after_blank_in_span(s):
+    """No line inside an element md_in_html parses as span Markdown (a
+    paragraph or heading marked markdown="1", markdown="span", a block tag
+    opened inside such an element) starts a block, a line after a blank one
+    included: the list item line there is text, and the fence indented under it
+    fails the build rather than becoming a code block in the paragraph or
+    heading."""
+    fences_refused(s, AFTER_BLANK_IN_SPAN)
+
+
+MD_BLOCKS_REFUSED = {
+    "a list item on the start tag's line": ('<div markdown="1">1. Step\n\n' + STEP_FENCE + "\n</div>\n", 10),
+}
+
+
+@scenario
+def fence_in_markdown_block_refused(s):
+    """An input the build doesn't read md_in_html's block for, a list item on
+    the start tag's own line, fails the build on the fence rather than build a
+    page that may be wrong."""
+    fences_refused(s, MD_BLOCKS_REFUSED)
+
+
+
+IN_RAW_TAIL = {
+    'a raw <div> opened after a <div> marked markdown="1" on its end tag\'s line': (
+        '<div markdown="1">\nText\n</div><div>\n\n1. Step\n\n' + STEP_FENCE + "\n</div>\n", 14),
+    'a raw <div> opened after a <p> marked markdown="1" on its end tag\'s line': (
+        '<p markdown="1">\nText\n</p><div>\n\n1. Step\n\n' + STEP_FENCE + "\n</div>\n", 14),
+    "a raw <section> in the tail and a bullet with a tilde fence": (
+        '<div markdown="1">\nText\n</div><section>\n\n- Step\n\n' + TILDE_STEP_FENCE + "\n</section>\n", 14),
+    "a raw <div> in the tail after a space": (
+        '<div markdown="1">\nText\n</div> <div>\n\n1. Step\n\n' + STEP_FENCE + "\n</div>\n", 14),
+    "a raw <div> in the tail of a one-line element": (
+        '<div markdown="1">Text</div><div>\n\n1. Step\n\n' + STEP_FENCE + "\n</div>\n", 12),
+    'a <div> marked markdown="1" in the tail after a space': (
+        '<div markdown="1">\nText\n</div> <div markdown="1">\n\n1. Step\n\n' + STEP_FENCE + "\n</div>\n", 14),
+    'a <div> marked markdown="1" indented three spaces': (
+        '   <div markdown="1">\n\n1. Step\n\n' + STEP_FENCE + "\n</div>\n", 12),
+}
+
+
+@scenario
+def fence_in_raw_tail(s):
+    """A block md_in_html writes out as raw HTML, wherever it opens, is raw to
+    the build too: a block tag on the line of a Markdown element's end tag (the
+    element's tail), and an outermost element marked markdown="1" that doesn't
+    start a block (after a space in a tail, or indented). The list item line in
+    it is text, and the fence indented under it fails the build rather than
+    becoming a code block in the raw element."""
+    fences_refused(s, IN_RAW_TAIL)
+
+
+HELD_BACK = {
+    '<hr><hr> before an unclosed <div> marked markdown="1"': (
+        '<hr><hr>\n\n<div markdown="1">\n\n1. Step\n\n' + STEP_FENCE, 14),
+    'two comments before an unclosed <section> marked markdown="block"': (
+        '<!-- a --><!-- b -->\n\n<section markdown="block">\n\n1. Step\n\n' + STEP_FENCE, 14),
+    "<hr> <hr> before an unclosed <details> marked markdown and a bullet with a tilde fence": (
+        '<hr> <hr>\n\n<details markdown>\n\n- Step\n\n' + TILDE_STEP_FENCE, 14),
+    'two processing instructions before an unclosed <blockquote> marked markdown="1"': (
+        '<?x y?><?x y?>\n\n<blockquote markdown="1">\n\n1. Step\n\n' + STEP_FENCE, 14),
+    'an <hr> in a raw <div>\'s tail before an unclosed <div> marked markdown="block"': (
+        '<div>x</div><hr>\n<div markdown="block">\n1. Step\n\n' + STEP_FENCE, 12),
+    'a comment in a Markdown <div>\'s tail before an unclosed <div> marked markdown="1"': (
+        '<div markdown="1">\nT\n</div><!-- c -->\n\n<div markdown="1">\n\n1. Step\n\n' + STEP_FENCE, 16),
+    '<hr><hr>, a closed <div>, then an unclosed <div> marked markdown="1"': (
+        '<hr><hr>\n\n<div markdown="1">\nT\n</div>\n\n<div markdown="1">\n\n1. Step\n\n' + STEP_FENCE, 18),
+    '<hr><hr> before an unclosed <div> marked markdown="1" that closes an open <p> marked markdown="block"': (
+        '<hr><hr>\n\n<p markdown="block">\n<div markdown="1">\n\n1. Step\n\n' + STEP_FENCE, 15),
+    'two comments before an unclosed <section> marked markdown="block" that closes an open <p> marked markdown="block"': (
+        '<!-- a --><!-- b -->\n\n<p markdown="block">\nIntro.\n<section markdown="block">\n\n1. Step\n\n' + STEP_FENCE, 16),
+    '<hr><hr> before an unclosed heading marked markdown="block" that closes an open <p> marked markdown="block"': (
+        '<hr><hr>\n\n<p markdown="block">\n<h2 markdown="block">\n\n1. Step\n\n' + STEP_FENCE, 15),
+    '<hr><hr> before a <blockquote> marked markdown="1" that closes an open <p> marked markdown="block" and holds '
+    'an unclosed <div> marked markdown="1"': (
+        '<hr><hr>\n\n<p markdown="block">\n<blockquote markdown="1">\n<div markdown="1">\n\n1. Step\n\n'
+        + STEP_FENCE, 16),
+    '<hr><hr> before two <p> marked markdown="block", each closed by the next element, then an unclosed <div> '
+    'marked markdown="1"': (
+        '<hr><hr>\n\n<p markdown="block">\n<p markdown="block">\n<div markdown="1">\n\n1. Step\n\n' + STEP_FENCE, 16),
+    'an <hr> in a raw <div>\'s tail before a <ul> marked markdown="block" that closes an open <p> marked '
+    'markdown="block" and holds an unclosed <section> marked markdown="block", and a bullet with a tilde fence': (
+        '<div>x</div><hr>\n<p markdown="block">\n\nIntro.\n<ul markdown="block">\n<section markdown="block">\n\n'
+        '- Step\n\n' + TILDE_STEP_FENCE, 17),
+    'two comments before a <details> marked markdown="block" that closes an open <p> marked markdown="block" and '
+    'holds an unclosed <div> marked markdown="block", and a bullet with a tilde fence': (
+        '<!-- a --><!-- b -->\n\n<p markdown="block">\n<details markdown="block">\n<div markdown="block">\n\n'
+        '- Step\n\n' + TILDE_STEP_FENCE, 16),
+}
+
+
+@scenario
+def fence_after_held_back_tag(s):
+    """An element marked as Markdown left open at the end of the page, after an
+    empty tag, comment or processing instruction held back from a tail (the
+    second <hr> of <hr><hr>), is stashed by md_in_html straight after the held
+    back one, on its line: it starts no block and is written out raw. The fence
+    under the list item in it fails the build rather than become a <pre> in the
+    raw element outside every <li>. So does one that becomes the outermost
+    element by closing an open <p> marked markdown="block" (md_in_html closes
+    the <p> without an end tag in the source), alone, holding another element
+    marked as Markdown, or after a second such <p>. Closed, or with nothing
+    held back, the element is Markdown and the code is in the item."""
+    fences_refused(s, HELD_BACK)
+    for what, body in {
+            '<hr><hr> before a closed <div> marked markdown="1"': (
+                '<hr><hr>\n\n<div markdown="1">\n\n1. Step\n\n' + STEP_FENCE + "\n</div>\n"),
+            'an unclosed <div> marked markdown="1" after an <hr>': (
+                '<hr>\n\n<div markdown="1">\n\n1. Step\n\n' + STEP_FENCE),
+            'an unclosed <div> marked markdown="1"': '<div markdown="1">\n\n1. Step\n\n' + STEP_FENCE,
+            '<hr><hr> before a closed <div> marked markdown="1" that closes an open <p> marked markdown="block"': (
+                '<hr><hr>\n\n<p markdown="block">\n<div markdown="1">\n\n1. Step\n\n' + STEP_FENCE + "\n</div>\n"),
+            'an unclosed <div> marked markdown="1" that closes an open <p> marked markdown="block"': (
+                '<p markdown="block">\n<div markdown="1">\n\n1. Step\n\n' + STEP_FENCE),
+            'an unclosed <div> marked markdown="1" in a <section> marked markdown="block" that closes an open <p> '
+            'marked markdown="block"': (
+                '<p markdown="block">\nIntro.\n<section markdown="block">\n<div markdown="1">\n\n1. Step\n\n'
+                + STEP_FENCE)}.items():
+        s.probe(body)
+        try:
+            s.passed()
+            check(re.search(r"<li>\s*<p>Step</p>\s*<pre><code class=\"language-python\">x = 1\n</code></pre>\s*</li>",
+                            s.page()), f"the code isn't in the item: {s.page()[-400:]}")
+        except Fail as e:
+            raise Fail(f"{what}: {e}")
+
+
+IN_MD_LIST = "a code fence in a list straight inside an <li>, <ol> or <ul> marked as Markdown"
+MD_LISTS_REFUSED = {
+    '<li markdown="block"> in <ol markdown="1">, text and a blank line': (
+        '<ol markdown="1">\n<li markdown="block">\nText\n\n1. Step\n\n' + STEP_FENCE + "\n</li>\n</ol>\n", 14),
+    '<li markdown="block">, text and a blank line': (
+        '<li markdown="block">\nText\n\n1. Step\n\n' + STEP_FENCE + "\n</li>\n", 13),
+    '<li markdown="block"> and a blank line': ('<li markdown="block">\n\n1. Step\n\n' + STEP_FENCE + "\n</li>\n", 12),
+    '<ol markdown="1"> holding a list': ('<ol markdown="1">\n1. Step\n\n' + STEP_FENCE + "\n</ol>\n", 11),
+    '<ul markdown="1"> holding a bullet with a tilde fence': (
+        '<ul markdown="1">\n- Step\n\n' + TILDE_STEP_FENCE + "\n</ul>\n", 11),
+}
+
+
+@scenario
+def fence_in_markdown_list_element(s):
+    """A list straight inside an <li> marked markdown="block", or an <ol> or
+    <ul> marked as Markdown, is one Python-Markdown can't hold code in: it puts
+    an indented block beside the list's item, outside every <li>. A fence under
+    such an item fails the build, naming the page and the line of its Markdown,
+    and is left as written."""
+    for what, (body, line) in MD_LISTS_REFUSED.items():
+        s.probe(body)
+        try:
+            s.failed(says=IN_MD_LIST)
+            check(re.search(rf"manual/99-probe\.md: {re.escape(IN_MD_LIST)} \(line {line} of manual/99-probe\.md\)",
+                            s.out), f"the page and line not named: {s.out.strip()[-300:]}")
+            check("language-python" not in s.page(), "the fence became a code block on the page")
+        except Fail as e:
+            raise Fail(f"{what}: {e}")
+
+
+@scenario
+def fence_in_list_in_markdown_li(s):
+    """A list in a <div> marked markdown="1" inside an <li> marked
+    markdown="block" is a plain Markdown list: the fence under its item is a
+    code block in that item, as is one under a list after a raw block's end,
+    and one in a <div> marked markdown="1" with a > in a quoted value."""
+    for what, body in {
+            'a > in a quoted value before markdown="1"': (
+                '<div title="a>b" markdown="1">\n1. Step\n\n' + STEP_FENCE + "\n</div>\n"),
+            '<div markdown="1"> in <li markdown="block">': (
+                '<ol markdown="1">\n<li markdown="block">\n<div markdown="1">\nText\n\n1. Step\n\n' + STEP_FENCE
+                + "\n</div>\n</li>\n</ol>\n"),
+            "a list after a raw <div> in a tail": (
+                '<div markdown="1">\nText\n</div><div>\nraw\n</div>\n\n1. Step\n\n' + STEP_FENCE)}.items():
+        s.probe(body)
+        try:
+            s.passed()
+            check(re.search(r"<li>\s*<p>Step</p>\s*<pre><code class=\"language-python\">x = 1\n</code></pre>\s*</li>",
+                            s.page()), f"the code isn't in the item: {s.page()[-400:]}")
+        except Fail as e:
+            raise Fail(f"{what}: {e}")
+
+SPANS = {
+    "a fence in a four-backtick span": ("```` ```python\nx ````\n", "<p><code>```python\nx</code></p>"),
+    "a fence and text in a four-backtick span": ("```` ``` x\ny ````\n", "<p><code>``` x\ny</code></p>"),
+    "a four-backtick run in a five-backtick span": ("````` ```` ```python\nx `````\n",
+                                                   "<p><code>```` ```python\nx</code></p>"),
+}
+
+
+@scenario
+def fence_in_code_span(s):
+    """A code span that starts a line and runs onto the next, with another
+    backtick run on its first line after the opening one (so no fence), is code,
+    as on main."""
+    failed = []
+    for what, (body, shown) in SPANS.items():
+        s.probe(body)
+        try:
+            s.passed()
+            check(shown in s.page(), f"{shown!r} isn't on the page")
+        except Fail as e:
+            failed.append(f"{what}: {e}")
+    check(not failed, "; ".join(failed))
+
+
+NESTED_PRE = "a <pre> inside another <pre>"
+
+
+@scenario
+def pre_in_pre(s):
+    """A built page with a <pre> inside another <pre> fails the build, naming
+    the page and the line: a raw one, and a code block after a raw <pre> left
+    open on a paragraph's line (main builds the code block inside it). One in a
+    comment, or two in turn, is fine."""
+    for what, body in {"a raw <pre> in a <pre>": "<pre>\n<pre>x</pre>\n</pre>\n",
+                       "a code block after an open <pre>": "Some text <pre>\n1. Step\n\n" + "".join(
+                           "    " + line for line in STEP_CODE.splitlines(True))}.items():
+        s.probe(body)
+        try:
+            s.failed(says=NESTED_PRE)
+            check(re.search(r"manual/99-probe\.html: a <pre> inside another <pre> at line \d+", s.out),
+                  f"the page and line not named: {s.out.strip()[-300:]}")
+        except Fail as e:
+            raise Fail(f"{what}: {e}")
+    s.probe("<!-- <pre> -->\n\n```\nx\n```\n\n<pre>y</pre>\n")
+    s.passed()
+
+
+@scenario
+def pre_in_attribute(s):
+    """The <pre> check reads tags as the per-tag check does: <pre, </pre, <!--
+    and --> in a quoted attribute value are the value's text. A tooltip naming
+    <pre> builds; a <pre> inside another with an end tag or a comment's
+    delimiters in a title between fails the build."""
+    for what, body in {"</pre> in a title": '<pre><span title="</pre>">a</span>\n<pre>b</pre>\n</pre>\n',
+                       "<!-- and --> in titles": ('<pre><span title="<!--">a</span>\n<pre>b</pre>\n'
+                                                  '<span title="-->">c</span></pre>\n')}.items():
+        s.probe(body)
+        try:
+            s.failed(says=NESTED_PRE)
+            check(re.search(r"manual/99-probe\.html: a <pre> inside another <pre> at line \d+", s.out),
+                  f"the page and line not named: {s.out.strip()[-300:]}")
+        except Fail as e:
+            raise Fail(f"{what}: {e}")
+    for what, (body, pres) in {
+            "<pre> in a title": ('Hover <span title="the <pre> tag">here</span>.\n\n' + STEP_CODE, 1),
+            "<!-- and --> in titles around two blocks": ('Hover <span title="<!--">here</span>.\n\n' + STEP_CODE
+                                                         + '\n<pre>y</pre>\n\nAnd <span title="-->">there</span>.\n',
+                                                         2)}.items():
+        s.probe(body)
+        try:
+            s.passed()
+            found = len(re.findall(r"(?m)^<pre>", s.page()))
+            check(found == pres, f"{found} code blocks, not {pres}")
+        except Fail as e:
+            raise Fail(f"{what}: {e}")
 
 
 def main():
