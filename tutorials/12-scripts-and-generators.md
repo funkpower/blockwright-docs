@@ -5,31 +5,31 @@ Checked: Blockwright 0.1.0 (12ee9ef)
 
 ## Goal
 
-Let programs draw part of a piece. You'll take the ridges generator from a sample, set its form until the mountains look right, keep a copy of its cells, write a small generator of your own for meteors, and finish the piece from a terminal with `blockwright-cli`. Shown at 2×:
+Let programs draw part of a piece: tune a sample's ridges generator, bake a copy of its cells, write a meteors generator, and finish from a terminal with `blockwright-cli`. Shown at 2×:
 
 ![An 80 by 25 piece. The top eight rows are black, with five meteors falling down to the left, their heads in rows 6 and 7 at columns 0, 2, 19, 32 and 68: each a white * head and a tail of light cyan / up to the right, ending in dark grey dots. A white crescent moon stands in rows 1 to 5 at columns 50 to 55. Below row 7 the sky climbs a rung a row from black through blue, magenta and light magenta to light red, and four ranges of sharp mountains stand in front of it, peaking at row 13: light blue at the back, then dark grey shaded over blue and over black, darkest at the front](../samples/12-scripts-and-generators/final.bwp "2x")
 
-Two of its five layers are generators: the ridges, drawn by a shell script that ships with the sample **Ridges at dusk**, and the meteors, drawn by a Python script of 50 lines you'll write here. The ridges script, in this piece and in every other project on this page that carries it, is Blockwright's own and is under the [GNU General Public License, version 3 or later](https://git.pumpin.online/funkpower/blockwright/src/branch/main/LICENSE), as Blockwright is; the meteors script and the rest of these docs are under CC BY-SA 4.0.
+Two of its five layers are generators: the ridges, a shell script from the sample **Ridges at dusk**, and the meteors, a 50-line Python script you'll write. The ridges script, in every project on this page that carries it, is Blockwright's own, under the [GNU General Public License, version 3 or later](https://git.pumpin.online/funkpower/blockwright/src/branch/main/LICENSE); the meteors script and these docs are CC BY-SA 4.0.
 
 ## The idea
 
-A **Generator layer** holds the output of a program. The program reads a few parameters and draws the layer's cells; the layer keeps the cells it drew, and the project keeps the program beside them under `scripts/<id>/`. Select the layer and its **parameter form** appears in the **Layers** dock, under the layer buttons: one field a parameter. Change a field and the program runs again.
+A **Generator layer** holds the output of a program. The project keeps the cells, and the program under `scripts/<id>/`.
 
-Three things follow from that:
+Select the layer and its **parameter form** appears in the **Layers** dock, one field a parameter. Change a field and the program runs again.
 
-- **The program draws, you choose.** You can't paint on a Generator layer: the brushes and typing leave its cells alone ([Limits](../manual/12-generators.md#limits)). What you control is the form.
-- **A seed is just a parameter.** Blockwright has no randomness of its own. A generator that wants random-looking output declares a **Seed** and draws its numbers from it, so the same form gives the same cells every time, on every computer that has the program. Changing the seed is how you ask for another roll of the dice.
-- **Running is opt-in.** A generator is a program run with your permissions. The first time a project's generators would run in a session, Blockwright asks, in a dialog called **Run Generators**, which names the project and the command it would run; **No** is the default. Opening, saving and exporting never run a generator, so a project shows and exports the same on a computer without the program.
+- **The program draws, you choose.** Brushes and typing leave a Generator layer's cells alone ([Limits](../manual/12-generators.md#limits)). You control the form.
+- **A seed is a parameter.** Blockwright has no randomness of its own; a generator declares a **Seed**, so the same form gives the same cells on any computer.
+- **Running is opt-in.** A generator runs with your permissions, so the first run in a session asks in the **Run Generators** dialog, **No** by default. Opening, saving and exporting never run one.
 
-A generator is a directory: a `generator.json` naming the command and declaring the parameters, the program, and a `params.json` of values the form writes. The program reads one line of JSON on its standard input (the canvas, the layer, the parameters) and writes an `.ans` on its standard output. With a **key** colour, its blank cells on that background are transparent, so the layers below show through. The manual's [Writing a generator](../manual/12-generators.md#writing-a-generator) has every key and type.
+A generator is a directory: a `generator.json` naming the command and the parameters, the program, and a `params.json` the form writes.
 
-Blockwright has no menu item that adds a generator to an open project: that is a job for the command line, `blockwright-cli add-generator`, below. One other way in makes Generator layers: **File > Open Scene...** (no shortcut) opens a Python scene as a new project, a Generator layer for each layer the scene lists. It asks first in the same **Run Generators** dialog, this time to run the scene, and then a progress dialog, **Open Scene**, says *Listing the scene's layers...* and *Running layer N of M (name)...* for each one ([Opening a scene](../manual/12-generators.md#opening-a-scene)). This tutorial doesn't need it.
+The program reads a line of JSON on standard input and writes an `.ans` to standard output. With a **key** colour, blank cells on that background are transparent. [Writing a generator](../manual/12-generators.md#writing-a-generator) has every key and type.
 
-Smart prefabs, parts that redraw themselves to fit, aren't in the app yet.
+No menu item adds a generator to an open project; `blockwright-cli add-generator` does. **File > Open Scene...** (no shortcut) opens a Python scene as a new project of Generator layers, after the **Run Generators** dialog and an **Open Scene** progress dialog ([Opening a scene](../manual/12-generators.md#opening-a-scene)).
 
 ## Do it
 
-Positions are column then row from `0, 0` at the top left. You'll need a terminal with `blockwright-cli` on the `PATH`, a POSIX `sh` and `awk` for the ridges, and `python3` for the meteors.
+Positions are column then row from `0, 0` at the top left. You need `blockwright-cli` on the `PATH`, a POSIX `sh` and `awk` for the ridges, and `python3` for the meteors.
 
 ### The sky
 
@@ -37,26 +37,26 @@ Positions are column then row from `0, 0` at the top left. You'll need a termina
 
     ![An 80 by 25 sky: rows 0 to 7 black; from row 8 down, light, medium and dark shades climb a colour every four rows, blue, magenta, light magenta and light red, to two rows of light red glow at the bottom](../samples/12-scripts-and-generators/start.bwp "2x")
 
-    It is one Cells layer, **sky**: black over a ladder up the sunset ramp, ░▒▓ between each colour and the next. Rows 0 to 7 each end in a black-on-black `█` at column 79, so IRC keeps the black rows ([tutorial 11](11-made-for-irc.md#what-irc-drops)). Close it again: the next step rewrites the file.
+    It is one Cells layer, **sky**. Rows 0 to 7 end in a black-on-black `█` at column 79, so IRC keeps them ([tutorial 11](11-made-for-irc.md#what-irc-drops)). Close it: the next step rewrites the file.
 
 ### A generator from a sample
 
-2. **Get the ridges generator.** Open **Ridges at dusk** from the start screen's Samples list or **Help > Samples**. Save it with **File > Save As Project Directory...** (no shortcut) as a directory called `ridges-at-dusk`. Its ridges generator is `ridges-at-dusk/scripts/3`: `generator.json`, `ridges.sh` and `ridges.awk`. Close the sample.
+2. **Get the ridges generator.** Open **Ridges at dusk** from the start screen's Samples list or **Help > Samples**. Save it with **File > Save As Project Directory...** (no shortcut) as `ridges-at-dusk`. The ridges generator is `ridges-at-dusk/scripts/3`. Close the sample.
 
-3. **Add it.** Put `start.bwp` beside `ridges-at-dusk`, rename it `night.bwp`, and in a terminal in that directory run:
+3. **Add it.** Put `start.bwp` beside `ridges-at-dusk`, rename it `night.bwp`, and in that directory run:
 
     ```
     $ blockwright-cli add-generator --name ridges night.bwp ridges-at-dusk/scripts/3
     layer 2 (ridges): 80x25
     ```
 
-    `add-generator` copies the directory into the project as `scripts/2`, adds a Generator layer called **ridges** on top, runs the program once with the values in the folder's `params.json`, and saves. Layer 2 is the new layer's id, and its size is the canvas's.
+    `add-generator` copies the directory in as `scripts/2`, adds Generator layer 2, **ridges**, on top, runs it once and saves.
 
 4. **Open it.** Open `night.bwp`:
 
     ![The same sky with three low ridges, the far one peaking at row 19 across columns 11 to 19: light blue at the back, then dark grey, with the light red glow showing in row 23 from columns 54 to 71 and 74 to 76, the far ridge along the bottom row under it](../samples/12-scripts-and-generators/ridges-1.bwp "2x")
 
-    These cells are the ones `add-generator` drew: opening runs nothing.
+    These are the cells `add-generator` drew; opening runs nothing.
 
 ### The form
 
@@ -64,46 +64,46 @@ Positions are column then row from `0, 0` at the top left. You'll need a termina
 
     ![The generator form: the title Generator, then Seed with a slider and a box reading 3, Ridges with a slider and 3, Roughness 0.30, Sharp peaks unticked, Highest row with a slider and 18, and a Run button](../samples/12-scripts-and-generators/form-ridges.png)
 
-    Each field's tooltip names the parameter and its type, such as `top (integer)`. A field commits when you let go of it: a slider released, a box stepped, a value typed and ended with <kbd>Enter</kbd>. Each commit is one undo step, and the generator runs 300 ms after the last one.
+    Tooltips name each parameter and type, such as `top (integer)`. Each committed change (slider released, box stepped, <kbd>Enter</kbd> after typing) is an undo step; the generator runs 300 ms after the last.
 
-6. **Raise the peaks.** Set **Highest row** to 13. The first time, Blockwright asks in the **Run Generators** dialog whether to run the project's generators, and shows the command, `sh ridges.sh`. Press **Yes**: the answer holds for this project until Blockwright closes. The status bar says *Running generator...*, then *Ran generator ridges*:
+6. **Raise the peaks.** Set **Highest row** to 13. In the **Run Generators** dialog, which shows `sh ridges.sh`, press **Yes**; it holds for this project until Blockwright closes. The status bar says *Running generator...*, then *Ran generator ridges*:
 
     ![The ridges taller: the far light blue ridge now peaks at row 14 across columns 11 to 19 and falls to row 20 at columns 59 to 65; a dark grey ridge stands under it, and a slate one, dark grey shaded over blue, along the bottom rows](../samples/12-scripts-and-generators/ridges-2.bwp "2x")
 
-    No peak rises above row 13. At 12, once the peaks are sharp in step 8, the far ridge reaches row 12, right under the solid blue of row 11, and the lint flags it as a rung-skip: rung 4 next to rung 8.
+    At **Highest row** 12, with the sharp peaks of step 8, the far ridge touches row 11's solid blue and lint flags a rung-skip, rung 4 next to rung 8.
 
 7. **One more ridge.** Set **Ridges** to 4:
 
     ![Four ridges now: the far light blue one, then dark grey shaded over blue, then two of dark grey shaded over black, the nearest darkest, along the bottom rows](../samples/12-scripts-and-generators/ridges-3.bwp "2x")
 
-8. **Sharp peaks.** Tick **Sharp peaks**. The same noise folds into points:
+8. **Sharp peaks.** Tick **Sharp peaks**:
 
     ![The four ridges with pointed peaks, the highest at row 13 between columns 25 and 47, and V-shaped valleys at columns 14 to 17 and 62 to 64, where the light magenta of the sky shows](../samples/12-scripts-and-generators/ridges-4.bwp "2x")
 
-9. **Reseed.** Set **Seed** to 41, then to 2026. Each seed is another range of mountains, and setting it back to 41 brings back the same one:
+9. **Reseed.** Set **Seed** to 41, then to 2026. Each seed gives another range, and the same seed the same range:
 
     ![Seed 41: peaks at column 0 and columns 6 to 8, both at row 14, and a high shoulder at row 13 from column 71 to 76, with deep valleys at columns 15 to 18 and 43 to 44](../samples/12-scripts-and-generators/ridges-5.bwp "2x")
 
     ![Seed 2026: a jagged range, the far ridge peaking at row 13 at columns 32, 33 and 79 and at row 14 around columns 24 and 46, with the sky's light magenta and light red showing in the valleys at the left edge and at columns 67 to 69](../samples/12-scripts-and-generators/ridges-6.bwp "2x")
 
-    Keep 2026. **Edit > Undo** (<kbd>Ctrl</kbd>+<kbd>Z</kbd>) steps back through the parameters and their cells together, without running anything.
+    Keep 2026. **Edit > Undo** (<kbd>Ctrl</kbd>+<kbd>Z</kbd>) steps back through parameters and cells together, without running anything.
 
 ### Bake the ridges
 
-A Generator layer's cells change whenever its form does. **Layer > Bake Layer** (no shortcut) would turn the **ridges** layer itself into a Cells layer of these cells and drop its program and form. To keep the ridges as plain cells and the generator too, copy them onto a Cells layer:
+**Layer > Bake Layer** (no shortcut) would turn **ridges** into plain cells and drop its program. To keep both, copy the cells to a Cells layer:
 
-10. With the **ridges** layer active, **Selection > Select All** (<kbd>Ctrl</kbd>+<kbd>A</kbd>), which takes the **Select** tool in hand, then **Edit > Copy** (<kbd>Ctrl</kbd>+<kbd>C</kbd>).
-11. **Layer > New Cells Layer** (no shortcut) adds an empty Cells layer above **ridges**. Double-click its name in the **Layers** dock and call it `ridges (baked)`.
-12. Click cell `0, 0`, inside the selection, which moves the cell cursor there. **Edit > Paste** (<kbd>Ctrl</kbd>+<kbd>V</kbd>) floats the copy with its top left corner at the cursor; press <kbd>Enter</kbd> to put it down. The paste mode can stay **Normal**: the generator's transparent cells paste as transparent.
-13. Untick the box beside **ridges** to hide it. The picture doesn't change; the cells you see are the baked copy:
+10. With **ridges** active, pick **Selection > Select All** (<kbd>Ctrl</kbd>+<kbd>A</kbd>), which takes the **Select** tool, then **Edit > Copy** (<kbd>Ctrl</kbd>+<kbd>C</kbd>).
+11. Pick **Layer > New Cells Layer** (no shortcut). Double-click the new layer's name in the **Layers** dock and call it `ridges (baked)`.
+12. Click cell `0, 0` to move the cursor there. **Edit > Paste** (<kbd>Ctrl</kbd>+<kbd>V</kbd>) floats the copy at the cursor; press <kbd>Enter</kbd> to put it down. Paste mode **Normal** keeps transparent cells transparent.
+13. Untick **ridges** to hide it. The picture doesn't change; you see the baked copy:
 
     ![The Layers dock: ridges (baked), its name cut off at the column's edge, a Cells layer, ticked and selected; ridges, a Generator layer, unticked; sky, a Cells layer, ticked](../samples/12-scripts-and-generators/layers.png)
 
-The hidden **ridges** layer keeps its program and form, so you can come back to it. The baked one is yours to paint on. When you don't need the program any more, **Bake Layer** with **ridges** active does it in one step: the layer keeps its name and becomes a Cells layer of what it shows, and **Edit > Undo** (<kbd>Ctrl</kbd>+<kbd>Z</kbd>), which reads **Undo Bake Generator**, brings the generator back.
+The hidden **ridges** keeps its form, and the baked layer takes paint. Done with the form, **Bake Layer** on **ridges** turns it into cells in one step; **Undo Bake Generator** reverses it.
 
 ### A generator of your own
 
-14. **Write it.** Make a directory called `meteors` beside `night.bwp`, and in it two files. [generator.json](../samples/12-scripts-and-generators/meteors/generator.json):
+14. **Write it.** Make a directory `meteors` beside `night.bwp` with two files. [generator.json](../samples/12-scripts-and-generators/meteors/generator.json):
 
     ```json
     {
@@ -119,7 +119,7 @@ The hidden **ridges** layer keeps its program and form, so you can come back to 
     }
     ```
 
-    `"key": 0` makes every blank cell on black transparent, so only the meteors cover the sky. And [meteors.py](../samples/12-scripts-and-generators/meteors/meteors.py):
+    `"key": 0` makes blank cells on black transparent. And [meteors.py](../samples/12-scripts-and-generators/meteors/meteors.py):
 
     ```python
     # Meteors falling down to the left: a white * head, then a tail of / up to
@@ -172,7 +172,9 @@ The hidden **ridges** layer keeps its program and form, so you can come back to 
         out.write(b"\x1b[0m\r\n")
     ```
 
-    The script draws its random numbers from a small generator of its own seeded with **Seed**, never from Python's `random` or the clock, so a seed always gives the same meteors. It picks a head, lays a trail up to the right, and throws the meteor away if the trail would leave the canvas or touch another one. Every cell it writes is on black (`40`): the meteors, and the spaces between them, which the key makes transparent. `\xfa` is CP437's small dot, written as the byte 0xFA; the output is read as CP437.
+    The script draws its random numbers from a small generator of its own seeded with **Seed**, never from Python's `random` or the clock, so a seed always gives the same meteors. It picks a head, lays a trail up to the right, and throws the meteor away if the trail would leave the canvas or touch another one.
+
+    Every cell it writes is on black (`40`): the meteors, and the spaces between them, which the key makes transparent. `\xfa` is CP437's small dot, written as the byte 0xFA; the output is read as CP437.
 
 15. **Add it.** Close `night.bwp` (save it first), then:
 
@@ -203,7 +205,7 @@ The hidden **ridges** layer keeps its program and form, so you can come back to 
 
 The rest of the piece needs no window. Close `night.bwp` first: each of these commands that writes the project rewrites the file.
 
-18. **A moon from a steps file.** `replay` plays a JSON file of editor actions on a copy and writes a file after each step. [moon.steps.json](../samples/12-scripts-and-generators/moon.steps.json) starts from `night.bwp`, adds a Pixels layer called `moon`, which lands just above **sky**, and draws two filled ellipses on it: a white disc and a black one over it, a pixel up and two columns right, leaving a crescent:
+18. **A moon from a steps file.** `replay` plays a JSON file of editor actions on a copy and writes a file after each step. [moon.steps.json](../samples/12-scripts-and-generators/moon.steps.json) adds a Pixels layer `moon` above **sky** and draws a white disc and a black one a pixel up and two columns right, leaving a crescent:
 
     ```json
     {
@@ -217,15 +219,15 @@ The rest of the piece needs no window. Close `night.bwp` first: each of these co
     }
     ```
 
-    Pixel positions are a column and a pixel row, two to a cell row. Play it, keeping each step as a project:
+    Positions are a column and a pixel row. Play it, keeping each step as a project:
 
     ```
     $ blockwright-cli replay moon.steps.json -o moon --project
     ```
 
-    It prints nothing and writes `moon/01-moon.bwp`, `02-disc.bwp` and `03-shadow.bwp`, with an `.ans` of each beside it. The last is the finished piece, the picture at the top of this page; `night.bwp` itself is untouched. Copy `moon/03-shadow.bwp` over `night.bwp`. The moon's layer is under the meteors, so a tail that crosses it would pass in front.
+    It writes `moon/01-moon.bwp`, `02-disc.bwp` and `03-shadow.bwp`, each with an `.ans`. The last is the finished piece; copy it over `night.bwp`.
 
-19. **What's in it.** `info` lists the layers, top first, and the files the project carries:
+19. **What's in it.** `info` lists the layers, top first, and the project's files:
 
     ```
     $ blockwright-cli info night.bwp
@@ -255,9 +257,8 @@ The rest of the piece needs no window. Close `night.bwp` first: each of these co
     sauce:       none
     ```
 
-    Each generator's `params.json` holds the form as you left it.
 
-20. **A picture, a check and an IRC export.** `render` draws a PNG, here at 2×, and prints nothing when it works:
+20. **A picture, a check and an IRC export.** `render` draws a PNG, here at 2×:
 
     ```
     $ blockwright-cli render --scale 2 night.bwp night.png
@@ -270,7 +271,7 @@ The rest of the piece needs no window. Close `night.bwp` first: each of these co
     clean, noise 0.0042, iCE on
     ```
 
-    `export --irc` writes the IRC text and measures each line against the budget ([tutorial 11](11-made-for-irc.md)):
+    `export --irc` writes IRC text and measures each line ([tutorial 11](11-made-for-irc.md)):
 
     ```
     $ blockwright-cli export --irc night.bwp night.txt
@@ -303,9 +304,9 @@ The rest of the piece needs no window. Close `night.bwp` first: each of these co
     25 lines, longest 289 bytes, 297 sent, budget 407: 0 over
     ```
 
-    The ridge rows cost most, up to 289 bytes, because their colours change along the row. A sky shade row is 80 glyphs of 3 bytes in one pair of colours, 244 bytes; line 12, row 11, is solid blue: 85 bytes.
+    Ridge rows cost most, up to 289 bytes; a sky shade row is 244, and solid blue line 12 is 85.
 
-21. **Run the visible generators from the terminal.** `run-generators` runs a project's visible generators again, without asking, and saves. It runs what is in each `scripts/<id>/params.json`, so to change a parameter, change that file. A `.bwp` is a zip; `unpack` opens it into a directory, and `pack` puts it back:
+21. **Run the visible generators from the terminal.** `run-generators` reruns a project's visible generators from each `scripts/<id>/params.json`, without asking, and saves. `unpack` opens a `.bwp` into a directory and `pack` zips it back:
 
     ```
     $ blockwright-cli unpack night.bwp night
@@ -323,7 +324,7 @@ The rest of the piece needs no window. Close `night.bwp` first: each of these co
 
     ![The finished piece with meteors from seed 5: four heads in row 6 at columns 4, 11, 19 and 22, one in row 7 at column 73, and the moon at columns 50 to 55](../samples/12-scripts-and-generators/seed-5.bwp "2x")
 
-    It left the hidden **ridges** layer alone and said so: a hidden layer shows nothing, so running it would change nothing you see, and its program would still run with your rights. To run a hidden generator, name it: `--layer 2` runs the ridges, hidden or not, and `--layer 4` runs the meteors alone. `--layer` runs only the layers it names; give it more than once for several. A command that runs generators doesn't ask first: run it only on projects you trust.
+    It skipped the hidden **ridges**. `--layer 2` runs it anyway, and `--layer 4` runs the meteors alone; repeat `--layer` for several. These commands don't ask first, so run them only on projects you trust.
 
 ## Check it
 
@@ -331,9 +332,9 @@ The rest of the piece needs no window. Close `night.bwp` first: each of these co
 
 ![The piece with five meteors. Three are in the black rows; two fall in the coloured sky, heads at column 12 of row 11 and column 19 of row 17, and every cell of them is on black, a diagonal of black boxes cutting through the blue, magenta and light magenta rows; the moon at columns 50 to 55](../samples/12-scripts-and-generators/low.bwp "2x")
 
-The script writes every cell on a black background, so a meteor over the coloured sky or the ridges cuts a black box out of them. The key colour only makes blank cells transparent, not the background behind a glyph. Keep **Lowest row** at 7 for this sky; to fall into the colours, the script would have to know what is under it, and a generator sees only its own layer.
+The script writes every cell on black, and the key makes only blank cells transparent, so a low meteor cuts a black box out of the sky. Keep **Lowest row** at 7.
 
-**A program that fails.** Rename `p["colour"]` to `p["color"]` in `meteors.py`, a typo the parameter doesn't share, and add it again:
+**A program that fails.** Change `p["colour"]` to `p["color"]` in `meteors.py` and add it again:
 
 ```
 $ blockwright-cli add-generator night.bwp meteors
@@ -345,11 +346,11 @@ Traceback (most recent call last):
 KeyError: 'color'
 ```
 
-The command exits with status 1 and writes nothing: `night.bwp` is as it was. The error ends with what the program wrote to its standard error, here Python's traceback. In the window the same fault shows in the status bar, *Generator meteors failed; the layer keeps its cells:* and the reason, and the layer keeps what it had ([Running](../manual/12-generators.md#running)).
+It exits with status 1 and leaves `night.bwp` as it was. The error ends with the program's standard error. In the window the status bar shows *Generator meteors failed; the layer keeps its cells:* and the reason ([Running](../manual/12-generators.md#running)).
 
-**Painting on a Generator layer.** Select **meteors** and paint with any brush: nothing changes. Paint on **ridges (baked)** instead, or on a new layer.
+**Painting on a Generator layer.** Select **meteors** and paint: nothing changes. Paint on **ridges (baked)** or a new layer.
 
-**The baked layer doesn't follow the form.** Show **ridges** again and set its **Seed** to 41: the generator's ridges change, but **ridges (baked)** over it still shows seed 2026, and covers them wherever it has cells. To keep the new ones, delete **ridges (baked)** and copy the ridges again (steps 10 to 13); or, done with the form, delete it and bake **ridges** itself with **Bake Layer**.
+**The baked layer doesn't follow the form.** Show **ridges** and set its **Seed** to 41: **ridges (baked)** still shows seed 2026 over it. To keep the new ridges, delete **ridges (baked)** and copy again (steps 10 to 13), or delete it and use **Bake Layer** on **ridges**.
 
 ## Try it
 
@@ -357,7 +358,7 @@ Download [try.bwp](../samples/12-scripts-and-generators/try.bwp) and open it (**
 
 ![The finished piece: five meteors with light cyan tails over the dusk sky, the crescent moon, and the four sharp ridges](../samples/12-scripts-and-generators/try.bwp "2x")
 
-It is the finished piece, with both generators in it. Its ridges generator is under the GNU GPL, version 3 or later, and its meteors generator under CC BY-SA 4.0, as in the finished piece above.
+It is the finished piece; its generators carry the licences above.
 
 1. Give the meteors tails in the glow's colour, light red, and make them shorter, 4 cells.
 2. Make the meteors fall down to the right instead, their tails up to the left in `\`.
@@ -365,13 +366,13 @@ It is the finished piece, with both generators in it. Its ridges generator is un
 <details markdown="1">
 <summary>Answers</summary>
 
-1. Select **meteors**; set **Tail** to **12 Light Red** and **Length** to 4. The same seed, 17, now places the meteors elsewhere: the script draws each head's place from the seed in turn, and a shorter trail fits where a longer one was thrown away:
+1. Select **meteors**; set **Tail** to **12 Light Red** and **Length** to 4. Seed 17 now places the meteors elsewhere, because a shorter trail fits where a longer one was thrown away:
 
     ![Five meteors with short light red tails, heads in rows 3 to 6 at columns 12, 19, 24, 40 and 71](../samples/12-scripts-and-generators/try-tail.bwp "2x")
 
     It is [try-tail.bwp](../samples/12-scripts-and-generators/try-tail.bwp).
 
-2. That is a change to the program, not the form. The program is in the project, `scripts/4/meteors.py`. Unpack it, edit it, run it and pack it:
+2. That needs a program change:
 
     ```
     $ blockwright-cli unpack try.bwp try
@@ -388,8 +389,8 @@ It is the finished piece, with both generators in it. Its ridges generator is un
 
     ![Five meteors falling down to the right, light cyan \ tails up to the left, heads in rows 6 and 7 at columns 19, 32, 42, 65 and 68](../samples/12-scripts-and-generators/try-right.bwp "2x")
 
-    It is [try-right.bwp](../samples/12-scripts-and-generators/try-right.bwp). The edited script travels with the project: anyone who opens it and runs the meteors gets the right-falling ones.
+    It is [try-right.bwp](../samples/12-scripts-and-generators/try-right.bwp). The edited script travels with the project.
 
 </details>
 
-The manual has the rest: [Generator layers and scripts](../manual/12-generators.md) for the form, running and writing a generator, and [blockwright-cli](../manual/14-cli.md) for every command.
+The manual has the rest: [Generator layers and scripts](../manual/12-generators.md) and [blockwright-cli](../manual/14-cli.md).
