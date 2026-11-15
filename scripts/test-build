@@ -1013,7 +1013,9 @@ def forge_url_default(s):
 def forge_url_moved(s):
     """--forge-url puts its address in place of the forge's in every link on
     every page, a trailing slash dropped, a query-free path and port kept; no
-    page names git.pumpin.online any more, and the licence link is left alone."""
+    page names git.pumpin.online any more, and the licence link is left alone.
+    A build for the I2P forge leaves the forge's clearnet address in no file of
+    the site, code text included (the install page's commands)."""
     other = "http://forge.example.test:8080/mirror"
     s.probe(f"[The release]({RELEASE}), [the forge]({FORGE}) and [not the forge](https://git.pumpin.online.example.test/x).")
     s.failed("--forge-url", other + "/", says="git.pumpin.online.example.test/x: a link out of the site")
@@ -1032,6 +1034,14 @@ def forge_url_moved(s):
         check(CC in urls, f"{page}: no licence link")
         for u in urls:
             check(u.startswith(other) or u == CC, f"{page}: a link out of the site to {u}")
+    i2p = "http://git.pumpin.i2p"
+    s.passed("--forge-url", i2p)
+    for f in sorted(p for p in (s.repo / "site").rglob("*") if p.is_file()):
+        check(b"git.pumpin.online" not in f.read_bytes(), f"{f.relative_to(s.repo / 'site')} still names git.pumpin.online")
+    install = (s.repo / "site" / "manual" / "01-install.html").read_text(encoding="utf-8")
+    for command in [f"curl -LO {i2p}/funkpower/blockwright/releases/download/", f"fetch {i2p}/funkpower/",
+                    f"brew tap funkpower/tap {i2p}/funkpower/homebrew-tap.git"]:
+        check(command in install, f"the install page has no {command!r}")
 
 
 @scenario
@@ -1104,7 +1114,9 @@ def external_link_refused(s):
     redirects), a style but a column's alignment, an unreadable tag and a comment
     closed early. mailto:, the licence and table alignment pass, and an address
     in code, in <pre> text, in a comment or in another attribute's value is no
-    link: neither checked nor moved by --forge-url."""
+    link and isn't checked; --forge-url moves the forge's address in code and
+    <pre> text, before a sentence-ending . or , too, not in a comment, another
+    attribute's value, a longer host name or before a port or a user part."""
     cases = {
         "a link out of the site": [
             "[elsewhere](https://example.org/page)", "[elsewhere](http://example.org/)",
@@ -1167,7 +1179,17 @@ def external_link_refused(s):
             '<span title="<!--">a comment opener in a value</span>\n\n'
             '`<a href="https://example.org/">` in code\n\n'
             '    <img src="https://example.org/x.png">\n\n'
-            '<!-- <a href="https://example.org/">a comment</a> -->\n\n'
+            f'<!-- <a href="https://example.org/">a comment</a> {FORGE}/y -->\n\n'
+            f'<span title="{FORGE}/t">the forge in a title</span>\n\n'
+            f'`curl -LO {FORGE}/z` and `{FORGE}.example.test/z`, `{FORGE}-x.example.test/z`\n\n'
+            f'`{FORGE}%2eevil.test/x` and `{FORGE}~x.example.test/y`\n\n'
+            f'See {FORGE}&#46;evil.test/x and {FORGE}&period;evil.test/x\n\n'
+            f'<pre>{FORGE}&#64;evil.test/x {FORGE}&#58;8443/x</pre>\n\n'
+            f'`{FORGE}\u00adevil.test/x` and `{FORGE}\uff0eevil.test/x`\n\n'
+            f'`{FORGE}!x@evil.test/x` and `{FORGE}$x@evil.test/x`\n\n'
+            f'`{FORGE}!x<y@evil.test/x` and `{FORGE}<x@evil.test/x`, `{FORGE}!x\x1fy@evil.test/x`\n\n'
+            f'<pre>{FORGE}!x&#60;y@evil.test/x</pre>\n\n'
+            f'`{FORGE}:8443/x` and `{FORGE}@evil.test/x`, `at {FORGE}.` and `{FORGE}, then`\n\n'
             "| Left | Right |\n|:---|---:|\n| a | b |\n\n"
             f'<pre>href="https://example.org/" and {FORGE}/x</pre>')
     s.passed("--forge-url", "http://forge.example.test")
@@ -1179,8 +1201,34 @@ def external_link_refused(s):
     check('src="http://forge.example.test/a.png"' in moved, "an image's forge address wasn't moved")
     check('href="http://forge.example.test?tab=repositories"' in moved
           and 'href="http://forge.example.test#projects"' in moved, "the forge with a query or fragment wasn't moved")
-    check(f"{FORGE}/x</pre>" in page, "the forge's address in <pre> text changed")
-    check("http://forge.example.test" not in page, "text that isn't a link was rewritten as one")
+    check("and http://forge.example.test/x</pre>" in page, "the forge in <pre> text wasn't moved")
+    check("<code>curl -LO http://forge.example.test/z</code>" in page, "the forge in code wasn't moved")
+    check(f"<code>{FORGE}.example.test/z</code>" in page and f"<code>{FORGE}-x.example.test/z</code>" in page,
+          "a longer host name in code was moved")
+    check(f"<code>{FORGE}%2eevil.test/x</code>" in page and f"<code>{FORGE}~x.example.test/y</code>" in page,
+          "a longer host name after a % or a ~ in code was moved")
+    check(f"See {FORGE}&#46;evil.test/x and {FORGE}&period;evil.test/x" in page,
+          "a longer host name after an entity for a . in text was moved")
+    check(f"<pre>{FORGE}&#64;evil.test/x {FORGE}&#58;8443/x</pre>" in page,
+          "the forge before an entity for an @ or a : in <pre> was moved")
+    check(f"<code>{FORGE}\u00adevil.test/x</code>" in page and f"<code>{FORGE}\uff0eevil.test/x</code>" in page,
+          "a longer host name after a soft hyphen or a full-width full stop in code was moved")
+    check(f"<code>{FORGE}!x@evil.test/x</code>" in page and f"<code>{FORGE}$x@evil.test/x</code>" in page,
+          "the forge before a user part starting with ! or $ in code was moved")
+    check(f"<code>{FORGE}!x&lt;y@evil.test/x</code>" in page and f"<code>{FORGE}&lt;x@evil.test/x</code>" in page,
+          "the forge before a user part with a < in code was moved")
+    check(f"<pre>{FORGE}!x&#60;y@evil.test/x</pre>" in page,
+          "the forge before a user part with an entity for a < in <pre> was moved")
+    check(f"<code>{FORGE}!x\x1fy@evil.test/x</code>" in page,
+          "the forge before a user part with a U+001F in code was moved")
+    check(f"<code>{FORGE}:8443/x</code>" in page and f"<code>{FORGE}@evil.test/x</code>" in page,
+          "the forge before a port or a user part in code was moved")
+    check("<code>at http://forge.example.test.</code>" in page
+          and "<code>http://forge.example.test, then</code>" in page,
+          "the forge before a sentence-ending . or , in code wasn't moved")
+    check(f"a comment</a> {FORGE}/y -->" in page, "the forge in a comment was moved")
+    check(f'title="{FORGE}/t"' in page, "the forge in another attribute's value was moved")
+    check('="http://forge.example.test' not in page, "text that isn't a link was rewritten as one")
 
 
 # 10. scripts/deploy: local or remote, as rsync decides, and nowhere else.
@@ -1441,7 +1489,7 @@ def checklist_renders(s):
     check(len(rows) == want, f"{len(rows)} rows for {want} pages")
     check("Release checklist" not in rows, "the checklist lists itself")
     check(not list((s.repo / "site" / "manual").glob("*checklist*")), "a checklist page in manual/")
-    check(rows["Installing Blockwright"][0] == "Not written", f"Install's status: {rows['Installing Blockwright']}")
+    check(rows["Installing Blockwright"][0] == "Written", f"Install's status: {rows['Installing Blockwright']}")
     check(rows["What ANSI art is"][0] == "Written", f"tutorial 01's status: {rows['What ANSI art is']}")
     version = subprocess.run([s.real_cli(), "--version"], stdin=subprocess.DEVNULL, capture_output=True, text=True,
                              timeout=REAL_APP_TIMEOUT).stdout.split()[1]

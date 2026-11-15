@@ -61,7 +61,8 @@ tag of every built page, the template's included, must be one the site uses
 and src the forge, the mirror, the licence (ALLOWED_EXTERNAL), a mailto: or a
 plain relative path; anything else fails the build, so the site works where
 only those addresses can be reached. Text in code, in <pre> and in comments is
-no link.
+no link; --forge-url moves the forge's address in text outside comments too, so
+a command on a page names the same forge as the page's links.
 
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
@@ -84,6 +85,7 @@ import shutil
 import struct
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path
 from string import Template
 from urllib.parse import unquote
@@ -123,6 +125,16 @@ ALLOWED_EXTERNAL = ("https://creativecommons.org/licenses/by-sa/4.0/",)
 # (no character that needs escaping in a URL list or in CSS).
 URL_RE = re.compile(r"^https?://[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::\d{1,5})?(?:/[A-Za-z0-9._~%/-]*)?$")
 ABSOLUTE_RE = re.compile(r"^(?:https?:)?//", re.I)
+# A character a reader sees as a space: Python's \s without U+000B, U+001C to
+# U+001F and U+0085, control characters that show as nothing.
+SPACE = r"[^\S\x0b\x1c-\x1f\x85]"
+# The forge's address in text, with the run of text after it up to a space or a
+# <. Whether it moves is forge_ends()'s to say.
+FORGE_TEXT_RE = re.compile(re.escape(FORGE) + r"(?=((?:(?!" + SPACE + r")[^<])*))")
+# What a URL parser drops from a host name (soft hyphen, zero-width and joining
+# characters, variation selectors and the like).
+IGNORED_RE = re.compile("[\u00ad\u034f\u17b4\u17b5\u180b-\u180f\u200b-\u200d\u2060-\u206f\ufe00-\ufe0f\ufeff"
+                        "\U0001bca0-\U0001bca3\U0001d173-\U0001d17a\U000e0100-\U000e01ef]")
 # HTML as the link pass reads it: a comment (closed as HTML closes one, at
 # <!--> and <!---> too), a tag, or the start of a tag it can't read. A tag is
 # its name and its attributes, each a name with an optional value in double,
@@ -583,6 +595,28 @@ def within(url, base):
     return url == base or url.startswith((base + "/", base + "?", base + "#"))
 
 
+def forge_ends(rest):
+    """Whether the text after the forge's address in text (FORGE_TEXT_RE's run)
+    ends the address under within()'s rule for links, read as written and
+    again as a reader sees it (entities decoded, up to a space; a < there came
+    from an entity and is a character the reader sees). It ends
+    the address when it starts with a /, a ? or a #, or when, after one
+    sentence-ending . or , at most, it goes on with no letter, digit, mark or
+    _ . , - : @ % ~ (a longer host name or a port), with what a URL parser drops
+    from a host name removed, full-width forms folded (NFKC) and an ideographic
+    full stop read as a dot; and not when what the reader sees has an @ before
+    its first /, ? or # (a user part)."""
+    def ends(text):
+        if text.startswith(("/", "?", "#")):
+            return True
+        text = text[1:] if text.startswith((".", ",")) else text
+        return not (re.match(r"[\w.,:@~%-]", text) or text and unicodedata.category(text[0]).startswith("M"))
+
+    seen = re.split(SPACE, html.unescape(rest), maxsplit=1)[0]
+    host = unicodedata.normalize("NFKC", IGNORED_RE.sub("", seen)).replace("\u3002", ".")
+    return ends(rest) and ends(host) and "@" not in re.split(r"[/?#]", seen, maxsplit=1)[0]
+
+
 # A relative address the build lets through: ASCII letters, digits and
 # / . _ ~ % - #, not starting with /, so it can name no scheme, host or
 # backslash form (empty is the page itself).
@@ -729,7 +763,9 @@ class Builder:
         """Puts the forge's address (--forge-url) in place of FORGE in every
         href and src of the page (the template's included), fails an address
         that isn't the forge, the mirror, the licence, a mailto: or a plain
-        relative path, and fails a tag or attribute the site doesn't use."""
+        relative path, and fails a tag or attribute the site doesn't use. In
+        text between tags, code and <pre> text included, the forge's address is
+        moved too; text is never checked as a link."""
         def fail(why):
             self.errors.append(f"{page.rel}: {why}")
 
@@ -800,9 +836,19 @@ class Builder:
 
             return name + ATTR_RE.sub(attr, text[len(name):])
 
-        # Only real tags: code and <pre> text has its < escaped, and a comment
-        # links to nothing.
-        return TAG_RE.sub(tag, doc)
+        def in_text(gap):
+            # The forge's address moved, so a command copied from a page names
+            # the same forge as its links. --forge-url holds no < > & or quote
+            # (URL_RE), so it can't start a tag here.
+            return FORGE_TEXT_RE.sub(lambda m: self.forge if forge_ends(m.group(1)) else m.group(0), gap)
+
+        # Only real tags are checked: code and <pre> text has its < escaped. A
+        # comment or a bogus comment links to nothing and is left as it is.
+        out, at = [], 0
+        for m in TAG_RE.finditer(doc):
+            out += [in_text(doc[at:m.start()]), tag(m)]
+            at = m.end()
+        return "".join(out + [in_text(doc[at:])])
 
     def neighbours(self, page):
         if not page.section or page.is_index:
