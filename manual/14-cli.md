@@ -3,7 +3,7 @@ Checked: Blockwright 0.1.0 (12ee9ef)
 
 # blockwright-cli
 
-`blockwright-cli` is Blockwright without the window. It converts, renders, exports, shades and lints pieces, packs and unpacks projects, and runs generator layers, so scripts can do what the editor does.
+`blockwright-cli` is Blockwright without the window.
 
 Tutorial 12, [Scripts and generators](../tutorials/12-scripts-and-generators.md#from-the-terminal), finishes a piece with `replay`, `info`, `render`, `lint`, `export --irc` and `run-generators`.
 
@@ -13,23 +13,27 @@ blockwright-cli [options] command [args...]
 
 ## What it reads
 
-Every command that reads a piece takes an ANSI file (`.ans`), an XBIN (`.xb`) or a BIN (`.bin`). It also takes a project, a `.bwp` zip or a project directory, and reads it as its flattened composite: the visible layers merged as the editor shows them. Commands that write a piece (`convert`, `shade`) write XBIN to an output named `.xb`, BIN to one named `.bin`, and ANSI otherwise. `convert`, `shade`, `export --irc`, `export --micron` and `render` refuse an output named `.bwp` (exit status 1): `pack` writes a project.
+Every command that reads a piece takes an ANSI file (`.ans`), an XBIN (`.xb`), a BIN (`.bin`) or a project, a `.bwp` zip or a project directory. A project is read as its visible layers merged.
 
-What a command reads must be a regular file, or for a project a directory. A FIFO (`/dev/stdin` from a pipe, or `<(...)`), a device, a socket or any other directory is refused, naming what it is, with exit status 1: `blockwright-cli: in.ans: is a FIFO, not a regular file`.
+`convert` and `shade` write XBIN to an output named `.xb`, BIN to one named `.bin`, and ANSI otherwise. `convert`, `shade`, `export --irc`, `export --micron` and `render` refuse an output named `.bwp` (exit status 1): `pack` writes a project.
 
-An `.ans` is read as UTF-8 when it starts with a byte order mark, or when it is all well-formed UTF-8 with a sequence of three bytes or more (the block and box glyphs terminals draw with); otherwise it is read as CP437. `--encoding auto|cp437|utf-8` says which, for `info`, `convert`, `render`, `export`, `shade`, `lint`, `pack` and `unpack`; `info` prints the one it was read as.
+Input must be a regular file, or a directory for a project. A FIFO (`/dev/stdin` from a pipe, or `<(...)`), a device, a socket or any other directory is refused, naming what it is, with exit status 1: `blockwright-cli: in.ans: is a FIFO, not a regular file`.
 
-`convert`, `shade` and `replay` write an `.ans` as CP437 unless `--output-encoding utf-8` is given. The SAUCE record stays CP437, and a UTF-8 `.ans` starts with a byte order mark only when its text has no sequence of three bytes or more, so that a reader still takes it for UTF-8. `snapshot` writes the project's own encoding, or the one `--output-encoding` gives. XBIN and BIN are CP437, so `--output-encoding utf-8` to an `.xb` or `.bin` output is a usage error. Everything else is written as CP437.
+An `.ans` is read as UTF-8 when it starts with a byte order mark, or is all well-formed UTF-8 with a sequence of three bytes or more; else as CP437. `--encoding auto|cp437|utf-8` sets it for `info`, `convert`, `render`, `export`, `shade`, `lint`, `pack` and `unpack`; `info` prints the result.
+
+`convert`, `shade` and `replay` write an `.ans` as CP437 unless given `--output-encoding utf-8`. The SAUCE record stays CP437, and a UTF-8 `.ans` gets a byte order mark only when its text has no sequence of three bytes or more.
+
+`snapshot` writes the project's own encoding, or the one `--output-encoding` gives. XBIN and BIN are CP437: `--output-encoding utf-8` to an `.xb` or `.bin` is a usage error.
 
 An option given to a command that doesn't take it is a usage error.
 
-In a project format before 5.0 (the project's `manifest.json` gives the version), a cell's attributes hold only blink: bold, italic and underline came with 5.0. If any cell of a project in such a format has another attribute bit set, which no earlier build wrote, every command that reads the project clears those bits as it reads and says so on stderr, naming the file and the number of cells (`1 cell` when there is one):
+In a project format before 5.0 (see its `manifest.json`), a cell's attributes hold only blink. Every command that reads such a project clears any other attribute bit and says so on stderr:
 
 ```
 blockwright-cli: note: old.bwp: cleared attribute bits no earlier build wrote from 2 cells
 ```
 
-The command goes on as usual: its output on stdout and its exit status are the same as without the note. `replay` prints it for a project it starts from, after the steps file's name (`blockwright-cli: note: steps.json: start: old.bwp: ...`), and so does `blockwright --screenshot` (`blockwright: note: steps.json: start: old.bwp: ...`). A newer project with an attribute bit Blockwright doesn't know is refused instead (`...: cell 0 has an unknown attribute`, exit status 1).
+Output and exit status are unchanged. A newer project with an attribute bit Blockwright doesn't know is refused (`...: cell 0 has an unknown attribute`, exit status 1).
 
 ## Commands
 
@@ -39,9 +43,9 @@ The command goes on as usual: its output on stdout and its exit status are the s
 blockwright-cli info <file>
 ```
 
-Prints the piece's size and whether it uses iCE colours. For an `.ans` it prints the encoding it was read as (CP437 or UTF-8); for an XBIN, that it is one (and whether it is compressed), its palette (none, standard or custom) and its font; for a BIN, that it is one. Then the SAUCE record, or `none`: title, author, group, date, the file size it records and whether that matches the content, data type, file type, the four TInfo fields, the flags (iCE colours, letter spacing, aspect ratio), font and comments.
+Prints the piece's size and iCE colours, then the SAUCE record or `none`. An `.ans` adds the encoding it was read as. An XBIN adds whether it is compressed, its palette (none, standard or custom) and font.
 
-For a project it prints whether it is a zip or a directory, its size, iCE colours, encoding and target, the IRC byte budget, the layers (id, kind, size, position, mode, visibility and locks, name), the size of the notes in bytes, the snapshots, the files it carries, and its SAUCE title, author, group, date, letter spacing, aspect ratio, font and comments.
+For a project it also prints the encoding, target, IRC byte budget, layers (id, kind, size, position, mode, visibility, locks and name), notes size, snapshots and the files it carries.
 
 ### convert
 
@@ -49,7 +53,9 @@ For a project it prints whether it is a zip or a directory, its size, iCE colour
 blockwright-cli convert [--allow-lossy] [--output-encoding cp437|utf-8] <in> <out>
 ```
 
-Reads a piece and writes it as ANSI, XBIN or BIN, chosen by `<out>`'s extension. `<out>` may be `<in>`: the file is rewritten in place, which normalises it. When something can't be represented in the output, nothing is written unless `--allow-lossy` is given. `--output-encoding` writes an `.ans` as CP437 (the default) or UTF-8 (see [What it reads](#what-it-reads)).
+Writes a piece as ANSI, XBIN or BIN, by `<out>`'s extension. `<out>` may be `<in>`, which rewrites it normalised.
+
+If the output can't represent something, nothing is written unless `--allow-lossy` is given. `--output-encoding` writes an `.ans` as CP437 (default) or UTF-8 ([What it reads](#what-it-reads)).
 
 ### render
 
@@ -78,7 +84,7 @@ Draws the piece as a PNG with the IBM VGA font.
 blockwright-cli export --irc [--budget N] [--fit] [--pad] [--swap-shades] [--allow-over-budget] <in> <out>
 ```
 
-Writes the piece as IRC text with mIRC colour codes, one line per row, and prints a table of each line's size in bytes, as written and as WeeChat's ascii script sends it (headed `line  bytes   sent`), then a summary:
+Writes the piece as IRC text with mIRC colour codes, one line per row, and prints a table of each line's size in bytes, as written and as WeeChat's ascii script sends it, then a summary:
 
 ```
 50 lines, longest 350 bytes, 352 sent, budget 407: 0 over
@@ -92,7 +98,9 @@ Writes the piece as IRC text with mIRC colour codes, one line per row, and print
 | `--swap-shades` | Let the encoder draw a shade as its opposite with the colours reversed when that is shorter |
 | `--allow-over-budget` | Write the file even when lines are over the budget |
 
-A line over the budget, measured as WeeChat's ascii script sends it, is reported with how far over it is. Without `--allow-over-budget` the output isn't written and the exit status is 3. Cells IRC text can't hold, such as a control character, are written as `?`, with a warning that counts them and names the first. `export --irc` refuses to write over its input.
+A line over the budget as sent is reported with how far over it is. Without `--allow-over-budget` nothing is written and the exit status is 3.
+
+Cells IRC text can't hold become `?`, with a warning. `export --irc` refuses to write over its input.
 
 ### export --micron
 
@@ -100,7 +108,7 @@ A line over the budget, measured as WeeChat's ascii script sends it, is reported
 blockwright-cli export --micron [--centre] [--cache S] <in> <out.mu>
 ```
 
-Writes the piece as a Micron page for NomadNet, as **File > Export Micron...** does ([Micron page](13-file-formats.md#micron-page-mu)): the cells as the editor shows them, in the document's palette, one line per row. A flat file is read as the editor opens it, and a project as its visible layers merged, under its iCE setting. It prints the lines and columns written, and says when the page is centred or the piece has its own palette:
+Writes the piece as a Micron page for NomadNet, as **File > Export Micron...** does ([Micron page](13-file-formats.md#micron-page-mu)). It prints the lines and columns written:
 
 ```
 $ blockwright-cli export --micron --centre mixed.ans mixed.mu
@@ -112,7 +120,9 @@ $ blockwright-cli export --micron --centre mixed.ans mixed.mu
 | `--centre` | Centre the piece on the page: each line starts with `` `c `` |
 | `--cache S` | Write the page header `#!c=S` as the first line, the seconds a peer may cache the page, 0 to 31536000; 0 says never cache it |
 
-`export` takes one format, `--irc` or `--micron`; neither or both is a usage error ("blockwright-cli: export needs one format: --irc or --micron"), and so is the other format's option: "blockwright-cli: --fit is an export --irc option". Cells the page writes as `?` are warned of, one warning for each kind, counting them and naming the first, and the file is still written, exit status 0. `export --micron` refuses to write over its input.
+`export` takes one format, `--irc` or `--micron`. Neither or both is a usage error, as is the other format's option.
+
+Cells the page writes as `?` get a warning; the file is still written, exit status 0. `export --micron` refuses to write over its input.
 
 ### shade
 
@@ -123,7 +133,7 @@ blockwright-cli shade --despeckle --ramp R (--box ... and/or --mask ...) <in> <o
 blockwright-cli shade --rim --ramp R [--light P] (--box ... and/or --mask ...) <in> <out>
 ```
 
-Runs one pass of a shading brush over part of the piece. Without a mode it is the rung step: each cell on the ramp moves one rung lighter (or darker), and the ladder is checked afterwards. `<out>` may be `<in>`.
+Runs one pass of a shading brush over part of the piece. With no mode it is the rung step: each cell on the ramp moves one rung lighter (or darker), then the ladder is checked. `<out>` may be `<in>`.
 
 | Option | What it does |
 |---|---|
@@ -153,7 +163,9 @@ Checks the shading ladders under each ramp, the pixel noise, and the craft rules
 62 findings (5 wide-rung, 47 rung-skip, 2 speckle, 2 fallback-speck, 1 one-glyph, 5 trailing-black), noise 0.0013, iCE on
 ```
 
-`--ramp` can be given more than once; without it every named ramp is checked, and the craft pairs. `--target ansi|irc` lints for an `.ans` or for IRC (default: a project's own target, else ANSI). `--json` prints the findings as JSON instead, each with a `severity`, `"warning"` or `"note"`; a piece with only notes still lists them. A note (`ans-loss`, under the IRC target) is printed with `note: ` before its message but leaves the piece clean, so the exit status is 4 only when there is a finding other than a note. See [Lint](11-lint.md#blockwright-cli-lint).
+`--ramp` can be repeated; without it every named ramp and the craft pairs are checked. `--target ansi|irc` lints for an `.ans` or for IRC (default: a project's own target, else ANSI).
+
+`--json` prints the findings as JSON, each with a `severity`, `"warning"` or `"note"`. A note (`ans-loss`, under the IRC target) prints with `note: ` and leaves the piece clean: exit status 4 needs a finding other than a note. See [Lint](11-lint.md#blockwright-cli-lint).
 
 ### library
 
@@ -162,7 +174,7 @@ blockwright-cli library list [dir]
 blockwright-cli library check <dir>
 ```
 
-`list` prints the stamps and text styles in a library, by default the bundled library and the user's, one per line, tab-separated: kind, category, name, size, widest IRC row in bytes, `ice` when a text style needs iCE colours (else `-`), tags, path. A text style's size and bytes are those of its thumbnail sample.
+`list` prints the stamps and text styles in a library (default: the bundled library and the user's), one per line, tab-separated: kind, category, name, size, widest IRC row in bytes, `ice` when a text style needs iCE colours (else `-`), tags, path. A text style's size and bytes are its thumbnail sample's.
 
 `check` checks every stamp, sidecar and text style in a library directory, drawing each text style's sample.
 
@@ -174,7 +186,7 @@ blockwright-cli unpack [--allow-lossy] [--target ansi|irc] <in> <dir>
 blockwright-cli snapshot [--allow-lossy] [--output-encoding cp437|utf-8] <project>
 ```
 
-`pack` writes a piece or a project as a project zip. `unpack` writes one as a project directory; `<dir>` must be empty or a project already. A project can't hold an XBIN's own palette or font, so `pack` and `unpack` drop them only with `--allow-lossy`. `--target` sets the project's target, ANSI or IRC (default: a project's own, else ANSI); see [Lint](11-lint.md#the-irc-target).
+`pack` writes a piece or project as a project zip; `unpack` writes one as a project directory, into a `<dir>` that is empty or already a project. A project can't hold an XBIN's own palette or font, so both drop them only with `--allow-lossy`. `--target` sets the project's target, ANSI or IRC (default: a project's own, else ANSI); see [Lint](11-lint.md#the-irc-target).
 
 `snapshot` saves the project's flattened composite as its next snapshot, `snapshots/rN.ans`, and prints `rN`. It is written in the project's own encoding unless `--output-encoding` gives one.
 
@@ -186,11 +198,13 @@ blockwright-cli run-generators [--layer ID]... [--timeout S] <project>
 blockwright-cli import-scene [--timeout S] [--bake] [--author NAME] [--date CCYYMMDD] <scene.py> <out>
 ```
 
-These run programs: a generator layer's output comes from the program its `generator.json` names. What a generator reads and writes, and its form in the window, are in [Generator layers and scripts](12-generators.md#writing-a-generator).
+These run the program each layer's `generator.json` names. What a generator reads and writes, and its form in the window, are in [Generator layers and scripts](12-generators.md#writing-a-generator).
 
-- `add-generator` adds a generator layer on top of the project, from a directory with a `generator.json` (and a `params.json` and scripts), runs it once and saves the project. `--name` names the layer (default: the directory's name).
-- `run-generators` runs the project's visible generator layers again, bottom first, and saves their output. A hidden generator layer is not run: it shows in no composite, render or export, and its program would still run with your rights, so `run-generators` lists it first as `layer N (name): hidden, not run` and leaves its cells as they were. `--layer` picks one layer by id (as `info` lists them), hidden or not, and runs only the layers it names; give it more than once for several. To run a hidden generator, name it with `--layer`.
-- `import-scene` opens a Python scene as a new project with a generator layer for each of the scene's layers, run once. `<out>` is a `.bwp`, or a directory that doesn't exist or is empty. It runs the scene with `python3` (on Windows, the first of `py -3`, `python` and `python3` that is Python 3). To rebuild a project byte for byte, `--bake` writes each layer as the cells it made, without its script, so the project doesn't name the scene's path (its layers can't be run again); `--author` sets the SAUCE author (1 to 20 CP437 characters) and `--date` the SAUCE date (default: the day in UTC of `SOURCE_DATE_EPOCH` when it is set, else today).
+- `add-generator` adds a generator layer on top of the project from a directory with a `generator.json` (and a `params.json` and scripts), runs it once and saves. `--name` names the layer (default: the directory's name).
+- `run-generators` reruns the project's visible generator layers, bottom first, and saves their output. A hidden one is listed as `layer N (name): hidden, not run` and keeps its cells. `--layer` runs only the layers it names, by id, hidden or not; repeat it for several.
+- `import-scene` opens a Python scene as a new project, one generator layer per scene layer, each run once. `<out>` is a `.bwp`, or a directory that is empty or doesn't exist. The scene runs with `python3` (on Windows, the first of `py -3`, `python` and `python3` that is Python 3).
+
+    `--bake` writes each layer as the cells it made, without its script; the project can't be rerun. `--author` sets the SAUCE author (1 to 20 CP437 characters) and `--date` the SAUCE date (default: the UTC day of `SOURCE_DATE_EPOCH` if set, else today).
 
 `--timeout` is the seconds a generator may run, 1 to 3600 (default 30). If any run fails, nothing is written.
 
@@ -200,15 +214,17 @@ These run programs: a generator layer's output comes from the program its `gener
 blockwright-cli replay [options] <steps.json> -o <dir>
 ```
 
-`replay` plays a steps file: a start and a list of edits, each made through the editor's own brushes, shapes, selection and layer operations. After each step it writes the canvas, flattened and with its SAUCE, to `<dir>` as `NN-<name>.ans`, where `NN` is the step's number from `01`, with as many digits as the number of steps has and never fewer than two (`001` to `120` for 120 steps); a step with `"capture": "before-after"` writes `NN-<name>-before.ans` and `NN-<name>-after.ans`. `<dir>` is made if it isn't there. Nothing is written unless every step applies, and the same file writes the same bytes every run but for one thing, the date of the SAUCE record a capture gets when its start has none: a `blank` start, or a file without a record. That date is today's, or, when `SOURCE_DATE_EPOCH` is set, that day in UTC. Files already in `<dir>` stay unless this run writes one of the same name.
+`replay` plays a steps file: a start and a list of edits made with the editor's own tools. After each step it writes the flattened canvas, with its SAUCE, to `<dir>` as `NN-<name>.ans`, `NN` counting from `01` with as many digits as the step count and never fewer than two (`001` to `120` for 120 steps). A step with `"capture": "before-after"` writes `NN-<name>-before.ans` and `NN-<name>-after.ans`.
 
-To make the output the same on any day, set `SOURCE_DATE_EPOCH` to seconds since 1970-01-01 UTC, as `import-scene` takes it:
+`<dir>` is made if missing; files already there stay unless this run writes one of the same name. Nothing is written unless every step applies. The same file writes the same bytes every run, except the SAUCE date of a capture whose start has no record: today, or the UTC day of `SOURCE_DATE_EPOCH`.
+
+For the same output on any day, set `SOURCE_DATE_EPOCH` to seconds since 1970-01-01 UTC:
 
 ```
 SOURCE_DATE_EPOCH=1767225600 blockwright-cli replay steps.json -o out
 ```
 
-Each capture whose start has no record is then dated `20260101`. A start's own record keeps its date, and a `--project` capture carries no record, so neither changes. An empty value counts as unset. A value that isn't digits alone, or is past the end of 9999, is a usage error, with exit status 2, before the steps file is read:
+Each such capture is then dated `20260101`. A start's own record keeps its date. An empty value counts as unset; a value that isn't all digits, or is past the end of the year 9999, is a usage error (exit status 2):
 
 ```
 blockwright-cli: SOURCE_DATE_EPOCH is seconds since 1970-01-01 UTC as digits, up to the end of 9999, not 'abc'
@@ -234,12 +250,12 @@ A steps file is JSON. In brief:
 ```
 
 - `"start"` is `{"file": ...}` (an `.ans`, `.xb`, `.bin` or project, relative to the steps file: [Paths in a steps file](#paths-in-a-steps-file)), `{"sample": ...}` or `{"blank": [w, h]}`. `"ice"` sets a blank start's iCE colours (default on).
-- Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …), a layer command (`newCellsLayer`, `setActiveLayer`, …), `canvasSize` ([Resizing the canvas](#resizing-the-canvas)), `clone` ([The clone stamp](#the-clone-stamp)) or `text` ([The text tool](#the-text-tool)). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row: the example's rectangle from pixel `[0, 0]` to `[7, 5]` covers cell rows 0 to 2.
-- Any step but a `view` or `canvasSize` step may also set Tool Options (`"fg"` and `"bg"` 0 to 15, `"size"`, `"ramp"`, `"symmetry"` and more), which hold for the steps after it. `"sampleMerged"` is one of them, but only a `fill` or `eyedropper` step takes it ([Sample merged](#sample-merged)), `"aligned"` another, which only a `clone` step takes ([The clone stamp](#the-clone-stamp)), and `"textOptions"`, the Text tool's settings, a third, which only a `text` step takes ([The text tool](#the-text-tool)).
+- Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …), a layer command (`newCellsLayer`, `setActiveLayer`, …), `canvasSize` ([Resizing the canvas](#resizing-the-canvas)), `clone` ([The clone stamp](#the-clone-stamp)) or `text` ([The text tool](#the-text-tool)). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row.
+- Any step but a `view` or `canvasSize` step may set Tool Options (`"fg"` and `"bg"` 0 to 15, `"size"`, `"ramp"`, `"symmetry"` and more), which hold for later steps. Three belong to one kind of step each: `"sampleMerged"` to `fill` and `eyedropper` ([Sample merged](#sample-merged)), `"aligned"` to `clone` ([The clone stamp](#the-clone-stamp)), and `"textOptions"`, the Text tool's settings, to `text` ([The text tool](#the-text-tool)).
 
-`blockwright-cli replay --help` gives the whole format: every action, its keys, and every Tool Option with its range and default. A step that can't be applied (an unknown action or key, a value out of range, a point off the canvas, nothing selected to transform) stops the replay with exit status 1 and a message naming the step, such as `blockwright-cli: bad.json: step 2 (off): cell (20, 1) is off the 8 x 3 canvas`.
+`blockwright-cli replay --help` gives the whole format: every action, its keys, and every Tool Option with range and default. A step that can't be applied stops the replay with exit status 1, naming the step.
 
-A steps file can also carry what only the editor's window uses ([Pictures of the window](#pictures-of-the-window)). `replay` takes no picture and passes over the file's `"window"`, but it still reads each step's `"screenshot"` and refuses the file over an error in the `"screenshot"` itself (a bad `"scale"` or `"pointer"`, below), though not one that needs the window. It has no window to set a view in, so it refuses a file with a `view` step before it reads the start or writes anything, with exit status 1:
+A steps file can also carry what only the editor's window uses ([Pictures of the window](#pictures-of-the-window)). `replay` takes no picture and ignores `"window"`, but refuses a `"screenshot"` error that doesn't need the window, such as a bad `"scale"`. It refuses a file with a `view` step, with exit status 1:
 
 ```
 blockwright-cli: v.json: step 2 (zoomed): view sets the window's zoom, scroll and IRC options, and blockwright-cli replay has no window; replay this file with blockwright --screenshot
@@ -247,9 +263,9 @@ blockwright-cli: v.json: step 2 (zoomed): view sets the window's zoom, scroll an
 
 #### Paths in a steps file
 
-A steps file names two kinds of file: its start, `"start": {"file": ...}`, and the font file of a `text` step's TheDraw face ([A TheDraw font](#a-thedraw-font)). Both paths are relative to the steps file's own directory, with `/` between directories, and `..` may leave that directory, so steps files in different folders can share a fonts folder: `"../fonts/titles.tdf"`. An absolute path (one that starts with `/`, or with a drive letter and `:`), a path with a `\` or a NUL character in it and an empty path are refused, so a steps file and the files beside it replay the same on any machine.
+A steps file names two kinds of file: its start, `"start": {"file": ...}`, and the font file of a `text` step's TheDraw face ([A TheDraw font](#a-thedraw-font)). Both are relative to the steps file's directory, with `/` between directories; `..` may leave it: `"../fonts/titles.tdf"`. An absolute path, a path with a `\` or a NUL character, and an empty path are refused.
 
-`replay` reads every file the steps name before it applies the first step, and a `.tdf` may be at most 4 MiB (4194304 bytes). A path it refuses, or a file it can't read, stops the replay naming the step (or `start`) and the path, with exit status 1, and nothing is written:
+`replay` reads every file the steps name before the first step; a `.tdf` may be at most 4 MiB. A refused path or unreadable file stops the replay with exit status 1, naming the step (or `start`) and the path, and nothing is written:
 
 ```
 blockwright-cli: p.json: start: "file" "/tmp/piece.ans" is absolute; a steps file names its files relative to its own directory
@@ -262,8 +278,6 @@ blockwright-cli: p.json: step 1 (title): ../fonts/missing.tdf: no such file
 blockwright-cli: p.json: step 1 (title): ../fonts/dir: is a directory
 blockwright-cli: p.json: step 1 (title): ../fonts/big.tdf: larger than 4194304 bytes, the most it may be
 ```
-
-The last four name the path as read: the steps file's directory as you gave it on the command line, then the path. Run from another folder, `blockwright-cli replay steps/p.json -o out` names `steps/../fonts/missing.tdf`.
 
 #### Resizing the canvas
 
@@ -278,13 +292,13 @@ A `canvasSize` step does what **Format > Canvas Size...** does ([Canvas Size](02
 | `"size"` | `[w, h]`, two whole numbers: 1 to 400 columns by 1 to 5000 rows | The new canvas, in cells. Required |
 | `"anchor"` | `top-left`, `top`, `top-right`, `left`, `centre`, `right`, `bottom-left`, `bottom` or `bottom-right` | Where the old canvas sits in the new one, as the dialog's grid of nine. `top-left` when left out, where the dialog starts |
 
-The step changes the piece as the dialog does. At the `centre` anchor an odd column is added or cut on the right and an odd row at the bottom.
+At the `centre` anchor an odd column goes on the right and an odd row at the bottom.
 
-- **A Cells or Pixels layer exactly the canvas's size and at its top-left corner** becomes the new size. Cells past the new edges are cut. The cells it gains are a space, grey on black, on the bottom layer when that is a Cells layer, and transparent on any other.
-- **Every other layer** keeps all its cells and moves with the old canvas: a Cells or Pixels layer of another size or place, and every Text, Generator and Reference layer. A Reference layer's picture moves 8 pixels a column (9 with 9 px letter spacing) and 16 a row. Locked and hidden layers change in the same way.
-- **The selection** moves with the cells and is cut to the new canvas, and is gone if none of it is left, so a later step that needs one is refused (`step 3 (d): deleteSelection needs a selection: select or selectAll first`).
+- **A Cells or Pixels layer exactly the canvas's size and at its top-left corner** takes the new size. Cells past the new edges are cut. New cells are a space, grey on black, on a bottom Cells layer, and transparent on any other.
+- **Every other layer** keeps its cells and moves with the old canvas: a Cells or Pixels layer of another size or place, and every Text, Generator and Reference layer. A Reference picture moves 8 pixels a column (9 with 9 px letter spacing) and 16 a row. Locked and hidden layers change too.
+- **The selection** moves with the cells and is cut to the new canvas. If none is left it is gone, and a later step that needs one is refused.
 - **A symmetry centre** (`"symmetry": {"mode": "radial", "folds": …, "centre": [x, y]}` on an earlier step) doesn't move with the art: it stays on its cell. If the new canvas doesn't have that cell, the centre moves to the nearest cell it does have.
-- The active layer, the clipboard and the other Tool Options stay as they are. Later steps' points are checked against the new size: `step 2 (dot): cell (5, 0) is off the 4 x 2 canvas`.
+- The active layer, the clipboard and the other Tool Options stay. Later steps' points are checked against the new size.
 
 A 12 × 4 sun over grass, grown to 16 × 6 about the centre, before and after (`blockwright --screenshot`, scale 2; [canvas-size.steps.json](../samples/manual-cli/canvas-size.steps.json)):
 
@@ -297,7 +311,7 @@ A step at the canvas's own size changes nothing. `replay` still writes its captu
 blockwright-cli: note: c.json: step 1 (same): changes nothing
 ```
 
-The step takes no Tool Options, because its `"size"` is the canvas's, not the brush's. It takes `"capture"` and a `"screenshot"` as any step does, but no `"pointer"`, since it has no point. Each of these is refused with exit status 1, and nothing is written:
+The step takes `"capture"` and a `"screenshot"`, but no Tool Options and no `"pointer"`. Each of these is refused with exit status 1, and nothing is written:
 
 ```
 blockwright-cli: c.json: step 1 (grow): canvasSize needs "size": [width, height], the new canvas in cells
@@ -311,7 +325,7 @@ blockwright-cli: c.json: step 1 (grow): "screenshot pointer" needs a step the po
 blockwright-cli: c.json: step 9 (grow): the canvas can't be made 400 x 5000: the layers would hold over 16000000 cells
 ```
 
-The last is the dialog's own refusal: the layers together may hold no more than 16000000 cells. `blockwright --screenshot` refuses all of them too, and one more, as the dialog does: a canvas it can't draw. 400 × 5000 can be drawn with 8-pixel cells but not with 9 px letter spacing, so on a piece with 9 px letter spacing `replay` makes it and `--screenshot` stops there, whether or not the step asks for a picture:
+The last is the dialog's own limit: the layers together may hold at most 16000000 cells. `blockwright --screenshot` also refuses a canvas it can't draw, such as 400 × 5000 with 9 px letter spacing:
 
 ```
 blockwright: step 1 (grow): the canvas is too large to display
@@ -319,12 +333,12 @@ blockwright: step 1 (grow): the canvas is too large to display
 
 #### Sample merged
 
-`"sampleMerged": true` or `false`, on a `fill` or `eyedropper` step, is **Sample merged** in Tool Options. It is off unless a step turns it on, as in the editor.
+`"sampleMerged": true` or `false`, on a `fill` or `eyedropper` step, is **Sample merged** in Tool Options. It is off until a step turns it on.
 
-- **Off**, the two tools read the active layer alone. Fill floods the layer's own pixels, so on a clear layer it fills the whole layer. The eyedropper picks from the layer's own cell, and a pick from a transparent cell or pixel leaves the pen as it was, with a note: `blockwright-cli: note: m.json: step 2 (pick): pixel (0, 0) is transparent; the pen is unchanged`.
-- **On**, they read the canvas as it shows: every visible layer combined, leaving out hidden and Reference layers. Fill finds the area there and paints it into the active layer. On a Cells layer that isn't alpha-locked, a clear cell the area only half covers takes its other half from what the layers below show there, so that colour lands in the active layer too. A layer above the active one can bound the area, but its colours aren't copied into the active layer.
+- **Off**, both tools read the active layer alone. Fill floods the layer's own pixels, so a clear layer fills whole. The eyedropper picks from the layer's own cell; a pick from a transparent cell or pixel leaves the pen unchanged, with a note on stderr.
+- **On**, they read every visible layer combined, leaving out hidden and Reference layers, and Fill finds the area there and paints it into the active layer. On a Cells layer without alpha lock, a clear cell the area half covers takes its other half from the layers below, so that colour lands in the active layer too. A layer above the active one can bound the area, but its colours aren't copied.
 
-Like any Tool Option it holds for the steps after it, on later `fill` and `eyedropper` steps, until a step sets it again. A `fill` or `eyedropper` step with no `"at"` only sets it. `blockwright --screenshot` ticks the box in Tool Options.
+It holds for later `fill` and `eyedropper` steps until a step sets it again. A step with no `"at"` only sets it.
 
 A red frame on the bottom layer, and a fill inside it with the yellow pen on a clear Cells layer above: off, then on ([sample-merged.steps.json](../samples/manual-cli/sample-merged.steps.json)):
 
@@ -332,9 +346,9 @@ A red frame on the bottom layer, and a fill inside it with the yellow pen on a c
 ![The red frame on black with its inside filled yellow](../samples/manual-cli/sample-merged-on.png)
 ![Tool Options for Fill, its help ending above the Alpha lock box, unticked, and the Sample merged box, ticked](../samples/manual-cli/sample-merged-options.png)
 
-Under the IRC target the eyedropper picks as the editor's does: a left-button pick takes the cell's bold, italic and underline into the pen along with its colour, and the glyph brush then paints with them on a Cells layer. A right-button pick takes the background colour alone.
+Under the IRC target a left-button pick also takes the cell's bold, italic and underline into the pen. A right-button pick takes the background colour alone.
 
-Only `fill` and `eyedropper` take the key: on any other step it is refused, even as `false`. A value that isn't `true` or `false` is refused too. Each stops the replay with exit status 1:
+Only `fill` and `eyedropper` take the key; any other step refuses it, even as `false`. A value other than `true` or `false` is refused too. Each stops the replay with exit status 1:
 
 ```
 blockwright-cli: m.json: step 2 (fill): "sampleMerged" must be true or false, not a number
@@ -358,26 +372,26 @@ A `clone` step is the **Clone Stamp** ([The clone stamp](../tutorials/07-detail.
 | `"points"` | Cells, as any brush stroke's | Where the copy goes: every cell the brush covers takes the cell at the stroke's distance from it. On the first stroke after a source, or with Aligned off, that is the distance from the source to the first point, so the cell under the first point takes the source cell. Without points the step sets only the source and Tool Options, and writes its capture with no note |
 | `"aligned"` | `true` or `false` | **Aligned** in Tool Options: on unless a step turns it off. Like any Tool Option it holds for the steps after it |
 
-A stroke needs a source, on its own step or an earlier `clone` step. `"button"` is taken, as by any stroke, but either button copies the same.
+A stroke needs a source, on its own step or an earlier `clone` step. `"button"` is taken, but either button copies the same.
 
-- **Aligned on**, the first stroke after a source sets the distance from the source to where the stroke starts, and every later stroke copies at that distance, so a second stroke goes on copying the same stretch. A new `"source"` starts again: the next stroke sets the distance afresh.
-- **Aligned off**, every stroke copies from the source again. It still sets the distance, so a stroke after Aligned is turned back on keeps the distance of the last stroke, not of the first.
-- The step reads the canvas as it was when the stroke began, so a copy that runs over its own source copies what was there before. With the source on the `A` of `ABCDEFGH` and a stroke along the same row from the `B` to the `E`, the row becomes `AABCDFGH`.
-- It copies whole cells, glyph and both colours, and only within the active layer: on a clear layer it finds nothing to copy. **Size** and **Tip** set the cells each point covers. A selection and **Alpha lock** limit the cells it writes, and under **Symmetry** each mirrored or turned copy reads from the source's mirrored or turned cell, as in the editor.
-- `blockwright --screenshot` marks the source with a dotted box round its cell and shows **Aligned** in Tool Options. With `"pointer": true` the pointer is on the source before the step, as the <kbd>Ctrl</kbd>+click comes first, and after it on the stroke's last point, or on the source when the step has no points.
+- **Aligned on**, later strokes copy at the distance the first stroke after a source set. A new `"source"` resets it.
+- **Aligned off**, every stroke copies from the source again. It still sets the distance that Aligned uses when turned back on.
+- The step reads the canvas as it was when the stroke began: a copy over its own source copies what was there before.
+- It copies whole cells, glyph and both colours, within the active layer only: on a clear layer it finds nothing. **Size** and **Tip** set the cells each point covers. A selection and **Alpha lock** limit what it writes, and under **Symmetry** each copy reads from the source's mirrored or turned cell.
+- `blockwright --screenshot` marks the source with a dotted box and shows **Aligned** in Tool Options. With `"pointer": true` the pointer is on the source before the step and on the stroke's last point after it.
 
-The fox in [Spruce Island](../samples/manual-cli/spruce-island.ans), a 120 × 50 piece by funkpower, copied onto the snow with a 4 × 4 square brush: the source set on its face, a first stroke along row 44, and a second along row 48, each from column 62 to 72 (`blockwright --screenshot`, scale 1, in a window large enough to show the cells cropped; [clone-aligned.steps.json](../samples/manual-cli/clone-aligned.steps.json) and [clone-unaligned.steps.json](../samples/manual-cli/clone-unaligned.steps.json)):
+The fox in [Spruce Island](../samples/manual-cli/spruce-island.ans), a 120 × 50 piece by funkpower, copied onto the snow with a 4 × 4 square brush, strokes along rows 44 and 48 (`blockwright --screenshot`, scale 1; [clone-aligned.steps.json](../samples/manual-cli/clone-aligned.steps.json) and [clone-unaligned.steps.json](../samples/manual-cli/clone-unaligned.steps.json)):
 
 ![A red-brown fox sitting on the right, in front of a grey wall with a shuttered window, and grey snow with white drifts below. The pointer is on a cell of the fox's face, the source, with a dotted box round it](../samples/manual-cli/clone-source.png)
 ![The same, with the fox's head copied onto the snow at the lower left, the dark wall behind it copied too, and the dotted box still round the source cell](../samples/manual-cli/clone-head.png)
 
-With Aligned on, the second stroke carries on below the first, and the copy is the whole fox. With Aligned off, it starts from the source again and copies the head a second time:
+With Aligned on, the second stroke continues below the first and copies the whole fox. With Aligned off, it copies the head a second time:
 
 ![The fox's body copied onto the snow below the copied head, so the copy at the lower left is the whole fox](../samples/manual-cli/clone-aligned.png)
 ![Two copies of the fox's head stacked on the snow at the lower left](../samples/manual-cli/clone-unaligned.png)
 ![Tool Options for the Clone Stamp after the second file: Size 4, Tip Square, and the Aligned box unticked](../samples/manual-cli/clone-options.png)
 
-A stroke that copies blank onto blank changes nothing, and `replay` notes it on stderr, with exit status 0: `blockwright-cli: note: c.json: step 3 (dab): changes nothing`. Each of these is refused with exit status 1, and nothing is written:
+A stroke that copies blank onto blank changes nothing; `replay` notes it on stderr, with exit status 0. Each of these is refused with exit status 1, and nothing is written:
 
 ```
 blockwright-cli: c.json: step 2 (dab): clone needs a source to copy from: "source": [x, y], the cell Ctrl+click sets, on this step or an earlier clone step
@@ -388,11 +402,9 @@ blockwright-cli: c.json: step 2 (dab): halfBlock takes no "aligned"
 blockwright-cli: c.json: step 2 (source): clone takes no "sampleMerged"
 ```
 
-Only a `clone` step takes `"aligned"`, even as `true`, and a `clone` step takes no `"sampleMerged"`.
-
 #### The text tool
 
-A `text` step is the **Text** tool ([Text layers and TheDraw fonts](../tutorials/10-letters-and-text.md#text-layers-and-thedraw-fonts)): a click at `"at"`, then `"text"` typed there, which makes a new live text layer. `"textOptions"` holds the rows Tool Options shows for the tool:
+A `text` step is the **Text** tool ([Text layers and TheDraw fonts](../tutorials/10-letters-and-text.md#text-layers-and-thedraw-fonts)): a click at `"at"`, then `"text"` typed there, making a new live text layer. `"textOptions"` holds the tool's Tool Options rows:
 
 ```
 {"name": "caption", "action": "text", "at": [28, 9], "text": "winter", "textOptions": {"colour": 0}},
@@ -417,21 +429,21 @@ A `text` step is the **Text** tool ([Text layers and TheDraw fonts](../tutorials
 | `"align"` | `"left"`, `"centre"` or `"right"` | **Align** | `"left"` |
 | `"letterSpacing"`, `"lineSpacing"` | 0 to 64 | **Spacing**: **Letters** and **Lines** | 0 |
 
-- `"text"` is taken as typed: `"\n"` is <kbd>Enter</kbd> and starts a new line, and any other control character (U+0000 to U+001F, U+007F, or the C1 controls U+0080 to U+009F) is refused, as the Text tool drops them; U+00A0 and above are typed.
-- Each step with `"at"` makes a layer `Text N` just above the active layer and makes it the active layer, as a click and typing do in the editor. Its blank cells are clear, so the art below shows through. The text's colour is `"colour"`, not `"fg"`: a `text` step takes `"fg"` and `"bg"`, as any step does, but they don't colour it.
-- A big style puts in its own colours, unless the step gives `"bigColours"`, and draws in the `block` face. A later step that picks another big style puts in that style's colours in the same way: Big 3D's are 8 and 0, yellow and white. The face stays `block` after `"bigStyle": "none"`, until a step sets another. Under a big style Tool Options greys out **Face** and **Colour**, so a step refuses a `"face"` other than `"block"`, and any `"colour"`. Without a big style **Colours** is greyed out too, so `"bigColours"` needs one, set on the same step or one before it.
+- `"text"` is taken as typed: `"\n"` is <kbd>Enter</kbd>. Any other control character (U+0000 to U+001F, U+007F, or the C1 controls U+0080 to U+009F) is refused, as the Text tool drops them; U+00A0 and above are typed.
+- Each step with `"at"` makes a layer `Text N` just above the active layer and makes it active. Its blank cells are clear. The text's colour is `"colour"`; `"fg"` and `"bg"` don't colour it.
+- A big style draws in the `block` face in its own colours, unless the step gives `"bigColours"`; the face stays `block` after `"bigStyle": "none"` until a step sets another. Under a big style a step refuses a `"face"` other than `"block"`, and any `"colour"`. `"bigColours"` needs a big style, set on the same step or earlier.
 - No step changes an existing layer's text.
-- A step with `"textOptions"` and no `"at"` sets them as Tool Options does. With a text layer active, they go on that layer's settings, which become the defaults for the next text, and on the layer, unless it is locked: a locked layer stays as it is and only the defaults change. With another kind of layer active, only the defaults change.
-- `blockwright --screenshot` shows the Text tool's rows in Tool Options. With `"pointer": true` the pointer is on `"at"`, where the click goes. A step with neither `"at"` nor `"textOptions"` sets nothing and isn't noted, so it can take a picture of the settings the steps before it left.
+- A step with `"textOptions"` and no `"at"` sets the defaults for the next text, and restyles the active text layer unless it is locked.
+- `blockwright --screenshot` shows the Text tool's rows in Tool Options. With `"pointer": true` the pointer is on `"at"`. A step with neither `"at"` nor `"textOptions"` sets nothing.
 
-On the sky of [Spruce Island](../samples/manual-cli/spruce-island.ans), a 120 × 50 piece by funkpower: `winter` in black in the `block` face, `SNOW` above it in Big shadow with mIRC white letters and a black shadow, and a step with no `"at"` that restyles the headline, the active layer, to Big 3D with a column between letters (`blockwright --screenshot`, scale 1, in a window large enough to show every Tool Options row; [text.steps.json](../samples/manual-cli/text.steps.json)):
+On the sky of [Spruce Island](../samples/manual-cli/spruce-island.ans), a 120 × 50 piece by funkpower: `winter` in the `block` face, `SNOW` above it in Big shadow, then a step with no `"at"` that restyles the headline to Big 3D with a column between letters (`blockwright --screenshot`, scale 1; [text.steps.json](../samples/manual-cli/text.steps.json)):
 
 ![The grey sky of Spruce Island with the dark tops of trees and hills along the bottom and right, and the word winter typed across it in large black letters. The pointer is at the top-left of the w, where the click went](../samples/manual-cli/text-caption.png)
 ![The same, with SNOW above it in tall white letters edged in black, its top on the top row of the canvas](../samples/manual-cli/text-headline.png)
 ![Tool Options for the Text tool after the headline: the face list with block picked and vga and mini greyed out, Big style Big shadow with Colours 0,1, Colour greyed out at Black, Case As typed, Wrap None, Align Left, and Spacing Letters 0 and Lines 0](../samples/manual-cli/text-options.png)
 ![The same sky after the restyle step, with SNOW redrawn in yellow letters with a white edge, a column further apart, and winter unchanged below it](../samples/manual-cli/text-restyle.png)
 
-A step with no `"at"` whose settings Tool Options already shows (the active text layer's, else the defaults) changes nothing, and `replay` notes it on stderr, with exit status 0: `blockwright-cli: note: t.json: step 2 (same): changes nothing`. Its defaults don't change either. Each of these is refused with exit status 1, and nothing is written:
+A step with no `"at"` whose settings Tool Options already shows changes nothing; `replay` notes it on stderr, with exit status 0. Each of these is refused with exit status 1, and nothing is written:
 
 ```
 blockwright-cli: t.json: step 2 (again): cell (7, 1) is on the text layer "Text 1", which a Text tool click there edits; a text step makes a new text layer, so click off every visible, unlocked text layer
@@ -448,11 +460,11 @@ blockwright-cli: t.json: step 1 (title): "textOptions align" takes left, centre,
 blockwright-cli: t.json: step 1 (edge): line takes no "textOptions"
 ```
 
-The first is a click at `[7, 1]`, beside an `i` typed at `[1, 1]` in the `block` face: the letter is two columns short of it, but the layer's 8 × 4 box takes it in. A `text` step takes no `"button"` and no `"sampleMerged"`.
+The first is a click inside an existing text layer's box. A `text` step takes no `"button"` and no `"sampleMerged"`.
 
 ##### A TheDraw font
 
-`"face"` may name a TheDraw font instead of a bundled face: a `.tdf` file and the font's name in it. Blockwright ships no TheDraw fonts, so the file is one of yours, named relative to the steps file ([Paths in a steps file](#paths-in-a-steps-file)). Here `fonts/titles.tdf`, beside the folder the steps file is in, holds three fonts, `BW Outline`, `BW Block` and `BW Colour`, at places 0, 1 and 2:
+`"face"` may name a TheDraw font instead of a bundled face: a `.tdf` file and the font's name in it. It is named relative to the steps file ([Paths in a steps file](#paths-in-a-steps-file)). Here `fonts/titles.tdf`, beside the steps file's folder, holds `BW Outline`, `BW Block` and `BW Colour`, at places 0, 1 and 2:
 
 ```
 {"name": "title", "action": "text", "at": [1, 1], "text": "Funk", "textOptions": {"face": {"tdf": "../fonts/titles.tdf", "font": "BW Outline"}}},
@@ -466,12 +478,12 @@ The first is a click at `[7, 1]`, beside an `i` typed at `[1, 1]` in the `block`
 | `"font"` | The font's name as the file holds it, not empty | The font in the file. Required |
 | `"index"` | 0 to 255 | The font's place in the file, counting from 0. Needed only when two fonts in the file have the name; when it is given, the font at that place must have the name |
 
-- The face is picked as in the face picker, and it holds for later `text` steps as a bundled face does: `caption` above sets `art` in `BW Block` too, on a new layer `Text 2`.
+- The face is picked as in the face picker and holds for later `text` steps.
 - The font draws in its own colours, as in the editor ([Text layers and TheDraw fonts](../tutorials/10-letters-and-text.md#text-layers-and-thedraw-fonts)): a step may set `"colour"`, but the letters don't change.
-- When a layer is set in the font, a new one or the active one restyled, the font file is copied into the project as `fonts/<sha256>.tdf`, named by the sha256 of its bytes ([Projects (.bwp)](13-file-formats.md#projects-bwp)), so a `--project` capture opens and draws its text without the steps file's fonts. A step that changes only the defaults (no text layer active, or a locked one) copies nothing; the file goes in with the first layer set in the font. A project keeps only the files its text layers use: restyle the one layer in a font into another file's font, and the next capture no longer holds the first file.
+- When a layer, new or restyled, is set in the font, the file is copied into the project as `fonts/<sha256>.tdf`, named by the sha256 of its bytes ([Projects (.bwp)](13-file-formats.md#projects-bwp)). A project keeps only the font files its text layers use.
 - A project holds at most 16 font files, so a step that would leave the text layers using a 17th file is refused.
-- A big style draws in the `block` face, so a step refuses a TheDraw font under one, as it refuses `"vga"`.
-- A step with no `"at"` that names the face Tool Options already shows changes nothing, and `replay` notes it, as for any other setting.
+- Under a big style a TheDraw font is refused, as `"vga"` is.
+- A step with no `"at"` that names the face Tool Options already shows changes nothing, and `replay` notes it.
 
 Each of these is refused with exit status 1, and nothing is written. A font the file doesn't hold, a name two of its fonts share, and an `"index"` that doesn't fit list the fonts the file holds:
 
@@ -490,7 +502,7 @@ blockwright-cli: t.json: step 1 (title): "textOptions face" "BW Block" (../fonts
 blockwright-cli: t.json: step 17 (word-17): the text layers would use over 16 TheDraw font files, more than a project holds
 ```
 
-A file that isn't a TheDraw font is refused with the reason the font reader gives, here a file that doesn't start like one. A key the face doesn't take is refused as a key it has none of: a `"file"` beside `"tdf"` and `"font"` gives the `has no "file"` line. A path that is refused, or a file that can't be read, stops the replay before the first step ([Paths in a steps file](#paths-in-a-steps-file)).
+A file that isn't a TheDraw font is refused with the font reader's reason. A key the face doesn't take is refused as a key it has none of: a `"file"` beside `"tdf"` and `"font"` gives the `has no "file"` line. A refused path or unreadable file stops the replay before the first step ([Paths in a steps file](#paths-in-a-steps-file)).
 
 ### Pictures of the window
 
@@ -498,7 +510,9 @@ A file that isn't a TheDraw font is refused with the reason the font reader give
 blockwright --screenshot <steps.json> -o <dir>
 ```
 
-`--screenshot` is an option of the editor, `blockwright`, not of `blockwright-cli`. It plays the same steps file in the editor's window, offscreen, and writes a PNG for each step that has a `"screenshot"`, as `NN-<name>.png`, `NN` numbered as for `replay`. A picture taken before the step is `NN-<name>-before.png`; the one taken after is `NN-<name>-after.png` when `"when"` is `"both"` or the step has `"capture": "before-after"`. A `"screenshot"` is:
+`--screenshot` is an option of the editor, `blockwright`. It plays the steps file in the editor's window, offscreen, and writes `NN-<name>.png` for each step with a `"screenshot"`.
+
+A picture before the step is `NN-<name>-before.png`; after it, `NN-<name>-after.png` when `"when"` is `"both"` or the step has `"capture": "before-after"`. A `"screenshot"` is:
 
 ```
 {"of": "window" | a dock or widget's object name,
@@ -508,16 +522,18 @@ blockwright --screenshot <steps.json> -o <dir>
  "pointer": true | false}
 ```
 
-`"of"` is `"window"` when left out, `"when"` is `"after"`, `"scale"` is 1 and `"pointer"` is `false`. A crop of `"cells"` needs `"of"` to hold the canvas, with the cells in view; one of `"pixels"` is in the pixels of `"of"`. The file's top-level `"window": [w, h]` sizes the window, 1280 × 800 without one. A file with no step that asks for a screenshot writes no picture and exits with status 0, saying `blockwright: ok.json: no step asks for a screenshot`.
+Defaults: `"of"` is `"window"`, `"when"` is `"after"`, `"scale"` is 1 and `"pointer"` is `false`. A crop of `"cells"` needs `"of"` to hold the canvas, with the cells in view; one of `"pixels"` is in the pixels of `"of"`.
 
-`"scale": 2` draws the picture at twice the pixels each way. It isn't an enlargement: the window keeps its size and is laid out again at a device pixel ratio of 2, as a high-DPI screen shows it, so the default 1280 × 800 window comes out 2560 × 1600 and a crop gives twice its pixels. Any scale but 1 or 2 is refused (`step 1 (dab): "screenshot scale" must be a whole number 1 to 2`).
+The top-level `"window": [w, h]` sizes the window (default 1280 × 800). A file with no step that asks for a screenshot writes no picture and exits with status 0, saying `blockwright: ok.json: no step asks for a screenshot`.
 
-`"pointer": true` draws a mouse pointer, a plain black arrow with a white edge, with its tip where the step left the mouse: at the step's last point (`"to"`, `"at"`, the last of `"points"`, the bottom-right cell of a `select` step's `"rect"`), or at its first in a picture taken before the step. The tip is at the middle of the cell, or of the half of the cell a half-block pixel is. A line, before and after, at scale 2:
+`"scale": 2` lays the window out at a device pixel ratio of 2, so the default 1280 × 800 window comes out 2560 × 1600 and a crop gives twice its pixels. Any scale but 1 or 2 is refused.
+
+`"pointer": true` draws an arrow at the middle of the step's last point, or its first in a picture before the step. A line, before and after, at scale 2:
 
 ![A black canvas with a white-edged arrow pointer near its top left, where the line will start](../samples/manual-cli/pointer-before.png)
 ![The same canvas with a yellow line from the top left down to the lower right, and the pointer's tip at its end](../samples/manual-cli/pointer-after.png)
 
-A pointer is refused, with exit status 1 and nothing written, when its value isn't `true` or `false`, when the step has no point to put it at (a tool step with no points, a menu, layer or dock action, a `move` or `moveSelection` by an offset, a `view` step), and when the picture doesn't show the point:
+A pointer is refused, with exit status 1 and nothing written, when its value isn't `true` or `false`, when the step has no point, or when the picture doesn't show the point:
 
 ```
 blockwright: p.json: step 1 (dab): "screenshot pointer" must be true or false, not a number
@@ -527,9 +543,11 @@ blockwright: step 1 (dab): the pointer's cell [190, 3] is not in view in the 128
 blockwright: step 1 (dab): the pointer's cell [8, 3] is outside the picture
 ```
 
-The first two, and the refused scale, are errors in the file itself, so `blockwright-cli replay` refuses the file over them too, with the same message after `blockwright-cli:`. The last three need the window, so only `--screenshot` meets them.
+`blockwright-cli replay` refuses the first two as well; the last three need the window.
 
-The pictures don't depend on the machine's screen or settings. The window runs offscreen on fixed screens at 96 dpi that no scaling setting in the environment reaches, in Qt's Fusion style with default settings, and its text is in Noto Sans at 10 pt, built into Blockwright, so the same steps file makes the same PNG bytes on every run. Noto Sans has no `█ ▓ ▒ ░` or half blocks `▀ ▄ ▌ ▐`, so where the window's own widgets show those (the Glyphs bar's set names, the status bar's F-keys, Tool Options' help) they come from a system font, and on another machine the docks can sit a pixel or two higher or lower and Tool Options' help can wrap differently. The canvas is drawn in Blockwright's own fonts everywhere.
+The window runs offscreen at 96 dpi, in Qt's Fusion style, with Blockwright's built-in Noto Sans 10 pt. The same steps file makes the same PNG bytes every run.
+
+Noto Sans has no block or shade glyphs, so the widgets that show them use a system font. Those glyphs, and the line wraps in Tool Options' help, change with the machine's system font. The canvas always uses Blockwright's own fonts.
 
 A `view` step sets what the window shows, for the pictures after it:
 
@@ -545,13 +563,15 @@ A `view` step sets what the window shows, for the pictures after it:
 | `"ircPad"` | `true` or `false` | **View > IRC > Pad Lines** (no shortcut) on or off |
 | `"ircSwapShades"` | `true` or `false` | **View > IRC > Swap Shades** (no shortcut) on or off |
 
-The three IRC settings are the ones in [Making rows fit](10-irc.md#making-rows-fit), and the row meter and the IRC View dock follow them as they do the menu. Every key is optional, but a view step needs at least one; an empty one is refused (`step 1 (empty): view needs at least one of "zoom", "scrollTo", "ircFit", "ircPad" or "ircSwapShades"`). A key left out leaves that setting as it was. A view step takes a `"screenshot"` but no Tool Options: `"fg"` on one is refused with `step 1 (v): view takes no "fg"`. A `"scrollTo"` cell must be on the canvas as it stands at that step; one off it is refused (`step 2 (far): scrollTo cell (20, 0) is off the 20 x 10 canvas`). Every refusal exits with status 1.
+The three IRC settings are those in [Making rows fit](10-irc.md#making-rows-fit); the row meter and the IRC View dock follow them. Every key is optional and a key left out leaves its setting alone, but an empty view step is refused.
 
-A view step takes effect where it stands and holds until a later view step changes it. A screenshot taken `"before"` a view step shows the view the steps before it left. Until the first view step the window has a new window's view: zoom 2, scrolled to the top left, Fit, Pad and Swap Shades off. Within one step the zoom is set before the scroll. A view step changes the window, not the piece: it makes no undo step and doesn't mark the document modified.
+A view step takes a `"screenshot"` but no Tool Options. A `"scrollTo"` cell must be on the canvas at that step. Each refusal exits with status 1.
+
+A view step holds until a later one changes it; a screenshot `"before"` it shows the earlier view. Before the first view step the window has zoom 2, scrolled to the top left, Fit, Pad and Swap Shades off. A view step makes no undo step and doesn't mark the document modified.
 
 ### The editor's action list
 
-`blockwright --list-actions` is an option of the editor, `blockwright`, not of `blockwright-cli`. It prints every menu and dock action as a JSON list and exits: each action's `id`, menu, text, default `shortcuts`, tips and more. It lists every action, including ones the open document doesn't offer. Glyph sets 17 to 21 (`glyphSet17` to `glyphSet21`), which are offered only under the IRC target or in a UTF-8 document ([Sets 17 to 21](03-keyboard-mode.md#sets-17-to-21)), carry `"offeredWhen": "in IRC and UTF-8 documents"`; no other action has `offeredWhen`.
+`blockwright --list-actions` is an option of the editor, `blockwright`. It prints every menu and dock action as a JSON list and exits: each action's `id`, menu, text, default `shortcuts`, tips and more. Glyph sets 17 to 21 (`glyphSet17` to `glyphSet21`), offered only under the IRC target or in a UTF-8 document ([Sets 17 to 21](03-keyboard-mode.md#sets-17-to-21)), carry `"offeredWhen": "in IRC and UTF-8 documents"`.
 
 ## Exit status
 

@@ -3,15 +3,21 @@ Checked: Blockwright 0.1.0 (12ee9ef)
 
 # Shortcuts
 
-Every action in Blockwright's menus and docks, menu by menu, with the keys it starts with and what it does. Any of them can be given a key. **Help > Keyboard Shortcuts** shows the actions that have a key, with the keys they have now.
+Every action in the menus and docks, menu by menu, with its default keys and what it does. Any action can be given a key. **Help > Keyboard Shortcuts** shows the actions that have a key now.
 
-Typing keys aren't actions, and nor are the keys a tool takes while you use it (the select tool's arrows, <kbd>Enter</kbd> and <kbd>Esc</kbd>, the glyph brush's F-keys). [Keyboard mode](03-keyboard-mode.md#keys) lists the typing keys and the F-key glyph sets.
+Typing keys and the keys a tool takes while you use it (the select tool's arrows, <kbd>Enter</kbd> and <kbd>Esc</kbd>, the glyph brush's F-keys) aren't actions. [Keyboard mode](03-keyboard-mode.md#keys) lists them.
 
 ## Changing a shortcut
 
-Open **Edit > Preferences** and its **Shortcuts** tab ([Preferences](16-preferences.md#shortcuts)). Pick an action in the list (the search box finds an action by its name or its key), then press the new key in **Key**. **No Key** takes the action's keys away. **Default** gives it its default keys back, but for any of them another action has now: it leaves that key off and names the action that has it under the list. **Reset All** gives every action its default keys back. Nothing changes until you press **OK**.
+Open the **Shortcuts** tab of **Edit > Preferences** ([Preferences](16-preferences.md#shortcuts)). Pick an action (the search box finds one by name or key), then press the new key in **Key**.
 
-An action gets one key here: a single key, with any modifiers it needs, and not a modifier on its own. <kbd>Meta</kbd> is the Windows key. The editor refuses these, and says why under the list:
+- **No Key** removes the action's keys.
+- **Default** restores its default keys, except any that another action now has; it names that action under the list.
+- **Reset All** restores every action's default keys.
+
+Nothing changes until **OK**.
+
+An action gets one key here, with any modifiers, and not a modifier alone. <kbd>Meta</kbd> is the Windows key. The editor refuses these, and says why under the list:
 
 - a key keyboard mode types or edits with:
     - any key but an F-key, unless <kbd>Ctrl</kbd> or <kbd>Meta</kbd> is held;

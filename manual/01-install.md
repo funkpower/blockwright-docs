@@ -3,9 +3,7 @@ Checked: Blockwright 0.1.1 (f281406)
 
 # Installing Blockwright
 
-Blockwright 0.1.1 was released on 14 November 2026. Its files are on the [release page](https://git.pumpin.online/funkpower/blockwright/releases/tag/v0.1.1), with the release notes. Every package installs two programs: `blockwright`, the editor, and `blockwright-cli`, the command line, which renders, converts and checks pieces without a display.
-
-This page has a section per system: what the file needs, the commands that install it, and how to check that it worked. Then come checksums, building from source and uninstalling.
+Blockwright 0.1.1 was released on 14 November 2026. Its files and release notes are on the [release page](https://git.pumpin.online/funkpower/blockwright/releases/tag/v0.1.1). Every package installs two programs: `blockwright`, the editor, and `blockwright-cli`, which renders, converts and checks pieces without a display.
 
 ## Downloads
 
@@ -25,23 +23,26 @@ This page has a section per system: what the file needs, the commands that insta
 
 ## Checking the install
 
-Every section below ends by running `blockwright-cli --version`. Its first line names the version and the commit it was built from:
+`blockwright-cli --version` ends each section. Its first line names the version and commit:
 
 ```text
 blockwright-cli 0.1.1 (bd67fae)
 ```
 
-The logo and the notices for the bundled fonts follow it.
+The logo and the bundled fonts' notices follow.
 
-The `.deb` and `.rpm` packages, the Arch package, the FreeBSD port, a source install and the Homebrew cask put `blockwright-cli` on the `PATH`. The AppImage doesn't: it runs as `blockwright-cli` with `--cli` first or through a symlink named `blockwright-cli` (a short script where AppImageLauncher is installed). The dmg keeps it inside the app bundle, and the Windows installer leaves its folder off the `PATH`; those sections give the full path.
+The `.deb` and `.rpm` packages, the Arch package, the FreeBSD port, a source install and the Homebrew cask put `blockwright-cli` on the `PATH`. The others don't:
+
+- The AppImage runs as `blockwright-cli` with `--cli` first, or through a symlink named `blockwright-cli` (a short script where AppImageLauncher is installed).
+- The dmg keeps it inside the app bundle, and the Windows installer leaves its folder off the `PATH`. Their sections give the full path.
 
 ## Linux: AppImage
 
-One file that runs on any x86-64 Linux with glibc 2.36 or newer: Debian 12, Ubuntu 24.04 and later releases. It carries its own Qt, so it also runs where the distribution's Qt is too old for the packages below.
+One file for any x86-64 Linux with glibc 2.36 or newer: Debian 12, Ubuntu 24.04 and later. It carries its own Qt.
 
-It needs a `fusermount3` or `fusermount` command on the `PATH`, from fuse3 or the older FUSE 2 package. Without either, set `APPIMAGE_EXTRACT_AND_RUN=1`, and the AppImage runs without FUSE.
+It needs `fusermount3` or `fusermount` on the `PATH`, from fuse3 or FUSE 2. Without either, set `APPIMAGE_EXTRACT_AND_RUN=1`.
 
-Make it executable and run it:
+Run it:
 
 ```sh
 chmod +x blockwright-0.1.1-x86_64.AppImage
@@ -54,7 +55,7 @@ Without FUSE:
 APPIMAGE_EXTRACT_AND_RUN=1 ./blockwright-0.1.1-x86_64.AppImage
 ```
 
-The same file is `blockwright-cli` when `--cli` comes first, or when it runs through a symlink named `blockwright-cli`:
+For `blockwright-cli`, put `--cli` first or use a symlink:
 
 ```sh
 ./blockwright-0.1.1-x86_64.AppImage --cli --version
@@ -63,27 +64,27 @@ ln -s "$PWD/blockwright-0.1.1-x86_64.AppImage" ~/.local/bin/blockwright-cli
 blockwright-cli --version
 ```
 
-The symlink works from any folder on the `PATH`; `~/.local/bin` is one many distributions put there. Where `mkdir` has just made it, it may only be on the `PATH` after the next login.
+Any folder on the `PATH` works. A new `~/.local/bin` may join the `PATH` only at the next login.
 
-Where AppImageLauncher is installed (there is an `appimage-type2` entry in `/proc/sys/fs/binfmt_misc/`), it runs every AppImage under the AppImage's own name, so the symlink starts the editor. There, make `~/.local/bin/blockwright-cli` a script that puts `--cli` first, with the AppImage's full path in place of `/path/to`. Remove the symlink first if you made one (`rm ~/.local/bin/blockwright-cli`), or the script is written over the AppImage.
+Under AppImageLauncher (an `appimage-type2` entry in `/proc/sys/fs/binfmt_misc/`) the symlink starts the editor. Remove it (`rm ~/.local/bin/blockwright-cli`), or the script below is written over the AppImage. Then make `~/.local/bin/blockwright-cli` a script that puts `--cli` first, with the AppImage's full path for `/path/to`.
 
 ```sh
 #!/bin/sh
 exec /path/to/blockwright-0.1.1-x86_64.AppImage --cli "$@"
 ```
 
-Then make it executable and check it:
+Then:
 
 ```sh
 chmod +x ~/.local/bin/blockwright-cli
 blockwright-cli --version
 ```
 
-Its first line is now the CLI's, `blockwright-cli 0.1.1 (bd67fae)`.
+The first line is now `blockwright-cli 0.1.1 (bd67fae)`.
 
 ## Debian and Ubuntu
 
-There is a `.deb` for each of these releases, and each one is for the release named in it only:
+Each `.deb` is for one release:
 
 | Release | File |
 |---|---|
@@ -92,14 +93,14 @@ There is a `.deb` for each of these releases, and each one is for the release na
 | Ubuntu 26.04 | `blockwright_0.1.1-1_ubuntu26.04_amd64.deb` |
 | Ubuntu 26.10 | `blockwright_0.1.1-1_ubuntu26.10_amd64.deb` |
 
-Install the file for your release with apt, which fetches the libraries it depends on:
+Install yours with apt, which fetches its libraries:
 
 ```sh
 sudo apt install ./blockwright_0.1.1-1_debian13_amd64.deb
 blockwright-cli --version
 ```
 
-The `./` matters: without it apt looks for a package of that name in its archives. Debian 12 and Ubuntu 24.04 have a Qt older than 6.7, which Blockwright needs; use the AppImage there.
+Keep the `./`, or apt looks in its archives. Debian 12 and Ubuntu 24.04 have a Qt older than the 6.7 Blockwright needs; use the AppImage there.
 
 ## Fedora
 
@@ -112,7 +113,7 @@ blockwright-cli --version
 
 ## Arch Linux
 
-An AUR package is coming, but it isn't up yet. Until it is, build the package from the `PKGBUILD` attached to the release. Run makepkg as a user who isn't root; it needs the `base-devel` group installed, and asks for your password through sudo when it installs.
+There is no AUR package yet. Build from the release's `PKGBUILD`, as a user who isn't root, with `base-devel` installed. makepkg asks for your sudo password to install.
 
 ```sh
 mkdir blockwright && cd blockwright
@@ -121,17 +122,17 @@ makepkg -si
 blockwright-cli --version
 ```
 
-makepkg downloads the source tarball from the release, checks it against the checksum in the `PKGBUILD`, builds it and runs the tests. `-s` installs the dependencies from the Arch repositories first, and `-i` installs the package. The `PKGBUILD` has no `.sha256` of its own; it carries the tarball's.
+makepkg downloads the source, checks its checksum, builds and runs the tests. `-s` installs the dependencies; `-i` installs the package.
 
 ## FreeBSD
 
-The port tarball holds a port for FreeBSD 14. It builds against the packaged Qt 6 and needs the ports framework in `/usr/ports`. If you don't have a ports tree, one way to get it is with git (`pkg install git`):
+The port is for FreeBSD 14 and needs the ports framework in `/usr/ports`. Without one, get it with git (`pkg install git`):
 
 ```sh
 git clone --depth 1 https://git.FreeBSD.org/ports.git /usr/ports
 ```
 
-Then, as root, install the build dependencies from packages, fetch the port, unpack it and build it:
+Then, as root, install the build dependencies, fetch the port, unpack it and build it:
 
 ```sh
 pkg install cmake ninja qt6-base qt6-svg libzip zstd
@@ -142,34 +143,34 @@ make install clean
 blockwright-cli --version
 ```
 
-`make install` downloads the source tarball from the release and checks it against the port's `distinfo`. The programs go in `/usr/local/bin`.
+`make install` downloads and checks the source. The programs go in `/usr/local/bin`.
 
 ## macOS
 
-`Blockwright-0.1.1.dmg` holds one app that runs natively on Apple Silicon and Intel Macs, on macOS 12 (Monterey) or later. Open the dmg and drag Blockwright to Applications.
+`Blockwright-0.1.1.dmg` holds one app for Apple Silicon and Intel Macs, on macOS 12 (Monterey) or later. Open the dmg and drag Blockwright to Applications.
 
 ### Homebrew
 
-Or install it from the Homebrew tap. Use the cask's full name, `funkpower/tap/blockwright`: Homebrew 7 refuses the short name for a cask from a tap it doesn't trust.
+Or install the cask by its full name, `funkpower/tap/blockwright`; Homebrew 7 refuses the short name from an untrusted tap.
 
 ```sh
 brew tap funkpower/tap https://git.pumpin.online/funkpower/homebrew-tap.git
 brew install --cask funkpower/tap/blockwright
 ```
 
-The cask installs the app in Applications and links `blockwright-cli` onto the `PATH`. That is the only macOS install that does; from the dmg, `blockwright-cli` stays inside the app.
+The cask also links `blockwright-cli` onto the `PATH`.
 
 ### Quarantine
 
-The app is signed ad hoc, not with an Apple Developer ID, and it isn't notarized, so macOS blocks it the first time you open it. That holds for the dmg and for Homebrew alike. Before you open it, run this in Terminal:
+The app isn't notarized, so macOS blocks it the first time you open it, from the dmg or from Homebrew. Before you open it, run this in Terminal:
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/Blockwright.app
 ```
 
-That lets both the app and `blockwright-cli` run. If you only need the app, you can instead try to open it once, then go to **System Settings > Privacy & Security** and click **Open Anyway**; that leaves `blockwright-cli` blocked.
+That lets the app and `blockwright-cli` run. For the app alone, try to open it once, then click **Open Anyway** in **System Settings > Privacy & Security**; `blockwright-cli` stays blocked.
 
-The command-line tool is inside the app, at `/Applications/Blockwright.app/Contents/MacOS/blockwright-cli`. From the dmg:
+From the dmg, `blockwright-cli` is inside the app:
 
 ```sh
 /Applications/Blockwright.app/Contents/MacOS/blockwright-cli --version
@@ -179,15 +180,17 @@ From Homebrew, `blockwright-cli --version`.
 
 ## Windows
 
-`blockwright-0.1.1-x86_64.msi` is for 64-bit Windows 10 or later. The installer isn't signed, so Windows warns before it runs it:
+`blockwright-0.1.1-x86_64.msi` is for 64-bit Windows 10 or later. The installer isn't signed, so Windows warns before running it:
 
-1. The browser may warn that the file isn't commonly downloaded. Choose to keep it.
-2. Open the MSI. Microsoft Defender SmartScreen shows a blue window, **Windows protected your PC**, saying it prevented an unrecognised app from starting. Click **More info**: the window names the file and **Unknown publisher**, and shows a **Run anyway** button. Click it.
-3. User Account Control asks whether to let an app from an unknown publisher make changes to your device. Click **Yes**. The installer installs for every user on the PC, so it needs an administrator's approval.
+1. If the browser warns that the file isn't commonly downloaded, keep it.
+2. Open the MSI. SmartScreen shows **Windows protected your PC**. Click **More info**, then **Run anyway**.
+3. User Account Control asks to let an app from an unknown publisher make changes. Click **Yes**; the install is for every user.
 
-The installer has no choices to make. It installs Blockwright into `C:\Program Files\Blockwright` and puts **Blockwright** in the Start menu. Installing a later MSI replaces the earlier version; an older MSI over a newer install is refused with "A newer version of Blockwright is already installed."
+The installer asks nothing. It installs into `C:\Program Files\Blockwright` and puts **Blockwright** in the Start menu.
 
-The programs are in `C:\Program Files\Blockwright\bin`. The installer doesn't put that folder on the `PATH`, so give the full path, in PowerShell:
+A later MSI replaces the earlier version. An older MSI over a newer install is refused with "A newer version of Blockwright is already installed."
+
+The programs are in `C:\Program Files\Blockwright\bin`, off the `PATH`. In PowerShell:
 
 ```powershell
 & "C:\Program Files\Blockwright\bin\blockwright-cli.exe" --version
@@ -195,7 +198,13 @@ The programs are in `C:\Program Files\Blockwright\bin`. The installer doesn't pu
 
 ## Building from source
 
-Building needs a C++20 compiler, CMake 3.24 or later, Ninja, Qt 6.7 or later (Core, Gui, Widgets, Concurrent and Svg), libzip 1.7 or later and zstd. Python 3 is optional at run time, for generator layers and scene scripts.
+Building needs:
+
+- a C++20 compiler, CMake 3.24 or later and Ninja;
+- Qt 6.7 or later (Core, Gui, Widgets, Concurrent and Svg);
+- libzip 1.7 or later and zstd.
+
+Python 3 is optional at run time, for generator layers and scene scripts.
 
 ```sh
 sha256sum -c blockwright-0.1.1.tar.gz.sha256
@@ -208,25 +217,25 @@ sudo cmake --install build
 blockwright-cli --version
 ```
 
-The tests need no display. They use an installed Catch2 3, and download one when there is none; `-DBUILD_TESTING=OFF` builds without them. `cmake --install` puts the programs in `/usr/local/bin` unless `-DCMAKE_INSTALL_PREFIX` names another prefix.
+The tests use an installed Catch2 3 or download one; `-DBUILD_TESTING=OFF` skips them. `cmake --install` puts the programs in `/usr/local/bin` unless `-DCMAKE_INSTALL_PREFIX` names another prefix.
 
-The package names of the dependencies differ from system to system. The [README](https://git.pumpin.online/funkpower/blockwright/src/tag/v0.1.1/README.md) lists what the build needs, and [packaging/README.md](https://git.pumpin.online/funkpower/blockwright/src/tag/v0.1.1/packaging/README.md), also in the source tarball, has the steps for each system's package. The Windows MSI is cross-built on Linux, as [packaging/windows/README.md](https://git.pumpin.online/funkpower/blockwright/src/tag/v0.1.1/packaging/windows/README.md) describes.
+The [README](https://git.pumpin.online/funkpower/blockwright/src/tag/v0.1.1/README.md) lists what the build needs, and [packaging/README.md](https://git.pumpin.online/funkpower/blockwright/src/tag/v0.1.1/packaging/README.md), also in the tarball, has each system's package steps. The Windows MSI is cross-built on Linux, as [packaging/windows/README.md](https://git.pumpin.online/funkpower/blockwright/src/tag/v0.1.1/packaging/windows/README.md) describes.
 
 ## Checksums
 
-Each file but the `PKGBUILD` has a `.sha256` file beside it on the release page, holding its SHA-256 checksum and its name. Download both into one folder and check the file against it. On Linux and FreeBSD:
+Each file but the `PKGBUILD` has a `.sha256` beside it. Download both into one folder and check. On Linux and FreeBSD:
 
 ```sh
 sha256sum -c blockwright-0.1.1-x86_64.AppImage.sha256
 ```
 
-It prints the file's name and `OK`, or `FAILED` when the file doesn't match. On macOS:
+It prints the file's name and `OK`, or `FAILED`. On macOS:
 
 ```sh
 shasum -a 256 -c Blockwright-0.1.1.dmg.sha256
 ```
 
-On Windows, in PowerShell, `Get-FileHash` prints the checksum in capitals; compare it with the one in the `.sha256` file:
+On Windows, in PowerShell, compare `Get-FileHash`'s checksum (in capitals) with the `.sha256` file's:
 
 ```powershell
 Get-FileHash .\blockwright-0.1.1-x86_64.msi

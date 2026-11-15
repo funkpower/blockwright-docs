@@ -3,37 +3,37 @@ Checked: Blockwright 0.1.0 (12ee9ef)
 
 # Lint panel and the checks it runs
 
-The lint reads a piece as it looks at 1× and lists the faults it can find by rule: shading that skips rungs or steps through colours that aren't neighbours, rungs too wide, specks, stray half blocks, pixel noise, lone glints, broken and dotted lines, glyphs in their own background, flat areas, the trailing black and blank rows that IRC drops, glyphs an `.ans` can't save, glyphs that clients count or order differently, and bold, italic or underline that draws nothing. The editor shows the list in the **Lint** dock; `blockwright-cli lint` prints it.
+The lint reads a piece as it looks at 1× and lists the faults a rule can find. The editor shows the list in the **Lint** dock; `blockwright-cli lint` prints it.
 
-The lint finds what a rule can find. It doesn't judge composition, light or legibility, and a clean result doesn't mean a piece is finished.
+The lint doesn't judge composition, light or legibility. A clean result doesn't mean a piece is finished.
 
 ## The Lint dock
 
 Open it from **Window > Lint**. It starts on the right, tabbed with the IRC View dock.
 
-At the top a list picks the ramps the lint checks:
+A list at the top picks the ramps the lint checks:
 
 | Choice | What it checks |
 |---|---|
-| All named ramps | Every named ramp, and the craft pairs are allowed (see [Ramps and craft pairs](#ramps-and-craft-pairs)). This is the default |
+| All named ramps | Every named ramp, with the craft pairs allowed ([Ramps and craft pairs](#ramps-and-craft-pairs)). The default |
 | A ramp by name (`fire`, `sunset`, `ice`, `grass`, `steel`, `skin`, `sea`, `toxic`, `violet`, `wood`) | That ramp only, without the craft pairs |
 
-Below it the findings are listed, one row each, in four columns:
+Below it is one row per finding:
 
 | Column | Holds |
 |---|---|
 | Cell | The cell the finding is at, `x,y`, counted from 0 at the top left |
 | Kind | The finding's kind, as named in [The checks](#the-checks) |
 | Ramp | The ramp it was found under, or `-` for noise and the checks that use no ramp |
-| Message | What is wrong. Hover over it to read a message too long for the column |
+| Message | What is wrong. Hover to read a long message |
 
-Click a row, or select it and press Enter, and the cell cursor goes to that cell and the canvas takes the keyboard focus, scrolled to show it.
+Click a row, or select it and press Enter, to move the cell cursor to that cell.
 
-Under the list a summary gives the count by kind, the canvas's pixel noise and whether iCE colours are on, in the same words as the CLI's summary line (below). The dock lists at most 1000 findings; past that the summary adds "The first 1000 are listed."
+Under the list is the same summary line the CLI prints. The dock lists at most 1000 findings; past that the summary adds "The first 1000 are listed."
 
-The dock lints what the canvas shows: every visible layer merged, with the document's iCE setting, for the document's target (see [The IRC target](#the-irc-target)). It lints again 250 ms after an edit, a file opened, a change to the document's format (iCE colours, letter spacing, SAUCE) or a change of target, and only while it is shown; a dock hidden behind the IRC View tab waits until it is brought forward. While the list is out of date, "Linting…" shows under it once half a second has passed, until the new list is in.
+The dock lints the visible layers merged, with the document's iCE setting and target ([The IRC target](#the-irc-target)). It lints again 250 ms after an edit, an open, or a change of format or target, while it is shown.
 
-The dock never reports [`flat`](#flat): that check needs a box around the subject, and only the CLI takes one.
+The dock never reports [`flat`](#flat), which needs a box that only the CLI takes.
 
 ## blockwright-cli lint
 
@@ -41,36 +41,36 @@ The dock never reports [`flat`](#flat): that check needs a box around the subjec
 blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc] [--json] <in>
 ```
 
-`<in>` is an `.ans`, `.xb` or `.bin` file, or a project, which is linted as its visible layers merged. iCE colours are the file's own. `--encoding` says how an `.ans` is read, as for every command that reads one (see [blockwright-cli](14-cli.md#what-it-reads)).
+`<in>` is an `.ans`, `.xb` or `.bin` file, or a project, linted as its visible layers merged, with the file's own iCE setting. `--encoding` says how an `.ans` is read ([blockwright-cli](14-cli.md#what-it-reads)).
 
 | Option | What it does |
 |---|---|
-| `--ramp R` | Check this ramp: a name (`fire`, `sunset`, `ice`, `grass`, `steel`, `skin`, `sea`, `toxic`, `violet`, `wood`) or palette indices 0-15 from dark to light, such as `0,8,7,15`. Give it more than once for several. Without it every named ramp is checked and the craft pairs are allowed; with it they aren't |
-| `--box x0,y0,x1,y1` | The subject's box, corners inclusive. Only findings that touch it are reported, and the [`flat`](#flat) check runs inside it. A box past the canvas's right or bottom edge is cut to the canvas |
-| `--target ansi|irc` | Lint for an `.ans` or for IRC. Without it a project is linted for its own target, and a flat file for ANSI. See [The IRC target](#the-irc-target) |
-| `--json` | Print the findings as JSON instead of text |
+| `--ramp R` | Check this ramp: a name (`fire`, `sunset`, `ice`, `grass`, `steel`, `skin`, `sea`, `toxic`, `violet`, `wood`) or palette indices 0-15 from dark to light, such as `0,8,7,15`. Repeat for several. Without it, every named ramp is checked with the craft pairs allowed |
+| `--box x0,y0,x1,y1` | The subject's box, corners inclusive. Only findings touching it are reported, and [`flat`](#flat) runs inside it. A box past the right or bottom edge is cut to the canvas |
+| `--target ansi|irc` | Lint for an `.ans` or for IRC. The default is a project's own target, or ANSI for a flat file ([The IRC target](#the-irc-target)) |
+| `--json` | Print the findings as JSON |
 
-The text output is one line per finding, then the summary:
+The text output is one line per finding, then a summary:
 
 ```
 11,2 speckle steel cell 11,2: a speck, lighter than every neighbour
 1 finding (1 speckle), noise 0.0000, iCE on
 ```
 
-Each line holds the cell, the kind, the ramp (`-` for none) and the message. Findings are sorted by row, then column, then kind; the same finding under two ramps is listed once, under the first. The summary counts the kinds in the order [The checks](#the-checks) lists them. A piece with nothing to report prints:
+Each line holds the cell, kind, ramp (`-` for none) and message, sorted by row, column, then kind; a finding under two ramps is listed once, under the first. The summary counts kinds in the order of [The checks](#the-checks). A piece with nothing to report prints:
 
 ```
 clean, noise 0.0000, iCE on
 ```
 
-A note is printed like a finding, with `note: ` before its message, but on its own it leaves the piece clean. The one note is [`ans-loss`](#ans-loss), under the IRC target: what an `.ans` save would lose of a piece that is fine for IRC. A snowman under `--target irc`:
+A note prints like a finding, with `note: ` before its message, but leaves the piece clean. The only note is [`ans-loss`](#ans-loss), under the IRC target: what an `.ans` save would lose. A snowman under `--target irc`:
 
 ```
 0,0 ans-loss - note: 1 cell holds a glyph a CP437 .ans saves as '?' (fine for IRC)
 clean, 1 note (1 ans-loss), noise 0.0000, iCE on
 ```
 
-The summary counts the findings by kind, then the notes by kind. In the Lint dock a note's row is in italics.
+The summary counts findings by kind, then notes. In the Lint dock a note's row is in italics.
 
 With `--json` the same finding reads:
 
@@ -78,15 +78,19 @@ With `--json` the same finding reads:
 {"findings":[{"kind":"speckle","severity":"warning","ramp":"steel","x":11,"y":2,"x2":11,"y2":2,"message":"cell 11,2: a speck, lighter than every neighbour"}],"noise":0.0000,"ice":true}
 ```
 
-`x2,y2` is the far corner of what the finding covers (the whole canvas for `one-glyph` and `noise`), or the other cell of a wide rung, a rung skip or a flag (see [`width-varies`](#width-varies)); for a single cell it is the cell again. `severity` is `"warning"` for a finding and `"note"` for a note. `ramp` is `null` for noise and the checks that use no ramp. A piece with nothing to report gives `{"findings":[],"noise":0.0000,"ice":true}`. A piece with only notes is clean, but its notes are still in the list, each with `"severity":"note"`; the snowman under `--target irc` gives:
+- `x2,y2` is the far corner of what the finding covers (the whole canvas for `one-glyph` and `noise`), or the other cell of a wide rung, a rung skip or a flag ([`width-varies`](#width-varies)). For a single cell it repeats the cell.
+- `severity` is `"warning"` for a finding and `"note"` for a note.
+- `ramp` is `null` for noise and the checks that use no ramp.
+
+A piece with nothing to report gives `{"findings":[],"noise":0.0000,"ice":true}`. A piece with only notes is clean but still lists them; the snowman under `--target irc` gives:
 
 ```
 {"findings":[{"kind":"ans-loss","severity":"note","ramp":null,"x":0,"y":0,"x2":0,"y2":0,"message":"1 cell holds a glyph a CP437 .ans saves as '?' (fine for IRC)"}],"noise":0.0000,"ice":true}
 ```
 
-So an empty list means there are no notes either. To tell whether a piece is clean, read the exit status, or look for a finding whose `severity` is `"warning"`.
+A clean piece can still list notes; to test for clean, read the exit status or look for `"severity":"warning"`.
 
-The exit status is 0 when the piece is clean, notes or none, and 4 when there is a finding other than a note. A bad `--ramp`, or a `--box` that isn't four numbers from 0, is a usage error, status 2: the CLI says what is wrong and then prints its usage text.
+The exit status is 0 when the piece is clean, with or without notes, and 4 when there is a finding. A bad `--ramp`, or a `--box` that isn't four numbers from 0, is a usage error, status 2, with the usage text.
 
 ```
 $ blockwright-cli lint --ramp nope clean.ans
@@ -110,7 +114,7 @@ See [blockwright-cli](14-cli.md#lint) for the other commands.
 
 ## Ramps and craft pairs
 
-A ramp is a list of palette colours from dark to light. The named ramps:
+A ramp is a list of palette colours, dark to light:
 
 | Ramp | Colours, dark to light |
 |---|---|
@@ -125,9 +129,13 @@ A ramp is a list of palette colours from dark to light. The named ramps:
 | `violet` | black, magenta, light magenta, white |
 | `wood` | black, red, brown, yellow |
 
-Between two neighbours on a ramp, a dark A and a light B, the shading ladder has five rungs: A, then B░A, B▒A and B▓A (the shade in B on A), then B. A shade can be written either way round (B▓A shows as A░B), and the lint reads it as the rung it shows. Each solid colour of a ramp is a rung and each neighbour pair adds three shades, so steel's ladder runs from black (rung 0) through dark grey (4) and grey (8) to white (12). Only the shade rungs are measured for width (see [wide-rung](#wide-rung)). A cell is on a ramp's ladder when it shows one of the ramp's colours flat (a space's background, a full block's foreground, a block or shade with both colours the same) or a ░▒▓ of two neighbours. Text, half blocks and blinking cells are off the ladder.
+Between two neighbours on a ramp, a dark A and a light B, the shading ladder has five rungs: A, B░A, B▒A, B▓A (the shade in B on A), then B. The lint reads a shade as the rung it shows, so B▓A counts as A░B.
 
-This canvas is clean: steel's ladder from dark grey to white, every shade rung no more than three cells wide.
+Each solid colour is a rung and each neighbour pair adds three shades: steel runs from black (rung 0) through dark grey (4) and grey (8) to white (12). Only shade rungs are measured for width ([wide-rung](#wide-rung)).
+
+A cell is on a ramp's ladder when it shows one of the ramp's colours flat (a space's background, a full block's foreground, a block or shade in one colour) or a ░▒▓ of two neighbours. Text, half blocks and blinking cells are off the ladder.
+
+This canvas is clean: steel from dark grey to white, no shade rung wider than three cells.
 
 ![Steel's ladder from dark grey through grey to white in vertical bands, each shade between the solids](../samples/manual-lint/clean.ans "3x")
 
@@ -136,11 +144,11 @@ $ blockwright-cli lint clean.ans
 clean, noise 0.0000, iCE on
 ```
 
-The **craft pairs** are steps shading often takes between colours that aren't neighbours on any named ramp: any colour but black or white with black, and these 21 pairs:
+The **craft pairs** are common shading steps between colours that aren't neighbours on any named ramp: black with any colour but white, and these 21 pairs:
 
 blue–light blue, light blue–white, grey–dark grey, grey–white, red–light red, light red–yellow, red–magenta, brown–light red, grey–light red, green–light green, yellow–white, magenta–light blue, cyan–light blue, cyan–grey, magenta–dark grey, cyan–light cyan, red–yellow, brown–yellow, dark grey–light green, red–dark grey, green–dark grey.
 
-Linting with every named ramp allows them, so a shade between them isn't a fault. Naming a ramp (with `--ramp` or the dock's list) checks that ramp alone, strictly. This canvas shades red to yellow through ▒, a craft pair:
+Linting with every named ramp allows them. Naming a ramp (`--ramp` or the dock's list) checks that ramp alone, strictly. This canvas shades red to yellow through ▒, a craft pair:
 
 ![Three vertical bands: red, a yellow medium shade on red, and yellow](../samples/manual-lint/craft-pair.ans "3x")
 
@@ -149,7 +157,7 @@ $ blockwright-cli lint craft-pair.ans
 clean, noise 0.0000, iCE on
 ```
 
-Under fire alone, where red and yellow aren't neighbours (light red is between them), every shaded cell is a fault:
+Under fire alone, light red sits between red and yellow, so every shaded cell is a fault:
 
 ```
 $ blockwright-cli lint --ramp fire craft-pair.ans
@@ -160,11 +168,11 @@ $ blockwright-cli lint --ramp fire craft-pair.ans
 
 ## The checks
 
-There are two families. The **ladder checks** read each ramp's ladder, and the ramp column names the ramp; noise is one of them but is judged once for the whole canvas under no ramp, so its ramp column is `-`. The **craft checks** use no ramp; the last six of them, from [`no-cp437`](#no-cp437) to [`wasted-format`](#wasted-format), are about the glyphs and formatting a piece's cells hold rather than how it is drawn. Each section shows a canvas drawn to have that fault and the lint's output for it; those six show their messages instead.
+The **ladder checks** read each ramp's ladder and name the ramp; noise is one, but with ramp `-`. The **craft checks** use no ramp. The last six, [`no-cp437`](#no-cp437) to [`wasted-format`](#wasted-format), check glyphs and formatting.
 
 ### non-neighbour-shade
 
-A ░▒▓ of two colours on a ramp that aren't neighbours on it, when no ramp linted has them as neighbours and they aren't a craft pair. The message gives the shade, its foreground and its background by palette index.
+A ░▒▓ of two colours on a ramp that aren't neighbours on it, when no linted ramp has them as neighbours and they aren't a craft pair. The message gives the shade and its colours by palette index.
 
 ![A blue field with three cells of yellow medium shade on blue in the middle](../samples/manual-lint/non-neighbour-shade.ans "3x")
 
@@ -176,11 +184,11 @@ $ blockwright-cli lint non-neighbour-shade.ans
 3 findings (3 non-neighbour-shade), noise 0.0000, iCE on
 ```
 
-Yellow on blue skips three of sunset's colours. **Fix:** step through the colours between, one neighbour pair at a time (blue to magenta to light magenta …), or use a ramp that has the two as neighbours.
+Yellow on blue skips three of sunset's colours. **Fix:** step through the colours between, one neighbour pair at a time (blue to magenta to light magenta …), or use a ramp where the two are neighbours.
 
 ### wide-rung
 
-A shade rung (░▒▓) of a gradient more than 3 cells wide. Only a run of one shade with a lower rung at one end and a higher one at the other is measured. Its width is the run along the gradient, or the longest run the other way if that is shorter, so a band only has to be narrow in one direction. A solid rung is never measured, however wide: steel's ladder with a band of solid grey six cells wide in the middle is clean.
+A shade rung (░▒▓) of a gradient more than 3 cells wide. Only a run of one shade with a lower rung at one end and a higher one at the other is measured, and solid rungs never are. A band has to be narrow in one direction only: the width is the run along the gradient or the longest run across it, whichever is shorter.
 
 ![Steel's ladder in vertical bands, the first shade six cells wide](../samples/manual-lint/wide-rung.ans "3x")
 
@@ -195,11 +203,11 @@ $ blockwright-cli lint wide-rung.ans
 6 findings (6 wide-rung), noise 0.0000, iCE on
 ```
 
-**Fix:** narrow the band, or add rungs so the gradient takes more steps over the same distance. A flat area that isn't part of a gradient (a sky, a fill) isn't a rung and isn't flagged.
+**Fix:** narrow the band, or add rungs so the gradient takes more steps over the same distance.
 
 ### rung-skip
 
-A jump of more than one rung where three or more levels climb or fall together: a gradient that leaves out its shades. An outline turning back, two planes meeting, and black against anything aren't skips.
+A jump of more than one rung where three or more levels climb or fall together: a gradient missing its shades. An outline turning back, two planes meeting, or black against anything isn't a skip.
 
 ![Three solid bands: dark grey, grey and white, with no shades between](../samples/manual-lint/rung-skip.ans "3x")
 
@@ -214,11 +222,11 @@ $ blockwright-cli lint rung-skip.ans
 6 findings (6 rung-skip), noise 0.0000, iCE on
 ```
 
-**Fix:** put the missing ░▒▓ rungs between the two colours, as in the clean ladder above.
+**Fix:** put the missing ░▒▓ rungs between the two colours.
 
 ### speckle
 
-A cell with at least three ladder neighbours that is lighter or darker than all of them. Black, a ramp's top colour (a glint) and dithered cells are never specks.
+A cell, with at least three ladder neighbours, lighter or darker than all of them. Black, a ramp's top colour (a glint) and dithered cells are never specks.
 
 ![A dark grey field with one grey cell in it](../samples/manual-lint/speckle.ans "3x")
 
@@ -232,17 +240,17 @@ $ blockwright-cli lint speckle.ans
 
 ### fallback-speck
 
-A half block (▀ or ▄) in two colours, cut into shading, whose half facing the shading shows a colour the shading holds but doesn't show. It is what is left when a shape is cut into a shaded area and a cut cell falls back to a half block in the shade's hidden colour.
+A two-colour half block (▀ or ▄) cut into shading, whose half facing the shading is in a colour the shade holds but doesn't show. It appears where a shape cut into shading leaves a cell in the shade's hidden colour.
 
-Each half is judged against the cell it faces, above or below it. That cell counts when it is on the ramp's ladder and isn't black, which is ink rather than shading; a solid ladder colour counts as well as ░, ▒ and ▓. The cell's run is the row of identical half blocks it belongs to, and the cells just past the run's two ends decide which rungs the half is judged against:
+Each half is judged against the cell it faces, above or below, when that cell is on the ladder and isn't black. The cells just past the two ends of its run of identical half blocks decide which rungs it is judged against:
 
 - When an end is the rung the half faces, that rung alone.
-- Otherwise, when both ends are the same rung of the ladder, that rung alone, though the half doesn't face it.
-- Otherwise the rung the half faces and the rungs either side of it, less any more than one rung from an end that is on the ladder. An end at the canvas's edge (the box's, with `--box`), in black or off the ladder takes nothing away. When nothing is left, the half isn't judged.
+- Otherwise, when both ends are the same rung, that rung alone.
+- Otherwise the faced rung and the rungs either side of it, less any more than one rung from an end on the ladder. An end at the canvas's edge (the box's, with `--box`), in black or off the ladder takes nothing away. When nothing is left, the half isn't judged.
 
-A judged half has fallen when it shows none of those rungs' colours and one of them could fall back to it. A solid rung shows its colour and has nothing to fall back to. ░ shows its background, ▓ its foreground and ▒ both, and each can fall back to either of its colours. With iCE off, the dark counterparts of a shade's colours can be fallen back to too, and count as shown when the half block's other half is bright. A half that isn't judged has to go on into the cell it faces, as a shape's edge goes on into the shape. The cell is flagged when it has a judged half, every judged half has fallen, and a ░, ▒ or ▓ of the ladder is at one of the run's ends or in a cell the half block faces.
+A judged half has fallen when it shows none of those rungs' colours and one of them could fall back to it: ░ shows its background, ▓ its foreground and ▒ both, and a solid rung has nothing to fall back to. With iCE off, a shade can also fall back to the dark counterparts of its colours, which count as shown when the half block's other half is bright.
 
-So against ░ in light red on red, with an end of the run against that ░, only ░ counts: a light red half is flagged, and neither a red half nor a half in a colour the shade doesn't hold (green, say) is. Run the same cut to the canvas's edges, or end it against black, and solid red and ▒ count too; ▒ shows light red, so the cut is clean. A light red half facing solid red is flagged when the run ends against ░ on both sides, as ░ is then the rung it is judged against, and isn't when it ends against black on both sides, as no shade is near.
+A half that isn't judged has to go on into the cell it faces, as a shape's edge goes on into the shape. The cell is flagged when it has a judged half, every judged half has fallen, and a ladder ░, ▒ or ▓ is at one of the run's ends or in a cell the half block faces.
 
 ![A light red shaded field with a light cyan block, its lower edge a row of light cyan over light red half blocks](../samples/manual-lint/fallback-speck.ans "3x")
 
@@ -255,13 +263,13 @@ $ blockwright-cli lint fallback-speck.ans
 8 findings (8 fallback-speck), noise 0.0000, iCE on
 ```
 
-The light red bottom halves face ░ in light red on red, which shows red, and the run of them ends against that ░ on both sides. Light red is the shade's other colour: one it holds and falls back to where a pixel cuts it, but doesn't show. With iCE off, a half in the dark counterpart of one of the shade's colours can be flagged too, when its other half is dark.
+The light red bottom halves face ░ in light red on red, which shows red, and their run ends against that ░ on both sides. Light red is the colour the shade holds but doesn't show.
 
 **Fix:** give the half facing the shade the colour the shade shows (red here), or carry the shade on into the cell.
 
 ### one-glyph
 
-Shading that uses only one of ░▒▓, in four shade cells or more. It is reported once for the whole canvas, at its top left.
+Shading that uses only one of ░▒▓, in four or more shade cells. Reported once, at the canvas's top left.
 
 ![A field of grey medium shade on dark grey](../samples/manual-lint/one-glyph.ans "3x")
 
@@ -271,11 +279,13 @@ $ blockwright-cli lint one-glyph.ans
 1 finding (1 one-glyph), noise 0.0000, iCE on
 ```
 
-**Fix:** shade through the ladder's rungs. A single shade is a texture, not a gradient.
+**Fix:** shade through the ladder's rungs. A single shade reads as texture.
 
 ### noise
 
-The canvas's pixel noise is over 0.02. Spaces, full blocks and half blocks are two pixels each, a top and a bottom; shade and text cells aren't pixels, and nor are the black spaces at the end of a row. Noise is the share of drawn pixels, not black, that are unlike all four of their neighbours, counted over the pixels whose four neighbours are all pixels. It is judged once for the whole canvas and reported at its top left, and the value is in every summary, clean or not. Shade speckle doesn't count here: [`speckle`](#speckle) finds it.
+The canvas's pixel noise is over 0.02. Spaces, full blocks and half blocks are two pixels each; shade cells, text cells and a row's trailing black spaces aren't pixels. Noise is the share of non-black pixels unlike all four neighbours, counted over pixels whose four neighbours are all pixels.
+
+It is reported at the top left; the value is in every summary. Shade specks are [`speckle`](#speckle).
 
 ![A light red field scattered with red half blocks](../samples/manual-lint/noise.ans "3x")
 
@@ -285,13 +295,13 @@ $ blockwright-cli lint noise.ans
 1 finding (1 noise), noise 0.1227, iCE on
 ```
 
-**Fix:** shade in bands that follow the form. Dither should step its density one way over many rows, not scatter.
+**Fix:** shade in bands that follow the form. Dither should step its density one way over many rows.
 
-A pattern of single pixels drawn on purpose counts too. In a row of marquee bulbs, say, a yellow `▀` on black in every other column between two red bands, each bulb's top pixel is unlike all four of its neighbours (the black on either side and below it, the red above), so it counts as a lonely pixel. Only a bulb on the piece's outer edge, or beside the black spaces a row ends with (which the check trims off, as the file leaves them out), is left out, since a neighbour is missing. A piece with a few such rows can go over 0.02 and get this finding. That is expected: the check counts pixels and can't tell a pattern from speckle. If the pattern is what you meant, leave it as it is.
+A deliberate pattern of single pixels, such as rows of marquee bulbs, can go over 0.02 too. If you meant it, leave it.
 
 ### lone-pixel
 
-One pixel of a half block that is lighter on a named ramp than the colour all around it, when all eight neighbouring pixels are that colour and it isn't black: a highlight a single pixel big.
+A single non-black pixel, lighter on a named ramp than the colour of all eight pixels around it: a one-pixel highlight.
 
 ![A red field with one light red top half pixel](../samples/manual-lint/lone-pixel.ans "3x")
 
@@ -305,7 +315,7 @@ $ blockwright-cli lint lone-pixel.ans
 
 ### gap
 
-A one-cell break in a line one cell thick, the gap showing what is on either side of the line. The line has to run on at least two cells each side of the break. A dashed pattern (breaks at a regular interval) isn't a gap, and nor is a break in a line along the canvas's edge, where there is no telling how thick the line is. The message says whether the line runs across a row or down a column.
+A one-cell break in a one-cell-thick line, the gap showing what is on either side; the line has to run at least two cells each side. Dashes (regular breaks) and breaks in a line along the canvas's edge aren't gaps. The message says whether the line runs across a row or down a column.
 
 ![A white line across a blue field, one cell missing in its middle](../samples/manual-lint/gap.ans "3x")
 
@@ -333,7 +343,7 @@ $ blockwright-cli lint merge.ans
 
 ### dotted-diagonal
 
-A diagonal line one pixel thick, at least four pixels long, whose pixels touch only at their corners. At 1× it reads as a row of dots.
+A 1-pixel diagonal, at least four pixels long, whose pixels touch only at their corners. At 1× it reads as dots.
 
 ![A yellow diagonal line of half blocks stepping down a blue field](../samples/manual-lint/dotted-diagonal.ans "2x")
 
@@ -343,11 +353,11 @@ $ blockwright-cli lint dotted-diagonal.ans
 1 finding (1 dotted-diagonal), noise 0.0169, iCE on
 ```
 
-**Fix:** join each pixel to the next along a side (4-connected), so the line steps as a staircase, or make it thicker.
+**Fix:** join each pixel to the next along a side (4-connected), as a staircase, or make the line thicker.
 
 ### flat
 
-Only with `--box`. An area inside the box of one look (one glyph in one pair of colours, not black), found in windows of 4×2 cells and reported when it covers at least 48 cells. The message gives its size and the box round it.
+Only with `--box`. An area inside the box of one look (one glyph in one pair of colours, not black), found in 4×2-cell windows and reported at 48 cells or more. The message gives its size and bounding box.
 
 ![A red rectangle in a blue field](../samples/manual-lint/flat.ans "3x")
 
@@ -359,11 +369,11 @@ $ blockwright-cli lint --box 0,0,23,5 flat.ans
 1 finding (1 flat), noise 0.0000, iCE on
 ```
 
-**Fix:** model the form with a ramp, or texture it. A flat fill is fine in a graphic piece and in a background: give `--box` round the subject, not the whole piece.
+**Fix:** model the form with a ramp, or texture it. Flat fills are fine in graphic pieces and backgrounds, so give `--box` round the subject only.
 
 ### trailing-black
 
-A row whose art stops short of the right edge, followed by black to the edge, beside a row that reaches it. IRC drops trailing black spaces, so the client shows its own background there; a row of black alone shows in the client's background whole.
+A row whose art ends in black before the right edge, beside a row that reaches it. IRC drops trailing black spaces, so the client's own background shows there, or across a row that is all black.
 
 ![A blue field; row 2 is black from column 14 to the edge, row 3 is black all the way](../samples/manual-lint/trailing-black.ans "3x")
 
@@ -374,7 +384,7 @@ $ blockwright-cli lint trailing-black.ans
 2 findings (2 trailing-black), noise 0.0000, iCE on
 ```
 
-**Fix:** end the row with something that isn't black, or export with **View > IRC > Pad Lines** (no shortcut) on, which keeps the trailing black and writes a row's last cell, when it is a glyph of one code point that shows black alone and isn't bold, italic or underlined (not a letter with a combining mark, nor the right cell of a wide glyph that IRC text writes whole), as a `█` with a black foreground and no background code of its own, which a client can't trim ([Making rows fit](10-irc.md#making-rows-fit)).
+**Fix:** end the row with something that isn't black, or export with **View > IRC > Pad Lines** (no shortcut) on. It keeps the trailing black and writes a row's last cell, when it is a plain one-code-point glyph that shows black alone, as a `█` with a black foreground, which a client can't trim ([Making rows fit](10-irc.md#making-rows-fit)).
 
 ### blank-edge-rows
 
@@ -389,11 +399,11 @@ $ blockwright-cli lint blank-edge-rows.ans
 2 findings (2 blank-edge-rows), noise 0.0000, iCE on
 ```
 
-**Fix:** crop the canvas to the art, or keep the margin with a black-on-black block in each row. **View > IRC > Pad Lines** (no shortcut) keeps the blank rows on export instead, and writes a row's last cell, when it is a glyph of one code point that shows black alone and isn't bold, italic or underlined (not a letter with a combining mark, nor the right cell of a wide glyph that IRC text writes whole), as a `█` with a black foreground ([Making rows fit](10-irc.md#making-rows-fit)).
+**Fix:** crop the canvas to the art, or put a black-on-black block in each margin row. **View > IRC > Pad Lines** (no shortcut) also keeps blank rows on export, the same way ([Making rows fit](10-irc.md#making-rows-fit)).
 
 ### no-cp437
 
-Only under the ANSI target. A glyph a CP437 `.ans` can't save as it is. The message names the glyph's code points and the glyph, and says what an `.ans` saves in its place:
+Only under the ANSI target. A glyph a CP437 `.ans` can't save as it is. The message names the glyph and its code points, and what an `.ans` saves instead:
 
 | The glyph | The message, for example |
 |---|---|
@@ -402,9 +412,9 @@ Only under the ANSI target. A glyph a CP437 `.ans` can't save as it is. The mess
 | Takes two cells | `U+6F22 漢 takes two cells: an .ans saves it as '?' and a space` |
 | Is a letter with combining marks that CP437 has no glyph for | `U+0071 U+0301 q U+0301 has no CP437 code: an .ans saves it as q, dropping U+0301` |
 
-A letter and a mark that CP437 has as one glyph (e and U+0301 is é) is saved as that glyph and isn't flagged. A control or bidi code point is named by its code alone and never printed. A cell that holds a control character itself (below U+0020, or U+007F) isn't flagged.
+A letter and mark that CP437 has as one glyph (e and U+0301 is é) isn't flagged, and nor is a cell holding a control character (below U+0020, or U+007F).
 
-The five glyphs whose byte the reader acts on are flagged like any other, and the lint exits 4. For a UTF-8 `.ans` holding ○◙♪→←:
+For a UTF-8 `.ans` holding ○◙♪→←:
 
 ```
 $ blockwright-cli lint arrows.ans
@@ -416,7 +426,7 @@ $ blockwright-cli lint arrows.ans
 5 findings (5 no-cp437), noise 0.0000, iCE on
 ```
 
-In the JSON each is a `"severity":"warning"`. Under the IRC target the check is off, and the same cells are counted in one [`ans-loss`](#ans-loss) note; with nothing else to report the piece is clean and the exit status is 0:
+Each is a `"severity":"warning"` in the JSON, and the exit status is 4. Under the IRC target the check is off and the same cells make one [`ans-loss`](#ans-loss) note, so the piece is clean, status 0:
 
 ```
 $ blockwright-cli lint --target irc arrows.ans
@@ -426,17 +436,17 @@ clean, 1 note (1 ans-loss), noise 0.0000, iCE on
 
 See [File formats](13-file-formats.md#writing) for why an `.ans` can't keep those five.
 
-**Fix:** draw it with CP437 glyphs, or keep the piece as a project, which holds any glyph. A piece made for IRC can take the IRC target instead.
+**Fix:** use CP437 glyphs, keep the piece as a project (which holds any glyph), or give an IRC piece the IRC target.
 
 ### width-varies
 
-A glyph whose width a client or terminal may count differently, so that the rest of its line moves. It runs under both targets. The message names the glyph and gives each reason that applies:
+Under either target, a glyph whose width clients and terminals count differently, shifting the rest of the line. The message names the glyph and each reason:
 
-- A code point that is two columns wide, or zero-width, only since a Unicode version after 9.0.0. A client with an older table draws it in one column, or gives it a column of its own.
-- U+200D (zero width joiner) in the cell: a terminal that joins graphemes draws the glyph and the one after it as one, narrower than their cells.
-- U+FE0F after a glyph one column wide: a terminal that joins graphemes draws it two columns wide, one more than its cell.
-- A skin tone modifier (U+1F3FB to U+1F3FF): a terminal that joins graphemes draws it inside the emoji before it.
-- Two regional indicators side by side make a flag. That is reported once, at the first of them, and `x2,y2` is the second.
+- Two columns wide, or zero-width, only since a Unicode version after 9.0.0. An older client draws it in one column, or gives it a column of its own.
+- U+200D (zero width joiner): a grapheme-joining terminal draws the glyph and the next as one, narrower than their cells.
+- U+FE0F after a one-column glyph: a grapheme-joining terminal draws it two columns wide.
+- A skin tone modifier (U+1F3FB to U+1F3FF): a grapheme-joining terminal draws it inside the emoji before it.
+- Two regional indicators side by side make a flag, reported once at the first, with `x2,y2` the second.
 
 ```
 $ blockwright-cli lint --target irc heart.ans
@@ -451,7 +461,7 @@ A newer emoji reads `U+1F970 🥰: it takes two columns here, but only since a U
 
 ### lone-mark
 
-A zero-width code point, such as a combining mark, alone in a cell, which a terminal draws on the cell before it or not at all; or a glyph two columns wide with no continuation cell after it, which a terminal draws over the next cell too. It runs under both targets.
+Under either target, a zero-width code point, such as a combining mark, alone in a cell: a terminal draws it on the cell before or not at all. Also a two-column glyph with no continuation cell, which a terminal draws over the next cell.
 
 ```
 U+0301 is zero-width in a cell of its own: a terminal draws it on the cell before it, or not at all
@@ -461,7 +471,7 @@ U+0301 is zero-width in a cell of its own: a terminal draws it on the cell befor
 
 ### bidi-control
 
-A bidi control (U+061C, U+200E, U+200F, U+202A to U+202E, U+2066 to U+2069) in a cell, alone or in a cluster. A UTF-8 `.ans` or IRC text writes it as it is, and a client that applies bidi reorders the rest of the line. It runs under both targets. A right-to-left override alone in a cell, under the IRC target, is a bidi control and a lone mark, and the note beside them doesn't make the piece clean:
+A bidi control (U+061C, U+200E, U+200F, U+202A to U+202E, U+2066 to U+2069) in a cell, alone or in a cluster, under either target. A UTF-8 `.ans` or IRC text writes it as it is, and a client that applies bidi reorders the rest of the line. A right-to-left override alone in a cell is a bidi control and a lone mark:
 
 ```
 $ blockwright-cli lint --target irc override.ans
@@ -477,7 +487,7 @@ The exit status is 4.
 
 ### ans-loss
 
-Only under the IRC target, and a note, not a fault: what an `.ans` save would lose of a piece that is fine for IRC. There is at most one note of each kind, at the first cell it counts:
+Only under the IRC target. A note of what an `.ans` save would lose; at most one of each kind, at the first cell it counts:
 
 | What is lost | The message |
 |---|---|
@@ -485,11 +495,15 @@ Only under the IRC target, and a note, not a fault: what an `.ans` save would lo
 | Colours: cells in a colour other than the 16 | `1 cell is in a colour an .ans can't hold, saved as the nearest of the 16 (fine for IRC)` |
 | Formatting: cells with bold, italic or underline | `5 cells have bold, italic or underline, which an .ans leaves out (fine for IRC)` |
 
-A note leaves the piece clean: with notes alone the summary starts `clean` and the exit status is 0. In the JSON a note's `severity` is `"note"`; in the Lint dock its row is in italics. Nothing needs fixing for IRC; if the piece is to be saved as an `.ans` as well, lint it under the ANSI target.
+With notes alone the summary starts `clean` and the exit status is 0. If the piece will also be saved as an `.ans`, lint it under the ANSI target.
 
 ### wasted-format
 
-Bold, italic or underline on a cell where it draws nothing, though IRC text still spends a byte on each toggle. An attribute is wasted when the cell draws the same pixels without it, at both glyph widths, 8 and 9 pixels: bold on a blank, a `▀` or a `█`, say, or underline on a `█`. Italic shears a block off its background, so italic on `█` draws and isn't flagged. Only a glyph the VGA font has is judged. It runs under both targets, one finding a cell, naming the attributes wasted. The formatting comes from the Palette dock's **B**, **I** and **U** toggles, which the glyph brush and typing write under the IRC target.
+Bold, italic or underline that draws nothing, though IRC text spends a byte on each toggle; one finding per cell, under either target. An attribute is wasted when the cell draws the same pixels without it at both glyph widths, 8 and 9 pixels: bold on a blank, `▀` or `█`, or underline on `█`.
+
+Italic shears a block, so italic on `█` isn't flagged. Only glyphs in the VGA font are judged.
+
+The formatting comes from the Palette dock's **B**, **I** and **U** toggles, which the glyph brush and typing write under the IRC target.
 
 For an IRC project whose first five cells are bold on a blank, underline on `█`, bold on `▀`, bold on `A` and italic on `█`:
 
@@ -502,18 +516,20 @@ $ blockwright-cli lint formatted.bwp
 3 findings (3 wasted-format), 1 note (1 ans-loss), noise 0.0000, iCE on
 ```
 
-In the JSON each is a `"severity":"warning"`, and the exit status is 4.
+Each is a `"severity":"warning"`; the exit status is 4.
 
-**Fix:** turn the attribute off on those cells. Export writes the formatting a cell has, wasted or not.
+**Fix:** turn the attribute off on those cells. Export writes it, wasted or not.
 
 ## The IRC target
 
-A document is made for an `.ans` (the ANSI target) or for IRC. The editor sets it with **Format > Target**, a project keeps it (`pack` and `unpack` set it with `--target`), and `lint --target` overrides it; a flat file is linted for ANSI unless `--target irc` is given. Under the IRC target:
+A document targets an `.ans` (ANSI) or IRC: set it with **Format > Target**. A project keeps it (`pack` and `unpack` take `--target`), `lint --target` overrides it, and a flat file is linted for ANSI unless `--target irc` is given. Under the IRC target:
 
 - [`no-cp437`](#no-cp437) is off, and [`ans-loss`](#ans-loss) notes say what an `.ans` save would lose instead.
-- A ladder check at a cell in a colour other than the 16 judges it by the nearest of the 16, and the message ends `(an RGB cell, judged by the nearest of the 16)`.
-- Every other check runs as it does under ANSI.
+- A ladder check judges a cell in a colour outside the 16 by the nearest of the 16, and the message ends `(an RGB cell, judged by the nearest of the 16)`.
+- Every other check runs as under ANSI.
 
 ## Where the rules come from
 
-The rules are the ones funkpower's pieces for the IRC library are held to. The ladder rules (rungs one to three cells wide, a ramp stepping between neighbours through ░ ▒ ▓ in order, no form shaded in one glyph) are the shading rules tutorials 04 and 05 teach. The craft checks are the faults a rule can find: no lone glint pixels, no fallback specks, no dotted 1 px diagonals, no large flat areas on the subject, and no blank rows or trailing black lost to the IRC trim. The flat check reports each area of one look that covers 48 cells or more, found with 4×2-cell windows at any offset; it doesn't give the share of the subject that is flat, though keeping that under 15% is a good bar. `--box` counts canvas rows from the top, blank rows included. The rest (every word read at 1×, one light direction, the squint test, nothing that reads as the wrong thing) needs a reader.
+The rules are the ones funkpower's pieces for the IRC library are held to. The ladder rules (rungs one to three cells wide, neighbours stepped through ░ ▒ ▓ in order, no form shaded in one glyph) are the shading rules of tutorials 04 and 05.
+
+The flat check doesn't give the share of the subject that is flat; under 15% is a good bar. `--box` counts canvas rows from the top, blank rows included. The rest (every word read at 1×, one light direction, the squint test, nothing that reads as the wrong thing) needs a reader.

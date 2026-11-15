@@ -3,15 +3,19 @@ Checked: Blockwright 0.1.0 (12ee9ef)
 
 # Keyboard mode, F-key glyph sets and the pen
 
-Keyboard mode types on the canvas the way a text editor types on a page: a key puts a glyph in the cell under the cursor and moves the cursor on. The F-keys type the block, shade and line glyphs that aren't on a keyboard, from 21 sets you switch between (16 in a CP437 document under the ANSI target). Everything typed is drawn in the pen's two colours.
+In keyboard mode a key puts a glyph in the cell under the cursor and moves the cursor on. The F-keys type block, shade and line glyphs from 21 sets (16 in a CP437 document under the ANSI target). Everything is typed in the pen's two colours.
 
 [What ANSI art is](../tutorials/01-what-ansi-art-is.md) types its first word this way.
 
 ## Keyboard mode
 
-**Tools > Keyboard** (<kbd>Ctrl</kbd>+<kbd>K</kbd>) is the tool Blockwright starts with. Keys type in every other tool too, unless the tool uses the key itself: the select tool takes the arrows, <kbd>Enter</kbd>, <kbd>Esc</kbd> and <kbd>Delete</kbd> while there is a selection, the glyph brush takes the F-keys to pick its glyph, and the text tool types into its own text layer.
+Blockwright starts in **Tools > Keyboard** (<kbd>Ctrl</kbd>+<kbd>K</kbd>). Keys type in the other tools too, except keys a tool uses itself:
 
-Click a cell to put the cursor there. The cursor is a frame around one cell (both cells of a wide character), drawn so it shows on any colour.
+- the select tool takes the arrows, <kbd>Enter</kbd>, <kbd>Esc</kbd> and <kbd>Delete</kbd> while there is a selection;
+- the glyph brush takes the F-keys to pick its glyph;
+- the text tool types into its own text layer.
+
+Click a cell to put the cursor there. The cursor is a frame around one cell, or both cells of a wide character.
 
 ### Keys
 
@@ -25,31 +29,37 @@ Click a cell to put the cursor there. The cursor is a frame around one cell (bot
 | <kbd>Backspace</kbd> | Moves the cursor one cell left and clears that cell. On the first column it does nothing. |
 | <kbd>Delete</kbd> | Clears the cell under the cursor; the cursor stays. |
 
-A cleared cell is a space in grey on black on the bottom layer, and transparent on any other layer. A pixels layer is the exception: a cell cleared on one is transparent even when it is the bottom layer.
+A cleared cell is transparent, except on a bottom Cells layer, where it is a space in grey on black.
 
-Typing on the last column leaves the cursor on it, past the glyph just typed. <kbd>Backspace</kbd> then clears that last cell rather than the one to its left. Any move of the cursor ends this.
+Typing on the last column leaves the cursor there. <kbd>Backspace</kbd> then clears that last cell, until the cursor moves.
 
-Each key is one step on the undo stack: **Edit > Undo** takes back one glyph at a time.
+Each key is one undo step.
 
 ### Which keys type
 
-A key types when it gives a printable character, unless <kbd>Ctrl</kbd> (or <kbd>Meta</kbd>) is held without <kbd>Alt</kbd>: those chords are shortcuts, such as <kbd>Ctrl</kbd>+<kbd>↑</kbd> for the pen below. So characters made with <kbd>AltGr</kbd>, or with <kbd>Option</kbd> on a Mac, type, and so does text from an input method.
+A key types when it gives a printable character, unless <kbd>Ctrl</kbd> (or <kbd>Meta</kbd>) is held without <kbd>Alt</kbd>: those chords are shortcuts. Characters made with <kbd>AltGr</kbd> or <kbd>Option</kbd>, and text from an input method, type.
 
-What a key can type depends on the document. In a CP437 document under the ANSI target, a cell can hold only a glyph CP437 has. Accented letters made of a letter and a combining accent are joined first, so `e` followed by a combining acute types `é`, which CP437 has. A character with no CP437 glyph, such as `€` or an emoji, is not typed, and the status bar says so for a few seconds, naming the target and the encoding: `€ has no CP437 code; not typed (target: ANSI, CP437)`. When an input method sends several characters at once and any of them can't be typed, none of them is.
+In a CP437 document under the ANSI target, a cell holds only glyphs CP437 has. A letter and a combining accent are joined first, so `e` and a combining acute type `é`.
 
-Five CP437 glyphs can't be typed there either: `○ ◙ ♪ → ←`. Their bytes, 9, 10, 13, 26 and 27, are tab, line feed, carriage return, end of file and escape, which a reader of an `.ans` file acts on rather than draws, so the file can't hold them as glyphs. The status bar names the byte and what a reader takes it for: `→ is CP437 0x1A, which .ans reads as SUB; not typed (target: ANSI, CP437)`.
+A character with no CP437 glyph, such as `€` or an emoji, isn't typed, and the status bar says `€ has no CP437 code; not typed (target: ANSI, CP437)`. If an input method sends several characters and any can't be typed, none is.
 
-Under the IRC target, and in a UTF-8 document under either target (the documents that offer [sets 17 to 21](#sets-17-to-21)), a key types any character but a control code: `€`, the five glyphs above and wide characters such as `中` all type. A wide character takes two cells and moves the cursor two; on the last column it isn't typed, and the status bar says `中 would start on the last column; dropped`. <kbd>Backspace</kbd> and <kbd>Delete</kbd> clear both of its cells. A combining accent typed on its own joins the character just left of the cursor.
+Five CP437 glyphs can't be typed there either: `○ ◙ ♪ → ←`. Their bytes, 9, 10, 13, 26 and 27, are control codes an `.ans` reader acts on. The status bar names the byte: `→ is CP437 0x1A, which .ans reads as SUB; not typed (target: ANSI, CP437)`.
+
+Under the IRC target, and in a UTF-8 document under either target (the documents that offer [sets 17 to 21](#sets-17-to-21)), any character but a control code types, including `€`, the five glyphs above and wide characters such as `中`.
+
+- A wide character takes two cells and moves the cursor two. On the last column it isn't typed: `中 would start on the last column; dropped`.
+- <kbd>Backspace</kbd> and <kbd>Delete</kbd> clear both of its cells.
+- A combining accent typed on its own joins the character left of the cursor.
 
 ### Where the glyphs go
 
-Typing goes into the active layer. On a layer that is hidden or locked, a generator layer, a reference layer or a live text layer, nothing is typed. A pixels layer holds only spaces and the blocks `█ ▀ ▄`, so any other glyph typed on one doesn't land.
+Typing goes into the active layer. Nothing is typed on a hidden or locked layer, a generator, reference or live text layer. A pixels layer takes only spaces and `█ ▀ ▄`.
 
-With **Edit > Mirror Mode** (<kbd>Ctrl</kbd>+<kbd>M</kbd>) on and **Edit > Symmetry > Mirror X** picked, every glyph typed is also put in the mirrored column across the canvas's centre, flipped left to right, so `┌` on the left gives `┐` on the right. The other symmetry modes don't repeat typing ([Mirror mode and symmetry](06-symmetry.md#typing-and-pasting)).
+With **Edit > Mirror Mode** (<kbd>Ctrl</kbd>+<kbd>M</kbd>) on and **Edit > Symmetry > Mirror X** picked, each glyph is also typed, flipped, in the mirrored column: `┌` on the left gives `┐` on the right. Other symmetry modes don't repeat typing ([Mirror mode and symmetry](06-symmetry.md#typing-and-pasting)).
 
 ## The F-key glyph sets
 
-<kbd>F1</kbd> to <kbd>F10</kbd> type the ten glyphs of the current **glyph set**. There are 21. Sets 1 to 16, the ones Moebius and PabloDraw have, are offered in every document; sets 17 to 21 hold glyphs CP437 doesn't have and are offered only in IRC and UTF-8 documents ([Sets 17 to 21](#sets-17-to-21)). Set 6, the shades and half blocks, is the default. Blockwright starts on the set last picked, and on set 6 the first time or when the set last picked is one the document doesn't offer:
+<kbd>F1</kbd> to <kbd>F10</kbd> type the ten glyphs of the current **glyph set**. Sets 1 to 16, as in Moebius and PabloDraw, are offered in every document; sets 17 to 21 hold glyphs CP437 lacks and are offered only in IRC and UTF-8 documents ([Sets 17 to 21](#sets-17-to-21)). Blockwright starts on the set last picked, or on set 6, the shades and half blocks, the first time or when the document doesn't offer the set last picked:
 
 ![The 16 glyph sets, a row each under F1 to F10, set 6 on blue: 1 single box lines, 2 double box lines, 3 and 4 mixed single and double lines, 5 crossings and symbols, 6 shades and half blocks, 7 faces, card suits and notes, 8 arrows, 9 to 16 maths, Greek, accented letters and brackets](../samples/manual-03-keyboard-mode/glyph-sets.ans "2x")
 
@@ -87,32 +97,36 @@ With **Edit > Mirror Mode** (<kbd>Ctrl</kbd>+<kbd>M</kbd>) on and **Edit > Symme
 | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F1</kbd> to <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd> | Sets 1 to 10. |
 | **Glyphs > Set 1** to **Set 21** | Any set the document offers; each item shows its ten glyphs, and the current one is ticked. Sets 17 to 21 are in the menu only in IRC and UTF-8 documents. |
 
-Sets 11 to 21 have no key of their own: pick them from the **Glyphs** menu or the Glyphs dock, or step to them. To give a set a key, select it on the **Shortcuts** tab of **Edit > Preferences...** (no shortcut by default; on macOS it is in the application menu), where the sets are listed under **Glyphs**.
+Sets 11 to 21 have no key; pick them from the **Glyphs** menu or the Glyphs dock, or step to them. To give a set a key, find it under **Glyphs** on the **Shortcuts** tab of **Edit > Preferences...** (on macOS in the application menu).
 
 ### Sets 17 to 21
 
-Sets 17 to 21 are offered in a document under the IRC target (**Format > Target > IRC**, no shortcut) and in a UTF-8 document, such as one read from or saved as a UTF-8 `.ans`, under either target. In a CP437 document under the ANSI target, the only other kind, the **Glyphs** menu, the Glyphs dock's list and stepping leave them out, and the status bar's tooltip names only the keys of the sets offered. If the set in use is one of them when the document stops offering it, the F-keys type set 6.
+Sets 17 to 21 are offered under the IRC target (**Format > Target > IRC**, no shortcut) and in a UTF-8 document, such as a UTF-8 `.ans`, under either target. A CP437 document under the ANSI target leaves them out of the menu, the dock and stepping. If the set in use stops being offered, the F-keys type set 6.
 
-They can still be given a key in any document. The **Shortcuts** tab lists them under **Glyphs** in every document; in one that hides them, each row ends "(hidden: offered only in IRC and UTF-8 documents)", in grey (set 21's reads "Set 21: ✦✧✶✷✸✹⋆✱✺❖ (hidden: offered only in IRC and UTF-8 documents)"), and its tooltip adds "Hidden in this document: offered only in IRC and UTF-8 documents. A key given to it is kept, and works there." In a document that hides the set the key does nothing. A key counts as taken whether or not the action that has it is shown: a key one of these sets has is refused for any other action, with "… is already the key for …", and a key another action has is refused for one of these sets. **Help > Keyboard Shortcuts...** (no shortcut) lists a hidden set that has a key, with the same note in its tooltip, and `blockwright --list-actions` lists all five after set 16, each with `"offeredWhen": "in IRC and UTF-8 documents"`.
+You can give them a key in any document; in a document that hides the set, the key does nothing.
 
-Set 21 holds sparkles, stars and asterisks no other set has: `✦ ✧ ✶ ✷ ✸ ✹ ⋆ ✱ ✺ ❖`. With it picked the status bar reads `F-keys set 21: ✦ ✧ ✶ ✷ ✸ ✹ ⋆ ✱ ✺ ❖`, and the **Glyphs** menu and the Glyphs dock's list call it `Set 21: ✦✧✶✷✸✹⋆✱✺❖`. Unifont, the font the editor draws them with, has all but `⋆` 16 pixels wide, so the editor squeezes those into one cell, as it does `★` and `☆`; an IRC client draws each in one column in its own font. Like 11 to 20 it has no key until you give it one. In an IRC or UTF-8 document **Next Set** steps from 20 to 21 and from 21 round to 1, and **Previous Set** from 1 to 21.
+- The **Shortcuts** tab lists them under **Glyphs**. Where hidden, each row ends "(hidden: offered only in IRC and UTF-8 documents)" in grey.
+- A key counts as taken whether or not its set is shown. A key one of these sets has is refused for any other action, with "… is already the key for …", and a key another action has is refused for these sets.
+- **Help > Keyboard Shortcuts...** (no shortcut) lists a hidden set that has a key. `blockwright --list-actions` lists all five after set 16, each with `"offeredWhen": "in IRC and UTF-8 documents"`.
 
-Moebius picks sets with <kbd>Alt</kbd>+F-keys. Blockwright doesn't, because the desktop takes many of those keys before an editor sees them (<kbd>Alt</kbd>+<kbd>F4</kbd> closes the window), and leaves <kbd>Ctrl</kbd>+F-keys and <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+F-keys alone for the same reason. On a Mac the <kbd>Ctrl</kbd> keys on this page are <kbd>Cmd</kbd>.
+Set 21 holds sparkles, stars and asterisks. Unifont draws all but `⋆` 16 pixels wide, so the editor squeezes them into one cell, as it does `★` and `☆`. An IRC client draws each in one column in its own font.
 
-<kbd>Shift</kbd>+<kbd>F1</kbd> is **Help > What's This?**, not a glyph; <kbd>F1</kbd> on its own types. <kbd>F11</kbd> and <kbd>F12</kbd> type nothing.
+Blockwright doesn't pick sets with <kbd>Alt</kbd>+F-keys as Moebius does, and leaves <kbd>Ctrl</kbd>+F-keys and <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+F-keys alone: the desktop takes many of those keys. On a Mac the <kbd>Ctrl</kbd> keys on this page are <kbd>Cmd</kbd>.
+
+<kbd>Shift</kbd>+<kbd>F1</kbd> is **Help > What's This?**; <kbd>F1</kbd> alone types. <kbd>F11</kbd> and <kbd>F12</kbd> type nothing.
 
 ### Seeing the set
 
-- **The status bar** shows the current set and its glyphs: `F-keys set 6: ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·`. Its tooltip lists each F-key with its glyph and the keys that change the set.
-- **The Glyphs dock**, along the bottom of the window, shows the set as ten cells, with a list of the sets the document offers beside them. Clicking a cell does what its F-key does with the active tool: in keyboard mode it types the glyph, with the glyph brush it picks the brush's glyph. Picking a set from the list changes the set.
+- **The status bar** shows the set: `F-keys set 6: ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·`. Its tooltip lists each F-key's glyph and the keys that change the set.
+- **The Glyphs dock**, along the bottom, shows the set as ten cells, beside a list of the sets offered. A cell click does what its F-key does with the active tool. Picking from the list changes the set.
 
-Here is a sign typed in keyboard mode. The frame is set 2 (<kbd>F1</kbd> `╔`, <kbd>F5</kbd> `═`, <kbd>F2</kbd> `╗`, <kbd>F6</kbd> `║`, <kbd>F3</kbd> `╚`, <kbd>F4</kbd> `╝`) in light cyan; the bar is set 6 (<kbd>F1</kbd> `░`, <kbd>F2</kbd> `▒`, <kbd>F3</kbd> `▓`, <kbd>F4</kbd> `█`) in light red; the words are letters in yellow:
+A sign typed in keyboard mode. The frame is set 2 (<kbd>F1</kbd> `╔`, <kbd>F5</kbd> `═`, <kbd>F2</kbd> `╗`, <kbd>F6</kbd> `║`, <kbd>F3</kbd> `╚`, <kbd>F4</kbd> `╝`) in light cyan; the bar is set 6 (<kbd>F1</kbd> `░`, <kbd>F2</kbd> `▒`, <kbd>F3</kbd> `▓`, <kbd>F4</kbd> `█`) in light red; the words are letters in yellow:
 
 ![A sign in a light cyan double frame: NOW OPEN in yellow over a light red bar that fades out through the shades at both ends](../samples/manual-03-keyboard-mode/typed.ans "2x")
 
 ## The pen
 
-The **pen** is the two colours everything is drawn in: a **foreground** for the glyph and a **background** for the rest of the cell. Keyboard mode types in both, and the drawing tools use them too. Blockwright starts with the two colours last picked for the pen, and with grey on black the first time.
+The **pen** is the two colours everything is drawn in: a **foreground** for the glyph and a **background** for the rest of the cell. Blockwright starts with the pen last picked, grey on black the first time.
 
 | Key or item | What it does |
 |---|---|
@@ -123,9 +137,9 @@ The **pen** is the two colours everything is drawn in: a **foreground** for the 
 | **Colours > Previous Background**, <kbd>Ctrl</kbd>+<kbd>←</kbd> | The colour before the background. |
 | **Colours > Next Background**, <kbd>Ctrl</kbd>+<kbd>→</kbd> | The colour after the background. |
 | **Colours > Default Colours**, <kbd>Ctrl</kbd>+<kbd>D</kbd> | Grey on black, with no bold, italic or underline. |
-| **Colours > Swap Colours** | Swaps the foreground and the background. It has no key; give it one in **Edit > Preferences... > Shortcuts**. |
-| **Tools > Eyedropper**, <kbd>Ctrl</kbd>+<kbd>I</kbd> | On a half-block pixel, a left click makes the pixel's colour the foreground and a right click makes it the background. On any other cell, a left click takes the cell's foreground and a right click its background. |
+| **Colours > Swap Colours** | Swaps the foreground and the background. No key; set one in **Edit > Preferences... > Shortcuts**. |
+| **Tools > Eyedropper**, <kbd>Ctrl</kbd>+<kbd>I</kbd> | Left click takes the foreground, right click the background: on a half-block pixel, the pixel's colour; on any other cell, the cell's foreground or background. |
 
-Under the IRC target the pen also has bold, italic and underline: the **B**, **I** and **U** toggles under the Palette dock's colours. Typing writes them with the colours, except on a Pixels layer, and **Swap Colours** leaves them as they are. Under the ANSI target the toggles are hidden and typing writes none.
+Under the IRC target the pen also has bold, italic and underline: the **B**, **I** and **U** toggles under the Palette dock's colours. Typing writes them, except on a Pixels layer; **Swap Colours** leaves them alone. Under the ANSI target they are hidden.
 
-The colours are numbered 0 to 15, in the order the Palette dock shows them; under the IRC target the dock shows mIRC's 99, 0 to 98, and the <kbd>Ctrl</kbd>+arrow keys step through all of them. The Palette dock, its pen swatches and what the colours look like are on [Palette, iCE colours and 24-bit colour](09-colour.md).
+The colours are numbered 0 to 15 in the Palette dock's order. Under the IRC target it shows mIRC's 99, 0 to 98, and <kbd>Ctrl</kbd>+arrows step through all of them. The colours themselves are on [Palette, iCE colours and 24-bit colour](09-colour.md).
