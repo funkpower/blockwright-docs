@@ -111,7 +111,7 @@ Checked: Blockwright 0.1.1 (609a15c)
 <p><a href="samples/index.md">Nine sample projects</a>, taken apart a layer at a time: what each layer adds, the variants each keeps, and the projects to download.</p>
 
 <div class="strip pieces">
-<figure><img src="samples/gallery/04-generator-ridges/ridges-at-dusk.ans" alt="Ridges at dusk, the finished piece at 1×"><figcaption><a href="samples/index.md#ridges-at-dusk">Ridges at dusk</a></figcaption></figure>
+<figure><img src="samples/gallery/09-wtc-0903/wtc-0903.ans" alt="Lower Manhattan at 9:03 on 11 September 2001, seen across the East River: an airliner entering the South Tower, a fireball breaking from the tower&#39;s east face, and the North Tower burning behind it with its smoke carried left across the sky"><figcaption><a href="samples/index.md#wtc-0903">wtc-0903</a>, 11 September 2001, 9:03</figcaption></figure>
 <figure><img src="samples/gallery/05-character/traveller.ans" alt="Traveller, the finished piece at 1×"><figcaption><a href="samples/index.md#traveller">Traveller</a></figcaption></figure>
 <figure><img src="samples/gallery/08-brain-on-irc/this-is-your-brain-on-irc.ans" alt="This Is Your Brain on IRC, the finished piece at 1×"><figcaption><a href="samples/index.md#this-is-your-brain-on-irc">This Is Your Brain on IRC</a></figcaption></figure>
 </div>
