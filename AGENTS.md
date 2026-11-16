@@ -34,7 +34,7 @@ Static documentation site for Blockwright: tutorials and the manual. `PLAN.md` i
 
 ## Review
 
-Every PR gets an adversarial Codex review before it merges. When Codex is unavailable (out of credits or its session limit), a Claude reviewer stands in for it, one that didn't write the change, and says in its comment that it is the fallback. A later pass may go back to Codex once it is available; either the stand-in or Codex may then re-check the stand-in's findings. Findings need a failing test or an exact repro; the author fixes, the same reviewer re-checks. Codex can't run the build, so the PR body states what was built and tested and how.
+Every PR gets an adversarial review before it merges, by a Claude reviewer that didn't write the change and starts with none of the author's context. Findings need a failing test or an exact repro; the author fixes, the same reviewer re-checks. The PR body states what was built and tested and how.
 
 ## Public repo
 
