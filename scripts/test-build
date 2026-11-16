@@ -2329,6 +2329,211 @@ def pre_in_attribute(s):
             raise Fail(f"{what}: {e}")
 
 
+DROPPED = "text of an element marked as Markdown"
+# The two shapes md_in_html drops an element's text in (docs#78), after a line
+# of text: two elements marked as Markdown, both left open; and a tag after the
+# start tag on its line, the element closed. The probe's body starts at line 8.
+DROPPED_CASES = {
+    "two nested open <div markdown=\"1\">": ('Before.\n\n<div markdown="1">\n<div markdown="1">\n\nSome text.\n',
+                                              10, "line 13", "Some text"),
+    "<div markdown=\"1\"><hr>": ('Before.\n\n<div markdown="1"><hr>\n\nSome text.\n</div>\n\nAfter.\n',
+                                 10, "line 12", "Some text"),
+    # Reported once, not once for each of md_in_html's two ends to the element.
+    "<p markdown=\"span\"><hr>": ('Before.\n\n<p markdown="span"><hr> Some text.</p>\n', 10, "line 10", "Some text"),
+    # Text the page's Markdown has before the element can't hide the lost
+    # text: a code span holding a < (an apostrophe later on a line of the
+    # element would pair with one before it in a tag running on to </div>),
+    # and a fence holding <!-- (with --> in a fence after the element).
+    "`a<b` in a code span before it": ("Compare with `a<b`, which isn't the same.\n\n<div markdown=\"1\"><hr>\n\n"
+                                       "That's the zebra quagga.\n</div>\n", 10, "line 12", "That s the zebra quagga"),
+    "<!-- in a fence before it": ('```\n<!-- x\n```\n\n<div markdown="1"><hr>\n\nZebra quagga okapi.\n</div>\n\n'
+                                  '```\n-->\n```\n', 12, "line 14", "Zebra quagga okapi"),
+    # Nor can the same words elsewhere on the page: a footnote saying it.
+    "a footnote's words": ('<div markdown="1"><hr>\n\nA note on zebras.\n\n</div>\n\nSee this.[^n]\n\n'
+                           '[^n]: A note on zebras.\n', 8, "line 10", "A note on zebras"),
+    # Nor the same words straight after the element, where the surviving copy
+    # and the lost one line up equally well (docs#82 round-2 review).
+    "the same words straight after it": ('<div markdown="1"><hr>\n\nUndo the last edit.\n</div>\n\n'
+                                         'Undo the last edit.\n', 8, "line 10", "Undo the last edit"),
+    "a sentence after it that starts with its words": (
+        '<details markdown="1"><summary>Cut</summary>\n\nCut copies the selection to the clipboard and clears '
+        'every cell it covers.\n</details>\n\n<details markdown="1"><hr>\n\nCopy copies the selection to the '
+        'clipboard.\n</details>\n\nCopy copies the selection to the clipboard and leaves the cells as they are.\n',
+        13, "line 15", "Copy copies the selection to the clipboard"),
+}
+# The same with the elements closed and the <hr> on its own line, and an
+# element marked as Markdown holding what Markdown writes differently from its
+# source: a numbered list, links (inline and by reference, with a title), an
+# image's alt text, inline HTML, entities, a footnote, an abbreviation, a
+# definition list, a table, a fence, a heading with an attribute list, a nested
+# element marked as Markdown and a comment.
+KEPT_CASES = {
+    "two nested closed <div markdown=\"1\">": ('Before.\n\n<div markdown="1">\n<div markdown="1">\n\nSome text.\n'
+                                               '</div>\n</div>\n', ["<p>Some text.</p>"]),
+    "<hr> on its own line": ('Before.\n\n<div markdown="1">\n<hr>\n\nSome text.\n</div>\n\nAfter.\n',
+                             ["<hr>\n<p>Some text.</p>"]),
+    "Markdown that changes its text": ("""Before.
+
+<details markdown="1">
+<summary>Answers</summary>
+
+1. A [link](../index.md "home page") and a [reference][ref], *em*, **strong** and `code_span`.
+2. An image ![alt words](../img/pic.png "title") and <kbd>Ctrl</kbd>+<kbd>Z</kbd>, &copy; &amp; a&lt;b.
+3. A footnote[^note] and an HTML abbreviation.
+
+Term
+:   Its definition.
+
+| Col one | Col two |
+|---|:-:|
+| cell a | cell b |
+
+```python
+print("in a fence")  # <div>
+```
+
+A heading with attributes {: #own-id .klass }
+---------------------------------------------
+
+<div markdown="1">
+Nested *Markdown* text.
+</div>
+
+<!-- a comment that never shows -->
+
+[ref]: ../index.md
+[^note]: The footnote's text.
+*[HTML]: Hyper Text Markup Language
+
+</details>
+
+After.
+""", ["<li>A <a", "<dd>Its definition.</dd>", "cell b</td>", "in a fence", 'id="own-id"',
+      "<p>Nested <em>Markdown</em> text.</p>", "The footnote's text.", "</details>\n<p>After.</p>"]),
+    # Markdown the check once read wrongly (docs#82 review): a link title
+    # holding a ")", and [TOC].
+    "a link title holding )": ('<div markdown="1">\n\nSee [this](../index.md "a) b c") now.\n\n</div>\n',
+                               ['title="a) b c"', "now.</p>"]),
+    "[TOC]": ('<div markdown="1">\n\n[TOC]\n\nSome text.\n\n</div>\n', ['<div class="toc">', "<p>Some text.</p>"]),
+    # And in round 2: a start tag with a blank line inside it, as the element
+    # marked as Markdown and inside one; a reference definition with its
+    # address or its title on the next line; a heading or a rule straight after
+    # a footnote's definition, which ends the footnote; and [TOC] with a
+    # footnote reference before a heading.
+    "a start tag with a blank line in it": ('<div markdown="1"\n\nclass="x">\n\nBody words.\n</div>\n',
+                                            ['<div class="x">', "<p>Body words.</p>"]),
+    "a start tag with a blank line in it, inside one": (
+        '<div markdown="1">\n\n<p\n\nclass="x">Inner words.</p>\n\n</div>\n', ['<p class="x">Inner words.</p>']),
+    "a reference's title on the next line": (
+        '<div markdown="1">\n\nSee [the site][s].\n\n[s]: ../index.md\n    "Example title words"\n\n</div>\n',
+        ['title="Example title words"', "the site</a>.</p>"]),
+    "a reference's address on the next line": (
+        '<div markdown="1">\n\nSee [the site][s].\n\n[s]:\n    ../tutorials/index.md\n\n</div>\n',
+        ['href="../tutorials/index.html">the site</a>']),
+    "a heading and a rule after a footnote": (
+        '<div markdown="1">\n\nText[^a] and more[^b].\n\n[^a]: Note words.\n## Heading words\nAfter heading.\n\n'
+        '[^b]: Other note.\nIts second line.\n***\nAfter rule.\n\n</div>\n',
+        ['<h2 id="heading-words">Heading words</h2>\n<p>After heading.</p>', "<hr />\n<p>After rule.</p>",
+         "Its second line."]),
+    "[TOC] and a footnote before a heading": (
+        '<div markdown="1">\n\n[TOC]\n\nShort[^1].\n\n## Alpha Beta Gamma\n\n## Delta\n\n[^1]: n.\n\n</div>\n',
+        ['<div class="toc">', "<p>Short<sup"]),
+}
+
+
+@scenario
+def markdown_text_dropped(s):
+    """A page whose element marked as Markdown loses its text in md_in_html
+    fails the build, naming the page, the element's line and the lost text's
+    line: two nested <div markdown="1"> both left open, and <div markdown="1">
+    with an <hr> after it on its line (docs#78), and <p markdown="span"> with
+    an <hr> after it, reported once; and the same after a code span holding
+    `a<b` and between fences holding <!-- and -->, with a footnote saying the
+    same words, and with the same words, or a sentence starting with them,
+    straight after the element. On main the first two build, exit 0, with
+    "Some text." on neither page."""
+    for what, (body, opened, line, said) in DROPPED_CASES.items():
+        s.probe(body)
+        try:
+            s.failed(says=DROPPED)
+            check(f"manual/99-probe.md: {DROPPED} (opened at line {opened}) is missing from the page, {line} of "
+                  f"manual/99-probe.md: {said!r}" in s.out, f"the page and lines not named: {s.out.strip()[-400:]}")
+            check(s.out.count(DROPPED) == 1, f"not reported exactly once: {s.out.strip()[-600:]}")
+        except Fail as e:
+            raise Fail(f"{what}: {e}")
+
+
+@scenario
+def markdown_text_dropped_restated(s):
+    """Text an element marked as Markdown loses fails the build when other text
+    on the page says the same words: text a marker put on the page (the real
+    Shortcuts page's tables, and a stand-in app's), a sentence restating it
+    only in part, all of it reported, and a fenced block's words (docs#82
+    review)."""
+    lost = "Undo the last edit. Copy the selection and clear its cells."
+    for what, said in {"the real Shortcuts page": lost,
+                       "the real Shortcuts page, in part": "Undo the last edit with Ctrl Z, and redo it with Ctrl Shift Z."
+                       }.items():
+        rel = "manual/15-shortcuts.md"
+        page = (ROOT / rel).read_text(encoding="utf-8")
+        check(page.endswith("\n"), f"{rel} doesn't end in a newline")
+        s.write(rel, page + f'\n<details markdown="1"><hr>\n\n{said}\n</details>\n')
+        opened = page.count("\n") + 2
+        words = " ".join(re.findall(r"[^\W_]+", said))
+        try:
+            s.failed(says=DROPPED)
+            check(f"{rel}: {DROPPED} (opened at line {opened}) is missing from the page, line {opened + 2} of "
+                  f"{rel}: {words!r}" in s.out, f"the page and lines not named: {s.out.strip()[-400:]}")
+        except Fail as e:
+            raise Fail(f"{what}: {e}")
+        s.write(rel, page)
+    for what, (body, args) in {
+            "a stand-in app's tables": ('<!-- generated: shortcuts -->\n\n<div markdown="1"><hr>\n\nSome text: Undo, '
+                                        "Delete, Makes the cells bigger & sharper.\n</div>\n",
+                                        ("--cli", s.test_cli(), "--app", s.app())),
+            "a fenced block": ("```\nSome text: zebra okapi.\n```\n\n<div markdown=\"1\"><hr>\n\n"
+                               "Some text: zebra okapi.\n</div>\n", ())}.items():
+        s.probe(body)
+        opened = 8 + body.split("\n").index('<div markdown="1"><hr>')
+        try:
+            s.failed(*args, says=DROPPED)
+            check(f"manual/99-probe.md: {DROPPED} (opened at line {opened}) is missing from the page, line "
+                  f"{opened + 2} of manual/99-probe.md: 'Some text" in s.out,
+                  f"the page and lines not named: {s.out.strip()[-400:]}")
+        except Fail as e:
+            raise Fail(f"{what}: {e}")
+
+
+@scenario
+def markdown_text_kept(s):
+    """The repros of markdown-text-dropped with the elements closed and the
+    <hr> on its own line build, and so does an element marked as Markdown whose
+    Markdown writes its text otherwise than its source (list numbers, link
+    addresses, an image's alt text, a footnote moved to the page's end, a
+    definition's label, an attribute list, a link title holding ")", [TOC]; a
+    start tag with a blank line inside it, a reference definition with its
+    address or title on the next line, a # heading or a rule ending a
+    footnote, [TOC] with a footnote reference before a heading), with all its
+    text on the page. Code spans holding <!-- before such an
+    element and --> after it lose nothing either: md_in_html reads them as a
+    comment and leaves the element's tags as text, which the attribute check
+    refuses, and the dropped-text check says nothing."""
+    (s.repo / "img").mkdir()
+    (s.repo / "img" / "pic.png").write_bytes(tiny_png())
+    for what, (body, shown) in KEPT_CASES.items():
+        s.probe(body)
+        try:
+            s.passed()
+            page = s.page()
+            for text in shown:
+                check(text in page, f"{text!r} isn't on the page")
+        except Fail as e:
+            raise Fail(f"{what}: {e}")
+    s.probe("Start one with `<!--`.\n\n<div markdown=\"1\"><hr>\n\nZebra quagga okapi.\n</div>\n\nEnd with `-->`.\n")
+    s.failed(says="manual/99-probe.md: <div markdown>: an attribute the site doesn't use")
+    check(DROPPED not in s.out, f"text reported lost: {s.out.strip()[-400:]}")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Check scripts/build and scripts/deploy against scratch copies of the repo.")
     ap.add_argument("--build", type=Path, help="build script to test instead of scripts/build")

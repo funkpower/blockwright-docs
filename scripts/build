@@ -89,6 +89,13 @@ functions in CSS_AT_RULES and CSS_FUNCTIONS (no @import, @font-face, url() or
 image-set()) and no backslash, which could spell one as a CSS escape, so it
 names no address for --forge-url to move.
 
+Python-Markdown's md_in_html drops an element's text without an error when two
+elements marked as Markdown are left open one inside the other, and when a tag
+follows the start tag on its line. The build fails on a page where it did:
+words of an element marked as Markdown, its Markdown syntax read past, that no
+word of the page's HTML matches where they should be, matched in order
+(dropped_text), naming the page and the lines.
+
 The build fails on a link or image that doesn't resolve, a `#fragment` the
 target page has no id for, a link to a stub, a path that leaves the repo or
 resolves into `.git/` or `site/`, a missing sample, a sample the CLI can't
@@ -102,6 +109,7 @@ any output inside the repo other than `site/`, and any that contains the repo.
 """
 
 import argparse
+import difflib
 import html
 import json
 import os
@@ -241,6 +249,41 @@ CODE_RE = re.compile(r"<!--.*?-->|<pre(?=[ \t\n\f\r>]).*?</pre>|<code(?=[ \t\n\f
 STRAY_FENCE_RE = re.compile(r"`{3,}[^`]*|~{3,}[^~]*")
 # What comes before a line's text in Markdown: its indent, quote marks and list markers.
 SOURCE_PREFIX_RE = re.compile(r"^(?:[ \t]*(?:>|[*+-][ \t]|\d+\.[ \t]))*[ \t]*")
+# A word, as the dropped-text check reads a page: letters and digits.
+WORD_RE = re.compile(r"[^\W_]+")
+# For the dropped-text check, read first and in one pass so neither can start
+# inside the other: a comment, and a code span (a run of backticks, what it
+# holds, the same run; no blank line inside, as a code span is inline text).
+# What a code span holds is text whatever it looks like (`a<b`, `<!--`), so it
+# is kept as its words only, and no tag, quote or comment pairs across it.
+CODE_SPAN_RE = re.compile(r"<!--.*?-->|(?<!\\)(`+)((?:(?!\n[ \t]*\n).)+?)(?<!`)\1(?!`)", re.S)
+# What else of a page's Markdown a reader never sees as text on the page, for
+# the dropped-text check: a tag (an autolink too; never across a blank line or
+# another <, so a stray < in the text doesn't run on to the next tag, except a
+# start tag at the start of a line written as a tag's name and attributes alone,
+# which md_in_html's parser reads over blank lines too), a link's or image's
+# address and title (an address with one level of parentheses, a title in
+# quotes holding a ")"), a reference link's label, a footnote's label, a
+# reference definition (its address and title on the lines after it too, as
+# Python-Markdown's ReferenceProcessor reads one), a reference, footnote or
+# abbreviation definition's line, an attribute list, a numbered list item's
+# number, and a [TOC] line (the toc extension puts the page's contents there).
+_NB = r"(?:\n(?![ \t]*\n))"  # a line break that isn't a blank line
+DROPPED_SYNTAX = [re.compile(p, re.M | re.S) for p in (
+    r"^(?:[ \t]*>)*[ \t]*\d+\.(?=[ \t])",
+    r"""^[ \t]*<[A-Za-z][-\w]*(?:\s+[A-Za-z_:][-\w:.]*(?:\s*=\s*(?:"[^"<]*"|'[^'<]*'|[^\s"'=<>`]+))?)*\s*/?>""",
+    rf"""</?[A-Za-z](?:[^<>"'\n]|{_NB}|"(?:[^"\n]|{_NB})*"|'(?:[^'\n]|{_NB})*')*>""",
+    r"""\]\([ \t]*(?:<[^>\n]*>|(?:[^()\s]|\([^()\s]*\))*)(?:[ \t]+(?:"[^"\n]*"|'[^'\n]*'))?[ \t]*\)""",
+    r"\]\([^)\n]*\)", r"\]\[[^\]\n]*\]", r"\[\^[^\]\n]*\]",
+    r"""^[ ]{0,3}\[[^\[\]\n]*\]:[ ]*(?:\n[ ]*)?[^\s]+[ ]*(?:\n[ ]*)?(?:(["'])[^\n]*\1[ ]*|\([^\n]*\)[ ]*)?$""",
+    r"^[ ]{0,3}\*?\[[^\]\n]+\]:[^\n]*", r"\{[ \t]*:?[ \t]*[#.][^}\n]*\}|\{:[^}\n]*\}",
+    r"^[ \t]*\[TOC\][ \t]*$")]
+# A footnote's definition, as the footnotes extension finds one.
+FOOTNOTE_DEF_RE = re.compile(r"^[ ]{0,3}\[\^[^\]]*\]:")
+# A line that ends a footnote's block: a # heading or a rule, which
+# Python-Markdown's block parser splits off before the footnotes extension
+# reads the block.
+FOOTNOTE_END_RE = re.compile(r"#{1,6}|[ ]{0,3}(?:(?:-+[ ]{0,2}){3,}|(?:_+[ ]{0,2}){3,}|(?:\*+[ ]{0,2}){3,})[ ]*$")
 
 
 class BuildError(Exception):
@@ -333,13 +376,15 @@ class Markers(Preprocessor):
     def __init__(self, md, replace):
         super().__init__(md)
         self.replace = replace
+        self.generated = []  # the HTML of each marker, in order
 
     def run(self, lines):
         out = []
         for line in lines:
             m = MARKER_RE.match(line)
             if m:
-                out += ["", self.md.htmlStash.store(self.replace(m.group(1), m.group(2))), ""]
+                self.generated.append(self.replace(m.group(1), m.group(2)))
+                out += ["", self.md.htmlStash.store(self.generated[-1]), ""]
             else:
                 out.append(line)
         return out
@@ -366,16 +411,7 @@ class NestedFences(Preprocessor):
         fenced = self.md.preprocessors["fenced_code_block"]
         # The lines a closed fence at the left margin or a raw HTML block holds
         # are None in seen: they aren't looked at, and in_item doesn't read past one.
-        seen = list(lines)
-        i = 0
-        while i < len(lines):
-            m = FENCE_LINE_RE.match(lines[i])
-            end = self.closing(lines, i, 0, m.group(2)) if m and not m.group(1) else None
-            if end is None:
-                i += 1
-            else:
-                seen[i:end + 1] = [None] * (end + 1 - i)
-                i = end + 1
+        seen = left_fences(lines)
         text = ["" if line is None else line for line in seen]
         edges, inline, raw, items = markdown_edges(text, self.md)
         self.edges = {n - 1 for n in edges}
@@ -492,6 +528,22 @@ class NestedFences(Preprocessor):
         return lead < 4 and not under
 
 
+def left_fences(lines):
+    """lines, with each line of a closed fenced block at the left margin (the
+    fences included) None: what fenced_code sets aside before md_in_html looks."""
+    seen = list(lines)
+    i = 0
+    while i < len(lines):
+        m = FENCE_LINE_RE.match(lines[i])
+        end = NestedFences.closing(lines, i, 0, m.group(2)) if m and not m.group(1) else None
+        if end is None:
+            i += 1
+        else:
+            seen[i:end + 1] = [None] * (end + 1 - i)
+            i = end + 1
+    return seen
+
+
 class MarkdownEdges(HTMLExtractorExtra):
     """md_in_html's own parser, noting where it splits the text into raw HTML
     and Markdown, every line counted from 1, all from its own state as it goes:
@@ -534,7 +586,11 @@ class MarkdownEdges(HTMLExtractorExtra):
       puts a block indented under one of the list's items beside the item, in
       the list; a list in a list element adds its items to that element, and a
       block indented under one is an indented code block beside the item. Either
-      way it is in no <li>."""
+      way it is in no <li>.
+    - elements, (first line, last line) of each outermost element marked as
+      Markdown (one md_in_html puts on its mdstack), from its start tag's line
+      to the line of the end tag that closes it, or to the last line when it
+      is still open at the end of the text."""
 
     def reset(self):
         super().reset()
@@ -547,6 +603,7 @@ class MarkdownEdges(HTMLExtractorExtra):
         self.ending = False
         self.starting = False
         self.tops = []  # (line, whether the innermost Markdown element is an item) after each change
+        self.elements = []
 
     def whole_line(self, text):
         line, offset = self.getpos()
@@ -590,9 +647,10 @@ class MarkdownEdges(HTMLExtractorExtra):
                  and tag in self.mdstack)
         super().handle_endtag(tag)
         if self.outer is not None and not self.mdstack:
+            end = len(self.lines) if self.ending else self.getpos()[0]
             if not self.stashed_in_block():
-                end = len(self.lines) if self.ending else self.getpos()[0]
                 self.raw.update(range(self.outer, end + 1))
+            self.elements.append((self.outer, end))
             self.outer = None
         if outer and not self.mdstack and self.whole_line(self.get_endtag_text(tag)):
             self.edges.add(self.getpos()[0])
@@ -615,6 +673,12 @@ class MarkdownEdges(HTMLExtractorExtra):
     def close(self):
         self.ending = True
         super().close()
+        if self.outer is not None:
+            # md_in_html's close() ends the first element on its mdstack by
+            # name, which closes the innermost of two open elements of one
+            # name only: the outer one is never stashed, and all it holds is lost.
+            self.elements.append((self.outer, len(self.lines)))
+            self.outer = None
         if self.opened is not None:
             self.raw.update(range(self.opened, len(self.lines) + 1))
             self.opened = None
@@ -632,9 +696,8 @@ class MarkdownEdges(HTMLExtractorExtra):
         return found
 
 
-def markdown_edges(lines, md):
-    """Where md_in_html splits lines into raw HTML and Markdown (MarkdownEdges):
-    (edges, inline, raw, items), found on a scratch Markdown instance with md's
+def edges_parser(lines, md):
+    """MarkdownEdges run over lines, on a scratch Markdown instance with md's
     block-level tags and list item tags, in one pass of md_in_html's parser."""
     scratch = markdown.Markdown()
     scratch.block_level_elements = list(md.block_level_elements)
@@ -644,7 +707,169 @@ def markdown_edges(lines, md):
     parser.item_types = set(indent.ITEM_TYPES) | set(indent.LIST_TYPES)
     parser.feed("\n".join(lines))
     parser.close()
+    return parser
+
+
+def markdown_edges(lines, md):
+    """Where md_in_html splits lines into raw HTML and Markdown (MarkdownEdges):
+    (edges, inline, raw, items)."""
+    parser = edges_parser(lines, md)
     return parser.edges, parser.inline, parser.raw, parser.item_lines()
+
+
+def words_only(text):
+    """text as its words alone, its line breaks kept."""
+    return "\n".join(" ".join(WORD_RE.findall(part)) for part in text.split("\n"))
+
+
+def source_words(text):
+    """The words of a page's Markdown (text) a reader sees on the page, each
+    with its line (from 1), as two lists: the page's own, and its footnotes'
+    in the order they are defined, which is the order the footnotes extension
+    writes them in at the page's end. What is left when comments, tags, a
+    fence's own lines, link and image addresses and titles, footnote labels,
+    reference, footnote and abbreviation definitions (their own lines),
+    {attribute} lists, a numbered list item's number and [TOC] are taken out
+    and entities decoded; a code span and a fenced block are text whatever they
+    hold, so they are read as their words before anything else is, and no
+    tag, quote or comment pairs across them. Markdown's own marks (* _ ` # > |
+    and the like) are no part of a word, so a word is a run of letters and
+    digits."""
+    def blank(m):
+        return " " + "\n" * m.group(0).count("\n")
+
+    lines = text.split("\n")
+    i = 0
+    while i < len(lines):
+        m = FENCE_LINE_RE.match(lines[i])
+        end = NestedFences.closing(lines, i, len(m.group(1)), m.group(2)) if m else None
+        if end is None:
+            i += 1
+            continue
+        lines[i + 1:end] = [words_only(line) for line in lines[i + 1:end]]
+        i = end + 1
+    notes = set()
+    for k, line in enumerate(lines):
+        if FOOTNOTE_DEF_RE.match(line):
+            notes.add(k)
+        elif k - 1 in notes:
+            # A footnote runs on to the next definition, over the lines of its
+            # block up to a # heading or a rule, and over each later block
+            # indented four spaces.
+            if line.strip():
+                if not FOOTNOTE_END_RE.match(line):
+                    notes.add(k)
+            elif next((n for n in lines[k + 1:] if n.strip()), "").startswith("    "):
+                notes.add(k)
+    text = "\n".join("" if FENCE_LINE_RE.match(line) else line for line in lines)
+    text = CODE_SPAN_RE.sub(lambda m: words_only(m.group(2)) if m.group(1) else blank(m), text)
+    for pattern in DROPPED_SYNTAX:
+        text = pattern.sub(blank, text)
+    lines = html.unescape(text).split("\n")
+    own, noted = [], []
+    for k, line in enumerate(lines):
+        (noted if k in notes else own).extend((w, k + 1) for w in WORD_RE.findall(line))
+    return own, noted
+
+
+def html_words(body):
+    """The words of a page's HTML (body) a reader sees: its text and each
+    image's alt text, in order."""
+    body = re.sub(r"<!--.*?-->", " ", body, flags=re.S)
+    body = re.sub(r"""<img[ \t\n\f\r](?:[^>"']|"[^"]*"|'[^']*')*>""", lambda m: " " + " ".join(re.findall(r'alt="([^"]*)"', m.group(0))) + " ",
+                  body, flags=re.I)
+    return WORD_RE.findall(html.unescape(re.sub(r"""<(?:[^>"']|"[^"]*"|'[^']*')*>""", " ", body)))
+
+
+def footnotes_div(body):
+    """body split into what comes before the footnotes extension's
+    <div class="footnote">, the div, and what comes after it."""
+    start = body.rfind('<div class="footnote">')
+    if start < 0:
+        return body, "", ""
+    depth = 0
+    for m in re.compile(r"<(/?)div\b", re.I).finditer(body, start):
+        depth += -1 if m.group(1) else 1
+        if not depth:
+            end = body.index(">", m.end()) + 1
+            return body[:start], body[start:end], body[end:]
+    return body[:start], body[start:], ""
+
+
+def dropped_text(text, body, md, generated=()):
+    """Where Python-Markdown dropped text of an element marked as Markdown: md_in_html
+    loses an element's text without an error when one such element is left open
+    inside another, or when a tag follows the start tag on its line. The words of
+    the page's Markdown (source_words) are matched in order against those of its
+    HTML (html_words, difflib), the page's own against the page's, and its
+    footnotes' (moved to the page's end, in the order they are defined) against
+    the footnotes', with the HTML a marker put in (generated, which has no words
+    in the Markdown) and the toc extension's contents taken out; a run of source
+    words inside an outermost element marked as Markdown
+    (MarkdownEdges.elements) with no word matched for it is dropped, whether or
+    not its words are elsewhere on the page. Where the words just before or
+    after an unmatched run outside every such element say the same as the run,
+    the match can't tell which copy the HTML holds, and difflib gives it the
+    first: the run is moved over them, as far as it goes into such elements,
+    so a copy that survived outside isn't taken for the one an element lost.
+    Returns (element's first line, first and last line of the run, its text)
+    for each, once."""
+    lines = text.split("\n")
+    elements = sorted(set(edges_parser(["" if line is None else line for line in left_fences(lines)], md).elements))
+    if not elements:
+        return []
+    for part in generated:
+        body = body.replace(part, " ", 1)
+    body = re.sub(r'<div class="toc">.*?</div>', " ", body, flags=re.S)
+    own, noted = source_words(text)
+    before, notes, after = footnotes_div(body)
+    found = []
+    for src, out in ((own, html_words(before + " " + after)), (noted, html_words(notes))):
+        words = [w for w, _ in src]
+        inside = [any(first <= n <= last for first, last in elements) for _, n in src]
+        matched = [False] * len(src)
+        for op, i1, i2, _, _ in difflib.SequenceMatcher(None, words, out, autojunk=False).get_opcodes():
+            if op == "equal":
+                matched[i1:i2] = [True] * (i2 - i1)
+        i = 0
+        while i < len(src):
+            if matched[i]:
+                i += 1
+                continue
+            s = i
+            while i < len(src) and not matched[i]:
+                i += 1
+            e = best = i
+            if not any(inside[s:e]):
+                # Slide the run [s, e) over matched words equal to its own, so
+                # each slide keeps the match in order and its words the same.
+                most = 0
+                for step in (-1, 1):
+                    a, b = s, e
+                    while (0 < a if step < 0 else b < len(src)) and \
+                            (matched[a - 1] and words[a - 1] == words[b - 1] if step < 0
+                             else matched[b] and words[a] == words[b]):
+                        a, b = a + step, b + step
+                        if sum(inside[a:b]) > most:
+                            most, best = sum(inside[a:b]), b
+                if most:
+                    lo, hi = min(s, best - (e - s)), max(e, best)
+                    matched[lo:hi] = [True] * (hi - lo)
+                    matched[best - (e - s):best] = [False] * (e - s)
+                    i = max(e, best)
+        i = 0
+        while i < len(src):
+            if matched[i]:
+                i += 1
+                continue
+            s = i
+            while i < len(src) and not matched[i]:
+                i += 1
+            for first, last in elements:
+                run = [(w, n) for w, n in src[s:i] if first <= n <= last]
+                if run:
+                    found.append((first, run[0][1], run[-1][1], " ".join(w for w, _ in run)))
+    return sorted(set(found))
 
 
 class FenceSpans(InlineProcessor):
@@ -1425,6 +1650,14 @@ class Builder:
             self.errors.append(f"{page.rel}: a code fence shown as text at line {n} of {page.out}{where}: {said!r}; "
                                "a fence goes at the left margin, or in a list item at the item's content indent "
                                "(four spaces a level), and closes with the same fence at the same indent")
+        for first, start, end, said in dropped_text(text, body, md,
+                                                     md.preprocessors["blockwright_markers"].generated):
+            lines = f"line {start}" if start == end else f"lines {start}-{end}"
+            self.errors.append(f"{page.rel}: text of an element marked as Markdown (opened at line {first}) is "
+                               f"missing from the page, {lines} of {page.rel}: {said[:80]!r}; Python-Markdown's "
+                               "md_in_html drops it when such an element is left open inside another, or when a "
+                               "tag follows its start tag on the same line: close every element marked as "
+                               "Markdown, and put its start tag alone on its line")
         dest = self.out / page.out
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(doc, encoding="utf-8")
