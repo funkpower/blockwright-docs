@@ -201,10 +201,7 @@ def main():
             "The sample projects that come with Blockwright, taken apart. Each one is built from layers, and "
             "each is shown here a layer at a time from the bottom up, with what every layer does, the variants "
             "it keeps, the finished piece and what it costs on IRC. Download a project and open it to turn its "
-            "layers on and off yourself; the start screen and **Help > Samples** open the ones your Blockwright installed.", "",
-            "Blockwright 0.1.1 installs all nine. 0.1.0 installed five of them, Harbour at night, Still life, "
-            "Ridges at dusk, Traveller and Blockwright logo, and Ember Kiln, a text-style logo DDOS KING has since "
-            "replaced; it opens the other four projects too.", ""]
+            "layers on and off yourself; the start screen and **Help > Samples** open the ones your Blockwright installed.", ""]
     page += [f"- [{title}](#{short})" for title, short, _ in sections]
     for _, _, md in sections:
         page += ["", md]
