@@ -15,7 +15,7 @@ An image whose source is an `.ans` or a `.bwp` project
 (`![alt](../samples/x/y.ans "2x")`) is drawn by `blockwright-cli render` (a
 project as its composite) at the scale its title names (1x when it names
 none), as `y.ans-2x.png` beside it, and links to the sample, which is copied
-beside the picture. Any other image must be a `.png`, copied as it is; an
+beside the picture; one the page wraps in `<a href>` keeps that link instead. Any other image must be a `.png`, copied as it is; an
 image of any other kind fails the build.
 
 Any other relative link names a file in the repo (a `.bwp` or an `.ans` no
@@ -1364,7 +1364,7 @@ class Builder:
 
     def fix_images(self, page, body):
         def img(m):
-            attrs = m.group(1)
+            link, attrs = m.group(1), m.group(2)
             quoted = re.search(r'(?<![\w-])src[ \t\n\f\r]*=[ \t\n\f\r]*"([^"]+)"', attrs, re.I)
             if not quoted:
                 raise BuildError(f"{page.rel}: <img {attrs.strip()[:60]}>: an image whose src isn't in double quotes; "
@@ -1398,10 +1398,16 @@ class Builder:
             alt = alt.group(1) if alt else ""
             href = os.path.relpath(ans, page.out.parent)
             pngref = os.path.relpath(png, page.out.parent)
-            return (f'<a class="ans" href="{html.escape(href)}"><img src="{html.escape(pngref)}" '
-                    f'alt="{alt}" width="{w}" height="{h}"></a>')
+            picture = f'<img src="{html.escape(pngref)}" alt="{alt}" width="{w}" height="{h}">'
+            if link:
+                # The page already links the picture somewhere: keep that link.
+                return f'<a class="ans" href="{link}">{picture}</a>'
+            return f'<a class="ans" href="{html.escape(href)}">{picture}</a>'
 
-        return re.sub(r"<img[ \t\n\f\r]([^>]*)/?>", img, body, flags=re.I)
+        # An image the page wraps in <a href="…"> keeps that link; any other
+        # sample links to itself.
+        return re.sub(r'(?:<a[ \t\n\f\r]+href="([^"]*)"[ \t\n\f\r]*>[ \t\n\f\r]*)?<img[ \t\n\f\r]([^>]*)/?>'
+                      r'(?(1)[ \t\n\f\r]*</a>)', img, body, flags=re.I)
 
     def copy_asset(self, page, ref):
         """Copy the repo file a relative link or image names into the site."""

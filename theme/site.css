@@ -141,8 +141,11 @@ body.home-page main h2 { margin: 0 0 1rem; }
 .dl ul.files { list-style: none; padding: 0; }
 .dl .note { color: var(--dim); font-size: .9rem; }
 .dl .how::before { content: "> "; content: "> " / ""; color: var(--green); }
-/* Three finished pieces side by side, stacked on a phone. */
-.strip.pieces { grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); align-items: center; }
+/* The finished samples in a row that scrolls sideways, one snap per piece. */
+.carousel { display: flex; gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory; margin: 1rem 0; padding-bottom: .5rem; }
+.carousel figure { flex: 0 0 min(100%, 22rem); margin: 0; scroll-snap-align: start; }
+.carousel a.ans { display: block; width: auto; overflow: visible; margin: 0; }
+.carousel a.ans img { max-width: 100%; max-height: 26rem; width: auto; height: auto; image-rendering: auto; }
 .docs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: 0 3rem; }
 .docs section { min-width: 0; }
 

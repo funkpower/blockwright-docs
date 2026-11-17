@@ -108,12 +108,18 @@ Checked: Blockwright 0.1.1 (609a15c)
 
 <h2 id="samples"><span class="visually-hidden">Samples</span><span aria-hidden="true">ls samples/</span></h2>
 
-<p><a href="samples/index.md">Nine sample projects</a>, taken apart a layer at a time: what each layer adds, the variants each keeps, and the projects to download.</p>
+<p><a href="samples/index.md">All samples</a></p>
 
-<div class="strip pieces">
-<figure><img src="samples/gallery/09-wtc-0903/wtc-0903.ans" alt="Lower Manhattan at 9:03 on 11 September 2001, seen across the East River: an airliner entering the South Tower, a fireball breaking from the tower&#39;s east face, and the North Tower burning behind it with its smoke carried left across the sky"><figcaption><a href="samples/index.md#wtc-0903">wtc-0903</a>, 11 September 2001, 9:03</figcaption></figure>
-<figure><img src="samples/gallery/05-character/traveller.ans" alt="Traveller, the finished piece at 1×"><figcaption><a href="samples/index.md#traveller">Traveller</a></figcaption></figure>
-<figure><img src="samples/gallery/08-brain-on-irc/this-is-your-brain-on-irc.ans" alt="This Is Your Brain on IRC, the finished piece at 1×"><figcaption><a href="samples/index.md#this-is-your-brain-on-irc">This Is Your Brain on IRC</a></figcaption></figure>
+<div class="carousel">
+<figure><a href="samples/index.md#harbour-at-night"><img src="samples/gallery/01-layers-showcase/harbour-at-night.ans" alt="Harbour at night, the finished piece"></a><figcaption><a href="samples/index.md#harbour-at-night">Harbour at night</a></figcaption></figure>
+<figure><a href="samples/index.md#ddos-king"><img src="samples/gallery/02-ddos-king/ddos-king.ans" alt="DDOS KING, the finished piece"></a><figcaption><a href="samples/index.md#ddos-king">DDOS KING</a></figcaption></figure>
+<figure><a href="samples/index.md#still-life"><img src="samples/gallery/03-still-life/still-life.ans" alt="Still life, the finished piece"></a><figcaption><a href="samples/index.md#still-life">Still life</a></figcaption></figure>
+<figure><a href="samples/index.md#ridges-at-dusk"><img src="samples/gallery/04-generator-ridges/ridges-at-dusk.ans" alt="Ridges at dusk, the finished piece"></a><figcaption><a href="samples/index.md#ridges-at-dusk">Ridges at dusk</a></figcaption></figure>
+<figure><a href="samples/index.md#traveller"><img src="samples/gallery/05-character/traveller.ans" alt="Traveller, the finished piece"></a><figcaption><a href="samples/index.md#traveller">Traveller</a></figcaption></figure>
+<figure><a href="samples/index.md#blockwright-logo"><img src="samples/gallery/06-blockwright-logo/blockwright-logo.ans" alt="Blockwright logo, the finished piece"></a><figcaption><a href="samples/index.md#blockwright-logo">Blockwright logo</a></figcaption></figure>
+<figure><a href="samples/index.md#battlestation"><img src="samples/gallery/07-battlestation/battlestation.ans" alt="Battlestation, the finished piece"></a><figcaption><a href="samples/index.md#battlestation">Battlestation</a></figcaption></figure>
+<figure><a href="samples/index.md#this-is-your-brain-on-irc"><img src="samples/gallery/08-brain-on-irc/this-is-your-brain-on-irc.ans" alt="This Is Your Brain on IRC, the finished piece"></a><figcaption><a href="samples/index.md#this-is-your-brain-on-irc">This Is Your Brain on IRC</a></figcaption></figure>
+<figure><a href="samples/index.md#wtc-0903"><img src="samples/gallery/09-wtc-0903/wtc-0903.ans" alt="wtc-0903, the finished piece"></a><figcaption><a href="samples/index.md#wtc-0903">wtc-0903</a></figcaption></figure>
 </div>
 
 <div class="rule" aria-hidden="true"><span>█▓▒░</span>░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
@@ -121,7 +127,7 @@ Checked: Blockwright 0.1.1 (609a15c)
 <div class="docs">
 <section>
 <h2 id="tutorials"><span class="visually-hidden">Tutorials</span><span aria-hidden="true">ls tutorials/</span></h2>
-<p><a href="tutorials/index.md">From nothing to a finished piece on IRC</a>, one skill at a time.</p>
+<p><a href="tutorials/index.md">All tutorials</a></p>
 <!-- list: tutorials -->
 </section>
 <section>

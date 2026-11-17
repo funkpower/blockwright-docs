@@ -624,6 +624,17 @@ def bwp_beside_ans(s):
 
 
 @scenario
+def image_own_link(s):
+    """A sample picture the page wraps in <a href> links there, not to the sample."""
+    s.probe('<a href="14-cli.md"><img src="../samples/01-what-ansi-art-is/cells.ans" alt="x"></a>')
+    s.passed()
+    page = s.page()
+    check(re.search(r'<a class="ans" href="14-cli\.html"><img src="\.\./samples/01-what-ansi-art-is/cells\.ans-1x\.png"', page),
+          "the picture doesn't keep the page's link")
+    check('href="../samples/01-what-ansi-art-is/cells.ans"' not in page, "the picture links to the sample")
+
+
+@scenario
 def image_unknown(s):
     """An image that is neither a sample nor a .png fails the build, though the file exists."""
     s.write("img/pic.gif", "GIF89a")
