@@ -42,23 +42,22 @@ Checked: Blockwright 0.1.1 (609a15c)
 <section class="dl" id="dl-macos">
 <h3>macOS</h3>
 <p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/Blockwright-0.1.1.dmg">Blockwright-0.1.1.dmg</a></p>
-<p>macOS 12 or later, Apple Silicon and Intel. The command line stays inside the app, at <code>Blockwright.app/Contents/MacOS/blockwright-cli</code>.</p>
-<p>Homebrew installs it too, from funkpower's <a href="https://git.pumpin.online/funkpower/homebrew-tap">tap</a>, and links <code>blockwright-cli</code> onto the <code>PATH</code>; the manual's <a href="manual/01-install.md#homebrew">Homebrew section</a> gives the two commands.</p>
+<p>macOS 12 or later, Apple Silicon and Intel. Also on <a href="manual/01-install.md#homebrew">Homebrew</a>.</p>
 <p class="how"><a href="manual/01-install.md#macos">Installing on macOS</a></p>
 </section>
 
 <section class="dl" id="dl-windows">
 <h3>Windows</h3>
 <p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright-0.1.1-x86_64.msi">blockwright-0.1.1-x86_64.msi</a></p>
-<p>Windows 10 or later, x86-64. It installs <code>blockwright.exe</code> and <code>blockwright-cli.exe</code> in the <code>bin</code> folder of <code>Program Files\Blockwright</code>, which it doesn't add to the <code>PATH</code>.</p>
+<p>Windows 10 or later, x86-64.</p>
 <p class="how"><a href="manual/01-install.md#windows">Installing on Windows</a></p>
 </section>
 
 <section class="dl" id="dl-appimage">
 <h3>Linux · AppImage</h3>
 <p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright-0.1.1-x86_64.AppImage">blockwright-0.1.1-x86_64.AppImage</a></p>
-<p>Any x86-64 distribution with glibc 2.36 or newer. One file holds both programs: it runs the editor, or the command line when <code>--cli</code> comes first or when it's started through a link named <code>blockwright-cli</code>. Where AppImageLauncher is installed, that link starts the editor; use a two-line script that runs the AppImage with <code>--cli</code> first instead, after removing the link.</p>
-<p class="how"><a href="manual/01-install.md#linux-appimage">Installing the AppImage</a>, the script included</p>
+<p>Any x86-64 distribution with glibc 2.36 or newer.</p>
+<p class="how"><a href="manual/01-install.md#linux-appimage">Installing the AppImage</a></p>
 </section>
 
 <section class="dl" id="dl-deb">
@@ -69,28 +68,24 @@ Checked: Blockwright 0.1.1 (609a15c)
 <li>Ubuntu 26.04: <a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright_0.1.1-1_ubuntu26.04_amd64.deb">blockwright_0.1.1-1_ubuntu26.04_amd64.deb</a></li>
 <li>Ubuntu 26.10: <a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright_0.1.1-1_ubuntu26.10_amd64.deb">blockwright_0.1.1-1_ubuntu26.10_amd64.deb</a></li>
 </ul>
-<p>Each <code>.deb</code> is for the release named in it only. Both programs go on the <code>PATH</code>.</p>
 <p class="how"><a href="manual/01-install.md#debian-and-ubuntu">Installing on Debian and Ubuntu</a></p>
 </section>
 
 <section class="dl" id="dl-fedora">
 <h3>Fedora 45</h3>
 <p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright-0.1.1-1.fc45.x86_64.rpm">blockwright-0.1.1-1.fc45.x86_64.rpm</a></p>
-<p>Both programs go on the <code>PATH</code>.</p>
 <p class="how"><a href="manual/01-install.md#fedora">Installing on Fedora</a></p>
 </section>
 
 <section class="dl" id="dl-arch">
 <h3>Arch Linux</h3>
 <p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/PKGBUILD">PKGBUILD</a></p>
-<p>Built with <code>makepkg -si</code>. Both programs go on the <code>PATH</code>.</p>
 <p class="how"><a href="manual/01-install.md#arch-linux">Installing on Arch Linux</a></p>
 </section>
 
 <section class="dl" id="dl-freebsd">
 <h3>FreeBSD 14</h3>
 <p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright-0.1.1-freebsd-port.tar.gz">blockwright-0.1.1-freebsd-port.tar.gz</a></p>
-<p>A port to build. Both programs go on the <code>PATH</code>.</p>
 <p class="how"><a href="manual/01-install.md#freebsd">Installing on FreeBSD</a></p>
 </section>
 
@@ -99,7 +94,7 @@ Checked: Blockwright 0.1.1 (609a15c)
 <p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright-0.1.1.tar.gz">blockwright-0.1.1.tar.gz</a></p>
 <p>Needs a C++20 compiler, CMake 3.24 or newer, Qt 6.7 or newer (Core, Gui, Widgets, Concurrent and Svg), libzip 1.7 or newer and zstd.</p>
 <p class="how"><a href="manual/01-install.md#building-from-source">Building from source</a></p>
-<p>The source is on <a href="https://git.pumpin.online/funkpower/blockwright">the forge</a>, under the GPL version 3 or later. Older releases, 0.1.0 among them, are on its <a href="https://git.pumpin.online/funkpower/blockwright/releases">releases page</a>.</p>
+<p><a href="https://git.pumpin.online/funkpower/blockwright">Repository</a> · <a href="https://git.pumpin.online/funkpower/blockwright/releases">Older releases</a> · GPL 3.0 or later</p>
 </section>
 
 </div>
