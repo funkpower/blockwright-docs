@@ -343,7 +343,7 @@ Closing such a flat document asks first: only a project saves its layers and IRC
 
 ## Micron page (.mu)
 
-**File > Export Micron...** and `blockwright-cli export --micron` write the canvas as a Micron page, NomadNet's page markup: UTF-8, one line per row ending in a line feed. Blockwright doesn't read it back. In the app:
+**File > Export Micron...** and `blockwright-cli export --micron` write the canvas as a Micron page, the page markup of NomadNet on the Reticulum network: UTF-8, one line per row ending in a line feed. Blockwright doesn't read it back. In the app:
 
 1. Any edit in progress lands. A floating selection that can't land stops the export, and the status bar says "Not exported: the floating selection can't land: …".
 2. If any cell would be written as something else ([What a page doesn't keep](#what-a-page-doesnt-keep)), a warning starts "Before exporting a Micron page:", lists them, and asks "Export anyway?". **Save** goes on; **Cancel**, the default, stops.
