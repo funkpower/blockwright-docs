@@ -7,7 +7,8 @@ opened by a {"sample": ...} start, a layer made active, the zoom set to 1, and
 a tool's settings set by a step without points, which changes nothing on the
 canvas. The window is pictured at that step, so Tool Options shows the tool.
 
-harbour.png: Harbour at night, the moon's Pixels layer and the Half-Block Brush.
+wtc-0903.png: wtc-0903, the fireball layer and the Ramp Shade Brush on the fire
+ramp.
 still-life.png: Still life, the sphere and the Form Brush, a dome lit from the
 north-west on the sea ramp.
 battlestation.png: Battlestation, the colours-only glow layer and the Colorize
@@ -30,7 +31,7 @@ GUI = os.environ.get("BLOCKWRIGHT") or "blockwright"
 WINDOW = [1600, 1000]
 
 SHOTS = {
-    "harbour": ("01-layers-showcase", "moon", {"action": "halfBlock", "fg": 14, "size": 2}),
+    "wtc-0903": ("09-wtc-0903", "fireball", {"action": "rampShade", "ramp": "fire", "size": 3}),
     "still-life": ("03-still-life", "sphere", {"action": "form", "ramp": "sea", "size": 6, "light": "NW",
                                                "form": {"shape": "dome", "rim": False, "specular": True}}),
     "battlestation": ("07-battlestation", "glow", {"action": "colorize", "fg": 9, "size": 4, "tip": "round"}),

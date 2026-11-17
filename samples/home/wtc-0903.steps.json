@@ -1,13 +1,13 @@
 {
  "version": 1,
  "start": {
-  "sample": "01-layers-showcase"
+  "sample": "09-wtc-0903"
  },
  "steps": [
   {
    "name": "layer",
    "action": "setActiveLayer",
-   "layer": "moon"
+   "layer": "fireball"
   },
   {
    "name": "zoom",
@@ -15,10 +15,10 @@
    "zoom": 1
   },
   {
-   "action": "halfBlock",
-   "fg": 14,
-   "size": 2,
-   "name": "harbour",
+   "action": "rampShade",
+   "ramp": "fire",
+   "size": 3,
+   "name": "wtc-0903",
    "screenshot": {
     "of": "window"
    }
