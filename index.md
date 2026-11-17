@@ -10,7 +10,7 @@ Checked: Blockwright 0.1.1 (609a15c)
 ## ## ##   ## ## ##    ####  ####### ## #   ##  ## ## ## ##   ##
 ####  ####  ###   #### ## ##  ## ##  ## ## ####  #### ## ##   ##"></div>
 <div class="hero-text">
-<p class="tagline">An editor for ANSI and IRC art: half-block pixels, shading along colour ramps, lighting, layers, and a live byte meter so every line fits on IRC.</p>
+<p class="tagline">An editor for ANSI, IRC and Reticulum Micron art: half-block pixels, shading along colour ramps, lighting, layers, and a live byte meter so every line fits on IRC.</p>
 <div class="term">
 <p><span class="ps1" aria-hidden="true">$ </span>blockwright --version | head -n 1</p>
 <p class="out">blockwright 0.1.1 (bd67fae)</p>
