@@ -35,7 +35,7 @@ Checked: Blockwright 0.1.1 (609a15c)
 
 <h2 id="download"><span class="visually-hidden">Download</span><span aria-hidden="true">ls releases/v0.1.1/</span></h2>
 
-<p class="lead">Blockwright 0.1.1, released on 14 November 2026. Every package holds both <code>blockwright</code>, the editor, and <code>blockwright-cli</code>, the command line; each card says where it puts the second. Each file but the <code>PKGBUILD</code> has a <code>.sha256</code> file beside it with its SHA-256 checksum (<a href="manual/01-install.md#checksums">checking it</a>). The <a href="https://git.pumpin.online/funkpower/blockwright/releases/tag/v0.1.1">release page</a> lists every file, and the manual's <a href="manual/01-install.md">install page</a> takes each system in turn.</p>
+<p class="lead"><a href="https://git.pumpin.online/funkpower/blockwright/releases/tag/v0.1.1">Blockwright 0.1.1</a>, 14 November 2026</p>
 
 <div class="downloads">
 
