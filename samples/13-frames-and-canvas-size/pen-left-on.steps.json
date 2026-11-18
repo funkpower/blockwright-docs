@@ -1,0 +1,1063 @@
+{
+ "version": 1,
+ "start": {
+  "file": "start.ans"
+ },
+ "steps": [
+  {
+   "name": "grown",
+   "action": "canvasSize",
+   "size": [
+    38,
+    14
+   ],
+   "anchor": "centre"
+  },
+  {
+   "name": "box-grey-1",
+   "action": "glyph",
+   "glyph": "╔",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     4
+    ],
+    [
+     5,
+     4
+    ]
+   ],
+   "size": 1,
+   "tip": "square",
+   "symmetry": "none"
+  },
+  {
+   "name": "box-grey-2",
+   "action": "glyph",
+   "glyph": "═",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     6,
+     4
+    ],
+    [
+     31,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "box-grey-3",
+   "action": "glyph",
+   "glyph": "╗",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     4
+    ],
+    [
+     32,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "box-grey-4",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     5
+    ],
+    [
+     5,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "box-grey-5",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     5
+    ],
+    [
+     32,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "box-grey-6",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "box-grey-7",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     6
+    ],
+    [
+     32,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "box-grey-8",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     7
+    ],
+    [
+     5,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "box-grey-9",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     7
+    ],
+    [
+     32,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "box-grey-10",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "box-grey-11",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     8
+    ],
+    [
+     32,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "box-grey-12",
+   "action": "glyph",
+   "glyph": "╚",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     9
+    ],
+    [
+     5,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "box-grey-13",
+   "action": "glyph",
+   "glyph": "═",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     6,
+     9
+    ],
+    [
+     31,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "box-grey",
+   "action": "glyph",
+   "glyph": "╝",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     9
+    ],
+    [
+     32,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-1",
+   "action": "glyph",
+   "glyph": "╔",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     4
+    ],
+    [
+     5,
+     4
+    ]
+   ],
+   "size": 1,
+   "tip": "square",
+   "symmetry": "none"
+  },
+  {
+   "name": "box-yellow-2",
+   "action": "glyph",
+   "glyph": "═",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     6,
+     4
+    ],
+    [
+     31,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-3",
+   "action": "glyph",
+   "glyph": "╗",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     4
+    ],
+    [
+     32,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-4",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     5
+    ],
+    [
+     5,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-5",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     5
+    ],
+    [
+     32,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-6",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-7",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     6
+    ],
+    [
+     32,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-8",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     7
+    ],
+    [
+     5,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-9",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     7
+    ],
+    [
+     32,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-10",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-11",
+   "action": "glyph",
+   "glyph": "║",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     8
+    ],
+    [
+     32,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-12",
+   "action": "glyph",
+   "glyph": "╚",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     9
+    ],
+    [
+     5,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow-13",
+   "action": "glyph",
+   "glyph": "═",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     6,
+     9
+    ],
+    [
+     31,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "box-yellow",
+   "action": "glyph",
+   "glyph": "╝",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     9
+    ],
+    [
+     32,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "source-1",
+   "action": "keyboard",
+   "at": [
+    1,
+    10
+   ],
+   "text": "♦·♦",
+   "fg": 13,
+   "bg": 0
+  },
+  {
+   "name": "source-2",
+   "action": "keyboard",
+   "at": [
+    1,
+    11
+   ],
+   "text": "· ·",
+   "fg": 13,
+   "bg": 0
+  },
+  {
+   "name": "source",
+   "action": "keyboard",
+   "at": [
+    1,
+    12
+   ],
+   "text": "♦·♦",
+   "fg": 13,
+   "bg": 0
+  },
+  {
+   "name": "select-source",
+   "action": "select",
+   "rect": [
+    1,
+    10,
+    3,
+    12
+   ]
+  },
+  {
+   "name": "deleted",
+   "action": "deleteSelection"
+  },
+  {
+   "name": "deselect",
+   "action": "deselect"
+  },
+  {
+   "name": "pen-left-on-1",
+   "action": "glyph",
+   "glyph": "♦",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     0
+    ]
+   ],
+   "size": 1,
+   "tip": "square",
+   "symmetry": "none"
+  },
+  {
+   "name": "pen-left-on-2",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     1,
+     0
+    ],
+    [
+     36,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-3",
+   "action": "glyph",
+   "glyph": "♦",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     0
+    ],
+    [
+     37,
+     0
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-4",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-5",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     1
+    ],
+    [
+     37,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-6",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-7",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     2
+    ],
+    [
+     37,
+     2
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-8",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-9",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     3
+    ],
+    [
+     37,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-10",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     4
+    ],
+    [
+     0,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-11",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     4
+    ],
+    [
+     37,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-12",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-13",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     5
+    ],
+    [
+     37,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-14",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     6
+    ],
+    [
+     0,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-15",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     6
+    ],
+    [
+     37,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-16",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     7
+    ],
+    [
+     0,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-17",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     7
+    ],
+    [
+     37,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-18",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     8
+    ],
+    [
+     0,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-19",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     8
+    ],
+    [
+     37,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-20",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     9
+    ],
+    [
+     0,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-21",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     9
+    ],
+    [
+     37,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-22",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     10
+    ],
+    [
+     0,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-23",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     10
+    ],
+    [
+     37,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-24",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     11
+    ],
+    [
+     0,
+     11
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-25",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     11
+    ],
+    [
+     37,
+     11
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-26",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-27",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     12
+    ],
+    [
+     37,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-28",
+   "action": "glyph",
+   "glyph": "♦",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     0,
+     13
+    ],
+    [
+     0,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on-29",
+   "action": "glyph",
+   "glyph": "·",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     1,
+     13
+    ],
+    [
+     36,
+     13
+    ]
+   ]
+  },
+  {
+   "name": "pen-left-on",
+   "action": "glyph",
+   "glyph": "♦",
+   "fg": 14,
+   "bg": 0,
+   "points": [
+    [
+     37,
+     13
+    ],
+    [
+     37,
+     13
+    ]
+   ]
+  }
+ ]
+}

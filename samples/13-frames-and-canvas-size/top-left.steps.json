@@ -1,0 +1,17 @@
+{
+ "version": 1,
+ "start": {
+  "file": "start.ans"
+ },
+ "steps": [
+  {
+   "name": "top-left",
+   "action": "canvasSize",
+   "size": [
+    38,
+    14
+   ],
+   "anchor": "top-left"
+  }
+ ]
+}

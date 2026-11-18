@@ -1,0 +1,19 @@
+{
+ "version": 1,
+ "start": {
+  "file": "final.ans"
+ },
+ "steps": [
+  {
+   "name": "tab",
+   "action": "keyboard",
+   "at": [
+    13,
+    4
+   ],
+   "text": " TOP SCORES ",
+   "fg": 15,
+   "bg": 0
+  }
+ ]
+}

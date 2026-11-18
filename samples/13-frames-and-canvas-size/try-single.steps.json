@@ -1,0 +1,422 @@
+{
+ "version": 1,
+ "start": {
+  "file": "final.ans"
+ },
+ "steps": [
+  {
+   "name": "erased-1",
+   "action": "glyph",
+   "glyph": " ",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     4
+    ],
+    [
+     32,
+     4
+    ]
+   ],
+   "size": 1,
+   "tip": "square",
+   "symmetry": "none"
+  },
+  {
+   "name": "erased-2",
+   "action": "glyph",
+   "glyph": " ",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     5
+    ],
+    [
+     5,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "erased-3",
+   "action": "glyph",
+   "glyph": " ",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     5
+    ],
+    [
+     32,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "erased-4",
+   "action": "glyph",
+   "glyph": " ",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "erased-5",
+   "action": "glyph",
+   "glyph": " ",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     6
+    ],
+    [
+     32,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "erased-6",
+   "action": "glyph",
+   "glyph": " ",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     7
+    ],
+    [
+     5,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "erased-7",
+   "action": "glyph",
+   "glyph": " ",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     7
+    ],
+    [
+     32,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "erased-8",
+   "action": "glyph",
+   "glyph": " ",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "erased-9",
+   "action": "glyph",
+   "glyph": " ",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     8
+    ],
+    [
+     32,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "erased",
+   "action": "glyph",
+   "glyph": " ",
+   "fg": 7,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     9
+    ],
+    [
+     32,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "single-1",
+   "action": "glyph",
+   "glyph": "┌",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     4
+    ],
+    [
+     5,
+     4
+    ]
+   ],
+   "size": 1,
+   "tip": "square",
+   "symmetry": "none"
+  },
+  {
+   "name": "single-2",
+   "action": "glyph",
+   "glyph": "─",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     6,
+     4
+    ],
+    [
+     31,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "single-3",
+   "action": "glyph",
+   "glyph": "┐",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     4
+    ],
+    [
+     32,
+     4
+    ]
+   ]
+  },
+  {
+   "name": "single-4",
+   "action": "glyph",
+   "glyph": "│",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     5
+    ],
+    [
+     5,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "single-5",
+   "action": "glyph",
+   "glyph": "│",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     5
+    ],
+    [
+     32,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "single-6",
+   "action": "glyph",
+   "glyph": "│",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "single-7",
+   "action": "glyph",
+   "glyph": "│",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     6
+    ],
+    [
+     32,
+     6
+    ]
+   ]
+  },
+  {
+   "name": "single-8",
+   "action": "glyph",
+   "glyph": "│",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     7
+    ],
+    [
+     5,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "single-9",
+   "action": "glyph",
+   "glyph": "│",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     7
+    ],
+    [
+     32,
+     7
+    ]
+   ]
+  },
+  {
+   "name": "single-10",
+   "action": "glyph",
+   "glyph": "│",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "single-11",
+   "action": "glyph",
+   "glyph": "│",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     8
+    ],
+    [
+     32,
+     8
+    ]
+   ]
+  },
+  {
+   "name": "single-12",
+   "action": "glyph",
+   "glyph": "└",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     5,
+     9
+    ],
+    [
+     5,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "single-13",
+   "action": "glyph",
+   "glyph": "─",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     6,
+     9
+    ],
+    [
+     31,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "single",
+   "action": "glyph",
+   "glyph": "┘",
+   "fg": 11,
+   "bg": 0,
+   "points": [
+    [
+     32,
+     9
+    ],
+    [
+     32,
+     9
+    ]
+   ]
+  }
+ ]
+}

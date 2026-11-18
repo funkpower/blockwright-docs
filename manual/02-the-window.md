@@ -60,7 +60,7 @@ Each layer ([Layers](07-layers.md)):
 
 Locked and hidden layers change too. The selection moves with the old canvas and is cut to the new one, or cleared if nothing is left. The cell cursor moves and stays on the canvas.
 
-The change is one undo step, `Canvas Size`; **Edit > Undo** (<kbd>Ctrl</kbd>+<kbd>Z</kbd>) puts everything back. Picking the current size adds no step.
+The change is one undo step, `Canvas Size`; **Edit > Undo** (<kbd>Ctrl</kbd>+<kbd>Z</kbd>) puts everything back. Picking the current size adds no step. Tutorial 13's [Room round the art](../tutorials/13-frames-and-canvas-size.md#room-round-the-art) uses it.
 
 A refused size changes nothing. The message box starts `The canvas can't be made that size:` and gives the reason:
 

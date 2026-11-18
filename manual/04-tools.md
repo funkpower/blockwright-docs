@@ -442,7 +442,7 @@ Draws a border to fit the rectangle you drag; a drag smaller than the frame's sm
 
 The built-in styles, in the list's order: **Single line**, **Double line**, **Double across, single down**, **Single across, double down**, **Heavy block**, **Thin half-block**, **Shaded**, **Bevel**, **Hazard stripes**, **Dashed line** and **Double-bevel button**. Line, half-block and shaded frames keep the background under their cells; the bevel, the hazard stripes and the button paint their own. Your own styles follow: select a small drawn box and choose **Selection > Save as Frame Style** ([Save as Frame Style and Save as Preset](08-library.md#save-as-frame-style-and-save-as-preset)).
 
-On a Pixels layer it draws only a style whose glyphs the layer holds, and the status bar says when it can't. No tutorial teaches it yet.
+On a Pixels layer it draws only a style whose glyphs the layer holds, and the status bar says when it can't. Tutorial 13, [Frames and canvas size](../tutorials/13-frames-and-canvas-size.md), teaches it; see its [How a frame fits any size](../tutorials/13-frames-and-canvas-size.md#how-a-frame-fits-any-size).
 
 ## Fill
 
