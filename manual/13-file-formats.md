@@ -46,7 +46,8 @@ If the file can't hold everything, a warning lists the losses before writing, un
 | N cell(s) hold a glyph whose CP437 byte .ans reads as a control code (…) and will be written as '?' (XBIN and BIN keep them) | A CP437 `.ans`, and a glyph whose byte the reader would act on (see [Writing](#writing)) |
 | N cell(s) hold control characters a UTF-8 .ans can't hold and will be written as '?': … | A UTF-8 `.ans`, and a control character in a cell; other lines name a wide glyph or a zero-width glyph a terminal wouldn't draw in its cells |
 | N cell(s) lost their blink when the file was opened with iCE colours, and this save doesn't put it back | See [iCE colours and blink](#ice-colours-and-blink) |
-| the file's own palette is left out (only XBIN keeps one) | Anything but XBIN, from an XBIN with its own palette |
+| the piece's own palette is left out (only XBIN and a project keep one): its colours show as the standard 16 (Colours > Fit to Palette > Standard first keeps its look) | Anything but XBIN or a project, from a document with a palette other than the standard one |
+| N palette colour(s) is/are rounded to the 64 levels a channel XBIN holds | An XBIN save, and a palette entry that reads back differently (a preset such as xterm, or a palette file, can hold colours XBIN can't) |
 | the file's own font is left out (only XBIN keeps one) | Anything but XBIN, from an XBIN with its own font |
 | the 9 px letter spacing is left out (XBIN has none and draws 8 px) | XBIN, with 9 px letter spacing on |
 | the legacy aspect ratio is left out (XBIN has none) | XBIN, with SAUCE's aspect ratio set; a square one says `square` |
@@ -160,7 +161,7 @@ Converting to XBIN or BIN says the same. In the editor the blink is lost on open
 An XBIN is an 11-byte header (width, height, font height, flags), an optional palette and font, then character and attribute pairs, optionally run-compressed. Blockwright refuses one with a 512-character font, a font height outside 1-32, a palette or font cut short, or a size of 0 or over 400 × 5000.
 
 - iCE colours are the header's non-blink flag.
-- A palette is 16 colours of 6-bit RGB, a font 256 glyphs 8 pixels wide. Only an XBIN save writes them back; other saves warn. The canvas and PNGs ignore them and use the standard palette and IBM VGA font.
+- A palette is 16 colours of 6-bit RGB, a font 256 glyphs 8 pixels wide. Only an XBIN save writes them back (a project keeps the palette, not the font); other saves warn. The canvas, the preview and `blockwright-cli render` draw in the palette and the font ([The document's palette](09-colour.md#the-documents-palette)).
 - SAUCE, if any, follows the cells.
 
 The writer compresses each row and writes SAUCE as XBin (DataType 6, FileType 0) with flags and font name cleared; iCE goes in the header. So 9 px letter spacing, the aspect flag and a font name other than `IBM VGA` or `IBM VGA 437` are lost: saving warns, and `convert` needs `--allow-lossy`.
@@ -202,7 +203,7 @@ size:        8x2
 ice:         off
 sauce:       none
 $ blockwright-cli convert palette.xb palette.ans
-blockwright-cli: warning: palette.xb: its palette is left out: only XBIN holds one
+blockwright-cli: warning: palette.xb: its palette is left out: only XBIN and a project hold one (remap --fit-palette cga first keeps its look)
 blockwright-cli: palette.ans: not written: the conversion loses data (--allow-lossy writes it anyway)
 ```
 
@@ -322,7 +323,7 @@ comments:    0
 
 A reader refuses a major version it doesn't know. Within a major version it skips unknown keys, and keeps unknown files and saves them back.
 
-A project doesn't hold an XBIN's palette or font: packing an XBIN that has one needs `--allow-lossy`, and Save warns.
+A project keeps an XBIN's palette but not its font: packing an XBIN that has a font needs `--allow-lossy`, and Save warns. In the manifest, `"palette"` is `"cga"` for the standard palette and otherwise a list of 16 colours, each `"#rrggbb"` (upper or lower case). A manifest with any other value is refused: `manifest.json: palette "X": this build has only cga or a list of colours`, `manifest.json: "palette" is not "cga" or a list of 16 colours`, or `manifest.json: palette colour N is not "#rrggbb"`. The version doesn't change. `info` of a project prints `palette: standard` or `palette: custom`.
 
 ### Saving a project as a flat file
 
@@ -354,7 +355,7 @@ Closing such a flat document asks first: only a project saves its layers and IRC
 
 ### What a page holds
 
-- The visible layers merged, under the document's iCE setting. The 16 colours are written in the document's palette (an XBIN's own, if it has one). Any other colour, such as one of [mIRC's 99 colours](09-colour.md#what-each-target-does-with-colour), is written as exact RGB.
+- The visible layers merged, under the document's iCE setting. The 16 colours are written in the document's palette (its own, if it has one). Any other colour, such as one of [mIRC's 99 colours](09-colour.md#what-each-target-does-with-colour), is written as exact RGB.
 - A colour as `` `F `` (foreground) or `` `B `` (background) and three hex digits when each channel is one digit doubled, as in the 16 (`#aa5500` is `a50`), else `T` and six digits (`` `FT001008 ``).
 - A colour only where it changes and the cell shows it: no foreground for a space unless underlined, no background behind a `█` unless italic.
 - Bold, italic and underline as `` `! ``, `` `* `` and `` `_ ``, toggled where they change.
@@ -434,7 +435,8 @@ To read a file the other way, open it with the `ANSI art, CP437 (*.ans)` or `ANS
 | Colours outside the 16: mIRC's, a Micron page's | Yes | The nearest of the 16 | The nearest of the 16 | The nearest of the 16 |
 | Bold, italic, underline | Yes | No | No | No |
 | iCE colours | Yes | Yes | Yes (header) | Yes |
-| An XBIN's palette and font | No | No | Yes | No |
+| A palette of its own | Yes | No | Yes | No |
+| An XBIN's font | No | No | Yes | No |
 | SAUCE title, author, group, date, comments | Yes | Yes | Yes | Yes |
 | SAUCE letter spacing and aspect | Yes | Yes | No | Yes |
 | SAUCE font name | Yes | Yes | No; a warning unless it is `IBM VGA` or `IBM VGA 437` | Yes |
@@ -455,11 +457,13 @@ A conversion that would lose something prints a warning for each loss and writes
 
 ```
 $ blockwright-cli convert palette.xb palette.ans
-blockwright-cli: warning: palette.xb: its palette is left out: only XBIN holds one
+blockwright-cli: warning: palette.xb: its palette is left out: only XBIN and a project hold one (remap --fit-palette cga first keeps its look)
 blockwright-cli: palette.ans: not written: the conversion loses data (--allow-lossy writes it anyway)
 $ blockwright-cli pack palette.xb palette.bwp
-blockwright-cli: warning: palette.xb: its palette is left out: only XBIN holds one
-blockwright-cli: palette.bwp: not written: the project loses data (--allow-lossy writes it anyway)
+$ blockwright-cli info palette.bwp | grep palette
+palette:     custom
 ```
+
+`pack` keeps the palette, so it writes the project without a warning. An XBIN's font is the one thing a project leaves out.
 
 `convert` loses blink only where a bright background forces iCE colours on, as with `mixed.ans` above. `pack` warns of lost blink but writes the project anyway. Other options are in [convert](14-cli.md#convert) and [pack, unpack and snapshot](14-cli.md#pack-unpack-and-snapshot).

@@ -93,7 +93,7 @@ Each panel around the canvas is a dock. Drag its title bar to another side, onto
 | **Toolbox** | Left, top | A button for each tool or group of tools in the **Tools** menu, with the same shortcuts. | Yes |
 | **Tool Options** | Left, under the Toolbox | The settings of the active tool, under the tool's name. | Yes |
 | **Preview (1x)** | Right, top | The whole canvas at 1×, as it looks at its real size. | No |
-| **Palette** | Right | The 16 colours and the pen ([Palette, iCE colours and 24-bit colour](09-colour.md)); under the IRC and Micron targets, mIRC's 99 colours (16 swatches under IRC with **IRC in 16 Colours** on) and the pen's **B**, **I** and **U** toggles ([The pen](03-keyboard-mode.md#the-pen)), and under the Micron target a click on the pen opens the colour dialog ([The Micron colour dialog](09-colour.md#the-micron-colour-dialog)). | No |
+| **Palette** | Right | The 16 colours, in the document's own palette, and the pen ([Palette, iCE colours and 24-bit colour](09-colour.md)); under the IRC and Micron targets, mIRC's 99 colours (16 swatches under IRC with **IRC in 16 Colours** on) and the pen's **B**, **I** and **U** toggles ([The pen](03-keyboard-mode.md#the-pen)), and under the Micron target a click on the pen opens the colour dialog ([The Micron colour dialog](09-colour.md#the-micron-colour-dialog)). | No |
 | **Layers** | Right | The layer stack of the canvas. | Yes |
 | **Library** | Right | The stamps and text styles of the library, as thumbnails with a category list and a search box. | No |
 | **Lint** | Right, bottom, in front | The lint's findings for the canvas, one a row; activating a row puts the cell cursor on its cell. | Yes |

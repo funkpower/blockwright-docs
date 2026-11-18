@@ -173,7 +173,7 @@ The **ladder checks** read each ramp's ladder and name the ramp; noise is one, b
 
 ### non-neighbour-shade
 
-A ░▒▓ of two colours on a ramp that aren't neighbours on it, when no linted ramp has them as neighbours and they aren't a craft pair. The message gives the shade and its colours by palette index.
+A ░▒▓ of two colours on a ramp that aren't neighbours on it, when no linted ramp has them as neighbours and they aren't a craft pair. The message gives the shade and its colours by palette index. A document's own palette changes no finding: the lint reads indices, and its dock runs again when the palette changes.
 
 ![A blue field with three cells of yellow medium shade on blue in the middle](../samples/manual-lint/non-neighbour-shade.ans "3x")
 

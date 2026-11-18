@@ -139,4 +139,56 @@ Files that use more than the 16 colours are read with each colour fitted to the 
 
 Nearest is the least squared distance in red, green and blue; a tie goes to the lower number. `ESC[38;2;200;30;30m` reads as red (4), and `ESC[48;5;21m`, xterm's pure blue, as blue (1).
 
-An XBIN file can carry its own palette. Saving as XBIN keeps it; any other format leaves it out and warns: `the file's own palette is left out (only XBIN keeps one)`. The editor shows such a piece in the standard 16 colours.
+## The document's palette
+
+A document draws its 16 colours in its own palette. The standard palette is the PC's VGA one in the table above, and a document with none of its own uses it. An XBIN file can carry its own, a project keeps one, and the **Colours** menu sets one for the open canvas. The canvas, the preview, the Palette dock and `blockwright-cli render` all draw in it, and the colour and ramp lists follow it.
+
+The palette belongs to the document, not to its cells. A cell holds an index from 0 to 15, and an RGB colour keeps its RGB under any palette. The [lint](11-lint.md) judges by index, so a palette changes no finding.
+
+### Swap, remap and fit
+
+- **A swap** changes the palette and no cell. The cells keep their indices and show the new colours.
+- **A remap** changes the cells' indices, foreground and background, and keeps the palette.
+- **A fit** is a remap chosen to keep the look, with the palette set in the same step: each cell's colour becomes the index in the new palette nearest to what it showed, by least squared distance in red, green and blue, a tie going to the lower number.
+
+Each is one undo step and marks the document as modified.
+
+### The Colours menu
+
+- **Palette >** lists the presets, then **From File...**. Choosing one swaps the palette.
+- **Edit Palette...** shows the 16 swatches; click one to pick a new colour. The undo step is **Edit Palette**. Each entry is kept as an XBIN holds it, 64 levels a channel, so a picked colour is rounded to the nearest of those.
+- **Fit to Palette >** lists the presets and fits the piece to the one you choose.
+- **Remap Colours...** gives each colour index the one beside it, in the foreground and the background. Set each with its box, or type the **Map** field: pairs such as `3=11,11=3` (3 becomes 11 and 11 becomes 3), or 16 hex digits, one per colour. **Apply to** is **The selection**, **The active layer** or **Every layer**; it opens on **The selection** when something is selected (the choice is greyed out otherwise) and on **The active layer** when not. Cells in RGB colours stay as they are.
+
+The undo step for the preset and file items is **Palette**.
+
+The menus name each preset by its title, the second column; the first is the name the command line and a steps file take.
+
+| Preset | Palette |
+|---|---|
+| `cga` | Standard (CGA, EGA, VGA). `standard`, `vga` and `ega` also name it on the command line and in a steps file. |
+| `cga-yellow` | CGA without the brown fix: colour 6 is `#aaaa00`, not `#aa5500`. |
+| `xterm` | xterm's 16 colours. |
+| `windows` | Windows console (legacy). |
+| `campbell` | Windows Terminal (Campbell). |
+| `mirc` | mIRC's colours 0 to 15, each at the index the IRC export maps it to. |
+
+**From File...** reads an XBIN, a GIMP palette (`.gpl`), a JASC palette (`.pal`) or a text file of hex colours (`.hex`, `.txt`), one a line. It needs at least 16 colours and takes the first 16. The status bar says `Palette from NAME`, or `Palette from NAME: its first 16 of N colours`.
+
+### What the status bar says
+
+A remap that moves no cell reports `Nothing remapped: ` and the reason, such as `no cell holds a colour the map moves` or `nothing is selected`. Otherwise it reports `N cell(s) remapped`, adding `; N layer(s) left as they are (live text and generators draw their own)` when a live text or generator layer was in the scope: those redraw from their own settings, not from the indices.
+
+A fit reports `Fitted to X: N cell(s) show another colour`, or `Fitted to X: every cell looks as it did`, adding `; N layer(s) left as they are` when a live text or generator layer was in the scope; a piece already in the palette says `The piece is already in the X colours`. A fit also maps the colours a layer's text style names (plate, shadow, outline, flat fill), but not ramps (glow, shade, bevel, ramp fill), which step through palette indices. The count compares the composite after the fit with the composite before it, so it includes ramps and live layers the fit leaves alone.
+
+### In the file
+
+- **XBIN** keeps the palette, 6 bits a channel. Edit Palette rounds every entry, but a preset or a palette file can hold colours XBIN can't (xterm's `#cdcd00`, say). An XBIN save counts the entries that read back differently as a loss: `N palette colour(s) is/are rounded to the 64 levels a channel XBIN holds`.
+- **A project** keeps the palette ([Projects](13-file-formats.md#projects-bwp)), but not an XBIN's font.
+- **`.ans`, BIN and the other formats** leave it out. Saving warns: `the piece's own palette is left out (only XBIN and a project keep one): its colours show as the standard 16 (Colours > Fit to Palette > Standard first keeps its look)`. A palette equal to the standard one isn't counted.
+
+IRC text maps an index to mIRC's colour by index and ignores the palette; the IRC view draws mIRC's colours. A Micron page writes RGB from the document's palette.
+
+### An XBIN's font
+
+The canvas draws an XBIN's font too: a cell is as high as the font, 1 to 32 pixels. With a font that isn't 16 pixels high, a glyph with no CP437 byte draws as `?`, the second half of a wide pair draws nothing, and above 16 pixels bold, italic and underline aren't drawn. A font too big to show is left for the VGA one, and the status bar says so. After a save drops the font, the canvas goes back to VGA.

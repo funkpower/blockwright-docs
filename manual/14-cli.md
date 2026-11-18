@@ -43,33 +43,36 @@ Output and exit status are unchanged. A newer project with an attribute bit Bloc
 blockwright-cli info <file>
 ```
 
-Prints the piece's size and iCE colours, then the SAUCE record or `none`. An `.ans` adds the encoding it was read as. An XBIN adds whether it is compressed, its palette (none, standard or custom) and font.
+Prints the piece's size and iCE colours, then the SAUCE record or `none`. An `.ans` adds the encoding it was read as. An XBIN adds whether it is compressed, its palette (`none`, `standard` or `custom`) and font (`none`, or its size such as `8x8`).
 
-For a project it also prints the encoding, target, IRC colours (`16` or `99`), IRC byte budget, layers (id, kind, size, position, mode, visibility, locks and name), notes size, snapshots and the files it carries.
+For a project it also prints the encoding, target, palette (`standard` or `custom`), IRC colours (`16` or `99`), IRC byte budget, layers (id, kind, size, position, mode, visibility, locks and name), notes size, snapshots and the files it carries.
 
 ### convert
 
 ```
-blockwright-cli convert [--allow-lossy] [--output-encoding cp437|utf-8] <in> <out>
+blockwright-cli convert [--allow-lossy] [--palette P] [--output-encoding cp437|utf-8] <in> <out>
 ```
 
 Writes a piece as ANSI, XBIN or BIN, by `<out>`'s extension. `<out>` may be `<in>`, which rewrites it normalised.
 
 If the output can't represent something, nothing is written unless `--allow-lossy` is given. `--output-encoding` writes an `.ans` as CP437 (default) or UTF-8 ([What it reads](#what-it-reads)).
 
+`--palette P` swaps the piece's palette for `P`, a preset (`cga`, `cga-yellow`, `xterm`, `windows`, `campbell`, `mirc`; `standard`, `vga` and `ega` also name `cga`) or a palette file, and changes no cell. [remap](#remap) changes the cells. An `.ans` or BIN holds no palette, so the swap is a loss there. An XBIN holds 64 levels a channel, so a palette with finer colours is rounded: `convert --palette xterm palette.ans out.xb` warns `9 palette colours are rounded to the 64 levels a channel XBIN holds` and writes nothing without `--allow-lossy`.
+
 ### render
 
 ```
-blockwright-cli render [--scale N] [--font-width 8|9] <in> <out.png>
+blockwright-cli render [--scale N] [--font-width 8|9] [--palette P] <in> <out.png>
 blockwright-cli render --irc [--budget N] [--fit] [--pad] [--swap-shades] [--colours 16|99] [--scale N] [--font-width 8|9] <in> <out.png>
 ```
 
-Draws the piece as a PNG with the IBM VGA font.
+Draws the piece as a PNG in the piece's own palette, with the IBM VGA font or the XBIN's own font ([The document's palette](09-colour.md#the-documents-palette)).
 
 | Option | What it does |
 |---|---|
 | `--scale N` | Integer zoom, nearest neighbour, 1 to 8 (default 1) |
 | `--font-width 8|9` | Glyph width in pixels (default: the SAUCE letter spacing, else 8) |
+| `--palette P` | Draw in palette `P` instead of the piece's own, a preset (`cga`, `cga-yellow`, `xterm`, `windows`, `campbell`, `mirc`) or a palette file. No cell changes. Refused with `--irc`: `--palette is not a render --irc option: the IRC view draws mIRC's colours` |
 | `--irc` | Draw the IRC view instead: the mIRC palette, without what IRC drops, each line cut at the budget. Prints how many rows were cut, as `IRC view: 0 rows cut at 407 bytes` |
 | `--budget N` | With `--irc`: the bytes a line may take, 1 to 512. Default: a project's own budget, else 407 |
 | `--fit`, `--pad`, `--swap-shades`, `--colours` | With `--irc`: as for [export --irc](#export-irc) |
@@ -77,6 +80,37 @@ Draws the piece as a PNG with the IBM VGA font.
 `--budget`, `--fit`, `--pad`, `--swap-shades` and `--colours` without `--irc` are usage errors.
 
 `render` refuses to write over its input.
+
+### remap
+
+```
+blockwright-cli remap --map M [--allow-lossy] [--output-encoding cp437|utf-8] <in> <out>
+blockwright-cli remap --fit-palette P [--allow-lossy] [--output-encoding cp437|utf-8] <in> <out>
+```
+
+Changes which colour index the cells use, in both the foreground and the background, as **Colours > Remap Colours...** and **Fit to Palette** do ([The document's palette](09-colour.md#the-documents-palette)). Cells in RGB colours stay. `<out>` is written as `convert` writes it.
+
+Give one of the two:
+
+- **`--map M`** remaps colours. `M` is `FROM=TO` pairs, `1=9,9=1` swaps blue and light blue, or 16 hex digits, the new index of each colour 0 to 15. The palette stays.
+- **`--fit-palette P`** sets the palette to `P`, a preset or a palette file, and remaps each cell to the index nearest to the colour it showed (least squared distance in red, green and blue, a tie to the lower index).
+
+```
+$ blockwright-cli remap --map 1=9,9=1 piece.ans out.ans
+piece.ans: 160 cells remapped
+$ blockwright-cli remap --fit-palette cga palette.xb out.xb
+palette.xb: 15 cells remapped
+blockwright-cli: warning: palette.xb: 15 cells show another colour: the new palette has no entry that matches
+```
+
+`--fit-palette` warns how many cells show another colour. A fitted piece in the standard palette keeps no palette in an XBIN, and a fit to any other palette into an `.ans` or BIN is refused as a palette loss unless `--allow-lossy` is given. These are usage errors, exit status 2:
+
+```
+blockwright-cli: remap needs one of --map M or --fit-palette P
+blockwright-cli: --map: "1=17" is not a pair FROM=TO of colours 0-15
+blockwright-cli: --map: colour 1 is mapped twice
+blockwright-cli: --palette takes a preset (cga, cga-yellow, xterm, windows, campbell, mirc) or a palette file, not 'bogus'
+```
 
 ### export --irc
 
@@ -230,7 +264,7 @@ blockwright-cli unpack [--allow-lossy] [--target ansi|irc|micron] [--colours 16|
 blockwright-cli snapshot [--allow-lossy] [--output-encoding cp437|utf-8] <project>
 ```
 
-`pack` writes a piece or project as a project zip; `unpack` writes one as a project directory, into a `<dir>` that is empty or already a project. A project can't hold an XBIN's own palette or font, so both drop them only with `--allow-lossy`. `--target` sets the project's target, `ansi`, `irc` or `micron` (default: a project's own, else ANSI), and `--colours` its IRC colours, 16 or 99 (default: a project's own, else 99); see [Lint](11-lint.md#targets).
+`pack` writes a piece or project as a project zip; `unpack` writes one as a project directory, into a `<dir>` that is empty or already a project. A project keeps an XBIN's palette but not its font, so a font drops only with `--allow-lossy`. `--target` sets the project's target, `ansi`, `irc` or `micron` (default: a project's own, else ANSI), and `--colours` its IRC colours, 16 or 99 (default: a project's own, else 99); see [Lint](11-lint.md#targets).
 
 `snapshot` saves the project's flattened composite as its next snapshot, `snapshots/rN.ans`, and prints `rN`. It is written in the project's own encoding unless `--output-encoding` gives one.
 
@@ -374,6 +408,42 @@ The last is the dialog's own limit: the layers together may hold at most 1600000
 
 ```
 blockwright: step 1 (grow): the canvas is too large to display
+```
+
+#### Palettes in a steps file
+
+Three actions do what the **Colours** menu does ([The document's palette](09-colour.md#the-documents-palette)):
+
+```
+{"name": "xt", "action": "palette", "preset": "xterm"},
+{"name": "swap", "action": "remapColours", "map": "1=4,4=1", "scope": "document"},
+{"name": "back", "action": "fitToPalette", "preset": "cga"}
+```
+
+| Action | Key | Value | What it does |
+|---|---|---|---|
+| `"palette"` | `"preset"` | `cga`, `cga-yellow`, `xterm`, `windows`, `campbell` or `mirc` | **Colours > Palette >**: swaps the palette, no cell changes |
+| `"palette"`, `"fitToPalette"` | `"colours"` | 16 `"#rrggbb"` strings | The same with colours of your own, in place of `"preset"`. Exactly one of the two keys |
+| `"fitToPalette"` | `"preset"` or `"colours"` | As above | **Colours > Fit to Palette >**: remaps the cells to keep the look, and sets the palette |
+| `"remapColours"` | `"map"` | `FROM=TO` pairs (`"3=11,11=3"`) or 16 hex digits | **Colours > Remap Colours...**. Required |
+| `"remapColours"` | `"scope"` | `selection`, `layer` or `document` | **Apply to**. `layer`, the active layer, when left out. `selection` and `layer` need an editable layer, and `selection` needs a selection |
+
+None of the three takes Tool Options. A step that changes nothing is a note on stderr, exit status 0, as for `canvasSize`. A fit prints how many cells show another colour as a note:
+
+```
+blockwright-cli: note: p.json: step 4 (back): 5 cells show another colour
+```
+
+The palette is the project's. A `--project` capture keeps it, an `.ans` capture reports it lost and is refused without `--allow-lossy` (`its palette is left out: only XBIN and a project hold one`), and `--render` PNGs and `blockwright --screenshot` draw in it. After the `xt` step above, the captured project's manifest holds xterm's 16 colours, and after the `back` step `blockwright-cli info` on it says `palette: standard`.
+
+Each of these is refused with exit status 1, and nothing is written:
+
+```
+blockwright-cli: p.json: step 1 (xt): palette needs one of "preset", a preset's name, or "colours", 16 "#rrggbb"
+blockwright-cli: p.json: step 1 (xt): "preset" takes cga, cga-yellow, xterm, windows, campbell, mirc, not "x"
+blockwright-cli: p.json: step 1 (xt): "colours" must be a list of 16 "#rrggbb"
+blockwright-cli: p.json: step 1 (xt): "colours" 3 must be "#rrggbb", not "red"
+blockwright-cli: p.json: step 2 (swap): remapColours needs "map": FROM=TO pairs ("3=11,11=3") or 16 hex digits
 ```
 
 #### Sample merged
