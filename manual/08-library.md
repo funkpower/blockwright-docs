@@ -1,5 +1,5 @@
 Title: The Library: stamps, Save to Library and text styles
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (716a62e)
 
 # The Library: stamps, Save to Library and text styles
 
@@ -17,13 +17,14 @@ Prefabs (parts made of several layers) and the **Scene Starter**, which lays out
 | **Save to Library...** | **Selection** | none |
 | **Save as Frame Style...** | **Selection** | none |
 | **Save as Preset...** | The **Layer Style** dialog (**Layer > Layer Style…**) | none |
-| `library list`, `library check` | `blockwright-cli` ([CLI](14-cli.md#library)) | |
+| **New Collection...**, **Rename Collection...**, **Delete Collection...**, **Add Files to Collection...**, **Add Folder to Collection...**, **Add to Collection...**, **Edit Stamp...**, **Remove Stamp...** | The Library dock's **Collections** button, and right-click on the category list or the thumbnails | none; <kbd>Delete</kbd> on a stamp of yours is **Remove Stamp...** |
+| `library list`, `library check`, `library new`, `rename`, `delete`, `add`, `edit`, `remove` | `blockwright-cli` ([CLI](14-cli.md#library)) | |
 
 The Library dock can be moved and floated but not closed ([The Window menu](02-the-window.md#the-window-menu)). **Window > Reset Layout** puts it back.
 
 ## The Library dock
 
-![The Library dock: a search box reading "Search names and tags", a category list with All highlighted over buildings, classic and elements, a grid of stamp thumbnails with their names (Barn, Castle keep, Fence, House, Lighthouse, Log cabin, Stone bridge, Windmill, Wall of fire, the four frames, Snowy boulder, Cliff edge, Far mountain range), each name whole, wrapped onto a second line when it is long, and a Refresh button at the bottom](../samples/manual-08-library/dock.png)
+![The Library dock: a search box reading "Search names and tags", a category list with All highlighted over buildings, classic and elements, a grid of stamp thumbnails with their names (Barn, Castle keep, Fence, House, Lighthouse, Log cabin, Stone bridge, Windmill, Wall of fire, the four frames, Snowy boulder, Cliff edge, Far mountain range), each name whole, wrapped onto a second line when it is long, and the Collections and Refresh buttons at the bottom](../samples/manual-08-library/dock.png)
 
 From the top:
 
@@ -33,6 +34,7 @@ From the top:
 | Category list | **All**, then each category of the stamps and text styles once, in byte order (capitalised categories first). Pick one to show only its items; it combines with the search. |
 | Thumbnails | Each stamp and text style with its name under it, drawn at full size or shrunk to fit, never enlarged. Bundled stamps first, then yours, then bundled text styles, then yours, each group by category folder, then file name. |
 | Skipped files | Below the grid, when a file in either library can't be read: *1 file skipped*, *3 files skipped*. Its tooltip lists each file and what is wrong with it. |
+| **Collections** | A menu of the collection commands ([Your own stamps and collections](#your-own-stamps-and-collections)). |
 | **Refresh** | Reads both libraries again. |
 
 Hover over a stamp for its details. The bundled pine:
@@ -45,7 +47,7 @@ Tags: tree, pine, conifer, evergreen
 Bundled library: …/share/blockwright/library/trees/pine-tree.ans
 ```
 
-The dock reads the libraries at startup, after **Save to Library**, **Save as Frame Style** and **Save as Preset**, and on **Refresh**. To rename or delete a stamp, see [Your own stamps and categories](#your-own-stamps-and-categories).
+The dock reads the libraries at startup, after **Save to Library**, **Save as Frame Style**, **Save as Preset** and every collection command, and on **Refresh**, keeping the search and the category picked. To rename or remove a stamp of yours, see [Your own stamps and collections](#your-own-stamps-and-collections).
 
 A fresh install has 63 stamps and 11 text styles:
 
@@ -105,14 +107,14 @@ The **Save to Library** dialog:
 | Field | What it takes |
 |---|---|
 | **Name** | The stamp's name, each character one CP437 has a glyph for. At most 35 characters; spaces at the ends are dropped. |
-| **Category** | Type one, or pick one the Library has. It starts empty. |
+| **Category** | Type one, or pick one the Library has, a collection of yours included. It starts empty. A collection's name files the stamp in that collection's folder ([Collections](#collections)). |
 | **Tags** | Words to search by, comma-separated (`tree, pine, night`). Empty and repeated tags are dropped. |
 | **Resize** | **Fixed size**, **Width only (a band)** or **Width and height (a frame)** |
 | **Insets** | **Left**, **Right**, **Top** and **Bottom**, each starting at 1: the cells kept whole at each side when it resizes. **Left** and **Right** are for a band or a frame, **Top** and **Bottom** for a frame only. A placed frame or band saved again starts from its own. |
 
 **OK** stays greyed out while the dialog says something is missing: *The stamp needs a name.*, *The name holds a character CP437 has no glyph for.*, *The stamp needs a category.*
 
-If the top folder of your user library has a stamp with the same name, Blockwright asks before replacing it, **No** by default. A bundled stamp is never replaced.
+If the place the stamp goes already has one of the same name, Blockwright asks before replacing it, **No** by default: `A stamp named "Pine" is already in the library (…/pine.ans). Do you want to replace it?` The place is the top folder of your user library, or for a collection anywhere in its folder. A bundled stamp is never replaced.
 
 The cells are written as an `.ans` with the document's iCE setting. A transparent cell is written as a space on black, which **Transparent** mode leaves see-through.
 
@@ -133,47 +135,63 @@ If it can't be saved, a box says *Could not save the stamp:* and why, for exampl
 - drag one onto the canvas to start a new text layer in that style where you drop it;
 - a style that needs iCE colours is greyed out while iCE colours are off ([iCE colours](09-colour.md#ice-colours)).
 
-## Your own stamps and categories
+## Your own stamps and collections
 
-A category is a name in a stamp's sidecar. **Make a category** by typing a new name in **Category** when you save a stamp; a category can't exist without stamps.
+Your stamps live in your user library. A **collection** is a named set of them, which you make, rename and delete from the dock. A category is a name in a stamp's sidecar; a collection's stamps have its name as their category, so the category list shows each collection with the categories.
 
-A category of yours with a bundled one's name, such as `trees`, is one entry showing both sets.
+![The Library dock holding one collection of your own, Night sky, with its four stamps (Crescent moon, Full moon, Small star, Star field), listed in the category list under All; the Collections and Refresh buttons at the bottom. The bundled stamps are left out of this picture](../samples/manual-08-library/collection.png)
 
-### Adding a stamp to a category
+A category or collection of yours with a bundled one's name, such as `trees`, is one entry showing both sets.
 
-- **From the canvas.** Select the part, or have it floating, and choose **Selection > Save to Library...** with that category ([Save to Library](#save-to-library)).
-- **From a stamp already in the Library**, bundled or yours. Place it, choose **Selection > Save to Library...** while it floats, give it a name and your category, then press <kbd>Esc</kbd>: saving doesn't put the float down. The copy goes in your user library, and one saved under a bundled stamp's own name shows twice, once from each library.
-- **From an `.ans` file.** Open it with **File > Open...**, select the part (or **Selection > Select All**, <kbd>Ctrl</kbd>+<kbd>A</kbd>), and save it to the Library.
-- **By hand.** Copy a stamp's `.ans` and `.json` into the user library and press **Refresh**. An `.ans` without a sidecar isn't a stamp; the **Skipped files** tooltip says *no sidecar*, or *.ans has no SAUCE record (the title is the stamp's name)* when it has no SAUCE record.
+The collection commands are on the dock's **Collections** button. Right-click the category list for the collection commands, or a thumbnail for the stamp commands and **New Collection...**, **Add Files to Collection...** and **Add Folder to Collection...**. None has a shortcut; they are listed under **Library** in [Shortcuts](15-shortcuts.md#every-action), where one can be set.
 
-    A hand-written sidecar has to give the widest row's IRC bytes exactly. `blockwright-cli library check <dir>` says what is wrong with each file, such as *sidecar says the widest row is 0 IRC bytes; the art's is 52*.
+What a command did, or why it did nothing, shows in the status bar: `Made the collection "Night sky"`, `"trees" is a bundled category, not one of your collections; nothing renamed`. A bundled stamp, a text style and a bundled category can't be changed; a command on one is refused there, with no dialog.
+
+### Collections
+
+- **New Collection...** asks for a name and makes an empty collection, listed at once. A name already in use is refused, as is one whose folder name another folder already has ([Where stamps are kept](#where-stamps-are-kept)): `No collection made: a collection named "Night sky" already exists`.
+- **Rename Collection...** renames the collection picked in the category list, and its stamps' category with it. The collection stays picked under its new name.
+- **Delete Collection...** deletes the collection picked in the category list and every stamp in it, after asking, **No** by default: `Delete the collection "Night sky" and the 4 stamps in it? They go to the trash.`, or for an empty one `Delete the empty collection "Night sky"? It goes to the trash.` When a bundled category has the same name, the box adds that its bundled stamps stay.
+
+Pick the collection in the category list first; with **All** or a bundled category picked, the status bar says so and nothing changes.
+
+### Adding stamps to a collection
+
+- **From the canvas.** Select the part, or have it floating, and choose **Selection > Save to Library...** with the collection's name as the category ([Save to Library](#save-to-library)).
+- **From a stamp in the Library**, bundled or yours. Pick it and choose **Add to Collection...**. A box asks which collection; type a new name to make one first. The stamp is copied byte for byte, with the collection as its category.
+- **From `.ans` files.** **Add Files to Collection...** takes the files picked in a file dialog, and **Add Folder to Collection...** a folder's own `.ans` files (not its subfolders', nor hidden ones whose names start with `.`). Both then ask for the collection, as **Add to Collection...** does. A file with a sidecar beside it is copied as a stamp; a plain `.ans` is named from its SAUCE title, else its file name, and trimmed of blank columns on the right and blank rows below.
+
+A collection holds one stamp of each name: a name it has already is refused, and the stamp isn't added. A batch adds what it can; the status bar says how many were added and refused, `Added 3 stamps to the collection "Night sky"; 1 file refused`, and a box lists each refused file with its reason. A batch that takes more than half a second shows its progress, and **Cancel** stops it between files.
 
 ### Changing a stamp's name, category or tags
 
-**To change only the category or the tags**, edit the stamp's `.json` in a text editor ([Where stamps are kept](#where-stamps-are-kept)) and press **Refresh**. `blockwright-cli library check <dir>` says whether the edited sidecar still reads.
+Pick a stamp of yours and choose **Edit Stamp...**: the **Save to Library** dialog's **Name**, **Category** and **Tags**, filled in from the stamp. **OK** changes them.
 
-**To change the name**, place the stamp and save it again ([Adding a stamp to a category](#adding-a-stamp-to-a-category)); the name is the `.ans` file's SAUCE title. That writes both files afresh, with two traps:
+- A new name changes the stamp's SAUCE title; the files keep their names.
+- A collection's name as the category moves the stamp into that collection's folder. Any other category takes a stamp out of its collection, to the top of the user library; a stamp already at the top stays there.
+- A moved stamp's files take the new name's file name.
 
-- **The dialog starts empty.** Empty Tags saves no tags. Hover over the stamp in the dock first to see its category and tags.
-- **The art is the float as it is now.** A resize, flip or turn before saving is saved too. Save straight after placing it.
+To change the art, place the stamp, change it, and save it again with **Save to Library...** under the same name and category, which asks to replace it. The art is the float as it stands: a resize, flip or turn is saved too.
 
-The **same name**, character for character, asks to replace the stamp. A **new name** makes a new stamp and leaves the old one to delete.
+### Removing a stamp
 
-Only a stamp at the top of the user library is replaced; one you moved into a folder gets a second copy at the top.
+Pick a stamp of yours and choose **Remove Stamp...**, or press <kbd>Delete</kbd>. It asks, **No** by default: `Remove the stamp Pine (…/pine.ans)? It goes to the trash.`
 
-A bundled stamp can't be changed. Save a copy to your library and change that.
+### The trash
 
-### Removing a stamp, or a category
+Removed stamps and deleted collections go to the system's trash. Where the trash can't take them, nothing is removed, and a second box asks whether to delete them permanently, **No** by default; only **Yes** deletes them, and that can't be undone.
 
-To remove a stamp, delete its `.ans` and `.json` from the user library and press **Refresh**.
+### Stamps outside a collection
 
-A category leaves the list once no stamp or text style is in it. To remove one of yours, delete its stamps and presets, or change the `category` in their `.json` or `.style.json`. Bundled categories stay.
+Stamps saved with a category that names no collection go at the top of the user library, as they always have. They show in the category list by their category, and **Edit Stamp...** and **Remove Stamp...** work on them; the collection commands don't, as their category isn't a collection.
 
 ### Folders and sharing
 
-The user library is read with every folder in it. **Save to Library** always writes to the top. A symbolic link to a folder isn't followed (*symbolic link to a folder, not followed* under **Skipped files**); copy the folder in.
+The user library is read with every folder in it, a collection's or not. A symbolic link to a folder isn't followed (*symbolic link to a folder, not followed* under **Skipped files**); copy the folder in.
 
-To share stamps, copy their files into someone else's user library and press **Refresh**. Check them first with `blockwright-cli library check <dir>` ([CLI](14-cli.md#library)).
+To share a collection, copy its folder into someone else's user library and press **Refresh**, or give them the files to add with **Add Folder to Collection...**. Check them first with `blockwright-cli library check <dir>` ([CLI](14-cli.md#library)).
+
+Copying a stamp's `.ans` and `.json` into the user library by hand works too. An `.ans` without a sidecar isn't a stamp there; the **Skipped files** tooltip says *no sidecar*, or *.ans has no SAUCE record (the title is the stamp's name)* when it has no SAUCE record. A hand-written sidecar has to give the widest row's IRC bytes exactly. `blockwright-cli library check <dir>` says what is wrong with each file, such as *sidecar says the widest row is 0 IRC bytes; the art's is 52*.
 
 ## Where stamps are kept
 
@@ -184,23 +202,26 @@ A stamp is two files side by side with the same name:
 
 The category comes from the sidecar, not the folder.
 
+**A collection is a folder** in the user library, named from the collection's name as a stamp's file is (below): **Night sky** is `night-sky/`. A name Windows keeps for a device (`con`, `prn`, `aux`, `nul`, `com1` to `com9`, `lpt1` to `lpt9`) gets a `-` after it: `con-/`. The folder holds the collection's stamps and a `.collection` file with its name, one line, so an empty collection keeps its name. A folder copied in without one is named after the category its stamps share, else after the folder.
+
 The file name is the stamp's name in lower case, A to Z and 0 to 9, each run of other characters a `-`, at most 48 characters: **Pine (night)** is `pine-night.ans`. A name with no letter or digit is spelt in code points: **♥** is `u2665.ans`. A different name that makes the same file name, such as **pine night**, is saved as `pine-night-2.ans`, then `-3`.
 
 | Library | Where | Written by Blockwright |
 |---|---|---|
 | Bundled | `share/blockwright/library` beside the installed program, or `$BLOCKWRIGHT_BUNDLED_LIBRARY` | Never |
-| User | `$BLOCKWRIGHT_USER_LIBRARY` if it is set; otherwise `Blockwright/library` in the system's data folder: `~/.local/share/Blockwright/library` on Linux (or under `$XDG_DATA_HOME`), `~/Library/Application Support/Blockwright/library` on macOS, `AppData\Local\Blockwright\library` in the user's folder on Windows | **Save to Library**, **Save as Frame Style**, **Save as Preset** |
+| User | `$BLOCKWRIGHT_USER_LIBRARY` if it is set; otherwise `Blockwright/library` in the system's data folder: `~/.local/share/Blockwright/library` on Linux (or under `$XDG_DATA_HOME`), `~/Library/Application Support/Blockwright/library` on macOS, `AppData\Local\Blockwright\library` in the user's folder on Windows | **Save to Library**, **Save as Frame Style**, **Save as Preset**, and the collection commands |
 
 The user library folder is made the first time something is saved to it.
 
-`blockwright-cli library list` prints both libraries; `library check <dir>` checks a folder's files and IRC row widths ([CLI](14-cli.md#library)).
+`blockwright-cli library list` prints both libraries, your collections first; `library check <dir>` checks a folder's files and IRC row widths; `library new`, `rename`, `delete`, `add`, `edit` and `remove` do what the collection commands do ([CLI](14-cli.md#library)).
 
 ## Limits
 
 - **Size.** A stamp is at most 400 columns by 5000 rows, and can't be all blank.
 - **Name.** 1 to 35 characters, all in CP437.
 - **Category and tags.** A category can't be empty; a tag can't hold a comma. Neither can hold a control character.
+- **Collection name.** Not empty, no control character, at most 128 bytes in UTF-8.
 - **IRC.** **Save to Library** doesn't check a stamp's rows against the IRC budget; `blockwright-cli library check` does.
 - **Placing.** The float keeps at least one cell on the canvas; cells off the canvas are lost when it lands.
-- **Managing.** The dock doesn't rename, move or delete stamps, or make categories or folders: save a stamp again, or change its files and **Refresh** ([Your own stamps and categories](#your-own-stamps-and-categories)). There is no import or export command for a set of stamps; copy the files.
-- **Steps files.** No step places or saves a stamp, so `replay` and `--screenshot` can't show one being placed.
+- **Managing.** Files and folders dropped on the dock aren't added; use **Add Files to Collection...** or **Add Folder to Collection...**. There is no export command for a collection; copy its folder ([Folders and sharing](#folders-and-sharing)).
+- **Steps files.** A steps file's `placeStamp` and `saveToLibrary` steps place and save a stamp ([replay](14-cli.md#replay)), but none runs a collection command.

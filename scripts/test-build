@@ -1627,8 +1627,9 @@ def checklist_renders(s):
         links = [h for h in re.findall(r'href="([^"#]*)', text) if h and resolve(name, h) == CHECKLIST + ".html"]
         check(name == CHECKLIST + ".html" or not links, f"{name} links to the checklist: {links}")
         check(name == CHECKLIST + ".html" or "Release checklist" not in text, f"{name} names the checklist")
-    pager = re.search(r'<nav class="pager">.*?</nav>', s.page("manual/16-preferences.html"), re.S)
-    check(pager and 'rel="next"' not in pager.group(0), f"manual 16's pager has a next page: {pager and pager.group(0)}")
+    last = sorted(f.name for f in (s.repo / "manual").glob("*.md") if f.name != "index.md")[-1][:-3]
+    pager = re.search(r'<nav class="pager">.*?</nav>', s.page(f"manual/{last}.html"), re.S)
+    check(pager and 'rel="next"' not in pager.group(0), f"the last manual page's pager has a next page: {pager and pager.group(0)}")
 
 
 @scenario

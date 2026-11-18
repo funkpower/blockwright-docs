@@ -1,5 +1,5 @@
 Title: The window: canvas, docks and views
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (716a62e)
 
 # The window: canvas, docks and views
 
@@ -33,7 +33,7 @@ The cell cursor, a frame, marks where keyboard mode types ([Keyboard mode, F-key
 - **Zoom** is a whole number from 1× to 8×. A new window starts at 2×.
 - **Pan** with the scroll bars or by dragging with the middle mouse button.
 - **Move the active layer** by dragging with <kbd>Alt</kbd> and the left button, with any tool.
-- **The row meter**, beside the canvas, shows each row's size in bytes as an IRC line, as a share of the IRC byte budget: red when the row is over the budget, amber when cells were merged to fit. Hover over a row for its count. **View > IRC > Row Meter** hides and shows it.
+- **The row meter**, beside the canvas, shows each row's size in bytes as an IRC line, as a share of the IRC byte budget: red when the row is over the budget, amber when cells were merged to fit. Hover over a row for its count. **View > IRC > Row Meter** hides and shows it. Under the Micron target it is hidden, as a page has no byte budget ([The row meter](10-irc.md#the-row-meter)).
 
 The window's title is the file's name (`untitled.ans` before the first save), with a `*` for unsaved changes.
 
@@ -77,7 +77,7 @@ The status bar shows, from the left:
 
 - **The tool**, such as `Glyph ░`: what the active tool is set to.
 - **The glyph set**, such as `F-keys set 6: ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·`. Its tooltip lists the keys.
-- **The target and the encoding**: `ANSI` or `IRC` (**Format > Target**), and `CP437` or `UTF-8`, how the `.ans` is written. A new document takes the target set in [Preferences](16-preferences.md#documents).
+- **The target and the encoding**: `ANSI`, `IRC` or `Micron` (**Format > Target**: **ANSI (.ans)**, **IRC** or **Micron (NomadNet)**), and `CP437` or `UTF-8`, how the `.ans` is written. A new document takes the target set in [Preferences](16-preferences.md#documents).
 - **The position**, such as `12, 3  |  80x40  |  8 px  |  2x`: the cursor's column and row (0, 0 is top left), the canvas size in cells, the cell width (8, or 9 with 9 px letter spacing) and the zoom.
 
 ![The right end of the status bar: F-keys set 6 and its ten glyphs, then ANSI, CP437, and 0, 0, the cursor's column and row, then the canvas's size, 60x20, the cell's width, 8 px, and the zoom, 2x](../samples/manual-02-the-window/status-bar.png)
@@ -93,7 +93,7 @@ Each panel around the canvas is a dock. Drag its title bar to another side, onto
 | **Toolbox** | Left, top | A button for each tool or group of tools in the **Tools** menu, with the same shortcuts. | Yes |
 | **Tool Options** | Left, under the Toolbox | The settings of the active tool, under the tool's name. | Yes |
 | **Preview (1x)** | Right, top | The whole canvas at 1×, as it looks at its real size. | No |
-| **Palette** | Right | The 16 colours and the pen ([Palette, iCE colours and 24-bit colour](09-colour.md)); under the IRC target, mIRC's 99 colours and the pen's **B**, **I** and **U** toggles ([The pen](03-keyboard-mode.md#the-pen)). | No |
+| **Palette** | Right | The 16 colours and the pen ([Palette, iCE colours and 24-bit colour](09-colour.md)); under the IRC and Micron targets, mIRC's 99 colours and the pen's **B**, **I** and **U** toggles ([The pen](03-keyboard-mode.md#the-pen)), and under the Micron target a click on the pen opens the colour dialog ([The Micron colour dialog](09-colour.md#the-micron-colour-dialog)). | No |
 | **Layers** | Right | The layer stack of the canvas. | Yes |
 | **Library** | Right | The stamps and text styles of the library, as thumbnails with a category list and a search box. | No |
 | **Lint** | Right, bottom, in front | The lint's findings for the canvas, one a row; activating a row puts the cell cursor on its cell. | Yes |
@@ -137,4 +137,14 @@ Guides show where a piece breaks across 80 × 25, 80 × 40 or 80 × 50 screens. 
 
 **Help > Keyboard Shortcuts...** lists every action that has a key, with a search field.
 
-**Help > Manual...** opens the **Blockwright Manual** window, offline. It has a section per tool, in the **Tools** menu's order, with its key, a picture and its help, then one per layer kind. Its **Keyboard Shortcuts...** button opens the shortcuts list.
+**Help > Getting Started**, **Help > Tutorials** and **Help > Manual** open the first tutorial, the tutorials' index and this manual: in a help window when the help pages are installed with Blockwright, else in the web browser.
+
+**Help > Tool Reference...** opens the **Blockwright Manual** window, offline. It has a section per tool, in the **Tools** menu's order, with its key, a picture and its help, then one per layer kind. Its **Keyboard Shortcuts...** button opens the shortcuts list.
+
+**Help > Samples** lists the installed sample pieces, as the start screen does.
+
+**Help > About Blockwright** shows Blockwright's version, commit, licence and credits. **Help > About Qt** shows the version of Qt it runs on, and Qt's licence.
+
+## Quitting
+
+**File > Quit** (<kbd>Ctrl</kbd>+<kbd>Q</kbd>) closes Blockwright, asking to save unsaved changes first. On macOS it is in the application menu.

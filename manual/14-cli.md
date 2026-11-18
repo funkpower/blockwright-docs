@@ -1,5 +1,5 @@
 Title: blockwright-cli
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (9b263b8)
 
 # blockwright-cli
 
@@ -154,7 +154,7 @@ Runs one pass of a shading brush over part of the piece. With no mode it is the 
 ### lint
 
 ```
-blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc] [--json] <in>
+blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc|micron] [--json] <in>
 ```
 
 Checks the shading ladders under each ramp, the pixel noise, and the craft rules. It prints one line per finding (cell, kind, ramp, message) and a summary:
@@ -163,30 +163,73 @@ Checks the shading ladders under each ramp, the pixel noise, and the craft rules
 62 findings (5 wide-rung, 47 rung-skip, 2 speckle, 2 fallback-speck, 1 one-glyph, 5 trailing-black), noise 0.0013, iCE on
 ```
 
-`--ramp` can be repeated; without it every named ramp and the craft pairs are checked. `--target ansi|irc` lints for an `.ans` or for IRC (default: a project's own target, else ANSI).
+`--ramp` can be repeated; without it every named ramp and the craft pairs are checked. `--target ansi|irc|micron` lints for an `.ans`, for IRC or for a Micron page (default: a project's own target, else ANSI); see [Lint](11-lint.md#targets).
 
-`--json` prints the findings as JSON, each with a `severity`, `"warning"` or `"note"`. A note (`ans-loss`, under the IRC target) prints with `note: ` and leaves the piece clean: exit status 4 needs a finding other than a note. See [Lint](11-lint.md#blockwright-cli-lint).
+`--json` prints the findings as JSON, each with a `severity`, `"warning"` or `"note"`. A note (`ans-loss`, under the IRC and Micron targets; `micron-colour` and `micron-glyph`, under the Micron target) prints with `note: ` and leaves the piece clean: exit status 4 needs a finding other than a note. See [Lint](11-lint.md#blockwright-cli-lint).
 
 ### library
 
 ```
-blockwright-cli library list [dir]
+blockwright-cli library list [dir] | library list [--dir DIR]
 blockwright-cli library check <dir>
+blockwright-cli library new <collection>
+blockwright-cli library rename <collection> <new name>
+blockwright-cli library delete <collection> [--yes] [--permanent]
+blockwright-cli library add <collection> <file.ans|folder>...
+blockwright-cli library edit <stamp.ans> [--name N] [--category C] [--tags t1,t2]
+blockwright-cli library remove <stamp.ans>... [--yes] [--permanent]
 ```
 
-`list` prints the stamps and text styles in a library (default: the bundled library and the user's), one per line, tab-separated: kind, category, name, size, widest IRC row in bytes, `ice` when a text style needs iCE colours (else `-`), tags, path. A text style's size and bytes are its thumbnail sample's.
+`list` prints the stamps and text styles in a library (default: the bundled library and the user's), one per line, tab-separated: kind, category, name, size, widest IRC row in bytes, `ice` when a text style needs iCE colours (else `-`), tags, path. A text style's size and bytes are its thumbnail sample's. The user library's collections come first, or `--dir`'s: `collection`, name, stamp count, path.
 
 `check` checks every stamp, sidecar and text style in a library directory, drawing each text style's sample.
+
+The other six change your own stamps and collections, as the Library dock's collection commands do ([Your own stamps and collections](08-library.md#your-own-stamps-and-collections)). They work on the user library, or on the one `--dir` names; none changes the bundled library. Each exits 0 when it is done and 1 when it is refused, with the reason.
+
+| Command | What it does |
+|---|---|
+| `new` | Makes an empty collection, a folder named for it, and prints the folder |
+| `rename` | Renames a collection, its folder and its stamps' category, and prints the new folder |
+| `delete` | Moves a collection's folder and its stamps to the trash |
+| `add` | Copies stamps, `.ans` files and a folder's own `.ans` files (not hidden ones, nor its subfolders') into a collection, a line each: `added`, the name and the new path. A file without a sidecar is named from its SAUCE title, else its file name |
+| `edit` | Changes a stamp's name (`--name`), category (`--category`) or tags (`--tags`, comma-separated; empty for none), and prints its path. A category that is another collection's name moves the stamp into that collection |
+| `remove` | Moves stamps in the library and their sidecars to the trash |
+
+`delete` and `remove` need `--yes`; without it they say what would go and exit 1. `--permanent` deletes instead of using the trash. Where the trash refuses, nothing goes and the exit status is 1.
+
+The sun piece from [File formats](13-file-formats.md), made a stamp in a collection of a library folder `lib`, then renamed and deleted:
+
+```
+$ blockwright-cli library new --dir lib "Sun and sky"
+lib/sun-and-sky
+$ blockwright-cli library add --dir lib "Sun and sky" piece.ans
+added	A sun over a field	lib/sun-and-sky/a-sun-over-a-field.ans
+$ blockwright-cli library list --dir lib
+collection	Sun and sky	1	lib/sun-and-sky
+stamp	Sun and sky	A sun over a field	32x8	107	-		lib/sun-and-sky/a-sun-over-a-field.ans
+$ blockwright-cli library rename --dir lib "Sun and sky" Suns
+lib/suns
+$ blockwright-cli library delete --dir lib Suns
+blockwright-cli: library delete: this would remove lib/suns and its 1 stamp; run again with --yes
+$ blockwright-cli library delete --dir lib Suns --yes
+moved to the trash	lib/suns	1 stamp
+```
+
+Where the trash refuses:
+
+```
+blockwright-cli: library delete: lib/suns can't be moved to the trash (there is none, or it refused); nothing was removed; run again with --permanent to delete it for good
+```
 
 ### pack, unpack and snapshot
 
 ```
-blockwright-cli pack [--allow-lossy] [--target ansi|irc] <in> <out.bwp>
-blockwright-cli unpack [--allow-lossy] [--target ansi|irc] <in> <dir>
+blockwright-cli pack [--allow-lossy] [--target ansi|irc|micron] <in> <out.bwp>
+blockwright-cli unpack [--allow-lossy] [--target ansi|irc|micron] <in> <dir>
 blockwright-cli snapshot [--allow-lossy] [--output-encoding cp437|utf-8] <project>
 ```
 
-`pack` writes a piece or project as a project zip; `unpack` writes one as a project directory, into a `<dir>` that is empty or already a project. A project can't hold an XBIN's own palette or font, so both drop them only with `--allow-lossy`. `--target` sets the project's target, ANSI or IRC (default: a project's own, else ANSI); see [Lint](11-lint.md#the-irc-target).
+`pack` writes a piece or project as a project zip; `unpack` writes one as a project directory, into a `<dir>` that is empty or already a project. A project can't hold an XBIN's own palette or font, so both drop them only with `--allow-lossy`. `--target` sets the project's target, `ansi`, `irc` or `micron` (default: a project's own, else ANSI); see [Lint](11-lint.md#targets).
 
 `snapshot` saves the project's flattened composite as its next snapshot, `snapshots/rN.ans`, and prints `rN`. It is written in the project's own encoding unless `--output-encoding` gives one.
 
@@ -239,6 +282,7 @@ blockwright-cli: SOURCE_DATE_EPOCH is seconds since 1970-01-01 UTC as digits, up
 | `--font-width 8|9` | With `--render`: glyph width (default: the SAUCE's, else 8) |
 | `--allow-lossy` | Write an `.ans` that loses something; a warning says what |
 | `--output-encoding cp437|utf-8` | The `.ans` files' text (default CP437) |
+| `--user-library <dir>` | The user library `placeStamp` steps find stamps in and `saveToLibrary` steps save to, written once every capture is. Without it, a saved stamp is kept for this replay only |
 
 A steps file is JSON. In brief:
 
@@ -250,7 +294,7 @@ A steps file is JSON. In brief:
 ```
 
 - `"start"` is `{"file": ...}` (an `.ans`, `.xb`, `.bin` or project, relative to the steps file: [Paths in a steps file](#paths-in-a-steps-file)), `{"sample": ...}` or `{"blank": [w, h]}`. `"ice"` sets a blank start's iCE colours (default on).
-- Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …), a layer command (`newCellsLayer`, `setActiveLayer`, …), `canvasSize` ([Resizing the canvas](#resizing-the-canvas)), `clone` ([The clone stamp](#the-clone-stamp)) or `text` ([The text tool](#the-text-tool)). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row.
+- Each step has a `"name"` (1 to 64 of `a-z`, `0-9`, `-` and `_`, starting with a letter or a digit) and an `"action"`, the editor's name for it: a tool (`shade`, `halfBlock`, `line`, `keyboard`, …), a selection command (`select`, `copy`, `paste`, …), a layer command (`newCellsLayer`, `setActiveLayer`, …), `canvasSize` ([Resizing the canvas](#resizing-the-canvas)), `clone` ([The clone stamp](#the-clone-stamp)), `text` ([The text tool](#the-text-tool)), or a Library step: `placeStamp` places a stamp as the Library dock does, and `saveToLibrary` is **Selection > Save to Library...**, into a collection when its `"category"` names one ([The Library](08-library.md#save-to-library)). Points are cells, or, for the half-block tools (`halfBlock`, `line`, `rectangle`, `ellipse`, `fill` and `eyedropper`), pixels, two to a cell row.
 - Any step but a `view` or `canvasSize` step may set Tool Options (`"fg"` and `"bg"` 0 to 15, `"size"`, `"ramp"`, `"symmetry"` and more), which hold for later steps. Three belong to one kind of step each: `"sampleMerged"` to `fill` and `eyedropper` ([Sample merged](#sample-merged)), `"aligned"` to `clone` ([The clone stamp](#the-clone-stamp)), and `"textOptions"`, the Text tool's settings, to `text` ([The text tool](#the-text-tool)).
 
 `blockwright-cli replay --help` gives the whole format: every action, its keys, and every Tool Option with range and default. A step that can't be applied stops the replay with exit status 1, naming the step.

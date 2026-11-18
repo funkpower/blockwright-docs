@@ -1,5 +1,5 @@
 Title: Lint panel and the checks it runs
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (9b263b8)
 
 # Lint panel and the checks it runs
 
@@ -31,14 +31,14 @@ Click a row, or select it and press Enter, to move the cell cursor to that cell.
 
 Under the list is the same summary line the CLI prints. The dock lists at most 1000 findings; past that the summary adds "The first 1000 are listed."
 
-The dock lints the visible layers merged, with the document's iCE setting and target ([The IRC target](#the-irc-target)). It lints again 250 ms after an edit, an open, or a change of format or target, while it is shown.
+The dock lints the visible layers merged, with the document's iCE setting and target ([Targets](#targets)). It lints again 250 ms after an edit, an open, or a change of format or target, while it is shown.
 
 The dock never reports [`flat`](#flat), which needs a box that only the CLI takes.
 
 ## blockwright-cli lint
 
 ```
-blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc] [--json] <in>
+blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc|micron] [--json] <in>
 ```
 
 `<in>` is an `.ans`, `.xb` or `.bin` file, or a project, linted as its visible layers merged, with the file's own iCE setting. `--encoding` says how an `.ans` is read ([blockwright-cli](14-cli.md#what-it-reads)).
@@ -47,7 +47,7 @@ blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc] [--js
 |---|---|
 | `--ramp R` | Check this ramp: a name (`fire`, `sunset`, `ice`, `grass`, `steel`, `skin`, `sea`, `toxic`, `violet`, `wood`) or palette indices 0-15 from dark to light, such as `0,8,7,15`. Repeat for several. Without it, every named ramp is checked with the craft pairs allowed |
 | `--box x0,y0,x1,y1` | The subject's box, corners inclusive. Only findings touching it are reported, and [`flat`](#flat) runs inside it. A box past the right or bottom edge is cut to the canvas |
-| `--target ansi|irc` | Lint for an `.ans` or for IRC. The default is a project's own target, or ANSI for a flat file ([The IRC target](#the-irc-target)) |
+| `--target ansi|irc|micron` | Lint for an `.ans`, for IRC or for a Micron page. The default is a project's own target, or ANSI for a flat file ([Targets](#targets)) |
 | `--json` | Print the findings as JSON |
 
 The text output is one line per finding, then a summary:
@@ -63,7 +63,7 @@ Each line holds the cell, kind, ramp (`-` for none) and message, sorted by row, 
 clean, noise 0.0000, iCE on
 ```
 
-A note prints like a finding, with `note: ` before its message, but leaves the piece clean. The only note is [`ans-loss`](#ans-loss), under the IRC target: what an `.ans` save would lose. A snowman under `--target irc`:
+A note prints like a finding, with `note: ` before its message, but leaves the piece clean. The notes are [`ans-loss`](#ans-loss), under the IRC and Micron targets: what an `.ans` save would lose; and, under the Micron target only, [`micron-colour`](#micron-colour) and [`micron-glyph`](#micron-glyph): what a page doesn't write as the canvas holds it. A snowman under `--target irc`:
 
 ```
 0,0 ans-loss - note: 1 cell holds a glyph a CP437 .ans saves as '?' (fine for IRC)
@@ -373,7 +373,7 @@ $ blockwright-cli lint --box 0,0,23,5 flat.ans
 
 ### trailing-black
 
-A row whose art ends in black before the right edge, beside a row that reaches it. IRC drops trailing black spaces, so the client's own background shows there, or across a row that is all black.
+A row whose art ends in black before the right edge, beside a row that reaches it. IRC drops trailing black spaces, so the client's own background shows there, or across a row that is all black. Off under the Micron target ([Targets](#targets)).
 
 ![A blue field; row 2 is black from column 14 to the edge, row 3 is black all the way](../samples/manual-lint/trailing-black.ans "3x")
 
@@ -388,7 +388,7 @@ $ blockwright-cli lint trailing-black.ans
 
 ### blank-edge-rows
 
-Blank rows above or below the art. IRC trims them when the piece is pasted.
+Blank rows above or below the art. IRC trims them when the piece is pasted. Off under the Micron target ([Targets](#targets)).
 
 ![A blue band across the middle of a black canvas, two blank rows above and two below](../samples/manual-lint/blank-edge-rows.ans "3x")
 
@@ -426,7 +426,7 @@ $ blockwright-cli lint arrows.ans
 5 findings (5 no-cp437), noise 0.0000, iCE on
 ```
 
-Each is a `"severity":"warning"` in the JSON, and the exit status is 4. Under the IRC target the check is off and the same cells make one [`ans-loss`](#ans-loss) note, so the piece is clean, status 0:
+Each is a `"severity":"warning"` in the JSON, and the exit status is 4. Under the IRC and Micron targets the check is off and the same cells make one [`ans-loss`](#ans-loss) note, so the piece is clean, status 0:
 
 ```
 $ blockwright-cli lint --target irc arrows.ans
@@ -436,11 +436,11 @@ clean, 1 note (1 ans-loss), noise 0.0000, iCE on
 
 See [File formats](13-file-formats.md#writing) for why an `.ans` can't keep those five.
 
-**Fix:** use CP437 glyphs, keep the piece as a project (which holds any glyph), or give an IRC piece the IRC target.
+**Fix:** use CP437 glyphs, keep the piece as a project (which holds any glyph), or give an IRC piece the IRC target and a page the Micron target.
 
 ### width-varies
 
-Under either target, a glyph whose width clients and terminals count differently, shifting the rest of the line. The message names the glyph and each reason:
+Under every target, a glyph whose width clients and terminals count differently, shifting the rest of the line. The message names the glyph and each reason:
 
 - Two columns wide, or zero-width, only since a Unicode version after 9.0.0. An older client draws it in one column, or gives it a column of its own.
 - U+200D (zero width joiner): a grapheme-joining terminal draws the glyph and the next as one, narrower than their cells.
@@ -461,7 +461,7 @@ A newer emoji reads `U+1F970 🥰: it takes two columns here, but only since a U
 
 ### lone-mark
 
-Under either target, a zero-width code point, such as a combining mark, alone in a cell: a terminal draws it on the cell before or not at all. Also a two-column glyph with no continuation cell, which a terminal draws over the next cell.
+Under every target, a zero-width code point, such as a combining mark, alone in a cell: a terminal draws it on the cell before or not at all. Also a two-column glyph with no continuation cell, which a terminal draws over the next cell.
 
 ```
 U+0301 is zero-width in a cell of its own: a terminal draws it on the cell before it, or not at all
@@ -471,7 +471,7 @@ U+0301 is zero-width in a cell of its own: a terminal draws it on the cell befor
 
 ### bidi-control
 
-A bidi control (U+061C, U+200E, U+200F, U+202A to U+202E, U+2066 to U+2069) in a cell, alone or in a cluster, under either target. A UTF-8 `.ans` or IRC text writes it as it is, and a client that applies bidi reorders the rest of the line. A right-to-left override alone in a cell is a bidi control and a lone mark:
+A bidi control (U+061C, U+200E, U+200F, U+202A to U+202E, U+2066 to U+2069) in a cell, alone or in a cluster, under every target. A UTF-8 `.ans` or IRC text writes it as it is, and a client that applies bidi reorders the rest of the line. A right-to-left override alone in a cell is a bidi control and a lone mark:
 
 ```
 $ blockwright-cli lint --target irc override.ans
@@ -487,7 +487,7 @@ The exit status is 4.
 
 ### ans-loss
 
-Only under the IRC target. A note of what an `.ans` save would lose; at most one of each kind, at the first cell it counts:
+Only under the IRC and Micron targets. A note of what an `.ans` save would lose; at most one of each kind, at the first cell it counts. Under the Micron target each message ends `(fine for Micron)`:
 
 | What is lost | The message |
 |---|---|
@@ -497,13 +497,36 @@ Only under the IRC target. A note of what an `.ans` save would lose; at most one
 
 With notes alone the summary starts `clean` and the exit status is 0. If the piece will also be saved as an `.ans`, lint it under the ANSI target.
 
+### micron-colour
+
+Only under the Micron target. A note of the cells whose colour Export Micron writes in the six-digit truecolour form (`` `FTrrggbb ``, `` `BTrrggbb ``) because three hex digits can't hold it, such as most of mIRC's colours 16 to 98, or an XBIN's own palette entry that isn't twelve-bit. It counts the cells whose colour shows, so a foreground on a blank cell isn't counted, and it reports one note at the first cell. The page keeps such a colour exactly and NomadNet 1.5 reads it; the note is for a page meant to keep to three-digit codes. An XBIN whose palette has a colour that isn't twelve-bit, linted under `--target micron`:
+
+```
+0,0 micron-colour - note: 2 cells are in colours three hex digits can't write: the page writes them exactly, as truecolour (`FTrrggbb or `BTrrggbb), not a twelve-bit `Frgb or `Brgb
+clean, 1 note (1 micron-colour), noise 0.0000, iCE on
+```
+
+**Fix:** none is needed. To keep a page to three-digit codes, redraw those cells in colours the Micron colour dialog offers ([Colour](09-colour.md)).
+
+### micron-glyph
+
+Only under the Micron target. A note of the cells a Micron page writes as `?`: a glyph whose code point NomadNet strips from a page, a wide glyph (written as `?` and a space), and a glyph IRC text can't write. One note, at the first cell. It sits beside [`ans-loss`](#ans-loss), which counts what a CP437 `.ans` would lose. A combining mark and a snowman (`a`, U+0301, `b`, a space, U+2603) under `--target micron --encoding utf-8`:
+
+```
+0,0 micron-glyph - note: 1 cell holds a glyph a Micron page writes as '?': NomadNet strips its code point from a page, or IRC text can't write it
+3,0 ans-loss - note: 1 cell holds a glyph a CP437 .ans saves as '?' (fine for Micron)
+clean, 2 notes (1 ans-loss, 1 micron-glyph), noise 0.0000, iCE on
+```
+
+**Fix:** use a glyph NomadNet shows. The export's warning lists the glyphs it wrote as `?` ([What a page doesn't keep](13-file-formats.md#what-a-page-doesnt-keep)).
+
 ### wasted-format
 
-Bold, italic or underline that draws nothing, though IRC text spends a byte on each toggle; one finding per cell, under either target. An attribute is wasted when the cell draws the same pixels without it at both glyph widths, 8 and 9 pixels: bold on a blank, `▀` or `█`, or underline on `█`.
+Bold, italic or underline that draws nothing, though IRC text spends a byte on each toggle; one finding per cell, under the ANSI and IRC targets ([Targets](#targets)). An attribute is wasted when the cell draws the same pixels without it at both glyph widths, 8 and 9 pixels: bold on a blank, `▀` or `█`, or underline on `█`.
 
 Italic shears a block, so italic on `█` isn't flagged. Only glyphs in the VGA font are judged.
 
-The formatting comes from the Palette dock's **B**, **I** and **U** toggles, which the glyph brush and typing write under the IRC target.
+The formatting comes from the Palette dock's **B**, **I** and **U** toggles, which the glyph brush and typing write under the IRC and Micron targets.
 
 For an IRC project whose first five cells are bold on a blank, underline on `█`, bold on `▀`, bold on `A` and italic on `█`:
 
@@ -520,13 +543,31 @@ Each is a `"severity":"warning"`; the exit status is 4.
 
 **Fix:** turn the attribute off on those cells. Export writes it, wasted or not.
 
-## The IRC target
+## Targets
 
-A document targets an `.ans` (ANSI) or IRC: set it with **Format > Target**. A project keeps it (`pack` and `unpack` take `--target`), `lint --target` overrides it, and a flat file is linted for ANSI unless `--target irc` is given. Under the IRC target:
+A document targets an `.ans` (ANSI), IRC, or a Micron page for NomadNet: set it with **Format > Target**. A project keeps it (`pack` and `unpack` take `--target`), `lint --target` overrides it, and a flat file is linted for ANSI unless `--target irc` or `--target micron` is given.
+
+Under the IRC and Micron targets:
 
 - [`no-cp437`](#no-cp437) is off, and [`ans-loss`](#ans-loss) notes say what an `.ans` save would lose instead.
 - A ladder check judges a cell in a colour outside the 16 by the nearest of the 16, and the message ends `(an RGB cell, judged by the nearest of the 16)`.
-- Every other check runs as under ANSI.
+
+Under the Micron target, three checks are also off, as a page doesn't drop what IRC drops ([Drawing for NomadNet](17-nomadnet.md)):
+
+- [`trailing-black`](#trailing-black) and [`blank-edge-rows`](#blank-edge-rows): a page keeps every row and column, black and blank ones included.
+- [`wasted-format`](#wasted-format): a page has no byte budget, so a toggle that draws nothing costs nothing that matters.
+
+[`width-varies`](#width-varies), [`lone-mark`](#lone-mark) and [`bidi-control`](#bidi-control) stay under every target: NomadNet draws in a terminal. Two notes are added, [`micron-colour`](#micron-colour) and [`micron-glyph`](#micron-glyph), for what a page doesn't write as the canvas holds it. Every other check runs as under ANSI.
+
+The trailing-black sample and the arrows of [`no-cp437`](#no-cp437), linted for a page:
+
+```
+$ blockwright-cli lint --target micron trailing-black.ans
+clean, noise 0.0000, iCE on
+$ blockwright-cli lint --target micron arrows.ans
+0,0 ans-loss - note: 5 cells hold glyphs a CP437 .ans saves as '?' (fine for Micron)
+clean, 1 note (1 ans-loss), noise 0.0000, iCE on
+```
 
 ## Where the rules come from
 

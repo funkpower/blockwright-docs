@@ -1,5 +1,5 @@
 Title: Composing a scene
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (716a62e)
 
 # Composing a scene
 
@@ -125,13 +125,13 @@ The **Library** dock (**Window > Library**) holds stamps, bundled parts and your
 
 Double-click a stamp or press <kbd>Enter</kbd> on it to float it at the cell you last clicked, or drag it onto the canvas. The **Select** tool is then in hand, and the stamp lands in **Transparent** mode unless you change **Paste** while it floats. Move, flip or turn it, and press <kbd>Enter</kbd>.
 
-To keep a part, select it, choose **Selection > Save to Library...**, and give it a name CP437 can write, a category and tags. A new category name adds an entry to the category list.
+To keep a part, select it, choose **Selection > Save to Library...**, and give it a name CP437 can write, a category and tags. A new category name adds an entry to the category list. To keep your parts together, make a collection with the dock's **Collections** button (**New Collection...**) and give its name as the category: the stamp goes in the collection's folder, and the collection can be renamed or deleted in one go.
 
 Save to Library takes what the visible layers show. To save the pine from step 2, clear **Background**'s box in the **Layers** dock first, or the stamp carries the stars at `58, 5` and `57, 11`. Tick it again afterwards, since a hidden layer stays out of every export.
 
 The **Scene Starter**, a scene laid out from the Library in one go, isn't in the app yet.
 
-The manual's [Library](../manual/08-library.md) covers the dock, frames and bands that resize, the **Save to Library** dialog, [your own stamps and categories](../manual/08-library.md#your-own-stamps-and-categories) and where stamps are kept.
+The manual's [Library](../manual/08-library.md) covers the dock, frames and bands that resize, the **Save to Library** dialog, [your own stamps and collections](../manual/08-library.md#your-own-stamps-and-collections) and where stamps are kept.
 
 ## Check it
 

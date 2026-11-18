@@ -1,5 +1,5 @@
 Title: Preferences
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (716a62e)
 
 # Preferences
 
@@ -40,10 +40,11 @@ The **Documents** tab has one setting, **Target for new documents**:
 |---|---|
 | **ANSI (.ans)** (the default) | The 16 colours an `.ans` holds |
 | **IRC** | mIRC's 99 colours |
+| **Micron (NomadNet)** | A Micron page for NomadNet: mIRC's 99 colours and the 4096 a page's three-digit codes write |
 
-**When it takes effect.** At the next new document: **File > New**, the start screen's **New**, the canvas left when the start screen closes without a pick (from startup or **File > Start Screen...**), and the first canvas when Blockwright starts without the start screen. A new IRC document starts in UTF-8: the status bar reads `IRC UTF-8` where an ANSI one reads `ANSI CP437`.
+**When it takes effect.** At the next new document: **File > New**, the start screen's **New**, the canvas left when the start screen closes without a pick (from startup or **File > Start Screen...**), and the first canvas when Blockwright starts without the start screen. A new IRC or Micron document starts in UTF-8: the status bar reads `IRC UTF-8` or `Micron UTF-8` where an ANSI one reads `ANSI CP437`.
 
-For the open document, use **Format > Target**; it is part of the document and **Edit > Undo** takes it back. What each target means is in [IRC](10-irc.md) and [Palette, iCE colours and 24-bit colour](09-colour.md).
+For the open document, use **Format > Target**; it is part of the document and **Edit > Undo** takes it back. What each target means is in [IRC](10-irc.md), [Drawing for NomadNet](17-nomadnet.md) and [Palette, iCE colours and 24-bit colour](09-colour.md).
 
 ## Shortcuts
 
@@ -65,7 +66,7 @@ These settings, and everything else Blockwright remembers between runs, are in o
 | macOS | `~/Library/Preferences/com.blockwright.Blockwright.plist` |
 | Windows | The registry key `HKEY_CURRENT_USER\Software\Blockwright\Blockwright` |
 
-On Linux the file is plain text. **OK** with nothing changed leaves it alone, unless it was edited by hand. While IRC is the target or any action has an entry, **OK** rewrites the whole file, and comments and blank lines added by hand are lost.
+On Linux the file is plain text. **OK** with nothing changed leaves it alone, unless it was edited by hand. While IRC or Micron is the target or any action has an entry, **OK** rewrites the whole file, and comments and blank lines added by hand are lost.
 
 The **Preferences** entries:
 
@@ -80,7 +81,7 @@ folder=
 swapColours=Ctrl+Shift+U
 ```
 
-- `document/defaultTarget` is there only while the target is IRC, as `irc`. Case doesn't matter; missing or any value but `irc` or `ansi` means ANSI. **OK** normalises a hand-edited value even with nothing changed: `IRC` becomes `irc`, and `ansi` or an unknown value is removed.
+- `document/defaultTarget` is there only while the target is IRC or Micron, as `irc` or `micron`. Case doesn't matter; missing or any value but `irc`, `micron` or `ansi` means ANSI. **OK** normalises a hand-edited value even with nothing changed: `IRC` becomes `irc`, `Micron` becomes `micron`, and `ansi` or an unknown value is removed.
 - `fonts/folder` is the folder's path, or empty after **Clear**. **OK** writes it only after you change the field or use **Browse...** or **Clear**, and it stays from then on. Missing means the default, `~/tdfiglet/fonts` if it exists.
 - `shortcuts/<action>` holds the keys of an action you changed, by its id (`swapColours` is **Colours > Swap Colours**). Setting an action back to its default removes the entry.
 

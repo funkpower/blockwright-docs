@@ -1,9 +1,9 @@
 Title: Palette, iCE colours and 24-bit colour
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (716a62e)
 
 # Palette, iCE colours and 24-bit colour
 
-A cell has a foreground and a background, each one of 16 colours, or under the IRC target one of mIRC's 99. iCE colours decide whether the bright eight work as backgrounds.
+A cell has a foreground and a background, each one of 16 colours, or under the IRC target one of mIRC's 99. Under the Micron target it can also hold any of the 4096 colours a Micron page's three-digit codes write. iCE colours decide whether the bright eight work as backgrounds.
 
 [What ANSI art is](../tutorials/01-what-ansi-art-is.md) introduces the 16 colours and iCE colours.
 
@@ -28,19 +28,20 @@ The Palette dock, the **Colours** menu and `blockwright-cli` use the PC's order.
 
 ## mIRC's 99 colours
 
-Under the IRC target (**Format > Target > IRC**, no shortcut) a document can also use mIRC's colours 16 to 98. A cell holds each as its exact RGB. IRC text writes it as its mIRC number ([IRC](10-irc.md#how-a-row-is-encoded)); a Micron page for NomadNet writes the RGB ([Export for NomadNet](10-irc.md#export-for-nomadnet)).
+Under the IRC target (**Format > Target > IRC**, no shortcut) and the Micron target (**Format > Target > Micron (NomadNet)**, no shortcut) a document can also use mIRC's colours 16 to 98. A cell holds each as its exact RGB. IRC text writes it as its mIRC number ([IRC](10-irc.md#how-a-row-is-encoded)); a Micron page for NomadNet writes the RGB ([Export for NomadNet](10-irc.md#export-for-nomadnet)).
 
-Cells keep their mIRC colours under the ANSI target.
+Changing the target is one undo step, `Target`, and changes no cell: cells keep their colours under any target.
 
-An `.ans`, XBIN or BIN file holds only the 16. Saving another colour to one, under either target, writes the nearest of the 16 and warns: `3 cells are in colours the file can't hold, saved as the nearest of the 16` (`1 cell is in a colour …` for one). A project keeps them.
+An `.ans`, XBIN or BIN file holds only the 16. Saving another colour to one, under any target, writes the nearest of the 16 and warns: `3 cells are in colours the file can't hold, saved as the nearest of the 16` (`1 cell is in a colour …` for one). A project keeps them.
 
 ## The Palette dock
 
 The **Palette** dock is on the right of the window and can't be closed. It shows the pen on the left and the 16 colours in two rows of eight, 0 to 7 on top.
 
-Under the IRC target, mIRC's 16 to 98 follow under the pen in smaller swatches, in rows of 12; the greys 88 to 98 make their own row. Below them, **B**, **I** and **U** turn bold, italic and underline on and off for the pen (the glyph brush writes them as `^B`, `^]` and `^_`).
+Under the IRC and Micron targets, mIRC's 16 to 98 follow under the pen in smaller swatches, in rows of 12; the greys 88 to 98 make their own row. Below them, **B**, **I** and **U** turn bold, italic and underline on and off for the pen (the glyph brush writes them as `^B`, `^]` and `^_`).
 
 - **Left click** a colour for the pen's foreground, **right click** for the background.
+- **Under the Micron target, left click** the pen's foreground or background square to open the [Micron colour dialog](#the-micron-colour-dialog) for it. Its tooltip names the colour: `The foreground colour #aaaaaa: click to pick another` for the starting pen.
 - **The pen** is two overlapping squares: the foreground top-left over the background bottom-right.
 - **The bent arrow** at the pen's top-right swaps the foreground and the background (**Colours > Swap Colours**).
 - **The small grey-over-black squares** at the pen's bottom-left set the pen back to grey on black (**Colours > Default Colours**, <kbd>Ctrl</kbd>+<kbd>D</kbd>).
@@ -48,6 +49,22 @@ Under the IRC target, mIRC's 16 to 98 follow under the pen in smaller swatches, 
 An mIRC swatch's tooltip names it and its RGB, such as `mIRC 16 (#470000)`.
 
 The pen's keys and the eyedropper are on [Keyboard mode, F-key glyph sets and the pen](03-keyboard-mode.md#the-pen).
+
+## The Micron colour dialog
+
+Under the Micron target, **Colours > Pick Foreground Colour...** and **Colours > Pick Background Colour...** (no shortcuts), or a left click on the pen's foreground or background square, open a dialog titled **Foreground Colour** or **Background Colour**. The two menu items are greyed out under the other targets.
+
+| Part | What it does |
+|---|---|
+| **Red**, **Green**, **Blue** | A slider and a box for each channel, one hex digit, `0` to `F` |
+| **Code** | The three digits together, such as `a50`; type three to set all the channels |
+| The swatch | The colour |
+
+A digit stands for itself doubled, so `a50` is `#aa5500`: the dialog offers the 4096 colours a three-digit code writes, and only those. It opens on the pen's colour, each channel at its nearest digit; one of the 16 is read as the document's palette has it.
+
+**OK** sets the pen to the colour, as a swatch does; it adds no undo step. **OK** on the digits it opened with, or **Cancel**, leaves the pen as it was. The Palette dock marks no swatch for a colour none of them holds; **Colours > Next Foreground** and the other three step from it to the first or last swatch.
+
+How the page writes a colour is in [What a page holds](13-file-formats.md#what-a-page-holds).
 
 ## iCE colours
 

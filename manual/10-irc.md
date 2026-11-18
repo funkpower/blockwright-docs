@@ -1,5 +1,5 @@
 Title: IRC: byte budget, row meter, IRC view, export
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (716a62e)
 
 # IRC: byte budget, row meter, IRC view, export
 
@@ -29,7 +29,7 @@ The budget belongs to the document, and changing it is one undo step. A project 
 
 ## The row meter
 
-The row meter is a column right of the canvas, one bar beside each row, scrolling and zooming with it. **View > IRC > Row Meter** (no shortcut) turns it off and on; it starts on.
+The row meter is a column right of the canvas, one bar beside each row, scrolling and zooming with it. **View > IRC > Row Meter** (no shortcut) turns it off and on; it starts on. Under the Micron target the meter is hidden whatever the setting, as a page has no byte budget; **Row Meter** keeps its tick, and the meter comes back under the ANSI or IRC target. A project keeps its IRC budget under every target.
 
 Each bar's length is the row's share of the budget, full when the row is over it. When the row is tall enough on screen, the bar shows the row's bytes as sent. Its colour gives the row's state:
 
@@ -285,7 +285,7 @@ The lint reports both as [trailing-black](11-lint.md#trailing-black) and [blank-
 
 **File > Export Micron...** (no shortcut) writes the piece as a Micron page for NomadNet ([Micron page](13-file-formats.md#micron-page-mu)). Colours keep their exact RGB: mIRC's 16 to 98 as stored ([mIRC's 99 colours](09-colour.md#mircs-99-colours)), so mIRC 16, `#470000`, is `` `FT470000 `` and mIRC 52 is `` `Ff00 ``. The 16 are written as the editor draws them, light blue as `55f`.
 
-Bold, italic and underline are kept, and glyphs are written as IRC text writes them; a code point NomadNet drops from a page, such as a combining mark, is written as `?`. A page has no byte budget, so Fit, Pad and Swap Shades don't apply, and blank rows and trailing black stay. `blockwright-cli export --micron` writes the same page ([export --micron](14-cli.md#export-micron)).
+Bold, italic and underline are kept, and glyphs are written as IRC text writes them; a code point NomadNet drops from a page, such as a combining mark, is written as `?`. A page has no byte budget, so Fit, Pad and Swap Shades don't apply, and blank rows and trailing black stay. `blockwright-cli export --micron` writes the same page ([export --micron](14-cli.md#export-micron)). To draw for a page from the start, use the Micron target ([Drawing for NomadNet](17-nomadnet.md)).
 
 ## From the command line
 

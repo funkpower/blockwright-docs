@@ -1,5 +1,5 @@
 Title: File formats: .ans, SAUCE, IRC text, UTF-8, XBIN, project files
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (716a62e)
 
 # File formats: .ans, SAUCE, IRC text, UTF-8, XBIN, project files
 
@@ -9,7 +9,7 @@ Only a project holds everything the editor has. Before writing any other format,
 
 | Format | Read | Write | Holds |
 |---|---|---|---|
-| Project, `.bwp` or a directory | Yes | Yes | Everything: layers, any glyph, mIRC's colours, bold, italic and underline, the target, the IRC budget, notes, snapshots, SAUCE |
+| Project, `.bwp` or a directory | Yes | Yes | Everything: layers, any glyph, mIRC's colours and a Micron page's, bold, italic and underline, the target, the IRC budget, notes, snapshots, SAUCE |
 | ANSI, `.ans` | Yes | Yes | One flat canvas of CP437 glyphs, or any glyph in a UTF-8 `.ans`, in the 16 colours, iCE or blink, SAUCE |
 | XBIN, `.xb` | Yes | Yes | One flat canvas, its own palette and font, iCE, SAUCE without its flags |
 | BIN, `.bin` | Yes | Yes | One flat canvas an even number of columns wide, iCE, SAUCE |
@@ -246,7 +246,7 @@ refs/<sha256>.png   a reference layer's picture, .png or .jpg, named by the sha2
 scripts/<id>/, thumbnail.png and anything else
 ```
 
-The manifest has `"target": "irc"` only under the IRC target, and `"ansEncoding": "utf-8"` only for a UTF-8 `.ans`. A reference layer's `"reference"` key names its picture, with place, size and opacity; a picture whose bytes don't hash to its name is refused.
+The manifest has `"target": "irc"` only under the IRC target and `"target": "micron"` only under the Micron target, and `"ansEncoding": "utf-8"` only for a UTF-8 `.ans`. A reference layer's `"reference"` key names its picture, with place, size and opacity; a picture whose bytes don't hash to its name is refused.
 
 `blockwright-cli unpack` writes a project directory. For the sun piece:
 
@@ -343,7 +343,7 @@ Closing such a flat document asks first: only a project saves its layers and IRC
 
 ## Micron page (.mu)
 
-**File > Export Micron...** and `blockwright-cli export --micron` write the canvas as a Micron page, the page markup of NomadNet on the Reticulum network: UTF-8, one line per row ending in a line feed. Blockwright doesn't read it back. In the app:
+**File > Export Micron...** and `blockwright-cli export --micron` write the canvas as a Micron page, the page markup of NomadNet on the Reticulum network: UTF-8, one line per row ending in a line feed. Blockwright doesn't read it back. Where a page goes and how NomadNet shows it are in [Drawing for NomadNet](17-nomadnet.md). In the app:
 
 1. Any edit in progress lands. A floating selection that can't land stops the export, and the status bar says "Not exported: the floating selection can't land: …".
 2. If any cell would be written as something else ([What a page doesn't keep](#what-a-page-doesnt-keep)), a warning starts "Before exporting a Micron page:", lists them, and asks "Export anyway?". **Save** goes on; **Cancel**, the default, stops.
@@ -407,7 +407,7 @@ An `.ans` is read as UTF-8 when it starts with a byte order mark, or is all well
 
 To read a file the other way, open it with the `ANSI art, CP437 (*.ans)` or `ANSI art, UTF-8 (*.ans)` filter, or use **File > Reopen with Encoding** (**Auto (as its bytes say)**, **CP437** or **UTF-8**). It asks to save edits first, and works only on an `.ans`.
 
-**File > Save** writes an `.ans` in the encoding it was opened or last saved in. A new document is CP437 under the ANSI target, UTF-8 under the IRC target.
+**File > Save** writes an `.ans` in the encoding it was opened or last saved in. A new document is CP437 under the ANSI target, UTF-8 under the IRC and Micron targets.
 
 **Save As...** with `ANSI art (*.ans)` writes CP437, with `ANSI art, UTF-8 (*.ans)` UTF-8. A UTF-8 `.ans` with no sequence of three bytes or more gets a byte order mark, so it reads back as UTF-8.
 
@@ -417,11 +417,12 @@ To read a file the other way, open it with the `ANSI art, CP437 (*.ans)` or `ANS
 
 | File | Read by |
 |---|---|
-| PNG and JPEG pictures | **File > Open Reference Image...** (`Images (*.png *.jpg *.jpeg)`), as a reference layer; a project keeps the picture under `refs/` |
+| PNG and JPEG pictures | **File > Open Reference Image...** (`Images (*.png *.jpg *.jpeg)`) and a steps file's `openReferenceImage` step, as a reference layer; a project keeps the picture under `refs/` |
 | Python scenes (`.py`) | **File > Open Scene...** and `blockwright-cli import-scene`, which run the scene and open it as a project with a generator layer for each of its layers |
 | A generator's directory (`generator.json`, and `params.json` and scripts) | `blockwright-cli add-generator` |
 | TheDraw fonts (`.tdf`) | The fonts folder set in Preferences, for text layers, and a `text` step in a `blockwright-cli replay` steps file ([A TheDraw font](14-cli.md#a-thedraw-font)); a project keeps the fonts its text layers use under `fonts/` |
 | Library stamps (an `.ans` and its `.json` sidecar) and text styles (`.style.json`) | The Library, from the bundled library and the user's; `blockwright-cli library list` and `library check` |
+| Plain `.ans` files to make stamps of | **Add Files to Collection...** and **Add Folder to Collection...** in the Library dock, and `blockwright-cli library add` ([Adding stamps to a collection](08-library.md#adding-stamps-to-a-collection)) |
 
 ## What each format keeps
 
@@ -429,7 +430,7 @@ To read a file the other way, open it with the `ANSI art, CP437 (*.ans)` or `ANS
 |---|---|---|---|---|
 | Layers | Yes | Merged | Merged | Merged |
 | Glyphs with no CP437 code | Yes | `?` (CP437), Yes (UTF-8) | `?` | `?` |
-| mIRC's colours past 15 | Yes | The nearest of the 16 | The nearest of the 16 | The nearest of the 16 |
+| Colours outside the 16: mIRC's, a Micron page's | Yes | The nearest of the 16 | The nearest of the 16 | The nearest of the 16 |
 | Bold, italic, underline | Yes | No | No | No |
 | iCE colours | Yes | Yes | Yes (header) | Yes |
 | An XBIN's palette and font | No | No | Yes | No |
@@ -443,11 +444,11 @@ To read a file the other way, open it with the `ANSI art, CP437 (*.ans)` or `ANS
 
 ```
 blockwright-cli convert [--allow-lossy] [--encoding auto|cp437|utf-8] [--output-encoding cp437|utf-8] <in> <out>
-blockwright-cli pack [--allow-lossy] [--encoding auto|cp437|utf-8] [--target ansi|irc] <in> <out.bwp>
-blockwright-cli unpack [--allow-lossy] [--encoding auto|cp437|utf-8] [--target ansi|irc] <in> <dir>
+blockwright-cli pack [--allow-lossy] [--encoding auto|cp437|utf-8] [--target ansi|irc|micron] <in> <out.bwp>
+blockwright-cli unpack [--allow-lossy] [--encoding auto|cp437|utf-8] [--target ansi|irc|micron] <in> <dir>
 ```
 
-`convert` writes the format `<out>`'s name gives: XBIN for `.xb` or `.xbin`, BIN for `.bin`, ANSI for anything but `.bwp`, which it refuses with exit status 1: `pack` writes a project. `pack` and `unpack` write a project, its target set by `--target` (default: a project's own, else `ansi`).
+`convert` writes the format `<out>`'s name gives: XBIN for `.xb` or `.xbin`, BIN for `.bin`, ANSI for anything but `.bwp`, which it refuses with exit status 1: `pack` writes a project. `pack` and `unpack` write a project, its target set by `--target`: `ansi`, `irc` or `micron`, in any case (default: a project's own, else `ansi`).
 
 A conversion that would lose something prints a warning for each loss and writes nothing, exit status 1. With `--allow-lossy` it prints the warnings and writes the file:
 
