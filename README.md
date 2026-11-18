@@ -16,7 +16,7 @@ Published at <https://blockwright.pumpin.online/>. Every commit to `main` is liv
 | `index.md` | The home page |
 | `release-checklist.md` | The maintainer's release checklist: which pages are behind the dev build, at `/release-checklist.html`, linked from no other page |
 | `theme/` | The page template and stylesheet |
-| `scripts/build` | Builds the site into `site/` (not tracked) |
+| `scripts/build` | Builds the site into `site/`, and with `--help-bundle` Blockwright's offline help into `help/` (neither tracked) |
 | `scripts/test-build` | Checks the build against scratch copies of the repo |
 | `scripts/ansi.py` | Writes the samples' `.ans` files |
 | `scripts/deploy` | Copies `site/` to the web root: a directory, or `host:path` on another machine |
@@ -34,6 +34,7 @@ scripts/build --forge-url http://forge.example.test --mirror-url http://docs.exa
                                    # forge and download links to another address of the forge,
                                    # and a footer line naming the site's other address
 scripts/build --app path/to/blockwright  # the app the shortcuts page runs (from the CLI's commit)
+scripts/build --help-bundle        # also Blockwright's help bundle, into help/ (or --help-bundle DIR)
 scripts/test-build                 # the build's own checks
 ```
 

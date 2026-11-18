@@ -4,7 +4,7 @@ check what they do.
 
     scripts/test-build [--build FILE] [--deploy FILE] [scenario ...]
 
-Each scenario copies the repo (without .git and site/) into a fresh temporary
+Each scenario copies the repo (without .git, site/ and help/) into a fresh temporary
 directory, changes the copy, runs the build or the deploy there and checks the
 result. With --build or --deploy, FILE is used as the copy's scripts/build or
 scripts/deploy instead, to try another version of the script against the same
@@ -17,6 +17,7 @@ Exits 1 if any scenario fails.
 """
 
 import argparse
+import html
 import html.parser
 import json
 import os
@@ -115,7 +116,8 @@ class Scratch:
     def __init__(self, base, build, deploy=None):
         self.base = Path(base)
         self.repo = self.base / "docs"
-        shutil.copytree(ROOT, self.repo, ignore=shutil.ignore_patterns(".git", "site", "__pycache__"))
+        shutil.copytree(ROOT, self.repo, ignore=lambda d, names: [n for n in names if n in (".git", "__pycache__") or
+                                                                  (Path(d) == ROOT and n in ("site", "help"))])
         if build:
             shutil.copyfile(build, self.repo / "scripts" / "build")
         if deploy:
@@ -2543,6 +2545,230 @@ def markdown_text_kept(s):
     s.probe("Start one with `<!--`.\n\n<div markdown=\"1\"><hr>\n\nZebra quagga okapi.\n</div>\n\nEnd with `-->`.\n")
     s.failed(says="manual/99-probe.md: <div markdown>: an attribute the site doesn't use")
     check(DROPPED not in s.out, f"text reported lost: {s.out.strip()[-400:]}")
+
+# The help bundle (--help-bundle, Blockwright #210).
+
+BUNDLE_KEYS = {"format", "docsCommit", "checkedWith", "contents"}
+BUNDLE_APP_PAGES = ("tutorials/01-what-ansi-art-is.html", "tutorials/index.html", "manual/index.html")
+WEBSITE = "https://blockwright.pumpin.online/"
+
+
+def png(w, h):
+    """A w by h black PNG."""
+    def chunk(kind, data):
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+    rows = b"".join(b"\x00" + b"\x00\x00\x00" * w for _ in range(h))
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(rows)) + chunk(b"IEND", b""))
+
+
+def bundle_json(root):
+    f = root / "bundle.json"
+    check(f.is_file(), f"no {f}")
+    return json.loads(f.read_text(encoding="utf-8"))
+
+
+def bundle_refs(root):
+    """Every relative href and src of every page in the bundle at root that
+    doesn't resolve to a file in it, or to an id on the page it names."""
+    bad = []
+    root = root.resolve()
+    for f in sorted(root.rglob("*.html")):
+        text = f.read_text(encoding="utf-8")
+        for ref in re.findall(r'(?:href|src)="([^"]*)"', text):
+            ref = html.unescape(ref)
+            if re.match(r"^[a-z][a-z0-9+.-]*:", ref, re.I):
+                continue
+            path, _, frag = ref.partition("#")
+            target = (f.parent / path).resolve() if path else f
+            if not target.is_relative_to(root) or not target.is_file():
+                bad.append(f"{f.relative_to(root)}: {ref}")
+            elif frag and target.suffix == ".html" and f'id="{frag}"' not in target.read_text(encoding="utf-8"):
+                bad.append(f"{f.relative_to(root)}: {ref} (no #{frag})")
+    return bad
+
+
+@scenario
+def help_bundle(s):
+    """--help-bundle on the repo as it is writes help/ beside site/: bundle.json
+    with exactly format 1, the --docs-commit, the CLI's version less its name
+    and the contents (Tutorials and Manual, each index and every published page
+    in order, every one in the bundle); the three pages the app opens and
+    every tool section the app links to; no menu, footer, stylesheet or pager
+    <nav> on any page, and the licence credit as each page's last line; every link and picture resolving inside the bundle;
+    nothing but tutorials/, manual/ and samples/ besides bundle.json and the
+    build's manifest; a before
+    and its after in one row; the samples the pages link to copied. A second
+    build into the same help/ gives the same bytes, and site/ keeps its menu."""
+    s.passed("--help-bundle", "--docs-commit", "abc1234")
+    root = s.repo / "help"
+    b = bundle_json(root)
+    check(set(b) == BUNDLE_KEYS, f"bundle.json keys {sorted(b)}")
+    check(b["format"] == 1, f"format {b['format']!r}")
+    check(b["docsCommit"] == "abc1234", f"docsCommit {b['docsCommit']!r}")
+    version = subprocess.run([s.real_cli(), "--version"], capture_output=True, text=True).stdout.splitlines()[0]
+    check(b["checkedWith"] == version.split(" ", 1)[1], f"checkedWith {b['checkedWith']!r}, CLI {version!r}")
+    check(isinstance(b["contents"], list) and b["contents"], "contents isn't a non-empty list")
+    check([c["title"] for c in b["contents"]] == ["Tutorials", "Manual"], f"sections {b['contents']}")
+    named = []
+    for c in b["contents"]:
+        named.append(c["page"])
+        named += [p["page"] for p in c["pages"]]
+        check(all(p["title"] for p in c["pages"]), f"a page without a title in {c['title']}")
+    site = sorted(p.relative_to(s.repo / "site").as_posix() for d in ("tutorials", "manual")
+                  for p in (s.repo / "site" / d).glob("*.html"))
+    check(sorted(named) == site, f"contents {sorted(named)} aren't the site's sections {site}")
+    check(named[:2] == ["tutorials/index.html", "tutorials/01-what-ansi-art-is.html"], f"order {named[:2]}")
+    for page in named + list(BUNDLE_APP_PAGES):
+        check((root / page).is_file(), f"no {page} in the bundle")
+    tools = (root / "manual" / "04-tools.html").read_text(encoding="utf-8")
+    for anchor in ("keyboard", "half-block-brush", "line-rectangle-and-ellipse", "ramp-gradient", "text"):
+        check(f'id="{anchor}"' in tools, f"no #{anchor} in manual/04-tools.html")
+    for f in sorted(root.rglob("*.html")):
+        text = f.read_text(encoding="utf-8")
+        for left in ("<nav", "<footer", "<link", "<script", "<style", "site.css", 'class="side"'):
+            check(left not in text, f"{left} in {f.relative_to(root)}")
+        check('<p class="licence">Text and sample art by funkpower, under <a href="https://creativecommons.org/'
+              'licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>\n</body>' in text, f"no licence credit in {f.relative_to(root)}")
+    bad = bundle_refs(root)
+    check(not bad, f"links that don't resolve in the bundle: {bad[:5]}")
+    tops = {p.relative_to(root).parts[0] for p in root.rglob("*") if p.is_file()}
+    check(tops == {"tutorials", "manual", "samples", "bundle.json", MANIFEST}, f"the bundle holds {sorted(tops)}")
+    ladder = (root / "tutorials" / "04-shading-the-ladder.html").read_text(encoding="utf-8")
+    row = re.search(r"<tr>.*?shade-before\.ans-2x\.png.*?</tr>", ladder)
+    check(row and "shade-after.ans-2x.png" in row.group(0), "the shade brush's before and after aren't in one row")
+    check((root / "samples" / "04-shading-the-ladder" / "shade-before.ans").is_file(), "linked .ans not copied")
+    first = (root / "bundle.json").read_bytes(), ladder
+    s.passed("--help-bundle", "--docs-commit", "abc1234")
+    check(((root / "bundle.json").read_bytes(), (root / "tutorials" / "04-shading-the-ladder.html")
+           .read_text(encoding="utf-8")) == first, "a second build differs")
+    check('<nav class="side"' in s.page("tutorials/04-shading-the-ladder.html"), "the site lost its menu")
+
+
+@scenario
+def help_bundle_page(s):
+    """A bundle page: a link to the home page and the Samples page goes to the
+    website, a link to another bundle page and its anchor is kept, a stub isn't
+    in the contents; two 400-pixel pictures in a row drawn at half size, the
+    third in a row of its own at its size, two small pictures side by side at
+    theirs, and a picture with text beside it left alone; the pictures copied;
+    a table drawn with lines."""
+    (s.repo / "img").mkdir()
+    for name, size in {"a": (400, 20), "b": (400, 20), "c": (400, 20), "d": (8, 4), "e": (8, 4),
+                       "f": (8, 4)}.items():
+        (s.repo / "img" / f"{name}.png").write_bytes(png(*size))
+    s.write("manual/98-stub.md", "Title: Stub\n\n# Stub\n")
+    s.probe("[home](../index.md) and [samples](../samples/index.md) and [fill](04-tools.md#fill).\n\n"
+            "![a](../img/a.png)\n\n![b](../img/b.png)\n\n![c](../img/c.png)\n\nText.\n\n"
+            "![d](../img/d.png)\n\n![e](../img/e.png)\n\nText.\n\n![f](../img/f.png) beside text.\n\n"
+            "| x | y |\n|---|---|\n| 1 | 2 |\n")
+    s.passed("--help-bundle", s.base / "h", "--docs-commit", "abc1234")
+    root = s.base / "h"
+    page = (root / "manual" / "99-probe.html").read_text(encoding="utf-8")
+    check(f'href="{WEBSITE}index.html"' in page, "the home page link doesn't go to the website")
+    check(f'href="{WEBSITE}samples/index.html"' in page, "the Samples page link doesn't go to the website")
+    check('href="04-tools.html#fill"' in page, "the link to another bundle page changed")
+    named = [p["page"] for c in bundle_json(root)["contents"] for p in c["pages"]]
+    check("manual/99-probe.html" in named and "manual/98-stub.html" not in named, f"contents {named}")
+    check(not (root / "manual" / "98-stub.html").exists(), "the stub is in the bundle")
+    rows = re.findall(r"<tr><td.*?</tr>", page)
+    check(len(rows) == 3, f"rows: {rows}")
+    ab = next((r for r in rows if "a.png" in r), "")
+    check("b.png" in ab and ab.count('width="200" height="10"') == 2, f"a and b not at half size in a row: {ab}")
+    c = next((r for r in rows if "c.png" in r), "")
+    check("b.png" not in c and "width=" not in c, f"c not alone at its size: {c}")
+    de = next((r for r in rows if "d.png" in r), "")
+    check("e.png" in de and "width=" not in de, f"d and e not side by side at their size: {de}")
+    check("<p><img" in page and "f.png" in page.split("<p><img", 1)[1].split("</p>", 1)[0],
+          "the picture beside text was moved")
+    check('<table border="1" cellspacing="0" cellpadding="4">' in page, "the table has no lines")
+    for name in "abcdef":
+        check((root / "img" / f"{name}.png").read_bytes() == (s.repo / "img" / f"{name}.png").read_bytes(),
+              f"img/{name}.png not copied")
+
+
+@scenario
+def help_bundle_unpublished(s):
+    """--help-bundle fails when a page the app opens isn't published (here the
+    first tutorial, its Checked: line removed and the links to it moved to the
+    next one), naming the page."""
+    page = s.repo / "tutorials" / "01-what-ansi-art-is.md"
+    text = page.read_text(encoding="utf-8")
+    check("Checked:" in text, "tutorial 01 has no Checked: line")
+    page.write_text(re.sub(r"(?m)^Checked:.*\n", "", text, count=1), encoding="utf-8")
+    for f in sorted(s.repo.glob("*/*.md")):
+        if f != page:
+            t = f.read_text(encoding="utf-8")
+            if "01-what-ansi-art-is.md" in t:
+                f.write_text(t.replace("01-what-ansi-art-is.md", "02-your-first-piece.md"), encoding="utf-8")
+    s.passed()
+    s.failed("--help-bundle", "--docs-commit", "abc1234",
+             says="the app opens tutorials/01-what-ansi-art-is.html, which isn't in it")
+
+
+@scenario
+def help_bundle_left_over(s):
+    """--help-bundle fails on a bundle page that still holds a <nav>, <footer>,
+    <link>, <script>, <style> or <header> (a raw tag the site accepts), naming
+    the page and the tag."""
+    s.probe("Text.\n\n<nav>x</nav>")
+    s.passed()
+    s.failed("--help-bundle", "--docs-commit", "abc1234", says="manual/99-probe.html still holds <nav")
+    s.probe("Text.\n\n<header>x</header>")
+    s.passed()
+    s.failed("--help-bundle", "--docs-commit", "abc1234", says="manual/99-probe.html still holds <header")
+
+
+@scenario
+def help_bundle_scheme(s):
+    """--help-bundle fails on a link whose scheme the help window doesn't open
+    (it opens http and https), naming the page and the link, and still takes an
+    https one."""
+    s.probe('Write to <a href="mailto:someone@example.org">someone</a>.')
+    s.passed()
+    s.failed("--help-bundle", "--docs-commit", "abc1234",
+             says="manual/99-probe.html links to mailto:someone@example.org")
+    s.probe('Read <a href="https://creativecommons.org/licenses/by-sa/4.0/">the licence</a>.')
+    s.passed("--help-bundle", "--docs-commit", "abc1234")
+
+
+@scenario
+def help_bundle_out(s):
+    """--help-bundle inside the repo but help/, holding the site or inside it,
+    and on a foreign directory is refused; so is --docs-commit without
+    --help-bundle, or one that isn't a commit name; and --help-bundle without
+    --docs-commit where the repo isn't a git checkout."""
+    s.failed("--help-bundle", "manual/x", "--docs-commit", "a", says="inside the repo; only help/")
+    check(not (s.repo / "manual" / "x").exists(), "manual/x was created")
+    s.failed("--help-bundle", "site", "--docs-commit", "a", says="the bundle goes elsewhere")
+    s.failed("--out", s.base / "o", "--help-bundle", s.base / "o" / "h", "--docs-commit", "a",
+             says="the bundle goes elsewhere")
+    x = s.base / "x"
+    x.mkdir()
+    (x / "keep.txt").write_text("keep me")
+    s.failed("--help-bundle", x, "--docs-commit", "a", says="--help-bundle")
+    check("not a site this build wrote" in s.out and (x / "keep.txt").is_file(), f"{s.out.strip()[-300:]}")
+    s.failed("--docs-commit", "a", says="needs --help-bundle")
+    s.failed("--help-bundle", "--docs-commit", "a b", says="not a commit name")
+    s.failed("--help-bundle", says="pass --docs-commit")
+
+
+@scenario
+def help_bundle_commit(s):
+    """In a git checkout the bundle names the short HEAD, and HEAD-dirty once
+    the tree has changes."""
+    git = ["git", "-C", str(s.repo), "-c", "user.name=test", "-c", "user.email=test@example.org",
+           "-c", "commit.gpgsign=false"]
+    for args in (["init", "-q"], ["add", "-A"], ["commit", "-q", "-m", "x"]):
+        subprocess.run(git + args, check=True, capture_output=True)
+    head = subprocess.run(git + ["rev-parse", "--short", "HEAD"], check=True, capture_output=True,
+                          text=True).stdout.strip()
+    s.passed("--help-bundle")
+    check(bundle_json(s.repo / "help")["docsCommit"] == head, f"docsCommit isn't {head}")
+    s.probe("Changed.")
+    s.passed("--help-bundle")
+    check(bundle_json(s.repo / "help")["docsCommit"] == head + "-dirty", f"docsCommit isn't {head}-dirty")
+
 
 
 def main():

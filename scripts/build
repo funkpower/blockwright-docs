@@ -2,6 +2,7 @@
 """Build the docs site from the Markdown pages and the samples.
 
     scripts/build [--out DIR] [--cli PATH] [--app PATH] [--forge-url URL] [--mirror-url URL]
+                  [--help-bundle [DIR] [--docs-commit REV]]
 
 Pages are `index.md`, `samples/index.md` (the Samples page), `tutorials/*.md`
 and `manual/*.md`, each section with an `index.md` of its own. A page other than an index is published
@@ -106,6 +107,24 @@ built: it writes `.blockwright-docs-manifest` (every file it wrote) into the
 site, and refuses a directory without one, or with a file the manifest doesn't
 list. It refuses
 any output inside the repo other than `site/`, and any that contains the repo.
+
+`--help-bundle [DIR]` also writes Blockwright's help bundle (#210) into DIR
+(default `help/`, the one place in the repo it may go; cleared on the same
+terms as the site): every published tutorial and manual page, its section
+indexes included, as the site built it but only what is inside `<main>`, so no
+menu, footer or stylesheet, then the footer's licence credit as a last
+paragraph; the pager a paragraph; tables given lines by
+attributes, and each run of paragraphs that hold just a picture (a before and
+its after) laid out two to a row in a table, a row wider than
+BUNDLE_ROW_WIDTH pixels drawn smaller (at half size when that fits), all for
+QTextBrowser. Every file those pages link to (pictures, samples, Try-it files)
+is copied at its site path, and a link to a site page the bundle leaves out
+(the home page, the Samples page) goes to that page on the website instead.
+`bundle.json` holds `format` 1, `docsCommit` (`--docs-commit`, else the repo's
+short HEAD, `-dirty` when the tree has changes), `checkedWith` (the CLI's
+version less its name) and `contents`, a section each with its published
+pages in order. The bundle's links are checked as the site's are, and it must
+hold the three pages the app opens (BUNDLE_APP_PAGES).
 """
 
 import argparse
@@ -113,6 +132,7 @@ import difflib
 import html
 import json
 import os
+import posixpath
 import re
 import shutil
 import struct
@@ -121,7 +141,7 @@ import sys
 import unicodedata
 from pathlib import Path
 from string import Template
-from urllib.parse import unquote
+from urllib.parse import quote, unquote
 
 try:
     import markdown
@@ -152,6 +172,16 @@ ROBOTS = ""
 ROBOTS_TXT = "User-agent: *\nAllow: /\n"
 # Written into the site; names every file the build wrote.
 MANIFEST = ".blockwright-docs-manifest"
+# The help bundle (--help-bundle, Blockwright #210): the tutorials and the
+# manual for Blockwright's help window, a QTextBrowser. Its format, and the
+# pages the app opens, which the bundle must hold.
+BUNDLE_FORMAT = 1
+BUNDLE_APP_PAGES = ("tutorials/01-what-ansi-art-is.html", "tutorials/index.html", "manual/index.html")
+# Where a bundle page's link to a site page the bundle leaves out goes.
+WEBSITE = "https://blockwright.pumpin.online/"
+# The pictures in a row of the bundle's side-by-side tables are drawn at most
+# this many pixels wide together, so a row fits the help window's page.
+BUNDLE_ROW_WIDTH = 640
 # The forge as pages write it; --forge-url puts another address in its place.
 FORGE = "https://git.pumpin.online"
 # The only links out of the site besides the forge and the mirror.
@@ -944,26 +974,28 @@ def site_files(out):
     return found
 
 
-def prepare_out(out):
-    """Make out an empty directory, clearing it only if it is a site this script built."""
-    if out == ROOT / "site":
+def prepare_out(out, flag="--out", default="site"):
+    """Make out an empty directory, clearing it only if it is a site this script
+    built. Inside the repo only `default` (site/, or help/ for the help bundle)
+    may be built into."""
+    if out == ROOT / default:
         pass
     elif out.is_relative_to(ROOT):
-        raise BuildError(f"--out {out}: inside the repo; only site/ may be built there")
+        raise BuildError(f"{flag} {out}: inside the repo; only {default}/ may be built there")
     elif ROOT.is_relative_to(out):
-        raise BuildError(f"--out {out}: holds the repo; not clearing it")
+        raise BuildError(f"{flag} {out}: holds the repo; not clearing it")
     if out.exists() or out.is_symlink():
         if not out.is_dir():
-            raise BuildError(f"--out {out}: not a directory")
+            raise BuildError(f"{flag} {out}: not a directory")
         if any(out.iterdir()):
             manifest = out / MANIFEST
             if not manifest.is_file():
-                raise BuildError(f"--out {out}: not empty and not a site this build wrote (no {MANIFEST}); "
+                raise BuildError(f"{flag} {out}: not empty and not a site this build wrote (no {MANIFEST}); "
                                  "not clearing it")
             listed = set(manifest.read_text(encoding="utf-8").splitlines()) | {MANIFEST}
             extra = sorted(site_files(out) - listed)
             if extra:
-                raise BuildError(f"--out {out}: holds files the build didn't write ({', '.join(extra[:5])}"
+                raise BuildError(f"{flag} {out}: holds files the build didn't write ({', '.join(extra[:5])}"
                                  f"{', …' if len(extra) > 5 else ''}); not clearing it")
             shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=True)
@@ -1317,6 +1349,81 @@ def stylesheet_errors(css, rel="theme/site.css"):
     return errors
 
 
+MAIN_RE = re.compile(r"<main>\n?(.*?)\n?</main>", re.S)
+BUNDLE_LINK_RE = re.compile(r'\b(href|src)="([^"]*)"')
+# What the bundle's pages leave out of the site's: the menu, the footer, the
+# stylesheet and the pager's <nav>.
+BUNDLE_LEFT_RE = re.compile(r"<(?:nav|footer|link|script|style|header)(?=[\s>])", re.I)
+BUNDLE_PAGE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{title}</title>
+</head>
+<body>
+{body}
+</body>
+</html>
+"""
+# A paragraph that holds one picture and nothing else, and a run of them.
+PICTURE = r'<p>((?:<a class="ans" href="[^"]*">)?<img [^>]*>(?:</a>)?)</p>\n'
+PICTURE_RE = re.compile(PICTURE)
+PICTURE_RUN_RE = re.compile(f"(?:{PICTURE}){{2,}}")
+
+
+def sized(picture, w, h):
+    """picture's <img> drawn w by h pixels."""
+    img = re.search(r"<img [^>]*>", picture).group(0)
+    new = re.sub(r'\s(?:width|height)="\d*"', "", img)
+    new = new.replace("<img ", f'<img width="{w}" height="{h}" ', 1)
+    return picture.replace(img, new, 1)
+
+
+def side_by_side(body, size):
+    """Lays out each run of two or more paragraphs that each hold just a
+    picture (a before and its after, the steps of a worked example) two to a
+    row, in a table; size(picture) is a picture's (width, height). A row wider
+    than BUNDLE_ROW_WIDTH draws its pictures smaller: at half size when that
+    fits (a 2x render at 1x, still sharp), else as much smaller as it needs.
+    A last odd picture has a row of its own, at its size."""
+    def table(m):
+        pictures = PICTURE_RE.findall(m.group(0))
+        rows = []
+        for i in range(0, len(pictures), 2):
+            row = [(p, *size(p)) for p in pictures[i:i + 2]]
+            total = sum(w for _, w, _ in row)
+            scale = 1 if len(row) == 1 or total <= BUNDLE_ROW_WIDTH else \
+                0.5 if total / 2 <= BUNDLE_ROW_WIDTH else BUNDLE_ROW_WIDTH / total
+            rows.append([p if scale == 1 else sized(p, max(1, int(w * scale)), max(1, int(h * scale)))
+                         for p, w, h in row])
+        return ('<table class="pictures" cellspacing="0" cellpadding="4">\n'
+                + "".join("<tr>" + "".join(f'<td valign="top">{p}</td>' for p in r) + "</tr>\n" for r in rows)
+                + "</table>\n")
+    return PICTURE_RUN_RE.sub(table, body)
+
+
+def docs_commit(explicit):
+    """The docs commit a help bundle names: explicit (--docs-commit), else the
+    repo's short HEAD, with -dirty when the tree has changes."""
+    if explicit is not None:
+        if not re.fullmatch(r"[0-9A-Za-z._-]+", explicit):
+            raise BuildError(f"--docs-commit {explicit!r}: not a commit name (letters, digits, . _ -)")
+        return explicit
+    try:
+        git = ["git", "-C", str(ROOT)]
+        top = subprocess.run(git + ["rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True)
+        if Path(top.stdout.strip()).resolve() != ROOT:
+            raise subprocess.CalledProcessError(1, "git")
+        commit = subprocess.run(git + ["rev-parse", "--short", "HEAD"], capture_output=True, text=True,
+                                check=True).stdout.strip()
+        dirty = subprocess.run(git + ["status", "--porcelain"], capture_output=True, text=True,
+                               check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        raise BuildError("--help-bundle: the repo isn't a git checkout, so there is no commit to name; "
+                         "pass --docs-commit")
+    return commit + ("-dirty" if dirty else "")
+
+
 def page_root(page):
     """The way from page up to the site's root: "" or "../" and so on."""
     up = os.path.relpath(".", page.out.parent)
@@ -1328,8 +1435,10 @@ def is_home(page):
 
 
 class Builder:
-    def __init__(self, out, cli, app=None, forge=FORGE, mirror=None):
+    def __init__(self, out, cli, app=None, forge=FORGE, mirror=None, bundle=None, docs_commit=None):
         self.out = out
+        self.bundle = bundle
+        self.docs_commit = docs_commit
         self.cli = cli
         self.app = app
         self.forge = forge.rstrip("/")
@@ -1668,9 +1777,10 @@ class Builder:
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(doc, encoding="utf-8")
 
-    def check_refs(self):
-        """Every relative href and src in the built site resolves to a file in
-        it, and every #fragment to an id on the page it names."""
+    def check_refs(self, root=None):
+        """Every relative href and src in the built site (or the help bundle at
+        root) resolves to a file in it, and every #fragment to an id on the
+        page it names."""
         ids = {}
 
         def ids_of(f):
@@ -1679,7 +1789,7 @@ class Builder:
                 ids[f] = {html.unescape(i) for i in re.findall(r'\bid="([^"]*)"', text)}
             return ids[f]
 
-        out = self.out.resolve()
+        out = (root or self.out).resolve()
         for f in sorted(out.rglob("*.html")):
             text = f.read_text(encoding="utf-8")
             for ref in re.findall(r'(?:href|src)="([^"]+)"', text):
@@ -1721,6 +1831,97 @@ class Builder:
         n = sum(p.published for p in self.pages)
         app = f", shortcuts from {self.app_used}" if self.app_used else ""
         print(f"build: {n} pages, {len(self.rendered)} pictures, {self.version}{app}, into {self.out}")
+        if self.bundle:
+            self.write_bundle()
+
+    def write_bundle(self):
+        """The help bundle: each published page of the sections, from the built
+        site, without the menu, header and footer, laid out for a QTextBrowser,
+        with the files its pages link to and bundle.json."""
+        prepare_out(self.bundle, "--help-bundle", "help")
+        try:
+            inside = {p.out.as_posix() for p in self.pages if p.section in SECTIONS and p.published}
+            files = set()
+            for page in self.pages:
+                if page.out.as_posix() in inside:
+                    self.bundle_page(page, inside, files)
+            for rel in sorted(files):
+                dest = self.bundle / rel
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(self.out / rel, dest)
+            contents = []
+            for section, name in SECTIONS.items():
+                index = next(p for p in self.pages if p.section == section and p.is_index)
+                contents.append({"title": name, "page": index.out.as_posix(),
+                                 "pages": [{"title": p.title, "page": p.out.as_posix()}
+                                           for p in section_pages(self.pages, section) if p.published]})
+            bundle = {"format": BUNDLE_FORMAT, "docsCommit": self.docs_commit,
+                      "checkedWith": self.version.split(" ", 1)[-1], "contents": contents}
+            (self.bundle / "bundle.json").write_text(json.dumps(bundle, indent=1, ensure_ascii=False) + "\n",
+                                                     encoding="utf-8")
+            self.errors += [f"help bundle: the app opens {p}, which isn't in it"
+                            for p in BUNDLE_APP_PAGES if p not in inside]
+            for f in sorted(self.bundle.rglob("*.html")):
+                left = BUNDLE_LEFT_RE.findall(f.read_text(encoding="utf-8"))
+                if left:
+                    self.errors.append(f"help bundle: {f.relative_to(self.bundle)} still holds "
+                                       f"{', '.join(sorted(set(left)))}")
+            self.check_refs(self.bundle)
+        finally:
+            write_manifest(self.bundle)
+        if self.errors:
+            raise BuildError("\n".join(f"help bundle: {e}" if not e.startswith("help bundle") else e
+                                        for e in self.errors))
+        print(f"build: help bundle of {len(inside)} pages, {len(files)} files, docs {self.docs_commit}, "
+              f"into {self.bundle}")
+
+    def bundle_page(self, page, inside, files):
+        """Writes page's bundle copy and adds the files it links to (paths in
+        the site) to files. A link to a site page the bundle leaves out goes
+        to that page on the website."""
+        doc = (self.out / page.out).read_text(encoding="utf-8")
+        body = MAIN_RE.search(doc).group(1)
+        # The footer's credit, the licence the text and pictures are under,
+        # as the page's last line (without the mirror's line).
+        credit = re.search(r"<footer>(.*?)(?:<br>|</footer>)", doc, re.S).group(1).strip()
+        here = posixpath.dirname(page.out.as_posix())
+
+        def link(m):
+            attr, ref = m.group(1), html.unescape(m.group(2))
+            if EXTERNAL_RE.match(ref):
+                # The help window opens only http and https links.
+                if not re.match(r"https?:", ref, re.I):
+                    self.errors.append(f"{page.out.as_posix()} links to {ref}, which the help window "
+                                       f"doesn't open (it opens http and https links only)")
+                return m.group(0)
+            if ref.startswith("#"):
+                return m.group(0)
+            path, hashmark, frag = ref.partition("#")
+            target = posixpath.normpath(posixpath.join(here, unquote(path)))
+            if target.endswith(".html") and target not in inside:
+                return f'{attr}="{html.escape(WEBSITE + quote(target) + hashmark + frag)}"'
+            if not target.endswith(".html"):
+                files.add(target)
+            return m.group(0)
+
+        def size(picture):
+            w, h = (re.search(rf'\b{a}="(\d+)"', picture) for a in ("width", "height"))
+            if w and h:
+                return int(w.group(1)), int(h.group(1))
+            src = html.unescape(re.search(r'\bsrc="([^"]*)"', picture).group(1))
+            return png_size(self.out / posixpath.normpath(posixpath.join(here, unquote(src))))
+
+        body = BUNDLE_LINK_RE.sub(link, body)
+        body = side_by_side(body, size)
+        # The pager's links, a paragraph: QTextBrowser has no <nav>.
+        body = body.replace('<nav class="pager">', '<p class="pager">').replace("</nav>", "</p>")
+        # Tables drawn with lines, which QTextBrowser takes from attributes.
+        body = re.sub(r"<table(?=[ >])(?! class=\"pictures\")", '<table border="1" cellspacing="0" cellpadding="4"',
+                      body)
+        body += f'\n<p class="licence">{credit}</p>'
+        dest = self.bundle / page.out
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(BUNDLE_PAGE.format(title=html.escape(page.title), body=body), encoding="utf-8")
 
 
 def main():
@@ -1734,12 +1935,25 @@ def main():
                     f"(default: {FORGE})")
     ap.add_argument("--mirror-url", help="the site's other address, named in a line of every page's footer "
                     "(default: none, and no line)")
+    ap.add_argument("--help-bundle", type=Path, nargs="?", const=ROOT / "help", metavar="DIR",
+                    help="also write Blockwright's help bundle into DIR (default: help/)")
+    ap.add_argument("--docs-commit", help="the docs commit the help bundle names (default: the repo's short "
+                    "HEAD, -dirty when it has changes)")
     args = ap.parse_args()
     try:
         forge = site_url("--forge-url", args.forge_url)
         mirror = site_url("--mirror-url", args.mirror_url) if args.mirror_url is not None else None
+        out = args.out.resolve()
+        bundle = commit = None
+        if args.help_bundle is not None:
+            bundle = args.help_bundle.resolve()
+            if bundle.is_relative_to(out) or out.is_relative_to(bundle):
+                raise BuildError(f"--help-bundle {bundle}: the site is built into {out}; the bundle goes elsewhere")
+            commit = docs_commit(args.docs_commit)
+        elif args.docs_commit is not None:
+            raise BuildError("--docs-commit names the help bundle's commit; it needs --help-bundle")
         cli = find_cli(args.cli)
-        Builder(args.out.resolve(), cli, find_app(args.app, cli), forge, mirror).build()
+        Builder(out, cli, find_app(args.app, cli), forge, mirror, bundle, commit).build()
     except BuildError as e:
         sys.exit(f"build: {e}")
 
