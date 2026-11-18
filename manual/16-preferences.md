@@ -39,7 +39,7 @@ The **Documents** tab has one setting, **Target for new documents**:
 | Choice | A new document is made for |
 |---|---|
 | **ANSI (.ans)** (the default) | The 16 colours an `.ans` holds |
-| **IRC** | mIRC's 99 colours |
+| **IRC** | mIRC's 99 colours, or 0 to 15 with **IRC in 16 Colours** on (a setting of each document, off in a new one) |
 | **Micron (NomadNet)** | A Micron page for NomadNet: mIRC's 99 colours and the 4096 a page's three-digit codes write |
 
 **When it takes effect.** At the next new document: **File > New**, the start screen's **New**, the canvas left when the start screen closes without a pick (from startup or **File > Start Screen...**), and the first canvas when Blockwright starts without the start screen. A new IRC or Micron document starts in UTF-8: the status bar reads `IRC UTF-8` or `Micron UTF-8` where an ANSI one reads `ANSI CP437`.

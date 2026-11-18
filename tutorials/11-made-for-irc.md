@@ -62,7 +62,7 @@ A CP437 `.ans` holds 256 glyphs; IRC text is UTF-8 and carries `★` and most ot
 
 **Format > Target** sets what the document is made for: **ANSI (.ans)**, "The 16 colours and the glyphs an .ans holds", or **IRC**, "mIRC's 99 colours; saving as .ans, XBIN or BIN reports what it can't hold". A project keeps it. Under the IRC target:
 
-- the palette has mIRC's 99 colours, the first 16 swatches being the 16 colours; 52, 54, 58, 62, 88 and 98 go out as 4, 8, 11, 13, 1 and 0;
+- the palette has mIRC's 99 colours, the first 16 swatches being the 16 colours; 52, 54, 58, 62, 88 and 98 go out as 4, 8, 11, 13, 1 and 0. Clients differ on 16 to 98, so **IRC in 16 Colours** sends only 0 to 15 ([which to pick](../manual/10-irc.md#99-colours-or-16));
 - the **Keyboard** tool types Unicode, and the **Glyphs** menu adds F-key sets 17 to 21 of glyphs CP437 lacks (set 20 is `◢◣◤◥◆◇○●★☆`, set 21 `✦✧✶✷✸✹⋆✱✺❖`);
 - Lint's [`ans-loss`](../manual/11-lint.md#ans-loss) note counts the cells a CP437 `.ans` would save as `?`; under the ANSI target [`no-cp437`](../manual/11-lint.md#no-cp437) flags them.
 

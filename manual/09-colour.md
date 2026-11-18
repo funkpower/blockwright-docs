@@ -3,7 +3,7 @@ Checked: Blockwright 0.1.1 (716a62e)
 
 # Palette, iCE colours and 24-bit colour
 
-A cell has a foreground and a background, each one of 16 colours, or under the IRC target one of mIRC's 99. Under the Micron target it can also hold any of the 4096 colours a Micron page's three-digit codes write. iCE colours decide whether the bright eight work as backgrounds.
+A cell has a foreground and a background, each one of 16 colours or an exact RGB: one of mIRC's 16 to 98 under the IRC and Micron targets, and under the Micron target any of the 4096 colours a Micron page's three-digit codes write. iCE colours decide whether the bright eight work as backgrounds.
 
 [What ANSI art is](../tutorials/01-what-ansi-art-is.md) introduces the 16 colours and iCE colours.
 
@@ -26,11 +26,31 @@ The 16 colours are those of the PC's VGA text mode, numbered 0 to 15. 8 to 15 ar
 
 The Palette dock, the **Colours** menu and `blockwright-cli` use the PC's order. ANSI escape codes number the first eight differently (`31` is red, `34` is blue); Blockwright converts when it reads and writes `.ans` files.
 
-## mIRC's 99 colours
+## What each target does with colour
 
-Under the IRC target (**Format > Target > IRC**, no shortcut) and the Micron target (**Format > Target > Micron (NomadNet)**, no shortcut) a document can also use mIRC's colours 16 to 98. A cell holds each as its exact RGB. IRC text writes it as its mIRC number ([IRC](10-irc.md#how-a-row-is-encoded)); a Micron page for NomadNet writes the RGB ([Export for NomadNet](10-irc.md#export-for-nomadnet)).
+The target ([Format > Target](10-irc.md)) decides how many colours the document is sent in. The cells themselves hold the same colours under every target.
+
+| Target | Sent as |
+|---|---|
+| ANSI | The 16. A cell in another colour is saved as the nearest of the 16. |
+| IRC | mIRC's 99 by default: 0 to 15 as the palette, 16 to 98 as exact RGB. **IRC in 16 Colours** (below) sends only 0 to 15. |
+| Micron | The RGB of each cell ([Export for NomadNet](10-irc.md#export-for-nomadnet)). |
+
+A cell holds a colour as one of the 16, or as an exact RGB, which includes mIRC's 16 to 98 (under the IRC and Micron targets) and a Micron page's 4096. mIRC's 99 is no colour of a cell: it means the client's own colour, and the encoder writes it only for a row's foreground that nothing has set ([IRC](10-irc.md#how-a-row-is-encoded)). Cells keep their mIRC colours under the ANSI target.
 
 Changing the target is one undo step, `Target`, and changes no cell: cells keep their colours under any target.
+
+### IRC in 16 colours
+
+**Format > Target > IRC in 16 Colours** is a checkbox, enabled only under the IRC target. It makes IRC text carry only mIRC's 0 to 15. Each colour past 15 is sent as the nearest of 0 to 15, by squared RGB distance, a tie going to the lower number. The six of 16 to 98 that share an RGB with one of 0 to 15 (52, 54, 58, 62, 88 and 98) fold to 4, 8, 11, 13, 1 and 0. A cell in 0 to 15 is sent unchanged, so a document that uses only those exports the same bytes in both modes.
+
+The mode is a setting of the document, stored with it ([The project file](13-file-formats.md#projects-bwp)). It rewrites no cell: switch it off again and the 99-colour text is back. Under the ANSI and Micron targets it does nothing, and the setting is kept. Switching it is one undo step, **IRC Colours**. The status bar's target label reads `IRC 16` while it is on ([The window](02-the-window.md)).
+
+Export IRC Text, the row meter, the IRC View dock, `export --irc` and `render --irc` all send the folded colours, so they agree. [Lint](11-lint.md#irc-fold) counts what the fold changes.
+
+Which mode to pick, and what clients show for 16 to 98, is on [IRC](10-irc.md#99-colours-or-16).
+
+### Saving to a file
 
 An `.ans`, XBIN or BIN file holds only the 16. Saving another colour to one, under any target, writes the nearest of the 16 and warns: `3 cells are in colours the file can't hold, saved as the nearest of the 16` (`1 cell is in a colour …` for one). A project keeps them.
 
@@ -38,7 +58,7 @@ An `.ans`, XBIN or BIN file holds only the 16. Saving another colour to one, und
 
 The **Palette** dock is on the right of the window and can't be closed. It shows the pen on the left and the 16 colours in two rows of eight, 0 to 7 on top.
 
-Under the IRC and Micron targets, mIRC's 16 to 98 follow under the pen in smaller swatches, in rows of 12; the greys 88 to 98 make their own row. Below them, **B**, **I** and **U** turn bold, italic and underline on and off for the pen (the glyph brush writes them as `^B`, `^]` and `^_`).
+Under the IRC and Micron targets, mIRC's 16 to 98 follow under the pen in smaller swatches, in rows of 12; the greys 88 to 98 make their own row. Under IRC with **IRC in 16 Colours** on they are left out: the dock shows the 16 only, and an RGB pen shows as the swatch it is sent as. Below them, **B**, **I** and **U** turn bold, italic and underline on and off for the pen (the glyph brush writes them as `^B`, `^]` and `^_`).
 
 - **Left click** a colour for the pen's foreground, **right click** for the background.
 - **Under the Micron target, left click** the pen's foreground or background square to open the [Micron colour dialog](#the-micron-colour-dialog) for it. Its tooltip names the colour: `The foreground colour #aaaaaa: click to pick another` for the starting pen.

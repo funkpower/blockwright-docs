@@ -140,6 +140,25 @@ The dock follows the canvas when it scrolls, zooms or changes size. Scrolled by 
 
 The file is UTF-8, each line ended by a line feed. The blank lines above and below the art are left out unless Pad is on.
 
+## 99 colours or 16
+
+IRC text can name 99 colours with `^C` and a number. The IRC formatting spec (the page `modern.ircdocs.horse/formatting`) gives 0 to 15 as the colours every client knows and 16 to 98 as extended colours with fixed RGB values, and says 99 means the client's default foreground or background and is not universally supported. It adds that the RGB a client shows for 16 to 98 depends on its author, and that terminal clients often take it from the terminal's colour scheme.
+
+Blockwright sends mIRC 0 to 98 by default. **Format > Target > IRC in 16 Colours** ([what the mode does](09-colour.md#irc-in-16-colours)) sends only 0 to 15, each other colour as the nearest of them. Nothing is lost for a document in 0 to 15: both modes write the same bytes.
+
+What a client shows for 16 to 98, as read from each client's source at the version named. None of these clients was run for this page.
+
+| Client | Version | 0 to 15 | 16 to 98 | 99 | Source |
+|---|---|---|---|---|---|
+| WeeChat | 4.10.4 | its colour names for the 16, which `irc.color.mirc_remap` can change | the nearest terminal 256-colour number (16 is 52, 98 is 231), so near mIRC's RGB, not exact; the remap setting doesn't apply to them | the default colour | `src/plugins/irc/irc-color.c`, table `irc_color_to_weechat`; its user guide, `weechat.org/files/doc/weechat/stable/weechat_user.en.html` |
+| irssi | 1.4.5 | the terminal's 16 colours | the nearest terminal 256-colour number; with the setting `colors_ansi_24bit` on, the exact RGB | ignored, as a reset | `src/fe-text/gui-printtext.c`, tables `mirc_colors` and `mirc_colors24` |
+| HexChat | 2.16.2 | its palette entries 0 to 15 | not mIRC's RGB: 16 to 31 repeat the colours 0 to 15, and numbers 32 to 41 reach palette entries that are not mIRC colours (the text mark, foreground, background and marker-line colours among them), and numbers past 41 wrap modulo 32 | its foreground | `src/fe-gtk/xtext.c` and `xtext.h` (`XTEXT_MIRC_COLS`, `XTEXT_MAX_COLOR`), `src/fe-gtk/palette.c` |
+| mIRC | | not checked | not checked | not checked | |
+
+Two client settings also change what arrives: WeeChat's `irc.network.colors_receive` set to `off` drops every colour.
+
+So 16 to 98 show as mIRC's RGB only in a client that maps them, and then as a near colour unless it has a 24-bit mode. To be read the same everywhere, draw in 0 to 15 and switch **IRC in 16 Colours** on. [Lint](11-lint.md#irc-fold) lists the cells the fold changes.
+
 ## How a row is encoded
 
 The encoder tries the ways each cell can be drawn and writes the line shortest as WeeChat's ascii script sends it ([The IRC View dock](#the-irc-view-dock)), then shortest as written. The script writes every colour number in two digits and no colour code in front of a plain space on a background already set, so the shortest line written can be longer sent.
@@ -153,7 +172,7 @@ In every row:
 
 - A colour is set with `^C` (byte 0x03) only when it changes: `^Cfg,bg` when the background changes, `^Cfg` when only the foreground does.
 - Before a comma, which a client would read as a background, the encoder writes the background again or follows the number with `^B^B` (0x02 twice), whichever is shorter, and the background on a tie. `A` white and `,5` light red, on black, is `^C0,1A^C4,1,5`. On light blue, mIRC's 12, it is `^C0,12A^C4^B^B,5`.
-- A colour number under 10 takes one digit unless a digit follows it. The palette colours map onto mIRC's numbers as below. A 24-bit colour is drawn as the nearest of mIRC's 99, so under the IRC target mIRC 16 to 98 are written as their own numbers, except 52 as 4, 54 as 8, 58 as 11, 62 as 13, 88 as 1 and 98 as 0 (the same colours).
+- A colour number under 10 takes one digit unless a digit follows it. The palette colours map onto mIRC's numbers as below. A 24-bit colour is drawn as the nearest of mIRC's 99, so under the IRC target mIRC 16 to 98 are written as their own numbers, except 52 as 4, 54 as 8, 58 as 11, 62 as 13, 88 as 1 and 98 as 0 (the same colours). With **IRC in 16 Colours** on, a colour past 15 is written as the nearest of 0 to 15 ([IRC in 16 colours](09-colour.md#irc-in-16-colours)).
 - A cell that can be drawn more than one way is drawn whichever way gives the shortest line: a solid cell as a space in its colour or a █; ▀ as ▄ with the colours swapped, and ▄ as ▀ (▌ and ▐ the same); a glyph in its own background as a solid cell. Shades are drawn as they are unless Swap Shades is on. A cell with bold, italic or underline, a wide glyph followed by its continuation and a cluster are drawn only as themselves.
 - A colour code can set a colour its glyph doesn't show, such as a foreground in front of a space, when the next cell needs it. Until a row sets a foreground, the client's own is written as 99. `A` white on black, then a space grey on blue and `B` yellow on blue, are `^C0,1A^C8,2 B` (11 bytes written, 15 sent), and `A` white on black, then a █ light red on black and `B` light red on blue, are `^C0,1A^C4,2█B` (13 written, 17 sent).
 - Bold, italic and underline are switched on and off with `^B`, `^]` and `^_` (0x02, 0x1D, 0x1F), after any colour code.
@@ -283,20 +302,21 @@ The lint reports both as [trailing-black](11-lint.md#trailing-black) and [blank-
 
 ## Export for NomadNet
 
-**File > Export Micron...** (no shortcut) writes the piece as a Micron page for NomadNet ([Micron page](13-file-formats.md#micron-page-mu)). Colours keep their exact RGB: mIRC's 16 to 98 as stored ([mIRC's 99 colours](09-colour.md#mircs-99-colours)), so mIRC 16, `#470000`, is `` `FT470000 `` and mIRC 52 is `` `Ff00 ``. The 16 are written as the editor draws them, light blue as `55f`.
+**File > Export Micron...** (no shortcut) writes the piece as a Micron page for NomadNet ([Micron page](13-file-formats.md#micron-page-mu)). Colours keep their exact RGB: mIRC's 16 to 98 as stored ([What each target does with colour](09-colour.md#what-each-target-does-with-colour)), so mIRC 16, `#470000`, is `` `FT470000 `` and mIRC 52 is `` `Ff00 ``. The 16 are written as the editor draws them, light blue as `55f`.
 
 Bold, italic and underline are kept, and glyphs are written as IRC text writes them; a code point NomadNet drops from a page, such as a combining mark, is written as `?`. A page has no byte budget, so Fit, Pad and Swap Shades don't apply, and blank rows and trailing black stay. `blockwright-cli export --micron` writes the same page ([export --micron](14-cli.md#export-micron)). To draw for a page from the start, use the Micron target ([Drawing for NomadNet](17-nomadnet.md)).
 
 ## From the command line
 
 ```
-blockwright-cli export --irc [--budget N] [--fit] [--pad] [--swap-shades] [--allow-over-budget] <in> <out>
-blockwright-cli render --irc [--budget N] [--fit] [--pad] [--swap-shades] [--scale N] [--font-width 8|9] <in> <out.png>
+blockwright-cli export --irc [--budget N] [--fit] [--pad] [--swap-shades] [--colours 16|99] [--allow-over-budget] <in> <out>
+blockwright-cli render --irc [--budget N] [--fit] [--pad] [--swap-shades] [--colours 16|99] [--scale N] [--font-width 8|9] <in> <out.png>
 ```
 
 `export --irc` is Export IRC Text:
 
 - `--fit`, `--pad` and `--swap-shades` are the three settings.
+- `--colours 16` or `99` is the colour mode: a project's own under the IRC target by default, else 99. `--colours 16` folds even a project set to the ANSI target. Anything else is refused (`--colours takes 16 or 99, not '17'`).
 - `--budget` is the budget: a project's own by default, else 407. Outside 1 to 512 it is refused ("blockwright-cli: --budget takes 1 to 512 bytes", exit status 2).
 - Without `--allow-over-budget`, a line over the budget as sent leaves the file unwritten, exit status 3. With it, the file is written, the lines are still listed, and the exit status is 0.
 

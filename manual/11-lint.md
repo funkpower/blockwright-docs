@@ -38,7 +38,7 @@ The dock never reports [`flat`](#flat), which needs a box that only the CLI take
 ## blockwright-cli lint
 
 ```
-blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc|micron] [--json] <in>
+blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc|micron] [--colours 16|99] [--json] <in>
 ```
 
 `<in>` is an `.ans`, `.xb` or `.bin` file, or a project, linted as its visible layers merged, with the file's own iCE setting. `--encoding` says how an `.ans` is read ([blockwright-cli](14-cli.md#what-it-reads)).
@@ -48,6 +48,7 @@ blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc|micron
 | `--ramp R` | Check this ramp: a name (`fire`, `sunset`, `ice`, `grass`, `steel`, `skin`, `sea`, `toxic`, `violet`, `wood`) or palette indices 0-15 from dark to light, such as `0,8,7,15`. Repeat for several. Without it, every named ramp is checked with the craft pairs allowed |
 | `--box x0,y0,x1,y1` | The subject's box, corners inclusive. Only findings touching it are reported, and [`flat`](#flat) runs inside it. A box past the right or bottom edge is cut to the canvas |
 | `--target ansi|irc|micron` | Lint for an `.ans`, for IRC or for a Micron page. The default is a project's own target, or ANSI for a flat file ([Targets](#targets)) |
+| `--colours 16\|99` | Lint IRC text as sent in 99 or 16 colours. The default is a project's own setting under the IRC target, else 99. `16` turns [`irc-fold`](#irc-fold) on under the IRC target, whether a project's own or `--target irc` |
 | `--json` | Print the findings as JSON |
 
 The text output is one line per finding, then a summary:
@@ -63,7 +64,7 @@ Each line holds the cell, kind, ramp (`-` for none) and message, sorted by row, 
 clean, noise 0.0000, iCE on
 ```
 
-A note prints like a finding, with `note: ` before its message, but leaves the piece clean. The notes are [`ans-loss`](#ans-loss), under the IRC and Micron targets: what an `.ans` save would lose; and, under the Micron target only, [`micron-colour`](#micron-colour) and [`micron-glyph`](#micron-glyph): what a page doesn't write as the canvas holds it. A snowman under `--target irc`:
+A note prints like a finding, with `note: ` before its message, but leaves the piece clean. The notes are [`ans-loss`](#ans-loss), under the IRC and Micron targets: what an `.ans` save would lose; [`irc-fold`](#irc-fold), under the IRC target in 16 colours: what the fold changes; and, under the Micron target only, [`micron-colour`](#micron-colour) and [`micron-glyph`](#micron-glyph): what a page doesn't write as the canvas holds it. A snowman under `--target irc`:
 
 ```
 0,0 ans-loss - note: 1 cell holds a glyph a CP437 .ans saves as '?' (fine for IRC)
@@ -497,6 +498,25 @@ Only under the IRC and Micron targets. A note of what an `.ans` save would lose;
 
 With notes alone the summary starts `clean` and the exit status is 0. If the piece will also be saved as an `.ans`, lint it under the ANSI target.
 
+### irc-fold
+
+Only when IRC text is sent in 16 colours (**Format > Target > IRC in 16 Colours**, or `--target irc --colours 16`; [IRC in 16 colours](09-colour.md#irc-in-16-colours)). A note of what the fold to 0 to 15 changes; at most one of each kind, at the first cell it counts. The piece stays clean and the exit status is 0.
+
+| What changes | The message |
+|---|---|
+| Colours: cells in an mIRC colour past 15 | `1 cell is in an mIRC colour past 15, sent as the nearest of 0-15 (IRC in 16 colours)` |
+| Glyphs: cells whose foreground and background fold to the same colour | `1 cell's glyph is hidden in 16 colours: its foreground and background fold to the same colour` |
+
+For several cells the first reads `N cells are in …` and the second `N cells' glyphs are hidden in 16 colours: their foregrounds and backgrounds fold to the same colour`. A cell in mIRC 77 on black, linted with `--colours 16`, is also an [`ans-loss`](#ans-loss) colour note:
+
+```
+0,0 ans-loss - note: 1 cell is in a colour an .ans can't hold, saved as the nearest of the 16 (fine for IRC)
+0,0 irc-fold - note: 1 cell is in an mIRC colour past 15, sent as the nearest of 0-15 (IRC in 16 colours)
+clean, 2 notes (1 ans-loss, 1 irc-fold), noise 0.0000, iCE on
+```
+
+**Fix:** none is needed. To see what is sent, open the IRC View dock; to keep a colour exact, send 99 colours; to avoid the fold, draw in 0 to 15.
+
 ### micron-colour
 
 Only under the Micron target. A note of the cells whose colour Export Micron writes in the six-digit truecolour form (`` `FTrrggbb ``, `` `BTrrggbb ``) because three hex digits can't hold it, such as most of mIRC's colours 16 to 98, or an XBIN's own palette entry that isn't twelve-bit. It counts the cells whose colour shows, so a foreground on a blank cell isn't counted, and it reports one note at the first cell. The page keeps such a colour exactly and NomadNet 1.5 reads it; the note is for a page meant to keep to three-digit codes. An XBIN whose palette has a colour that isn't twelve-bit, linted under `--target micron`:
@@ -550,6 +570,7 @@ A document targets an `.ans` (ANSI), IRC, or a Micron page for NomadNet: set it 
 Under the IRC and Micron targets:
 
 - [`no-cp437`](#no-cp437) is off, and [`ans-loss`](#ans-loss) notes say what an `.ans` save would lose instead.
+- With **IRC in 16 Colours** on, [`irc-fold`](#irc-fold) notes say what the fold changes.
 - A ladder check judges a cell in a colour outside the 16 by the nearest of the 16, and the message ends `(an RGB cell, judged by the nearest of the 16)`.
 
 Under the Micron target, three checks are also off, as a page doesn't drop what IRC drops ([Drawing for NomadNet](17-nomadnet.md)):

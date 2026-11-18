@@ -168,6 +168,7 @@ Positions are column then row from `0, 0` at the top left; zoom in (<kbd>Ctrl</k
     ice:         on
     encoding:    CP437
     target:      ansi
+    irc colours: 99
     irc budget:  407 bytes (efnet-weechat)
     layers:      4 (next id 5)
       3  pixels  60x20 at 0,0  normal  visible yes, locked no, alpha locked no  banners

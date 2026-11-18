@@ -45,7 +45,7 @@ blockwright-cli info <file>
 
 Prints the piece's size and iCE colours, then the SAUCE record or `none`. An `.ans` adds the encoding it was read as. An XBIN adds whether it is compressed, its palette (none, standard or custom) and font.
 
-For a project it also prints the encoding, target, IRC byte budget, layers (id, kind, size, position, mode, visibility, locks and name), notes size, snapshots and the files it carries.
+For a project it also prints the encoding, target, IRC colours (`16` or `99`), IRC byte budget, layers (id, kind, size, position, mode, visibility, locks and name), notes size, snapshots and the files it carries.
 
 ### convert
 
@@ -61,7 +61,7 @@ If the output can't represent something, nothing is written unless `--allow-loss
 
 ```
 blockwright-cli render [--scale N] [--font-width 8|9] <in> <out.png>
-blockwright-cli render --irc [--budget N] [--fit] [--pad] [--swap-shades] [--scale N] [--font-width 8|9] <in> <out.png>
+blockwright-cli render --irc [--budget N] [--fit] [--pad] [--swap-shades] [--colours 16|99] [--scale N] [--font-width 8|9] <in> <out.png>
 ```
 
 Draws the piece as a PNG with the IBM VGA font.
@@ -72,16 +72,16 @@ Draws the piece as a PNG with the IBM VGA font.
 | `--font-width 8|9` | Glyph width in pixels (default: the SAUCE letter spacing, else 8) |
 | `--irc` | Draw the IRC view instead: the mIRC palette, without what IRC drops, each line cut at the budget. Prints how many rows were cut, as `IRC view: 0 rows cut at 407 bytes` |
 | `--budget N` | With `--irc`: the bytes a line may take, 1 to 512. Default: a project's own budget, else 407 |
-| `--fit`, `--pad`, `--swap-shades` | With `--irc`: as for [export --irc](#export-irc) |
+| `--fit`, `--pad`, `--swap-shades`, `--colours` | With `--irc`: as for [export --irc](#export-irc) |
 
-`--budget`, `--fit`, `--pad` and `--swap-shades` without `--irc` are usage errors.
+`--budget`, `--fit`, `--pad`, `--swap-shades` and `--colours` without `--irc` are usage errors.
 
 `render` refuses to write over its input.
 
 ### export --irc
 
 ```
-blockwright-cli export --irc [--budget N] [--fit] [--pad] [--swap-shades] [--allow-over-budget] <in> <out>
+blockwright-cli export --irc [--budget N] [--fit] [--pad] [--swap-shades] [--colours 16|99] [--allow-over-budget] <in> <out>
 ```
 
 Writes the piece as IRC text with mIRC colour codes, one line per row, and prints a table of each line's size in bytes, as written and as WeeChat's ascii script sends it, then a summary:
@@ -96,6 +96,7 @@ Writes the piece as IRC text with mIRC colour codes, one line per row, and print
 | `--fit` | Fit lines over the budget by merging their least visible colours, and report how many cells were merged in how many lines |
 | `--pad` | Keep trailing black cells and blank rows at the top and bottom, ending each row on a black block |
 | `--swap-shades` | Let the encoder draw a shade as its opposite with the colours reversed when that is shorter |
+| `--colours 16\|99` | Send mIRC 0 to 98 (`99`) or only 0 to 15 (`16`), each other colour as the nearest of 0 to 15. Default: a project's own setting under the IRC target, else 99. `16` folds even an ANSI project's colours; an `.ans` holds only 16 colours, so it is unchanged ([IRC in 16 colours](09-colour.md#irc-in-16-colours)) |
 | `--allow-over-budget` | Write the file even when lines are over the budget |
 
 A line over the budget as sent is reported with how far over it is. Without `--allow-over-budget` nothing is written and the exit status is 3.
@@ -154,7 +155,7 @@ Runs one pass of a shading brush over part of the piece. With no mode it is the 
 ### lint
 
 ```
-blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc|micron] [--json] <in>
+blockwright-cli lint [--ramp R]... [--box x0,y0,x1,y1] [--target ansi|irc|micron] [--colours 16|99] [--json] <in>
 ```
 
 Checks the shading ladders under each ramp, the pixel noise, and the craft rules. It prints one line per finding (cell, kind, ramp, message) and a summary:
@@ -163,9 +164,9 @@ Checks the shading ladders under each ramp, the pixel noise, and the craft rules
 62 findings (5 wide-rung, 47 rung-skip, 2 speckle, 2 fallback-speck, 1 one-glyph, 5 trailing-black), noise 0.0013, iCE on
 ```
 
-`--ramp` can be repeated; without it every named ramp and the craft pairs are checked. `--target ansi|irc|micron` lints for an `.ans`, for IRC or for a Micron page (default: a project's own target, else ANSI); see [Lint](11-lint.md#targets).
+`--ramp` can be repeated; without it every named ramp and the craft pairs are checked. `--target ansi|irc|micron` lints for an `.ans`, for IRC or for a Micron page (default: a project's own target, else ANSI); see [Lint](11-lint.md#targets). `--colours 16|99` lints IRC text as sent in 16 or 99 colours; `16` adds the [`irc-fold`](11-lint.md#irc-fold) note under the IRC target.
 
-`--json` prints the findings as JSON, each with a `severity`, `"warning"` or `"note"`. A note (`ans-loss`, under the IRC and Micron targets; `micron-colour` and `micron-glyph`, under the Micron target) prints with `note: ` and leaves the piece clean: exit status 4 needs a finding other than a note. See [Lint](11-lint.md#blockwright-cli-lint).
+`--json` prints the findings as JSON, each with a `severity`, `"warning"` or `"note"`. A note (`ans-loss`, under the IRC and Micron targets; `irc-fold`, under the IRC target in 16 colours; `micron-colour` and `micron-glyph`, under the Micron target) prints with `note: ` and leaves the piece clean: exit status 4 needs a finding other than a note. See [Lint](11-lint.md#blockwright-cli-lint).
 
 ### library
 
@@ -224,12 +225,12 @@ blockwright-cli: library delete: lib/suns can't be moved to the trash (there is 
 ### pack, unpack and snapshot
 
 ```
-blockwright-cli pack [--allow-lossy] [--target ansi|irc|micron] <in> <out.bwp>
-blockwright-cli unpack [--allow-lossy] [--target ansi|irc|micron] <in> <dir>
+blockwright-cli pack [--allow-lossy] [--target ansi|irc|micron] [--colours 16|99] <in> <out.bwp>
+blockwright-cli unpack [--allow-lossy] [--target ansi|irc|micron] [--colours 16|99] <in> <dir>
 blockwright-cli snapshot [--allow-lossy] [--output-encoding cp437|utf-8] <project>
 ```
 
-`pack` writes a piece or project as a project zip; `unpack` writes one as a project directory, into a `<dir>` that is empty or already a project. A project can't hold an XBIN's own palette or font, so both drop them only with `--allow-lossy`. `--target` sets the project's target, `ansi`, `irc` or `micron` (default: a project's own, else ANSI); see [Lint](11-lint.md#targets).
+`pack` writes a piece or project as a project zip; `unpack` writes one as a project directory, into a `<dir>` that is empty or already a project. A project can't hold an XBIN's own palette or font, so both drop them only with `--allow-lossy`. `--target` sets the project's target, `ansi`, `irc` or `micron` (default: a project's own, else ANSI), and `--colours` its IRC colours, 16 or 99 (default: a project's own, else 99); see [Lint](11-lint.md#targets).
 
 `snapshot` saves the project's flattened composite as its next snapshot, `snapshots/rN.ans`, and prints `rN`. It is written in the project's own encoding unless `--output-encoding` gives one.
 

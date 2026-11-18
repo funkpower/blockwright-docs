@@ -51,7 +51,7 @@ If the file can't hold everything, a warning lists the losses before writing, un
 | the 9 px letter spacing is left out (XBIN has none and draws 8 px) | XBIN, with 9 px letter spacing on |
 | the legacy aspect ratio is left out (XBIN has none) | XBIN, with SAUCE's aspect ratio set; a square one says `square` |
 | the SAUCE font name … is left out (XBIN names no font) | XBIN, with a SAUCE font name other than `IBM VGA` or `IBM VGA 437` |
-| N cell(s) are in colours the file can't hold, saved as the nearest of the 16 | An `.ans`, XBIN or BIN, and a cell in a colour past the 16, such as one of mIRC's ([Palette, iCE colours and 24-bit colour](09-colour.md#mircs-99-colours)) |
+| N cell(s) are in colours the file can't hold, saved as the nearest of the 16 | An `.ans`, XBIN or BIN, and a cell in a colour past the 16, such as one of mIRC's ([Palette, iCE colours and 24-bit colour](09-colour.md#what-each-target-does-with-colour)) |
 | N cell(s) have bold, italic or underline, which the file can't hold | An `.ans`, XBIN or BIN, and a cell with bold, italic or underline |
 
 When a UTF-8 `.ans` would keep glyphs a CP437 one loses, the warning says so. **Save** writes it anyway; **Cancel** writes nothing.
@@ -236,7 +236,7 @@ XBIN and BIN write any glyph with a CP437 byte as that byte, control codes inclu
 A project is the whole document: layers, IRC budget, notes, snapshots, SAUCE and any files kept with it. It is a zip file, `.bwp`, or a directory of the same files.
 
 ```
-manifest.json       format, version, size, palette, iCE, target, .ans encoding, IRC budget, SAUCE, layer order, next layer id
+manifest.json       format, version, size, palette, iCE, target, IRC colours, .ans encoding, IRC budget, SAUCE, layer order, next layer id
 layers/<id>.json    the layer's properties
 layers/<id>.cells   its cells (a versioned header, then zstd)
 fonts/<sha256>.tdf  a TheDraw font a text layer is set in, named by the sha256 of its bytes
@@ -246,7 +246,7 @@ refs/<sha256>.png   a reference layer's picture, .png or .jpg, named by the sha2
 scripts/<id>/, thumbnail.png and anything else
 ```
 
-The manifest has `"target": "irc"` only under the IRC target and `"target": "micron"` only under the Micron target, and `"ansEncoding": "utf-8"` only for a UTF-8 `.ans`. A reference layer's `"reference"` key names its picture, with place, size and opacity; a picture whose bytes don't hash to its name is refused.
+The manifest has `"target": "irc"` only under the IRC target, `"target": "micron"` only under the Micron target, `"ircColours": 16` only when IRC text is sent in 16 colours ([IRC in 16 colours](09-colour.md#irc-in-16-colours); absent, or any number but 16, means 99 colours, and a value that is not a number is refused; a project written with it needs no version change), and `"ansEncoding": "utf-8"` only for a UTF-8 `.ans`. A reference layer's `"reference"` key names its picture, with place, size and opacity; a picture whose bytes don't hash to its name is refused.
 
 `blockwright-cli unpack` writes a project directory. For the sun piece:
 
@@ -300,6 +300,7 @@ size:        32x8
 ice:         on
 encoding:    CP437
 target:      ansi
+irc colours: 99
 irc budget:  407 bytes (efnet-weechat)
 layers:      1 (next id 2)
   1  cells  32x8 at 0,0  normal  visible yes, locked no, alpha locked no  Background
@@ -353,7 +354,7 @@ Closing such a flat document asks first: only a project saves its layers and IRC
 
 ### What a page holds
 
-- The visible layers merged, under the document's iCE setting. The 16 colours are written in the document's palette (an XBIN's own, if it has one). Any other colour, such as one of [mIRC's 99 colours](09-colour.md#mircs-99-colours), is written as exact RGB.
+- The visible layers merged, under the document's iCE setting. The 16 colours are written in the document's palette (an XBIN's own, if it has one). Any other colour, such as one of [mIRC's 99 colours](09-colour.md#what-each-target-does-with-colour), is written as exact RGB.
 - A colour as `` `F `` (foreground) or `` `B `` (background) and three hex digits when each channel is one digit doubled, as in the 16 (`#aa5500` is `a50`), else `T` and six digits (`` `FT001008 ``).
 - A colour only where it changes and the cell shows it: no foreground for a space unless underlined, no background behind a `█` unless italic.
 - Bold, italic and underline as `` `! ``, `` `* `` and `` `_ ``, toggled where they change.
@@ -444,11 +445,11 @@ To read a file the other way, open it with the `ANSI art, CP437 (*.ans)` or `ANS
 
 ```
 blockwright-cli convert [--allow-lossy] [--encoding auto|cp437|utf-8] [--output-encoding cp437|utf-8] <in> <out>
-blockwright-cli pack [--allow-lossy] [--encoding auto|cp437|utf-8] [--target ansi|irc|micron] <in> <out.bwp>
-blockwright-cli unpack [--allow-lossy] [--encoding auto|cp437|utf-8] [--target ansi|irc|micron] <in> <dir>
+blockwright-cli pack [--allow-lossy] [--encoding auto|cp437|utf-8] [--target ansi|irc|micron] [--colours 16|99] <in> <out.bwp>
+blockwright-cli unpack [--allow-lossy] [--encoding auto|cp437|utf-8] [--target ansi|irc|micron] [--colours 16|99] <in> <dir>
 ```
 
-`convert` writes the format `<out>`'s name gives: XBIN for `.xb` or `.xbin`, BIN for `.bin`, ANSI for anything but `.bwp`, which it refuses with exit status 1: `pack` writes a project. `pack` and `unpack` write a project, its target set by `--target`: `ansi`, `irc` or `micron`, in any case (default: a project's own, else `ansi`).
+`convert` writes the format `<out>`'s name gives: XBIN for `.xb` or `.xbin`, BIN for `.bin`, ANSI for anything but `.bwp`, which it refuses with exit status 1: `pack` writes a project. `pack` and `unpack` write a project, its target set by `--target`: `ansi`, `irc` or `micron`, in any case (default: a project's own, else `ansi`), and its IRC colours by `--colours`, `16` or `99` (default: a project's own, else 99).
 
 A conversion that would lose something prints a warning for each loss and writes nothing, exit status 1. With `--allow-lossy` it prints the warnings and writes the file:
 

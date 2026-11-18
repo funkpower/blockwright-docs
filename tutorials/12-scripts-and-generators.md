@@ -237,6 +237,7 @@ The rest of the piece needs no window. Close `night.bwp` first: each of these co
     ice:         on
     encoding:    CP437
     target:      ansi
+    irc colours: 99
     irc budget:  407 bytes (efnet-weechat)
     layers:      5 (next id 6)
       4  generator  80x25 at 0,0  normal  visible yes, locked no, alpha locked no  meteors

@@ -142,4 +142,4 @@ The **pen** is the two colours everything is drawn in: a **foreground** for the 
 
 Under the IRC target the pen also has bold, italic and underline: the **B**, **I** and **U** toggles under the Palette dock's colours. Typing writes them, except on a Pixels layer; **Swap Colours** leaves them alone. Under the ANSI target they are hidden.
 
-The colours are numbered 0 to 15 in the Palette dock's order. Under the IRC target it shows mIRC's 99, 0 to 98, and <kbd>Ctrl</kbd>+arrows step through all of them. The colours themselves are on [Palette, iCE colours and 24-bit colour](09-colour.md).
+The colours are numbered 0 to 15 in the Palette dock's order. Under the IRC target it shows mIRC's 99, 0 to 98, and <kbd>Ctrl</kbd>+arrows step through all of them; with **IRC in 16 Colours** on they step 0 to 15 only. The colours themselves are on [Palette, iCE colours and 24-bit colour](09-colour.md).

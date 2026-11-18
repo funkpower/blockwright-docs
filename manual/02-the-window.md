@@ -77,7 +77,7 @@ The status bar shows, from the left:
 
 - **The tool**, such as `Glyph ░`: what the active tool is set to.
 - **The glyph set**, such as `F-keys set 6: ░ ▒ ▓ █ ▀ ▄ ▌ ▐ ■ ·`. Its tooltip lists the keys.
-- **The target and the encoding**: `ANSI`, `IRC` or `Micron` (**Format > Target**: **ANSI (.ans)**, **IRC** or **Micron (NomadNet)**), and `CP437` or `UTF-8`, how the `.ans` is written. A new document takes the target set in [Preferences](16-preferences.md#documents).
+- **The target and the encoding**: `ANSI`, `IRC`, `IRC 16` or `Micron` (**Format > Target**: **ANSI (.ans)**, **IRC**, **Micron (NomadNet)**; `IRC 16` is **IRC in 16 Colours**, [IRC](10-irc.md#99-colours-or-16)), and `CP437` or `UTF-8`, how the `.ans` is written. A new document takes the target set in [Preferences](16-preferences.md#documents).
 - **The position**, such as `12, 3  |  80x40  |  8 px  |  2x`: the cursor's column and row (0, 0 is top left), the canvas size in cells, the cell width (8, or 9 with 9 px letter spacing) and the zoom.
 
 ![The right end of the status bar: F-keys set 6 and its ten glyphs, then ANSI, CP437, and 0, 0, the cursor's column and row, then the canvas's size, 60x20, the cell's width, 8 px, and the zoom, 2x](../samples/manual-02-the-window/status-bar.png)
@@ -93,7 +93,7 @@ Each panel around the canvas is a dock. Drag its title bar to another side, onto
 | **Toolbox** | Left, top | A button for each tool or group of tools in the **Tools** menu, with the same shortcuts. | Yes |
 | **Tool Options** | Left, under the Toolbox | The settings of the active tool, under the tool's name. | Yes |
 | **Preview (1x)** | Right, top | The whole canvas at 1×, as it looks at its real size. | No |
-| **Palette** | Right | The 16 colours and the pen ([Palette, iCE colours and 24-bit colour](09-colour.md)); under the IRC and Micron targets, mIRC's 99 colours and the pen's **B**, **I** and **U** toggles ([The pen](03-keyboard-mode.md#the-pen)), and under the Micron target a click on the pen opens the colour dialog ([The Micron colour dialog](09-colour.md#the-micron-colour-dialog)). | No |
+| **Palette** | Right | The 16 colours and the pen ([Palette, iCE colours and 24-bit colour](09-colour.md)); under the IRC and Micron targets, mIRC's 99 colours (16 swatches under IRC with **IRC in 16 Colours** on) and the pen's **B**, **I** and **U** toggles ([The pen](03-keyboard-mode.md#the-pen)), and under the Micron target a click on the pen opens the colour dialog ([The Micron colour dialog](09-colour.md#the-micron-colour-dialog)). | No |
 | **Layers** | Right | The layer stack of the canvas. | Yes |
 | **Library** | Right | The stamps and text styles of the library, as thumbnails with a category list and a search box. | No |
 | **Lint** | Right, bottom, in front | The lint's findings for the canvas, one a row; activating a row puts the cell cursor on its cell. | Yes |
