@@ -58,6 +58,12 @@ Which samples are `.bwp` (§1): the final piece of 04–07, and the samples and 
 
 Whole pieces built from the Track A skills: a night scene (sky, moon, stars, tree lines), a face, a figure, a building, an object, an icon, a lettered logo. Written after Track A tutorials 01–08.
 
+They continue Track A's numbering in the same list, so no Track A page moves.
+
+| # | Tutorial | Covers | Status |
+|---|---|---|---|
+| 14 | A night scene | Planning a whole piece: a value plan, one light, a layer for each depth; a sky in two cell-banded ramp gradients, stars sprayed inside a selection, a moon and two tree lines on Pixels layers; getting it ready for IRC | Written, checked against `9b263b8` (#86): every picture a `replay --project` steps file from a blank 60 × 24 start, played through the editor's own tools (the gradients, the spray, the shapes, Line and Fill, the layer steps); the Layers dock taken with `--screenshot`; Lint's four findings and the padded export's 24 lines, longest 194 bytes, from the CLI on `final.bwp` |
+
 ## 3. Manual
 
 One page per area, in `manual/`. Each page is written when its feature is on Blockwright's `main`, and updated by the same change that alters the feature (see §5).

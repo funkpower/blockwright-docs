@@ -1,0 +1,442 @@
+{
+ "version": 1,
+ "start": {
+  "file": "blank.ans"
+ },
+ "steps": [
+  {
+   "name": "sky-layer",
+   "action": "layerProperties",
+   "rename": "sky"
+  },
+  {
+   "name": "sky-top",
+   "action": "gradient",
+   "ramp": "ice",
+   "gradient": {
+    "shape": "linear",
+    "banding": "cells",
+    "from": 0,
+    "to": 4
+   },
+   "from": [
+    30,
+    6
+   ],
+   "to": [
+    30,
+    10
+   ]
+  },
+  {
+   "name": "sky-lower",
+   "action": "select",
+   "rect": [
+    0,
+    12,
+    59,
+    23
+   ]
+  },
+  {
+   "name": "sky-bottom",
+   "action": "gradient",
+   "ramp": "ice",
+   "gradient": {
+    "shape": "linear",
+    "banding": "cells",
+    "from": 4,
+    "to": 8
+   },
+   "from": [
+    30,
+    12
+   ],
+   "to": [
+    30,
+    16
+   ]
+  },
+  {
+   "name": "sky",
+   "action": "deselect"
+  },
+  {
+   "name": "stars",
+   "action": "spray",
+   "fg": 7,
+   "size": 64,
+   "tip": "square",
+   "pressure": "none",
+   "symmetry": "none",
+   "spray": {
+    "kind": "stars",
+    "density": 100,
+    "seed": 1
+   },
+   "points": [
+    [
+     20,
+     3
+    ]
+   ]
+  },
+  {
+   "name": "moon-layer",
+   "action": "newPixelLayer",
+   "rename": "moon"
+  },
+  {
+   "name": "moon",
+   "action": "ellipse",
+   "fg": 15,
+   "filled": true,
+   "from": [
+    44,
+    2
+   ],
+   "to": [
+    53,
+    11
+   ]
+  },
+  {
+   "name": "far-layer",
+   "action": "newPixelLayer",
+   "rename": "far trees"
+  },
+  {
+   "name": "far-band",
+   "action": "rectangle",
+   "fg": 1,
+   "filled": true,
+   "from": [
+    0,
+    40
+   ],
+   "to": [
+    59,
+    47
+   ]
+  },
+  {
+   "name": "crown-1",
+   "action": "ellipse",
+   "from": [
+    0,
+    36
+   ],
+   "to": [
+    8,
+    44
+   ]
+  },
+  {
+   "name": "crown-2",
+   "action": "ellipse",
+   "from": [
+    6,
+    34
+   ],
+   "to": [
+    16,
+    44
+   ]
+  },
+  {
+   "name": "crown-3",
+   "action": "ellipse",
+   "from": [
+    16,
+    36
+   ],
+   "to": [
+    25,
+    44
+   ]
+  },
+  {
+   "name": "crown-4",
+   "action": "ellipse",
+   "from": [
+    22,
+    35
+   ],
+   "to": [
+    29,
+    44
+   ]
+  },
+  {
+   "name": "crown-5",
+   "action": "ellipse",
+   "from": [
+    28,
+    33
+   ],
+   "to": [
+    38,
+    44
+   ]
+  },
+  {
+   "name": "crown-6",
+   "action": "ellipse",
+   "from": [
+    34,
+    36
+   ],
+   "to": [
+    41,
+    44
+   ]
+  },
+  {
+   "name": "crown-7",
+   "action": "ellipse",
+   "from": [
+    38,
+    34
+   ],
+   "to": [
+    48,
+    44
+   ]
+  },
+  {
+   "name": "crown-8",
+   "action": "ellipse",
+   "from": [
+    47,
+    36
+   ],
+   "to": [
+    57,
+    44
+   ]
+  },
+  {
+   "name": "far-trees",
+   "action": "ellipse",
+   "from": [
+    54,
+    34
+   ],
+   "to": [
+    59,
+    44
+   ]
+  },
+  {
+   "name": "near-layer",
+   "action": "newPixelLayer",
+   "rename": "near trees"
+  },
+  {
+   "name": "ground",
+   "action": "rectangle",
+   "fg": 0,
+   "filled": true,
+   "from": [
+    0,
+    43
+   ],
+   "to": [
+    59,
+    47
+   ]
+  },
+  {
+   "name": "pine-1-left",
+   "action": "line",
+   "from": [
+    5,
+    22
+   ],
+   "to": [
+    1,
+    43
+   ]
+  },
+  {
+   "name": "pine-1-right",
+   "action": "line",
+   "from": [
+    5,
+    22
+   ],
+   "to": [
+    9,
+    43
+   ]
+  },
+  {
+   "name": "pine-1",
+   "action": "fill",
+   "at": [
+    5,
+    25
+   ]
+  },
+  {
+   "name": "pine-2-left",
+   "action": "line",
+   "from": [
+    17,
+    33
+   ],
+   "to": [
+    14,
+    43
+   ]
+  },
+  {
+   "name": "pine-2-right",
+   "action": "line",
+   "from": [
+    17,
+    33
+   ],
+   "to": [
+    20,
+    43
+   ]
+  },
+  {
+   "name": "pine-2",
+   "action": "fill",
+   "at": [
+    17,
+    36
+   ]
+  },
+  {
+   "name": "pine-3-left",
+   "action": "line",
+   "from": [
+    27,
+    24
+   ],
+   "to": [
+    22,
+    43
+   ]
+  },
+  {
+   "name": "pine-3-right",
+   "action": "line",
+   "from": [
+    27,
+    24
+   ],
+   "to": [
+    32,
+    43
+   ]
+  },
+  {
+   "name": "pine-3",
+   "action": "fill",
+   "at": [
+    27,
+    27
+   ]
+  },
+  {
+   "name": "pine-4-left",
+   "action": "line",
+   "from": [
+    38,
+    34
+   ],
+   "to": [
+    35,
+    43
+   ]
+  },
+  {
+   "name": "pine-4-right",
+   "action": "line",
+   "from": [
+    38,
+    34
+   ],
+   "to": [
+    41,
+    43
+   ]
+  },
+  {
+   "name": "pine-4",
+   "action": "fill",
+   "at": [
+    38,
+    37
+   ]
+  },
+  {
+   "name": "pine-5-left",
+   "action": "line",
+   "from": [
+    48,
+    23
+   ],
+   "to": [
+    44,
+    43
+   ]
+  },
+  {
+   "name": "pine-5-right",
+   "action": "line",
+   "from": [
+    48,
+    23
+   ],
+   "to": [
+    52,
+    43
+   ]
+  },
+  {
+   "name": "pine-5",
+   "action": "fill",
+   "at": [
+    48,
+    26
+   ]
+  },
+  {
+   "name": "pine-6-left",
+   "action": "line",
+   "from": [
+    56,
+    33
+   ],
+   "to": [
+    53,
+    43
+   ]
+  },
+  {
+   "name": "pine-6-right",
+   "action": "line",
+   "from": [
+    56,
+    33
+   ],
+   "to": [
+    59,
+    43
+   ]
+  },
+  {
+   "name": "near-trees",
+   "action": "fill",
+   "at": [
+    56,
+    36
+   ]
+  }
+ ]
+}
