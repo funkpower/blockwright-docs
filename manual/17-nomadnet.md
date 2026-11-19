@@ -1,5 +1,5 @@
 Title: Drawing for NomadNet: Reticulum and Micron pages
-Checked: Blockwright 0.1.1 (9b263b8)
+Checked: Blockwright 0.1.1 (c0acea0)
 
 # Drawing for NomadNet: Reticulum and Micron pages
 
@@ -60,7 +60,7 @@ Start `nomadnet` and open its **Network** section. **Node Info** shows the node'
 
 ## What a page shows
 
-- **Colours.** Blockwright writes a colour as three hex digits when each channel is one digit doubled, else in the six-digit truecolour form, so no colour is rounded ([What a page holds](13-file-formats.md#what-a-page-holds)); the Lint dock notes the cells in the second form (`micron-colour`, [Lint](11-lint.md#micron-colour)). NomadNet's `colormode` under `[textui]` decides what the reader sees: `24bit`, which the config file NomadNet writes sets, shows both forms as written; `256` and `88` show each as the nearest of the terminal's 256 or 88; `16` maps each to one of the terminal's 16 colours by NomadNet's own rule (`nomadnet/ui/textui/MicronParser.py`, `make_style`).
+- **Colours.** Blockwright writes a colour as three hex digits when each channel is one digit doubled, else in the six-digit truecolour form, so no colour is rounded ([What a page holds](13-file-formats.md#what-a-page-holds)); the Lint dock notes the cells in the second form (`micron-colour`, [Lint](11-lint.md#micron-colour)), and **Colours > Snap to Micron Colours** moves them to the nearest of the 4096 three digits write ([Keeping a page to three-digit codes](09-colour.md#keeping-a-page-to-three-digit-codes)); every code Blockwright writes is tabled in [Colours on a Micron page](09-colour.md#colours-on-a-micron-page). NomadNet's `colormode` under `[textui]` decides what the reader sees: `24bit`, which the config file NomadNet writes sets, shows both forms as written; `256` and `88` show each as the nearest of the terminal's 256 or 88; `16` maps each to one of the terminal's 16 colours by NomadNet's own rule; `monochrome` drops both, so the page shows in the terminal's default colours, keeping bold, underline and italics (`nomadnet/ui/textui/MicronParser.py`, `make_style`).
 - **Bold, italic and underline** are kept. **Blink** isn't: a blinking cell is written on its dark background.
 - **Glyphs.** Glyphs NomadNet drops are written as `?`. The Lint dock notes them (`micron-glyph`, [Lint](11-lint.md#micron-glyph)) and the export's warning lists them ([What a page doesn't keep](13-file-formats.md#what-a-page-doesnt-keep)).
 - **Size.** A page has no byte budget. Every row and column is written, blank ones and trailing black included.
@@ -70,5 +70,4 @@ Start `nomadnet` and open its **Network** section. **Node Info** shows the node'
 ## Limits
 
 - Blockwright doesn't open a `.mu` file.
-- No command moves colours to the nearest of the 4096.
 - No view shows the page as NomadNet draws it at 256 or 16 colours; the canvas shows it as the `24bit` mode does.

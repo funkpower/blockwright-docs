@@ -1,5 +1,5 @@
 Title: Palette, iCE colours and 24-bit colour
-Checked: Blockwright 0.1.1 (716a62e)
+Checked: Blockwright 0.1.1 (c0acea0)
 
 # Palette, iCE colours and 24-bit colour
 
@@ -85,6 +85,75 @@ A digit stands for itself doubled, so `a50` is `#aa5500`: the dialog offers the 
 **OK** sets the pen to the colour, as a swatch does; it adds no undo step. **OK** on the digits it opened with, or **Cancel**, leaves the pen as it was. The Palette dock marks no swatch for a colour none of them holds; **Colours > Next Foreground** and the other three step from it to the first or last swatch.
 
 How the page writes a colour is in [What a page holds](13-file-formats.md#what-a-page-holds).
+
+## Colours on a Micron page
+
+A Micron page ([Drawing for NomadNet](17-nomadnet.md)) sets a foreground with `` `F `` and a background with `` `B ``, followed by three hex digits (`` `Fa50 ``, a digit standing for itself doubled: `a50` is `#aa5500`) or by `T` and six (`` `FTff0098 ``). Blockwright writes the three-digit form when each of a colour's channels is one digit doubled, and the six-digit form for every other colour, so no colour is rounded. Every code below is the output of `blockwright-cli export --micron` on [micron-colours.bwp](../samples/manual-09-colour/micron-colours.bwp), a Micron project holding one cell of each; the page it writes is [micron-colours.mu](../samples/manual-09-colour/micron-colours.mu).
+
+| The cell holds | Foreground | Background |
+|---|---|---|
+| Palette colour 0, black | `` `F000 `` | `` `B000 `` |
+| 1, blue | `` `F00a `` | `` `B00a `` |
+| 2, green | `` `F0a0 `` | `` `B0a0 `` |
+| 3, cyan | `` `F0aa `` | `` `B0aa `` |
+| 4, red | `` `Fa00 `` | `` `Ba00 `` |
+| 5, magenta | `` `Fa0a `` | `` `Ba0a `` |
+| 6, brown | `` `Fa50 `` | `` `Ba50 `` |
+| 7, grey | `` `Faaa `` | `` `Baaa `` |
+| 8, dark grey | `` `F555 `` | `` `B555 `` |
+| 9, light blue | `` `F55f `` | `` `B55f `` |
+| 10, light green | `` `F5f5 `` | `` `B5f5 `` |
+| 11, light cyan | `` `F5ff `` | `` `B5ff `` |
+| 12, light red | `` `Ff55 `` | `` `Bf55 `` |
+| 13, light magenta | `` `Ff5f `` | `` `Bf5f `` |
+| 14, yellow | `` `Fff5 `` | `` `Bff5 `` |
+| 15, white | `` `Ffff `` | `` `Bfff `` |
+| A colour from the Micron colour dialog, `36c` (`#3366cc`) | `` `F36c `` | `` `B36c `` |
+| mIRC 52, `#ff0000`, which happens to be twelve-bit | `` `Ff00 `` | `` `Bf00 `` |
+| mIRC 16, `#470000` | `` `FT470000 `` | `` `BT470000 `` |
+| mIRC 63, `#ff0098` | `` `FTff0098 `` | `` `BTff0098 `` |
+| mIRC 77, `#ffd39c` | `` `FTffd39c `` | `` `BTffd39c `` |
+| No colour chosen: the pen's starting grey on black | `` `Faaa `` | `` `B000 `` |
+
+The sample holds each mIRC colour and the dialog's `36c` as a foreground and as a background (rows 3 to 5 of the `.mu`). A colour from mIRC's 99 is written by its RGB value, not its number, so most of 16 to 98 take the six-digit form: only those whose channels are all doubled digits, such as 52, take three.
+
+- **A bright background** is written as the bright colour (`` `Bf55 ``), with iCE colours on, and as its dark colour with them off ([What a page holds](13-file-formats.md#what-a-page-holds)). A blinking cell is written on its dark background, as the page has no blink.
+- **An XBIN's own palette** is written for the 16: an entry that isn't twelve-bit takes the six-digit form (`` `FT001008 ``, [What a page holds](13-file-formats.md#what-a-page-holds)). So does a palette set with **Colours > Palette** (and **Colours > Edit Palette...**): under the `xterm` preset the sample's colour 2, green, is written `` `FT00cd00 ``, colour 7, grey, `` `FTe5e5e5 ``, and colour 9, light blue, `` `FT5c5cff ``. Colours that stay twelve-bit under that palette, such as 0, 12 and 15, keep their three digits. **Fit to Palette** instead moves each cell to the nearest entry of the new palette, so the piece looks the same and the cells' colour numbers change.
+- **Greyscale.** NomadNet reads a two-digit greyscale code, `` `Fgxx `` (`MicronParser.py`, `high_color`). Blockwright never writes it.
+- **Default colours** are not written as such: a cell in the pen's starting colours gets `` `Faaa `` and `` `B000 `` like any other, and Blockwright writes no `#!fg=` or `#!bg=` header.
+
+### What the reader shows
+
+NomadNet's `colormode` decides which of these a reader sees ([Drawing for NomadNet](17-nomadnet.md#what-a-page-shows)):
+
+| `colormode` | A three-digit colour | A six-digit colour | Source |
+|---|---|---|---|
+| `24bit` | As written, each digit doubled | As written | `MicronParser.py`, `high_color` returns `#rrggbb` for both |
+| `256`, `88` | Handed to the terminal library as `#rrggbb`, which picks the nearest of the table | The same | `high_color`; the nearest-of-the-table step is the library's, not NomadNet's, and not checked here |
+| `16` | By the rule below | The first digit of each channel pair is kept (`FTff0098` reads as `f09`), then by the rule below | `MicronParser.py`, `low_color` |
+| `monochrome` | Dropped: the terminal's default colours | Dropped, the same | `MicronParser.py`, `make_style` gives the monochrome slot `mono_color`, which returns `default`; bold, underline and italics are kept |
+
+The `16` rule in `low_color` works on the three digits. Equal digits make a grey: digit × 6 under 12 is black, under 50 dark grey, under 80 light grey, else white. Otherwise the largest digit names the hue, and a digit above 7 makes it light; two equal largest digits make cyan, magenta or yellow (brown when dark). I haven't run NomadNet at 256, 88 or 16 colours to see the result.
+
+### Keeping a page to three-digit codes
+
+- Draw with the 16, or with the colours the Micron colour dialog offers. A colour from mIRC's 16 to 98 is written in the six-digit form; the Lint dock's [`micron-colour`](11-lint.md#micron-colour) note counts the cells that are.
+- **Colours > Snap to Micron Colours** moves colours to the nearest of the 4096 a three-digit code writes: each channel to the nearest digit, the one the Micron colour dialog opens on. It changes the RGB colours, foreground and background, of the selection's cells on the active layer, or of the whole layer when nothing is selected, as one undo step, **Snap to Micron Colours**. The status bar says `Snapped to Micron colours: 6 cells changed`, or `Nothing snapped:` and why: every colour is already one a three-digit code writes, or the layer can't be edited.
+- It leaves a colour that is already twelve-bit (mIRC 52 above, a colour picked in the dialog), the 16 and any other palette index (an XBIN palette entry that isn't twelve-bit stays, and **Fit to Palette** is the way to change it), a text layer's style colours, and every glyph and formatting. It is greyed out under the other targets: under IRC the 99 are the colours a line sends.
+- A steps file has it as `{"action": "snapMicronColours"}`, with no keys: the selection, or else the active layer. It refuses a piece whose target isn't Micron and notes a step that changes nothing ([blockwright-cli](14-cli.md)).
+
+On the sample, one step changes the six cells of rows 3 and 4 that held mIRC 16, 63 and 77:
+
+```
+$ blockwright-cli replay --project --allow-lossy snap.steps.json -o out
+$ blockwright-cli export --micron out/01-snap.bwp snapped.mu
+6 lines, 16 columns
+$ sed -n 3,4p snapped.mu
+`F400█`Ff00█`Ff09█`Ffc9█`B000            ``
+`B400 `Bf00 `Bf09 `Bfc9 `B000            ``
+```
+
+`#470000` is now `#440000` (`400`), `#ff0098` is `#ff0099` (`f09`) and `#ffd39c` is `#ffcc99` (`fc9`); mIRC 52 was already `f00` and the lint's `micron-colour` note is gone.
 
 ## iCE colours
 

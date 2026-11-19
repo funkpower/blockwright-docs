@@ -1,5 +1,5 @@
 Title: Lint panel and the checks it runs
-Checked: Blockwright 0.1.1 (9b263b8)
+Checked: Blockwright 0.1.1 (c0acea0)
 
 # Lint panel and the checks it runs
 
@@ -526,7 +526,7 @@ Only under the Micron target. A note of the cells whose colour Export Micron wri
 clean, 1 note (1 micron-colour), noise 0.0000, iCE on
 ```
 
-**Fix:** none is needed. To keep a page to three-digit codes, redraw those cells in colours the Micron colour dialog offers ([Colour](09-colour.md)).
+**Fix:** none is needed. To keep a page to three-digit codes, choose **Colours > Snap to Micron Colours**, which changes each RGB colour of the selection, or of the active layer when nothing is selected, to the nearest of the 4096 three digits write, as one undo step, **Snap to Micron Colours** (the steps-file action is `snapMicronColours`). It leaves an XBIN's own palette entry that isn't twelve-bit, so the note stays for it. Or redraw those cells in colours the Micron colour dialog offers ([Colours on a Micron page](09-colour.md#colours-on-a-micron-page)).
 
 ### micron-glyph
 
