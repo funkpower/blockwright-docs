@@ -1,5 +1,5 @@
 Title: File formats: .ans, SAUCE, IRC text, UTF-8, XBIN, project files
-Checked: Blockwright 0.1.1 (716a62e)
+Checked: Blockwright 0.1.1 (1347435)
 
 # File formats: .ans, SAUCE, IRC text, UTF-8, XBIN, project files
 
@@ -14,12 +14,12 @@ Only a project holds everything the editor has. Before writing any other format,
 | XBIN, `.xb` | Yes | Yes | One flat canvas, its own palette and font, iCE, SAUCE without its flags |
 | BIN, `.bin` | Yes | Yes | One flat canvas an even number of columns wide, iCE, SAUCE |
 | IRC text, `.txt` | No | Yes | The rows as IRC lines, in mIRC colours |
-| Micron page, `.mu` | No | Yes | The rows as a NomadNet page, in the document's colours, bold, italic and underline |
+| Micron page, `.mu` | Yes, as NomadNet draws it | Yes | The rows as a NomadNet page, in the document's colours, bold, italic and underline |
 | PNG | No | Yes, with `blockwright-cli render` | A picture |
 
 ## Opening a file
 
-**File > Open...** lists `Blockwright projects and ANSI art (*.bwp *.ans *.xb *.bin)`, `Blockwright projects (*.bwp)`, `ANSI art (*.ans)`, `ANSI art, CP437 (*.ans)`, `ANSI art, UTF-8 (*.ans)`, `XBIN (*.xb)`, `BIN (*.bin)` and `All files (*)`. The CP437 and UTF-8 filters read an `.ans` in that encoding; the others go by its bytes ([UTF-8 ANSI](#utf-8-ansi)).
+**File > Open...** lists `Blockwright projects and ANSI art (*.bwp *.ans *.xb *.bin *.mu)`, `Blockwright projects (*.bwp)`, `ANSI art (*.ans)`, `ANSI art, CP437 (*.ans)`, `ANSI art, UTF-8 (*.ans)`, `XBIN (*.xb)`, `BIN (*.bin)`, `Micron pages (*.mu)` and `All files (*)`. The CP437 and UTF-8 filters read an `.ans` in that encoding; the others go by its bytes ([UTF-8 ANSI](#utf-8-ansi)).
 
 **File > Open Project Directory...** opens a project directory. **File > Open Recent** lists recent files.
 
@@ -27,7 +27,7 @@ How a file is read:
 
 - A directory holding a `manifest.json`, a file that starts as a zip (`PK` 0x03 0x04), or any file named `.bwp` is a project.
 - A file that starts with the XBIN magic (`XBIN` and 0x1A) is an XBIN, whatever its name.
-- Otherwise the extension decides, in any case: `.xb` or `.xbin` is XBIN, `.bin` is BIN, anything else ANSI ([UTF-8 ANSI](#utf-8-ansi)).
+- Otherwise the extension decides, in any case: `.xb` or `.xbin` is XBIN, `.bin` is BIN, `.mu` is a Micron page, anything else ANSI ([UTF-8 ANSI](#utf-8-ansi)).
 
 A file that can't be read gives "Could not open …" and the reason. `blockwright-cli` reads files the same way, except that it ignores the `.bwp` name, and reads a project as its visible layers merged.
 
@@ -302,6 +302,7 @@ ice:         on
 encoding:    CP437
 target:      ansi
 irc colours: 99
+palette:     standard
 irc budget:  407 bytes (efnet-weechat)
 layers:      1 (next id 2)
   1  cells  32x8 at 0,0  normal  visible yes, locked no, alpha locked no  Background
@@ -345,7 +346,7 @@ Closing such a flat document asks first: only a project saves its layers and IRC
 
 ## Micron page (.mu)
 
-**File > Export Micron...** and `blockwright-cli export --micron` write the canvas as a Micron page, the page markup of NomadNet on the Reticulum network: UTF-8, one line per row ending in a line feed. Blockwright doesn't read it back. Where a page goes and how NomadNet shows it are in [Drawing for NomadNet](17-nomadnet.md). In the app:
+**File > Export Micron...** and `blockwright-cli export --micron` write the canvas as a Micron page, the page markup of NomadNet on the Reticulum network: UTF-8, one line per row ending in a line feed. A `.mu` is also read: **File > Open** and every CLI input draw it as NomadNet does, with links, fields and tables as plain text and a warning for each kind ([Opening a page](17-nomadnet.md#opening-a-page)). Where a page goes and how NomadNet shows it are in [Drawing for NomadNet](17-nomadnet.md). In the app:
 
 1. Any edit in progress lands. A floating selection that can't land stops the export, and the status bar says "Not exported: the floating selection can't land: …".
 2. If any cell would be written as something else ([What a page doesn't keep](#what-a-page-doesnt-keep)), a warning starts "Before exporting a Micron page:", lists them, and asks "Export anyway?". **Save** goes on; **Cancel**, the default, stops.

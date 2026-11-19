@@ -1,5 +1,5 @@
 Title: Tools and their options
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (1347435)
 
 # Tools and their options
 
@@ -28,7 +28,7 @@ The Toolbox has ten groups. A group of one tool is a plain button; a group of se
 9. **Eyedropper**
 10. **Text**
 
-The **Tool Options** dock shows the active tool's name, then **About this tool**: a picture of the tool at work, a few lines of help and a link to **Help > Keyboard Shortcuts**. Click **About this tool** to hide or show it.
+The **Tool Options** dock shows the active tool's name, then **About this tool**: a picture of the tool at work, a few lines of help, and below them a link to **Help > Keyboard Shortcuts** and **More in the manual**, which opens the **Blockwright Manual** window at the tool's section ([Help](02-the-window.md#help-on-the-window-itself)). Click **About this tool** to hide or show it.
 
 Across the tools:
 

@@ -1,5 +1,5 @@
 Title: Scripts and generators
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (1347435)
 
 # Scripts and generators
 
@@ -238,6 +238,7 @@ The rest of the piece needs no window. Close `night.bwp` first: each of these co
     encoding:    CP437
     target:      ansi
     irc colours: 99
+    palette:     standard
     irc budget:  407 bytes (efnet-weechat)
     layers:      5 (next id 6)
       4  generator  80x25 at 0,0  normal  visible yes, locked no, alpha locked no  meteors

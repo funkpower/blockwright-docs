@@ -1,5 +1,5 @@
 Title: blockwright-cli
-Checked: Blockwright 0.1.1 (9b263b8)
+Checked: Blockwright 0.1.1 (1347435)
 
 # blockwright-cli
 
@@ -13,7 +13,7 @@ blockwright-cli [options] command [args...]
 
 ## What it reads
 
-Every command that reads a piece takes an ANSI file (`.ans`), an XBIN (`.xb`), a BIN (`.bin`) or a project, a `.bwp` zip or a project directory. A project is read as its visible layers merged.
+Every command that reads a piece takes an ANSI file (`.ans`), an XBIN (`.xb`), a BIN (`.bin`), a Micron page (`.mu`) or a project, a `.bwp` zip or a project directory. A project is read as its visible layers merged. A `.mu` is read as NomadNet draws it, under the Micron target: a link, field, heading, table, partial or image the cells can't hold is drawn as text or left out, and a warning on the error stream says so, once for each kind, with the first line (`blockwright-cli: warning: page.mu: 1 link drawn as its label, on line 3`); the exit status stays 0 ([Opening a page](17-nomadnet.md#opening-a-page)). `info` prints `format:      Micron page`.
 
 `convert` and `shade` write XBIN to an output named `.xb`, BIN to one named `.bin`, and ANSI otherwise. `convert`, `shade`, `export --irc`, `export --micron` and `render` refuse an output named `.bwp` (exit status 1): `pack` writes a project.
 

@@ -1,5 +1,5 @@
 Title: Palette, iCE colours and 24-bit colour
-Checked: Blockwright 0.1.1 (c0acea0)
+Checked: Blockwright 0.1.1 (1347435)
 
 # Palette, iCE colours and 24-bit colour
 

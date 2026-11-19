@@ -1,5 +1,5 @@
 Title: The window: canvas, docks and views
-Checked: Blockwright 0.1.1 (716a62e)
+Checked: Blockwright 0.1.1 (1347435)
 
 # The window: canvas, docks and views
 
@@ -98,13 +98,14 @@ Each panel around the canvas is a dock. Drag its title bar to another side, onto
 | **Library** | Right | The stamps and text styles of the library, as thumbnails with a category list and a search box. | No |
 | **Lint** | Right, bottom, in front | The lint's findings for the canvas, one a row; activating a row puts the cell cursor on its cell. | Yes |
 | **IRC View** | Right, bottom, behind Lint | The canvas as an IRC client shows the exported lines, with a red bar where a line over the budget is cut. | Yes |
+| **NomadNet View** | Right, bottom, behind Lint, the tab after IRC View; under the Micron target only | The page as NomadNet draws it in its `256` colour mode ([The NomadNet View](17-nomadnet.md#the-nomadnet-view)). Off the Micron target it is hidden. | Yes |
 | **Glyphs** | Bottom | The current F-key set as ten cells and a list of the sets the document offers ([Keyboard mode, F-key glyph sets and the pen](03-keyboard-mode.md)). | Yes |
 
-Lint and IRC View share a place as two tabs. The one at the back updates when it comes to the front.
+IRC View, NomadNet View and Lint share a place as tabs, in that order from the left, with Lint in front. Under the Micron target all three show; under any other target the NomadNet View tab is gone and the other two remain. A tab at the back updates when it comes to the front.
 
 ### The Window menu
 
-The **Window** menu has a checkable item for each dock. Untick one to close the dock; tick it to bring it back. The Preview, Palette and Library items are always ticked and greyed out.
+The **Window** menu has a checkable item for each dock. The NomadNet View item is greyed out off the Micron target. Untick one to close the dock; tick it to bring it back. The Preview, Palette and Library items are always ticked and greyed out.
 
 **Window > Reset Layout** puts every dock back, with both columns 360 pixels wide. The canvas keeps at least 640 pixels of width; on a small screen the columns give way.
 
@@ -123,6 +124,7 @@ The **View** menu:
 | **9 px Letter Spacing** | | Cells 9 pixels wide instead of 8, with the line-drawing glyphs 0xC0–0xDF joined across the ninth column as a VGA screen joined them. Saved in the file's SAUCE record. |
 | **IRC > Row Meter** | | Shows or hides the row meter beside the canvas. |
 | **IRC > IRC View** | | Shows or hides the IRC View dock. |
+| **NomadNet View** | | Shows or hides the NomadNet View dock; enabled only under the Micron target ([The NomadNet View](17-nomadnet.md#the-nomadnet-view)). |
 | **Guides** | | **None**, **80x25**, **80x40** or **80x50**: a line after column 80 and after every 25, 40 or 50 rows. |
 
 The Preview dock always shows 1×, whatever the zoom. A canvas too big to draw at 9 pixels a cell stays at 8, and the status bar says so.

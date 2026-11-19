@@ -1,5 +1,5 @@
 Title: Drawing for NomadNet: Reticulum and Micron pages
-Checked: Blockwright 0.1.1 (c0acea0)
+Checked: Blockwright 0.1.1 (1347435)
 
 # Drawing for NomadNet: Reticulum and Micron pages
 
@@ -67,7 +67,57 @@ Start `nomadnet` and open its **Network** section. **Node Info** shows the node'
 - **Centring and caching.** **Centre the piece on the page** writes each line centred. **Write a page cache header** sets how long a visitor's NomadNet keeps the page; without it NomadNet keeps a page 12 hours, and it reads the header only from the first line (`nomadnet/ui/textui/Browser.py`; `Guide.py`, "Hosting a Node").
 - **One flat picture.** The visible layers are merged; layers, SAUCE, notes and snapshots stay in the project.
 
+## The NomadNet View
+
+**View > NomadNet View** opens a dock on the right, a tab after the IRC View and behind Lint, that shows the page as NomadNet draws it in its `256` colour mode. It is there only under the Micron target: off a page the dock is hidden and its menu entry, here and in the **Window** menu, is greyed out; back on a page it is as it was when you left one.
+
+- **Colours.** Each colour falls to the nearest step of the terminal's 256-colour cube, as NomadNet's `256` mode does, so a grey that is close to another one may show as a different step. The canvas shows the colours as written, as the `24bit` mode does.
+- **Glyphs.** A glyph NomadNet strips shows as the `?` the page writes for it, and the dock's status line counts them: `As NomadNet draws it at 256 colours; 2 glyphs it strips show as ?`.
+- **Following the document.** It redraws a moment after each edit, and only while it is shown; a dock in a tab behind another catches up when you bring it forward.
+
+Only the `256` mode is drawn. The `16` and `88` colour modes aren't.
+
+## Opening a page
+
+**File > Open** reads a `.mu` file, and so does every CLI command that takes an input. It is read as NomadNet draws it, not as text: headers, comments and colour codes draw nothing, and each line NomadNet draws is a row. The document opens untitled under the Micron target, so **Save** asks where to write it and never writes an `.ans` or a project over the page; **File > Export Micron...** writes the page again.
+
+The canvas holds cells, so what it can't show is drawn the way NomadNet draws it, and the CLI and the status bar each say what was changed. The CLI prints one warning for each kind, with a count and the first line it was on. The status bar joins them in one message, `Opened <path>: note; note`. The kinds:
+
+- a link as its label, or its address when it has none;
+- a field as its text, one row, with `*` for a masked one, drawn padded with spaces to the width the page declares (24 columns when it declares none, at most 256) and cut at that width; a check box as `[ ]` or `[X]` and a radio button as `( )` or `(X)`, each with its label;
+- a heading as its text in the heading's colours;
+- a divider as a row of its glyph;
+- a line in a section as indented by its section depth;
+- a line centred or right-aligned, as placed at the page width;
+- a table as its lines of text; a table that is never closed by a second `` `t `` isn't drawn, as in NomadNet, and is reported as `never closed, left out`;
+- a partial or an image left out, when NomadNet would have drawn one;
+- a row longer than 400 columns, cut at 400;
+- a line past row 5000, left out;
+- a byte that isn't UTF-8, read as U+FFFD.
+
+A page opens as far as 5000 rows and 400 columns; the rest is left out and the status bar says so. A malformed code is read as NomadNet reads it and never refuses the file.
+
+```
+$ cat page.mu
+>Welcome
+`!Hello`! from a node
+`[Go to the index`:/page/index.mu]
+Name: `<16|name`anon>
+$ blockwright-cli info page.mu
+blockwright-cli: warning: page.mu: 1 link drawn as its label, on line 3
+blockwright-cli: warning: page.mu: 1 field drawn as its text, on line 4
+blockwright-cli: warning: page.mu: 1 heading drawn as text in its heading colours, on line 1
+file:        page.mu
+format:      Micron page
+target:      micron
+size:        22x4
+```
+
+The warnings go to the error stream and the exit status is 0. `convert page.mu page.ans` is refused, because the page has more than an `.ans` keeps; `--allow-lossy` writes it anyway.
+
+Three differences from NomadNet are known: the text of a field ignores the line's alignment, radio buttons of one group can both be checked, and the notes also count what a line past row 5000 would have added.
+
 ## Limits
 
-- Blockwright doesn't open a `.mu` file.
-- No view shows the page as NomadNet draws it at 256 or 16 colours; the canvas shows it as the `24bit` mode does.
+- A page opens as plain cells: links, fields, tables, partials and images aren't kept, so exporting it writes the page's look and not its behaviour.
+- The NomadNet View shows the `256` colour mode only; no view shows the `16` or `88` mode, and the canvas shows the page as the `24bit` mode does.

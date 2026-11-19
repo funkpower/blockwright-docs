@@ -1,5 +1,5 @@
 Title: What ANSI art is
-Checked: Blockwright 0.1.0 (12ee9ef)
+Checked: Blockwright 0.1.1 (1347435)
 
 # What ANSI art is
 

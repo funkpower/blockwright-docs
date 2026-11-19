@@ -1,5 +1,5 @@
 Title: IRC: byte budget, row meter, IRC view, export
-Checked: Blockwright 0.1.1 (716a62e)
+Checked: Blockwright 0.1.1 (1347435)
 
 # IRC: byte budget, row meter, IRC view, export
 
@@ -150,9 +150,9 @@ What a client shows for 16 to 98, as read from each client's source at the versi
 
 | Client | Version | 0 to 15 | 16 to 98 | 99 | Source |
 |---|---|---|---|---|---|
-| WeeChat | 4.10.4 | its colour names for the 16, which `irc.color.mirc_remap` can change | the nearest terminal 256-colour number (16 is 52, 98 is 231), so near mIRC's RGB, not exact; the remap setting doesn't apply to them | the default colour | `src/plugins/irc/irc-color.c`, table `irc_color_to_weechat`; its user guide, `weechat.org/files/doc/weechat/stable/weechat_user.en.html` |
-| irssi | 1.4.5 | the terminal's 16 colours | the nearest terminal 256-colour number; with the setting `colors_ansi_24bit` on, the exact RGB | ignored, as a reset | `src/fe-text/gui-printtext.c`, tables `mirc_colors` and `mirc_colors24` |
-| HexChat | 2.16.2 | its palette entries 0 to 15 | not mIRC's RGB: 16 to 31 repeat the colours 0 to 15, and numbers 32 to 41 reach palette entries that are not mIRC colours (the text mark, foreground, background and marker-line colours among them), and numbers past 41 wrap modulo 32 | its foreground | `src/fe-gtk/xtext.c` and `xtext.h` (`XTEXT_MIRC_COLS`, `XTEXT_MAX_COLOR`), `src/fe-gtk/palette.c` |
+| WeeChat | 4.10.4 | its colour names for the 16, which `irc.color.mirc_remap` can change | the nearest terminal 256-colour number (16 is 52, 98 is 231), so near mIRC's RGB, not exact; the remap setting doesn't apply to them | the default colour | `src/plugins/irc/irc-color.c` (`https://github.com/weechat/weechat/blob/v4.10.4/src/plugins/irc/irc-color.c`), table `irc_color_to_weechat`; its user guide (`https://weechat.org/files/doc/weechat/4.10.4/weechat_user.en.html`) |
+| irssi | 1.4.5 | the terminal's 16 colours | the nearest terminal 256-colour number; with the setting `colors_ansi_24bit` on, the exact RGB | ignored, as a reset | `src/fe-text/gui-printtext.c` (`https://github.com/irssi/irssi/blob/1.4.5/src/fe-text/gui-printtext.c`), tables `mirc_colors` and `mirc_colors24` |
+| HexChat | 2.16.2 | its palette entries 0 to 15 | not mIRC's RGB: 16 to 31 repeat the colours 0 to 15, and numbers 32 to 41 reach palette entries that are not mIRC colours (the text mark, foreground, background and marker-line colours among them), and numbers past 41 wrap modulo 32 | its foreground | `src/fe-gtk/xtext.c` (`https://github.com/hexchat/hexchat/blob/v2.16.2/src/fe-gtk/xtext.c`) and `xtext.h` (`https://github.com/hexchat/hexchat/blob/v2.16.2/src/fe-gtk/xtext.h`) (`XTEXT_MIRC_COLS`, `XTEXT_MAX_COLOR`), `src/fe-gtk/palette.c` (`https://github.com/hexchat/hexchat/blob/v2.16.2/src/fe-gtk/palette.c`) |
 | mIRC | | not checked | not checked | not checked | |
 
 Two client settings also change what arrives: WeeChat's `irc.network.colors_receive` set to `off` drops every colour.

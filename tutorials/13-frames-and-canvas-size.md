@@ -1,5 +1,5 @@
 Title: Frames and canvas size
-Checked: Blockwright 0.1.1 (9b263b8)
+Checked: Blockwright 0.1.1 (1347435)
 
 # Frames and canvas size
 
@@ -82,11 +82,11 @@ Positions are column then row from `0, 0` at the top left; zoom in (<kbd>Ctrl</k
     - **Draw the middle** off, as it starts: the frame leaves the board inside it alone.
     - Tick **Keep the background under it**, so the dots and diamonds take the colour of whatever they are drawn on. On this black board it makes no difference.
 
-    The preview shows the style stretched. Click **OK**. The status bar says the style was saved to the library and that the Frame tool lists it.
+    The preview shows the style stretched. Click **OK**. The status bar reads `Saved <path> to the library; the Frame tool lists it`, where `<path>` is the style's file, not its name.
 
 7. **Clear the source.** With the box still selected, press <kbd>Delete</kbd>, then **Selection > Deselect** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd>). The corner is empty again.
 
-8. **Frame the board.** Take the **Frame** tool. Set **Frame** to **Dotted diamond**, at the end of the list, and **Colours** back to **Style colours**. Drag from `0, 0` to `37, 13`:
+8. **Frame the board.** Take the **Frame** tool. **Frame** already shows **Dotted diamond**, at the end of the list, because saving a style chooses it; if you changed it, choose it again. Set **Colours** back to **Style colours**. Drag from `0, 0` to `37, 13`:
 
     ![The finished board: the light magenta dotted border with diamond corners round the whole canvas](../samples/13-frames-and-canvas-size/final.ans "2x")
 

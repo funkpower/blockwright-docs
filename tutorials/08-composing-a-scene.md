@@ -1,5 +1,5 @@
 Title: Composing a scene
-Checked: Blockwright 0.1.1 (716a62e)
+Checked: Blockwright 0.1.1 (1347435)
 
 # Composing a scene
 

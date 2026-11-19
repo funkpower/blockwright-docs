@@ -1,5 +1,5 @@
 Title: Installing Blockwright
-Checked: Blockwright 0.1.1 (f281406)
+Checked: Blockwright 0.1.1 (1347435)
 
 # Installing Blockwright
 
