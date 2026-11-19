@@ -22,7 +22,9 @@ Static documentation site for Blockwright: tutorials and the manual. `PLAN.md` i
 
 ## Build and test
 
-- `scripts/build` must pass, and `scripts/test-build` (the build's own checks, run against scratch copies of the repo) must pass, before a PR opens. A change to `scripts/build` that adds behaviour adds a scenario to `scripts/test-build`.
+- `scripts/build` must pass before every PR opens.
+- `scripts/test-build` (the build script's own checks, run against scratch copies of the repo; it tests the build script, not the pages) must pass before a PR that changes `scripts/`.
+- A change to `scripts/build` that adds behaviour still adds a scenario to `scripts/test-build`.
 - Sample scripts (`samples/*/make.py`, and the layer scripts behind a `.bwp`) must reproduce the committed `.ans` and `.bwp` files byte for byte.
 
 ## Git and the forge
