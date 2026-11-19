@@ -17,7 +17,7 @@ Blockwright 0.1.2 was released on 19 November 2026. Its files and release notes 
 | Fedora 45 | [blockwright-0.1.2-1.fc45.x86_64.rpm](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-1.fc45.x86_64.rpm) | [.sha256](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-1.fc45.x86_64.rpm.sha256) |
 | Arch Linux | [PKGBUILD](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/PKGBUILD) | none; makepkg checks the source |
 | FreeBSD 14 | [blockwright-0.1.2-freebsd-port.tar.gz](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-freebsd-port.tar.gz) | [.sha256](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-freebsd-port.tar.gz.sha256) |
-| macOS 12 (Monterey) or later, Apple Silicon and Intel | [Blockwright-0.1.1.dmg](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/Blockwright-0.1.1.dmg) | [.sha256](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/Blockwright-0.1.1.dmg.sha256) |
+| macOS 12 (Monterey) or later, Apple Silicon and Intel | [Blockwright-0.1.2.dmg](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/Blockwright-0.1.2.dmg) | [.sha256](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/Blockwright-0.1.2.dmg.sha256) |
 | Windows 10 or later, x86-64 | [blockwright-0.1.2-x86_64.msi](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-x86_64.msi) | [.sha256](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-x86_64.msi.sha256) |
 | Source | [blockwright-0.1.2.tar.gz](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2.tar.gz) | [.sha256](https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2.tar.gz.sha256) |
 
@@ -178,7 +178,7 @@ blockwright-cli --version
 
 ## macOS
 
-The newest macOS build is [0.1.1](https://git.pumpin.online/funkpower/blockwright/releases/tag/v0.1.1); 0.1.2 has no dmg, and the Homebrew cask installs 0.1.1 too. `Blockwright-0.1.1.dmg` holds one app for Apple Silicon and Intel Macs, on macOS 12 (Monterey) or later. Open the dmg and drag Blockwright to Applications.
+`Blockwright-0.1.2.dmg` holds one app for Apple Silicon and Intel Macs, on macOS 12 (Monterey) or later. Open the dmg and drag Blockwright to Applications.
 
 ### Homebrew
 
@@ -263,7 +263,7 @@ sha256sum -c blockwright-0.1.2-x86_64.AppImage.sha256
 It prints the file's name and `OK`, or `FAILED`. On macOS:
 
 ```sh
-shasum -a 256 -c Blockwright-0.1.1.dmg.sha256
+shasum -a 256 -c Blockwright-0.1.2.dmg.sha256
 ```
 
 On Windows, in PowerShell, compare `Get-FileHash`'s checksum (in capitals) with the `.sha256` file's:
