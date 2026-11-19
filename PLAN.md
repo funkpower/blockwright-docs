@@ -64,7 +64,15 @@ They continue Track A's numbering in the same list, so no Track A page moves.
 |---|---|---|---|
 | 14 | A night scene | Planning a whole piece: a value plan, one light, a layer for each depth; a sky in two cell-banded ramp gradients, stars sprayed inside a selection, a moon and two tree lines on Pixels layers; getting it ready for IRC | Written, checked against `9b263b8` (#86): every picture a `replay --project` steps file from a blank 60 × 24 start, played through the editor's own tools (the gradients, the spray, the shapes, Line and Fill, the layer steps); the Layers dock taken with `--screenshot`; Lint's four findings and the padded export's 24 lines, longest 194 bytes, from the CLI on `final.bwp` |
 
-Every tutorial was re-run against Blockwright `1347435` (0.1.1) in #88; the `Checked:` line of each page names it.
+### Track C: on IRC
+
+Getting a finished piece into a channel, once Track A's tutorial 11 has it inside the byte budget. The client scripts are code, so they live in their own repos under the GPL (`funkpower/weechat-pump`, `funkpower/irssi-pump`, `funkpower/irccloud-pump`), and the page links to them; nothing of theirs is in this repo but their screenshots.
+
+| # | Tutorial | Covers | Status |
+|---|---|---|---|
+| 15 | Pumpin' on EFnet | EFnet's two flood limits (Excess Flood on the connection, the channel throttle without voice or ops) and the burst and rate that stay under them; WeeChat, irssi and IRCCloud set up with the pump scripts; per-host limits and easing after a flood | Written, checked against `95cefd6` (0.1.2): the export output from `export --irc` on 11's `final.bwp`; the WeeChat and irssi scripts run against a stand-in ratbox server (burst and rate, voiced and not, +v mid-play, throttle and resend, Excess Flood easing); the IRCCloud userscript only against a stand-in for IRCCloud's socket, and the page says so; screenshots are the scripts' own, drawn from the clients' terminals |
+
+Tutorials 01–14 were re-run against Blockwright `1347435` (0.1.1) in #88; the `Checked:` line of each page names it.
 
 ## 3. Manual
 

@@ -289,4 +289,4 @@ It is the finished sign with a blank margin row above and below.
 
 </details>
 
-Tutorial 12, *Scripts and generators*, goes on to generator layers, their parameter forms, and the headless CLI.
+Tutorial 12, *Scripts and generators*, goes on to generator layers, their parameter forms, and the headless CLI. To play a piece into a channel as fast as EFnet allows, see tutorial 15, [*Pumpin' on EFnet*](15-pumpin-on-efnet.md).

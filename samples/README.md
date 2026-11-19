@@ -10,6 +10,8 @@ PNGs are build output, not tracked; `scripts/build` renders them, a `.bwp` as it
 
 The samples are funkpower's art, under the repo's licence, CC BY-SA 4.0 (`LICENSE`), unless a file or the section below says otherwise.
 
+`15-pumpin-on-efnet/` holds only screenshots of the WeeChat and irssi scripts at work, with the docs' own pieces. The scripts themselves are in their own repos, under the GPL, and the tutorial links to them.
+
 ## Generator scripts from Blockwright
 
 The generators packed inside some of the `.bwp` projects come from Blockwright's own samples (the ridges and stars from **Ridges at dusk**, the fog from **Harbour at night**), and are under Blockwright's licence, the [GNU General Public License, version 3](https://www.gnu.org/licenses/gpl-3.0.html) or (at your option) any later version (GPL-3.0-or-later; Blockwright's [`LICENSE`](https://git.pumpin.online/funkpower/blockwright/src/branch/main/LICENSE)). Each generator is a `scripts/<n>/` directory inside the project, a zip: its `generator.json`, the `.sh` and `.awk` it runs, and its `params.json` where it has one (the ridges do, the stars don't). They are:

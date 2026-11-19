@@ -4,4 +4,4 @@ From no ANSI art at all to a finished piece on IRC, one skill per tutorial, each
 
 <!-- list: tutorials -->
 
-Each has a goal and the finished piece, the idea, illustrated steps, what goes wrong, and an exercise with a starting file. From 14 on, each is a project: a whole piece planned and built with the skills of the ones before it.
+Each has a goal and the finished piece, the idea, illustrated steps, what goes wrong, and an exercise with a starting file. 14 is a project: a whole piece planned and built with the skills of the ones before it. 15 takes a finished piece onto EFnet with WeeChat, irssi or IRCCloud.
