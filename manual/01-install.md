@@ -29,8 +29,6 @@ Blockwright 0.1.2 was released on 19 November 2026. Its files and release notes 
 blockwright-cli 0.1.2 (fb62a10)
 ```
 
-The logo and the bundled fonts' notices follow.
-
 The `.deb` and `.rpm` packages, the Arch package, the FreeBSD port, a source install and the Homebrew cask put `blockwright-cli` on the `PATH`. The others don't:
 
 - The Flatpak runs it as `flatpak run --command=blockwright-cli online.pumpin.funkpower.blockwright`.
