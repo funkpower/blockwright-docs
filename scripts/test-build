@@ -2374,6 +2374,15 @@ DROPPED_CASES = {
         'every cell it covers.\n</details>\n\n<details markdown="1"><hr>\n\nCopy copies the selection to the '
         'clipboard.\n</details>\n\nCopy copies the selection to the clipboard and leaves the cells as they are.\n',
         13, "line 15", "Copy copies the selection to the clipboard"),
+    # An inline tag's start at a line's start doesn't run over a blank line to
+    # a later ">" and hide the lost text: md_in_html's parser reads only a
+    # block-level tag that way (docs#89).
+    "an inline tag's start before a blank line": ('<div markdown="1"><hr>\n\n<kbd\n\nPress the key.\n'
+                                                  'Then release it >\n</div>\n', 8, "lines 10-13",
+                                                  "kbd Press the key Then release it"),
+    # Four spaces make a code line, text on the page, unless a list item is above it.
+    "an indented code line that reads like a reference definition": (
+        'Before.\n\n<div markdown="1"><hr>\n\n    [s]: page.html\n</div>\n', 10, "line 12", "s page html"),
 }
 # The same with the elements closed and the <hr> on its own line, and an
 # element marked as Markdown holding what Markdown writes differently from its
@@ -2452,6 +2461,49 @@ After.
     "[TOC] and a footnote before a heading": (
         '<div markdown="1">\n\n[TOC]\n\nShort[^1].\n\n## Alpha Beta Gamma\n\n## Delta\n\n[^1]: n.\n\n</div>\n',
         ['<div class="toc">', "<p>Short<sup"]),
+    # And after #82 (docs#89): an inline tag's start with a blank line after
+    # it, which the block parser splits; a <div class="toc"> the page writes
+    # itself; a reference definition with its address in <...> and its title
+    # on the next line, one in a blockquote, one in a list item and one with
+    # its label over two lines; a one-line footnote definition with a setext
+    # underline after it, which is a heading; and two footnote references side
+    # by side.
+    "an inline tag's start before a blank line": (
+        '<div markdown="1">\n\n<x\n\nAlpha beta gamma delta\n\nEpsilon zeta > eta\n</div>\n',
+        ["<p>&lt;x</p>", "<p>Alpha beta gamma delta</p>", "<p>Epsilon zeta &gt; eta</p>"]),
+    "a <div class=\"toc\"> of the page's own": (
+        '<div class="toc" markdown="1">\n\nHand made contents list.\n\n</div>\n',
+        ['<div class="toc">\n<p>Hand made contents list.</p>']),
+    "a raw <div class=\"toc\"> of the page's own": (
+        '<div markdown="1">\n\n<div class="toc">Hand made contents list</div>\n\n</div>\n',
+        ['<div class="toc">Hand made contents list</div>']),
+    "a reference's address in <...> and its title on the next line": (
+        '<div markdown="1">\n\nSee [the site][s].\n\n[s]: <index.md>\n  "Title words"\n\n</div>\n',
+        ['title="Title words">the site</a>']),
+    "a reference definition in a blockquote": (
+        '<div markdown="1">\n\nSee [the site][s].\n\n> [s]: ../index.md\n\n</div>\n', ['">the site</a>.</p>']),
+    "a reference definition in a list item": (
+        '<div markdown="1">\n\n- See [the site][s].\n\n    [s]: ../index.md\n\n</div>\n', ['">the site</a>.</p>']),
+    "a reference's label over two lines": (
+        '<div markdown="1">\n\nSome text.\n\n[a\nb]: ../index.md\n\n</div>\n', ["<p>Some text.</p>\n</div>"]),
+    "a setext underline after a footnote": (
+        '<div markdown="1">\n\nText[^a].\n\n[^a]: Note words.\n---\n\nAfter.\n\n</div>\n',
+        ["[^a]: Note words.</h2>\n<p>After.</p>"]),
+    "two footnote references side by side": (
+        '<div markdown="1">\n\nText[^a][^b].\n\n[^a]: One.\n[^b]: Two.\n\n</div>\n', ['href="#fn:b">2</a>']),
+    # Each of Python-Markdown's block boundaries before a one-line footnote
+    # definition with a setext underline after it (docs#96 review).
+    "a setext underline after a setext heading's, then a footnote": (
+        '<div markdown="1">\n\nText[^a].\n\nHead\n====\n[^a]: Note words.\n---\n\nAfter.\n\n</div>\n',
+        ["[^a]: Note words.</h2>\n<p>After.</p>"]),
+    "a setext underline after a fence's closing line, then a footnote": (
+        '<div markdown="1">\n\nText[^a].\n\n```\ncode\n```\n[^a]: Note words.\n---\n\nAfter.\n\n</div>\n',
+        ["[^a]: Note words.</h2>\n<p>After.</p>"]),
+    "a setext underline after a raw HTML line, then a footnote": (
+        '<div markdown="1">\n\nText[^a].\n\n<p>raw</p>\n[^a]: Note words.\n---\n\nAfter.\n\n</div>\n',
+        ["[^a]: Note words.</h2>\n<p>After.</p>"]),
+    "a reference definition after a bullet and a number": (
+        '<div markdown="1">\n\nSee [the site][s].\n\n- 1. [s]: ../index.md\n\n</div>\n', ['">the site</a>.</p>']),
 }
 
 
@@ -2463,8 +2515,10 @@ def markdown_text_dropped(s):
     with an <hr> after it on its line (docs#78), and <p markdown="span"> with
     an <hr> after it, reported once; and the same after a code span holding
     `a<b` and between fences holding <!-- and -->, with a footnote saying the
-    same words, and with the same words, or a sentence starting with them,
-    straight after the element. On main the first two build, exit 0, with
+    same words, with the same words, or a sentence starting with them,
+    straight after the element, and with an inline tag's start and a blank
+    line before the lost text, and an indented code line that reads like a
+    reference definition. On main the first two build, exit 0, with
     "Some text." on neither page."""
     for what, (body, opened, line, said) in DROPPED_CASES.items():
         s.probe(body)
@@ -2527,7 +2581,14 @@ def markdown_text_kept(s):
     definition's label, an attribute list, a link title holding ")", [TOC]; a
     start tag with a blank line inside it, a reference definition with its
     address or title on the next line, a # heading or a rule ending a
-    footnote, [TOC] with a footnote reference before a heading), with all its
+    footnote, [TOC] with a footnote reference before a heading; an inline
+    tag's start with a blank line after it, a <div class="toc"> the page
+    writes itself, a reference definition with its address in <...> and its
+    title on the next line, in a blockquote, in a list item or with its label
+    over two lines, a setext underline after a one-line footnote definition,
+    two footnote references side by side, a footnote definition and its
+    setext underline after a setext heading, a closing fence or a raw HTML
+    line, a reference definition after a bullet and a number), with all its
     text on the page. Code spans holding <!-- before such an
     element and --> after it lose nothing either: md_in_html reads them as a
     comment and leaves the element's tags as text, which the attribute check
