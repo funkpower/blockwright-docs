@@ -1,5 +1,5 @@
 Title: Blockwright
-Checked: Blockwright 0.1.1 (609a15c)
+Checked: Blockwright 0.1.2 (fb62a10)
 
 # Blockwright {.visually-hidden}
 
@@ -13,11 +13,11 @@ Checked: Blockwright 0.1.1 (609a15c)
 <p class="tagline">An editor for ANSI, IRC and Reticulum Micron art: half-block pixels, shading along colour ramps, lighting, layers, and a live byte meter so every line fits on IRC.</p>
 <div class="term">
 <p><span class="ps1" aria-hidden="true">$ </span>blockwright --version | head -n 1</p>
-<p class="out">blockwright 0.1.1 (bd67fae)</p>
+<p class="out">blockwright 0.1.2 (fb62a10)</p>
 <p aria-hidden="true"><span class="ps1">$ </span><span class="cursor"></span></p>
 </div>
 <p>For Linux, FreeBSD, macOS and Windows.</p>
-<p class="actions"><a class="button" href="#download">Download 0.1.1</a> <a class="button" href="samples/index.md">Samples</a> <a class="button" href="tutorials/index.md">Tutorials</a></p>
+<p class="actions"><a class="button" href="#download">Download 0.1.2</a> <a class="button" href="samples/index.md">Samples</a> <a class="button" href="tutorials/index.md">Tutorials</a></p>
 </div>
 </div>
 
@@ -33,65 +33,75 @@ Checked: Blockwright 0.1.1 (609a15c)
 
 <div class="rule" aria-hidden="true"><span>█▓▒░</span>░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
 
-<h2 id="download"><span class="visually-hidden">Download</span><span aria-hidden="true">ls releases/v0.1.1/</span></h2>
+<h2 id="download"><span class="visually-hidden">Download</span><span aria-hidden="true">ls releases/v0.1.2/</span></h2>
 
-<p class="lead"><a href="https://git.pumpin.online/funkpower/blockwright/releases/tag/v0.1.1">Blockwright 0.1.1</a>, 14 November 2026</p>
+<p class="lead"><a href="https://git.pumpin.online/funkpower/blockwright/releases/tag/v0.1.2">Blockwright 0.1.2</a>, 19 November 2026</p>
 
 <div class="downloads">
 
 <section class="dl" id="dl-macos">
 <h3>macOS</h3>
-<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/Blockwright-0.1.1.dmg">Blockwright-0.1.1.dmg</a></p>
+<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/Blockwright-0.1.2.dmg">Blockwright-0.1.2.dmg</a></p>
 <p>macOS 12 or later, Apple Silicon and Intel. Also on <a href="manual/01-install.md#homebrew">Homebrew</a>.</p>
 <p class="how"><a href="manual/01-install.md#macos">Installing on macOS</a></p>
 </section>
 
 <section class="dl" id="dl-windows">
 <h3>Windows</h3>
-<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright-0.1.1-x86_64.msi">blockwright-0.1.1-x86_64.msi</a></p>
+<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-x86_64.msi">blockwright-0.1.2-x86_64.msi</a></p>
 <p>Windows 10 or later, x86-64.</p>
 <p class="how"><a href="manual/01-install.md#windows">Installing on Windows</a></p>
 </section>
 
 <section class="dl" id="dl-appimage">
 <h3>Linux · AppImage</h3>
-<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright-0.1.1-x86_64.AppImage">blockwright-0.1.1-x86_64.AppImage</a></p>
+<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-x86_64.AppImage">blockwright-0.1.2-x86_64.AppImage</a></p>
 <p>Any x86-64 distribution with glibc 2.36 or newer.</p>
 <p class="how"><a href="manual/01-install.md#linux-appimage">Installing the AppImage</a></p>
 </section>
 
+<section class="dl" id="dl-flatpak">
+<h3>Linux · Flatpak</h3>
+<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-x86_64.flatpak">blockwright-0.1.2-x86_64.flatpak</a></p>
+<p>Any x86-64 distribution with Flatpak; the KDE runtime comes from Flathub.</p>
+<p class="how"><a href="manual/01-install.md#linux-flatpak">Installing the Flatpak</a></p>
+</section>
+
 <section class="dl" id="dl-deb">
 <h3>Debian and Ubuntu</h3>
+<p>Ubuntu 26.04: the <a href="manual/01-install.md#debian-and-ubuntu">PPA</a>, <code>ppa:funkpower/blockwright</code>.</p>
 <ul class="files">
-<li>Debian 13: <a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright_0.1.1-1_debian13_amd64.deb">blockwright_0.1.1-1_debian13_amd64.deb</a></li>
-<li>Debian testing (forky): <a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright_0.1.1-1_debian-testing_amd64.deb">blockwright_0.1.1-1_debian-testing_amd64.deb</a></li>
-<li>Ubuntu 26.04: <a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright_0.1.1-1_ubuntu26.04_amd64.deb">blockwright_0.1.1-1_ubuntu26.04_amd64.deb</a></li>
-<li>Ubuntu 26.10: <a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright_0.1.1-1_ubuntu26.10_amd64.deb">blockwright_0.1.1-1_ubuntu26.10_amd64.deb</a></li>
+<li>Debian 13: <a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright_0.1.2-1_debian13_amd64.deb">blockwright_0.1.2-1_debian13_amd64.deb</a></li>
+<li>Ubuntu 26.04: <a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright_0.1.2-1_ubuntu26.04_amd64.deb">blockwright_0.1.2-1_ubuntu26.04_amd64.deb</a></li>
 </ul>
 <p class="how"><a href="manual/01-install.md#debian-and-ubuntu">Installing on Debian and Ubuntu</a></p>
 </section>
 
 <section class="dl" id="dl-fedora">
-<h3>Fedora 45</h3>
-<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright-0.1.1-1.fc45.x86_64.rpm">blockwright-0.1.1-1.fc45.x86_64.rpm</a></p>
+<h3>Fedora</h3>
+<p>The <a href="manual/01-install.md#fedora">Copr</a>, <code>funkpower/blockwright</code>.</p>
+<ul class="files">
+<li>Fedora 44: <a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-1.fc44.x86_64.rpm">blockwright-0.1.2-1.fc44.x86_64.rpm</a></li>
+<li>Fedora 45: <a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-1.fc45.x86_64.rpm">blockwright-0.1.2-1.fc45.x86_64.rpm</a></li>
+</ul>
 <p class="how"><a href="manual/01-install.md#fedora">Installing on Fedora</a></p>
 </section>
 
 <section class="dl" id="dl-arch">
 <h3>Arch Linux</h3>
-<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/PKGBUILD">PKGBUILD</a></p>
+<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/PKGBUILD">PKGBUILD</a></p>
 <p class="how"><a href="manual/01-install.md#arch-linux">Installing on Arch Linux</a></p>
 </section>
 
 <section class="dl" id="dl-freebsd">
 <h3>FreeBSD 14</h3>
-<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright-0.1.1-freebsd-port.tar.gz">blockwright-0.1.1-freebsd-port.tar.gz</a></p>
+<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2-freebsd-port.tar.gz">blockwright-0.1.2-freebsd-port.tar.gz</a></p>
 <p class="how"><a href="manual/01-install.md#freebsd">Installing on FreeBSD</a></p>
 </section>
 
 <section class="dl" id="dl-source">
 <h3>Source</h3>
-<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.1/blockwright-0.1.1.tar.gz">blockwright-0.1.1.tar.gz</a></p>
+<p><a href="https://git.pumpin.online/funkpower/blockwright/releases/download/v0.1.2/blockwright-0.1.2.tar.gz">blockwright-0.1.2.tar.gz</a></p>
 <p>Needs a C++20 compiler, CMake 3.24 or newer, Qt 6.7 or newer (Core, Gui, Widgets, Concurrent and Svg), libzip 1.7 or newer and zstd.</p>
 <p class="how"><a href="manual/01-install.md#building-from-source">Building from source</a></p>
 <p><a href="https://git.pumpin.online/funkpower/blockwright">Repository</a> · <a href="https://git.pumpin.online/funkpower/blockwright/releases">Older releases</a> · GPL 3.0 or later</p>
