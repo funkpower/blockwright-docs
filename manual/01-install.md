@@ -108,7 +108,7 @@ flatpak override --user --env=PYTHONPATH=/path/to/modules online.pumpin.funkpowe
 
 ## Debian and Ubuntu
 
-On Ubuntu 26.04, install from the PPA. It covers Ubuntu 26.04, and updates come with the system's updates:
+On Ubuntu 26.04, install from the PPA; updates then come with the system's updates:
 
 ```sh
 sudo add-apt-repository ppa:funkpower/blockwright
@@ -117,7 +117,7 @@ sudo apt install blockwright
 blockwright-cli --version
 ```
 
-Otherwise, or on Debian, use a `.deb`. Each `.deb` is for one release. Version 0.1.2 has no `.deb` for Debian testing or Ubuntu 26.10:
+On Debian, or to install without the PPA, use a `.deb`. Each `.deb` is for one release. Version 0.1.2 has no `.deb` for Debian testing or Ubuntu 26.10:
 
 | Release | File |
 |---|---|
@@ -135,7 +135,15 @@ Keep the `./`, or apt looks in its archives. Debian 12 and Ubuntu 24.04 have a Q
 
 ## Fedora
 
-An `.rpm` is built for Fedora 44 and for Fedora 45, each for its release only (`fc44` or `fc45` in the file name):
+Install from the Copr; updates then come with dnf:
+
+```sh
+sudo dnf copr enable funkpower/blockwright
+sudo dnf install blockwright
+blockwright-cli --version
+```
+
+To install without the Copr, an `.rpm` is built for Fedora 44 and for Fedora 45, each for its release only (`fc44` or `fc45` in the file name):
 
 ```sh
 sudo dnf install ./blockwright-0.1.2-1.fc45.x86_64.rpm
@@ -282,6 +290,7 @@ Get-Content .\blockwright-0.1.2-x86_64.msi.sha256
 | Debian or Ubuntu `.deb` | `sudo apt remove blockwright` |
 | Ubuntu PPA | `sudo apt remove blockwright`, then `sudo add-apt-repository --remove ppa:funkpower/blockwright` |
 | Fedora `.rpm` | `sudo dnf remove blockwright` |
+| Fedora Copr | `sudo dnf remove blockwright`, then `sudo dnf copr remove funkpower/blockwright` |
 | Arch `PKGBUILD` | `sudo pacman -R blockwright` |
 | FreeBSD port | `pkg delete blockwright`, as root |
 | macOS dmg | Drag Blockwright from Applications to the Bin |
